@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FLOA BK</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{--p:#6A0DAD;--l:#F3E8FF;--bg:#F9FAFB;--w:#fff;--t:#111827;--m:#6b7280;--b:#e5e7eb;--g:#166534}
+*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:0}
+body{background:var(--bg);font-size:14px}
+.screen{display:none;min-height:100vh;padding-bottom:80px}.screen.active{display:block}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:50}
+.hidden{display:none!important}
+.circle{width:70px;height:70px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.btn{width:100%;padding:14px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:500;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.input{width:100%;padding:12px 14px;border:1px solid #D1D5DB;border-radius:8px;font-size:14px}
+header{background:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--b)}
+.logo{display:flex;gap:8px;align-items:center;font-size:19px;font-weight:700;color:var(--p);letter-spacing:0.5px}
+.badge{width:36px;height:36px;border-radius:50%;background:var(--l);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--p);cursor:pointer;font-size:14px}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--p);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 0 6px;z-index:100}
+.nav{color:#fff;font-size:11px;opacity:.7;text-align:center;cursor:pointer}.nav.active{opacity:1}.nav i{font-size:18px;margin-bottom:2px}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);border:1px solid var(--b)}
+</style>
+</head>
+<body>
+<section id="login" class="screen active">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:#f3f4f6">
+<div style="background:#fff;border-radius:12px;padding:28px;width:100%;max-width:360px;box-shadow:0 4px 12px rgba(0,0,.1)">
+<div class="circle"><span style="color:#fff;font-size:28px;font-weight:bold">F</span></div>
+<h1 style="text-align:center;font-size:20px;font-weight:700;margin-bottom:20px">FLOA BK - Twoja strefa klienta</h1>
+<div id="loginInfo" style="background:#f3f4f6;padding:12px;border-radius:8px;text-align:center;margin-bottom:18px;font-size:13px">Zaloguj się kontem z panelu admin</div>
+<label style="font-size:12px;color:var(--m);margin-bottom:4px;display:block">Twój adres e-mail</label>
+<input id="email" type="email" class="input" style="margin-bottom:14px" placeholder="email z admin">
+<label style="font-size:12px;color:var(--m);margin-bottom:4px;display:block">Twój kod PIN</label>
+<input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px" placeholder="••••••">
+<button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+<p id="err" class="hidden" style="color:#dc2626;margin-top:10px;font-size:13px;text-align:center"></p>
+</div></div>
+</section>
+
+<section id="dashboard" class="screen">
+<header><div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div><div style="display:flex;gap:10px"><div class="badge"><i class="fa-regular fa-bell"></i></div><div class="badge" onclick="openAcc()" id="avatar">FB</div></div></header>
+<main style="padding:20px 18px">
+<h2 style="font-weight:500;margin-bottom:16px;font-size:15px" id="greet">Powitanie</h2>
+<div class="card" style="background:var(--l);border-color:#E9D5FF">
+<p style="color:var(--m);margin-bottom:6px;font-size:13px">Dostępne saldo <i class="fa-solid fa-circle-check" style="color:var(--p)"></i></p>
+<p id="bal" style="font-size:28px;font-weight:700;margin-bottom:10px;color:var(--p)">0,00 zł</p>
+<p style="color:var(--m);margin-bottom:18px;font-size:12px">Uwzględnij wszystkie swoje potrzeby</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<button onclick="toast('IBAN')" style="padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:13px"><i class="fa-regular fa-credit-card"></i> IBAN</button>
+<button onclick="show('transfer')" style="padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:13px"><i class="fa-solid fa-arrow-up-right-from-square"></i> Przelew</button>
+<button onclick="openCard()" style="grid-column:1/-1;padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:13px"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
+</div></div>
+<h3 style="font-weight:600;margin-bottom:12px;font-size:14px"><i class="fa-solid fa-bars"></i> Historia</h3>
+<div id="history-list"></div>
+</main>
+</section>
+
+<section id="transfer" class="screen">
+<header><div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div></header>
+<main style="padding:20px 18px">
+<h1 style="font-weight:600;margin-bottom:18px;font-size:20px">Wykonaj przelew</h1>
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+<div style="font-size:15px">Dostępne saldo: <b id="bal2">0,00 zł</b></div>
+<div style="opacity:.15"><i class="fa-solid fa-money-bill-transfer" style="font-size:36px"></i></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:15px"><i class="fa-solid fa-wallet" style="color:var(--p)"></i> Wyślij przelew międzynarodowy</div>
+<label style="font-size:13px;color:var(--m)">Kwota przelewu</label>
+<div style="display:flex;margin:6px 0 16px">
+<input id="a" class="input" placeholder="0,00" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-size:16px;font-weight:600">
+<div style="padding:12px 16px;border:1px solid #D1D5DB;border-left:none;border-radius:0 8px 8px 0;background:#fff;font-weight:600">zł</div>
+</div>
+<label style="font-size:13px;color:var(--m)">Imię i nazwisko beneficjenta</label>
+<input id="b" class="input" style="margin:6px 0 16px">
+<label style="font-size:13px;color:var(--m)">IBAN / Numer konta</label>
+<input id="c" class="input" style="margin:6px 0 16px">
+<label style="font-size:13px;color:var(--m)">Kod banku (BIC / SWIFT)</label>
+<input id="d" class="input" style="margin:6px 0 16px">
+<label style="font-size:13px;color:var(--m)">Nazwa banku</label>
+<input id="e" class="input" style="margin:6px 0 16px">
+<label style="font-size:13px;color:var(--m)">Powód transferu</label>
+<input id="f" class="input" style="margin:6px 0 24px">
+<button onclick="toVerify()" class="btn" id="continueBtn" style="background:#8b5cf6">Kontynuuj →</button>
+</div>
+</main>
+</section>
+
+<section id="verify" class="screen">
+<header><div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div></header>
+<main style="padding:20px 18px">
+<h1 style="font-weight:600;margin-bottom:16px;font-size:18px">Weryfikacja tożsamości</h1>
+<div class="card">
+<div style="display:flex;align-items:center;gap:6px;color:var(--p);font-weight:600;margin-bottom:12px"><i class="fa-regular fa-file-lines"></i> Szczegóły oczekującego przelewu</div>
+<div style="background:#fafafa;padding:14px;border-radius:10px">
+<p style="font-size:12px;color:var(--m)">Kwota przelewu:</p><p style="font-weight:700;margin-bottom:8px" id="va">-</p>
+<p style="font-size:12px;color:var(--m)">Imię i nazwisko beneficjenta:</p><p style="font-weight:700;margin-bottom:8px" id="vb">-</p>
+<p style="font-size:12px;color:var(--m)">IBAN / Numer konta:</p><p style="font-weight:700;margin-bottom:8px" id="vc">-</p>
+<p style="font-size:12px;color:var(--m)">Kod banku (BIC / SWIFT):</p><p style="font-weight:700;margin-bottom:8px" id="vd">-</p>
+<p style="font-size:12px;color:var(--m)">Nazwa banku:</p><p style="font-weight:700;margin-bottom:8px" id="ve">-</p>
+<p style="font-size:12px;color:var(--m)">Powód transferu:</p><p style="font-weight:700;margin-bottom:10px" id="vf">-</p>
+<button onclick="show('transfer')" style="padding:6px 12px;border:1px solid #fca5a5;color:#dc2626;background:#fff;border-radius:6px;font-size:12px">Anuluj transfer →</button>
+</div></div>
+<div class="card"><label style="font-size:12px">Kod aktywacyjny</label><input id="code" class="input" style="margin:6px 0 14px"><button onclick="finish()" class="btn">Potwierdź</button><div id="progress" class="hidden" style="margin-top:12px"><div style="background:#eee;height:8px;border-radius:4px;overflow:hidden"><div id="bar" style="height:8px;background:var(--p);width:0%"></div></div><p id="ptext" style="font-size:13px;margin-top:8px;font-weight:600;text-align:center"></p></div></div>
+</main>
+</section>
+
+<section id="result" class="screen">
+<header><div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div></header>
+<main style="padding:20px 18px;display:flex;align-items:center;justify-content:center;min-height:70vh">
+<div class="card" style="text-align:center;max-width:340px;width:100%">
+<div id="resultIcon" style="font-size:56px;margin-bottom:12px">⏳</div>
+<h2 id="resultPercent" style="font-size:36px;font-weight:700;color:var(--p);margin-bottom:10px">0%</h2>
+<p id="resultMsg" style="font-size:14px;color:var(--t);line-height:1.6"></p>
+<button onclick="show('dashboard')" style="margin-top:22px;padding:12px 24px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:14px">Powrót do portfela</button>
+</div>
+</main>
+</section>
+
+<nav id="mainNav" style="display:none">
+  <div class="nav" onclick="show('dashboard')"><i class="fa-solid fa-house"></i><br>Portfel</div>
+  <div class="nav" onclick="show('transfer')"><i class="fa-solid fa-qrcode"></i><br>Zapłata</div>
+  <div class="nav" onclick="openCard()"><i class="fa-regular fa-credit-card"></i><br>Karta</div>
+  <div class="nav" onclick="openAcc()"><i class="fa-regular fa-user"></i><br>Konto</div>
+</nav>
+
+<div id="card" class="modal hidden"><div style="background:#fff;width:92%;max-width:360px;border-radius:12px;padding:24px;position:relative"><button onclick="closeCard()" style="position:absolute;top:-14px;right:14px;width:32px;height:32px;border-radius:50%;background:#e53935;color:#fff;border:none">×</button><p style="margin-bottom:12px;font-weight:600">Karta wirtualna</p><div style="background:linear-gradient(135deg,#6A0DAD,#7B2CBF);color:#fff;padding:18px;border-radius:10px"><div style="text-align:right"><i class="fa-brands fa-cc-visa" style="font-size:26px"></i></div><p style="margin:12px 0;font-weight:700">FLOA BK CARD</p><p style="margin:12px 0;letter-spacing:2px;font-size:16px">4556 5518 8867 XXXX</p><div style="display:flex;gap:20px;font-size:12px"><span>02/28</span><span>CVV: 556</span></div></div><p style="font-size:11px;color:var(--m);margin-top:14px;text-align:center;line-height:1.4">Ze względów bezpieczeństwa ostatnie 4 cyfry są ukryte. Pełne dane zostaną wyświetlone po dodatkowej weryfikacji.</p></div></div>
+
+<div id="acc" class="modal hidden"><div style="background:#fff;width:92%;max-width:360px;border-radius:12px;padding:24px;position:relative"><button onclick="closeAcc()" style="position:absolute;top:-14px;right:14px;width:32px;height:32px;border-radius:50%;background:#e53935;color:#fff;border:none">×</button><h3 style="margin-bottom:12px;display:flex;align-items:center;gap:8px"><i class="fa-regular fa-circle-user" style="color:var(--p);font-size:20px"></i> Konto</h3><div id="accinfo" style="font-size:13px;line-height:1.8"></div><button onclick="logout()" style="margin-top:14px;padding:9px 12px;border:1px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:6px;font-size:12px;width:100%"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button></div></div>
+
+<div id="t" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:8px;display:none;font-size:13px;z-index:200"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import {getDatabase,ref,get,onValue} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",authDomain:"vantex-admin-2026.firebaseapp.com",databaseURL:"https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",projectId:"vantex-admin-2026",storageBucket:"vantex-admin-2026.firebasestorage.app",messagingSenderId:"810884502320",appId:"1:810884502320:web:b5ba7c2909ddf4ccf02ef5"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);let user=null;
+const fmt=n=>new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(n)||0)+' zł';
+const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('mainNav').style.display=(id==='login'?'none':'grid')};
+window.show=show;
+function addHistory({title,subtitle,amount,date},save=true){const list=document.getElementById('history-list');const card=document.createElement('div');card.className='card';card.style.padding='14px';card.style.display='flex';card.style.justifyContent='space-between';card.style.alignItems='center';card.style.marginBottom='10px';const pos=amount>=0;card.innerHTML=`<div style="display:flex;gap:10px;align-items:center;min-width:0"><div style="width:30px;height:30px;border-radius:50%;background:${pos?'#ecfccb':'#fee2e2'};display:flex;align-items:center;justify-content:center;color:${pos?'var(--g)':'#dc2626'};flex-shrink:0"><i class="fa-solid ${pos?'fa-check':'fa-arrow-up'}" style="font-size:12px"></i></div><div style="min-width:0"><p style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title} <span style="color:var(--m)">• ${subtitle}</span></p><p style="font-size:11px;color:var(--m)">${date}</p></div><p style="color:${pos?'var(--g)':'#dc2626'};font-weight:600;font-size:13px;white-space:nowrap;flex-shrink:0;margin-left:10px">${pos?'+ ':'- '}${fmt(Math.abs(amount))}</p>`;list.prepend(card);if(save&&user){const key='floa_'+user.email.toLowerCase();const data=JSON.parse(localStorage.getItem(key)||'{"montant":0,"history":[]}');data.montant=user.montant;data.history.push({title,subtitle,amount,date});localStorage.setItem(key,JSON.stringify(data));}}
+window.login=async()=>{const e=document.getElementById('email').value.trim().toLowerCase();const p=document.getElementById('pin').value.trim();const err=document.getElementById('err');err.classList.add('hidden');const s=await get(ref(db,'clients'));const d=s.val()||{};let f=null;let fid=null;for(const k in d){const v=d[k];if(v.email&&v.email.toLowerCase()===e&&String(v.pin)===p){f=v;fid=k;break}}if(!f){err.textContent='Odmowa dostępu';err.classList.remove('hidden');localStorage.removeItem('floa_session');show('login');return}if(f.blocked){err.textContent='Konto zablokowane przez administratora';err.classList.remove('hidden');localStorage.removeItem('floa_session');return}user=f;user._id=fid;localStorage.setItem('floa_session',JSON.stringify({e,p}));const key='floa_'+user.email.toLowerCase();const stored=JSON.parse(localStorage.getItem(key)||'null');if(stored&&typeof stored.montant==='number'){user.montant=stored.montant;}document.getElementById('greet').textContent='Powitanie, '+user.nom;document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);document.getElementById('avatar').textContent=user.nom.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();document.getElementById('accinfo').innerHTML=`<div><i class="fa-solid fa-id-card" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Imię i nazwisko:</span> <b>${user.nom}</b></div><i class="fa-solid fa-wallet" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Saldo:</span> <b>${fmt(user.montant)}</b></div><i class="fa-solid fa-envelope" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Adres e-mail:</span> <b>${user.email}</b></div><i class="fa-solid fa-flag" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Kraj:</span> <b>${user.pays||'-'}</b></div><i class="fa-solid fa-location-dot" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Adres zamieszkania:</span> <b>${user.adresse||'-'}</b></div><i class="fa-solid fa-phone" style="color:var(--m);width:16px"></i> <span style="color:var(--m)">Numer telefonu:</span> <b>${user.tel||'-'}</b></div>`;document.getElementById('history-list').innerHTML='';if(stored&&stored.history&&stored.history.length){stored.history.forEach(h=>addHistory(h,false));}else{addHistory({title:'Przelew otrzymany',subtitle:'mBank Polska',amount:Number(user.montant),date:new Date().toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'})});}show('dashboard');setupValidation();watchClientStatus()};
+window.logout=()=>{user=null;localStorage.removeItem('floa_session');show('login')};
+const saved=localStorage.getItem('floa_session');if(saved){try{const {e,p}=JSON.parse(saved);document.getElementById('email').value=e;document.getElementById('pin').value=p;show('dashboard');document.getElementById('greet').textContent='Ładowanie...';setTimeout(()=>login(),100)}catch{}}
+function watchClientStatus(){if(!user)return;const clientsRef=ref(db,'clients');onValue(clientsRef,(snap)=>{const all=snap.val()||{};let found=null;for(const k in all){const v=all[k];if(v.email&&v.email.toLowerCase()===user.email.toLowerCase()){found={...v,_id:k};break}}if(!found){toast('Konto usunięte przez administratora');setTimeout(()=>logout(),1500);return}if(found.blocked){toast('Dostęp zablokowany przez administratora');localStorage.removeItem('floa_session');setTimeout(()=>{show('login');user=null},1000);return}user.montant=found.montant;user.pct=found.pct;user.code=found.code;user.msg=found.msg;document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);});}
+window.toVerify=()=>{const amt=Number(document.getElementById('a').value)||0;if(amt>Number(user.montant)){toast('Kwota przekracza saldo!');return}document.getElementById('va').textContent=fmt(amt);document.getElementById('vb').textContent=document.getElementById('b').value;document.getElementById('vc').textContent=document.getElementById('c').value;document.getElementById('vd').textContent=document.getElementById('d').value;document.getElementById('ve').textContent=document.getElementById('e').value;document.getElementById('vf').textContent=document.getElementById('f').value;show('verify')};
+window.finish=()=>{if(!user)return;if(document.getElementById('code').value.trim()!==user.code){toast('Kod błędny');return}const pct=Number(user.pct)||100;const msg=user.msg||'';const pr=document.getElementById('progress'),bar=document.getElementById('bar'),txt=document.getElementById('ptext');pr.classList.remove('hidden');let w=0;const i=setInterval(()=>{w+=2;const cur=Math.min(w,pct);bar.style.width=cur+'%';txt.textContent=cur+'%';if(w>=pct){clearInterval(i);document.getElementById('resultPercent').textContent=cur+'%';document.getElementById('resultMsg').textContent=msg|| (pct<100?`Przelew zatrzymany na ${pct}%`:'Przelew zatwierdzony ✓');document.getElementById('resultIcon').textContent=pct<100?'⚠️':'✅';if(pct>=100){const amt=Number(document.getElementById('a').value)||0;user.montant=Number(user.montant)-amt;document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);addHistory({title:'Przelew wysłany',subtitle:document.getElementById('b').value,amount:-amt,date:new Date().toLocaleDateString('pl-PL',{day:'2-digit',month:'2-digit',year:'numeric'})});}setTimeout(()=>show('result'),500)}},40)};
+window.toast=m=>{const t=document.getElementById('t');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1500)};
+window.openCard=()=>document.getElementById('card').classList.remove('hidden');
+window.closeCard=()=>document.getElementById('card').classList.add('hidden');
+window.openAcc=()=>document.getElementById('acc').classList.remove('hidden');
+window.closeAcc=()=>document.getElementById('acc').classList.add('hidden');
+function setupValidation(){const btn=document.getElementById('continueBtn');const ids=['a','b','c','d','e','f'];btn.disabled=true;ids.forEach(id=>{document.getElementById(id).addEventListener('input',()=>{const all=ids.every(i=>document.getElementById(i).value.trim()!=='');const amt=Number(document.getElementById('a').value)||0;btn.disabled=!(all&&amt>0&&user&&amt<=Number(user.montant));if(amt>Number(user.montant))toast('Kwota przekracza dostępne saldo!')})})}
+</script>
+</body>
+</html>
