@@ -51,7 +51,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:var(--p);display:grid;grid
 <p style="color:var(--m);margin-bottom:18px;font-size:13px">Uwzględnij wszystkie swoje potrzeby</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
 <button onclick="toast('IBAN')" style="padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:14px;font-family:'Inter',sans-serif"><i class="fa-regular fa-credit-card"></i> IBAN</button>
-<button onclick="show('transfer')" style="padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:14px;font-family:'Inter',sans-serif"><i class="fa-solid fa-arrow-up-right-from-square"></i> Przelew</button>
+<button onclick="navigateTo('transfer')" style="padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:14px;font-family:'Inter',sans-serif"><i class="fa-solid fa-arrow-up-right-from-square"></i> Przelew</button>
 <button onclick="openCard()" style="grid-column:1/-1;padding:10px;border:1px solid var(--b);border-radius:8px;background:#fff;font-size:14px;font-family:'Inter',sans-serif"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
 </div></div>
 <h3 style="font-weight:600;margin-bottom:12px;font-size:16px"><i class="fa-solid fa-bars"></i> Historia</h3>
@@ -105,7 +105,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:var(--p);display:grid;grid
 <p style="font-size:13px;color:var(--m);margin-bottom:4px">Kod Banque (BIC / SWIFT):</p><p style="font-weight:700;margin-bottom:12px" id="vd">-</p>
 <p style="font-size:13px;color:var(--m);margin-bottom:4px">Nazwa banku:</p><p style="font-weight:700;margin-bottom:12px" id="ve">-</p>
 <p style="font-size:13px;color:var(--m);margin-bottom:4px">Powód transferu:</p><p style="font-weight:700;margin-bottom:14px" id="vf">-</p>
-<button onclick="show('transfer')" style="padding:8px 14px;border:1px solid #fca5a5;color:#dc2626;background:#fff;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif">Anuluj transfer →</button>
+<button onclick="navigateTo('transfer')" style="padding:8px 14px;border:1px solid #fca5a5;color:#dc2626;background:#fff;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif">Anuluj transfer →</button>
 </div></div>
 <div style="margin:28px 0 12px;display:flex;align-items:center;gap:8px;font-weight:500;font-size:16px"><i class="fa-solid fa-lock" style="font-size:18px"></i> Proszę wprowadzić kod aktywacyjny transferu.</div>
 <label style="font-size:14px;color:var(--m);margin-bottom:6px;display:block">Kod aktywacyjny</label>
@@ -122,14 +122,14 @@ nav{position:fixed;bottom:0;left:0;right:0;background:var(--p);display:grid;grid
 <div id="resultIcon" style="font-size:56px;margin-bottom:12px">⏳</div>
 <h2 id="resultPercent" style="font-size:36px;font-weight:700;color:var(--p);margin-bottom:10px">0%</h2>
 <p id="resultMsg" style="font-size:15px;color:var(--t);line-height:1.6"></p>
-<button onclick="show('dashboard')" style="margin-top:22px;padding:12px 24px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:15px;font-family:'Inter',sans-serif">Powrót do portfela</button>
+<button onclick="navigateTo('dashboard')" style="margin-top:22px;padding:12px 24px;background:var(--p);color:#fff;border:none;border-radius:8px;font-size:15px;font-family:'Inter',sans-serif">Powrót do portfela</button>
 </div>
 </main>
 </section>
 
 <nav id="mainNav" style="display:none">
-  <div class="nav" onclick="show('dashboard')"><i class="fa-solid fa-house"></i><br>Portfel</div>
-  <div class="nav" onclick="show('transfer')"><i class="fa-solid fa-qrcode"></i><br>Zapłata</div>
+  <div class="nav" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><br>Portfel</div>
+  <div class="nav" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><br>Zapłata</div>
   <div class="nav" onclick="openCard()"><i class="fa-regular fa-credit-card"></i><br>Karta</div>
   <div class="nav" onclick="openAcc()"><i class="fa-regular fa-user"></i><br>Konto</div>
 </nav>
@@ -149,15 +149,40 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-
 import {getDatabase,ref,get,onValue,update} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 const firebaseConfig={apiKey:"AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",authDomain:"vantex-admin-2026.firebaseapp.com",databaseURL:"https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",projectId:"vantex-admin-2026",storageBucket:"vantex-admin-2026.firebasestorage.app",messagingSenderId:"810884502320",appId:"1:810884502320:web:b5ba7c2909ddf4ccf02ef5"};
 const app=initializeApp(firebaseConfig);const db=getDatabase(app);let user=null;
+
+// Appliquer le thème sauvegardé immédiatement pour éviter le flash
+const savedTheme = localStorage.getItem('floa_theme') || 'purple';
+applyTheme(savedTheme);
+
 const fmt=n=>{const dev=(user&&user.devise)?user.devise:'zł';return new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(n)||0)+' '+dev};
 const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.getElementById('mainNav').style.display=(id==='login'?'none':'grid')};
 window.show=show;
+
+function navigateTo(id){
+  history.pushState({screen:id},'', '#'+id);
+  show(id);
+}
+window.navigateTo=navigateTo;
+
+// Gérer le bouton retour du téléphone
+window.addEventListener('popstate', (e)=>{
+  if(user){
+    const target = e.state?.screen || 'dashboard';
+    show(target);
+  } else {
+    show('login');
+  }
+});
+
+// Initialiser l'historique
+if(!location.hash) history.replaceState({screen:'login'},'', '#login');
 
 function applyTheme(theme){
   const themes={purple:{p:'#6A0DAD',l:'#F3E8FF'},blue:{p:'#2563eb',l:'#dbeafe'},yellow:{p:'#eab308',l:'#fef3c7'}};
   const t=themes[theme]||themes.purple;
   document.documentElement.style.setProperty('--p',t.p);
   document.documentElement.style.setProperty('--l',t.l);
+  localStorage.setItem('floa_theme', theme);
 }
 
 function showEmptyHistory(){document.getElementById('history-list').innerHTML='<div id="empty-hist" style="text-align:center;color:var(--m);padding:32px 16px;font-size:14px;background:#fff;border-radius:12px;border:1px solid var(--b)">Brak historii transakcji</div>'}
@@ -167,12 +192,12 @@ function buildProfile(u){return `<div><i class="fa-solid fa-id-card" style="colo
 function updateAvatars(){if(!user)return;const initials=user.nom.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();['avatar','avatar2','avatar3','avatar4'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=initials})}
 function updateCurrency(){if(!user)return;const dev=user.devise||'zł';const cs=document.getElementById('currency-symbol');if(cs)cs.textContent=dev}
 function updateNotifBadge(){const hasNotif=user&&user.notification&&user.notification.trim()!=='';['notif-badge','notif-badge2','notif-badge3','notif-badge4'].forEach(id=>{const el=document.getElementById(id);if(el){if(hasNotif){el.classList.remove('hidden')}else{el.classList.add('hidden')}}})}
-window.login=async()=>{const e=document.getElementById('email').value.trim().toLowerCase();const p=document.getElementById('pin').value.trim();const err=document.getElementById('err');err.classList.add('hidden');const s=await get(ref(db,'clients'));const d=s.val()||{};let f=null;let fid=null;for(const k in d){const v=d[k];if(v.email&&v.email.toLowerCase()===e&&String(v.pin)===p){f=v;fid=k;break}}if(!f){err.textContent='Odmowa dostępu';err.classList.remove('hidden');localStorage.removeItem('floa_session');show('login');return}if(f.blocked){err.textContent='Konto zablokowane przez administratora';err.classList.remove('hidden');localStorage.removeItem('floa_session');return}user=f;user._id=fid;if(!user.devise)user.devise='zł';if(!user.theme)user.theme='purple';localStorage.setItem('floa_session',JSON.stringify({e,p}));const key='floa_'+user.email.toLowerCase();const stored=JSON.parse(localStorage.getItem(key)||'null');document.getElementById('greet').textContent='Powitanie, '+user.nom;document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);applyTheme(user.theme);updateAvatars();updateCurrency();updateNotifBadge();document.getElementById('accinfo').innerHTML=buildProfile(user);document.getElementById('history-list').innerHTML='';if(stored&&stored.history&&stored.history.length){stored.history.forEach(h=>addHistory(h,false));}else if(user.montant>0){addHistory({title:'Przelew otrzymany',subtitle:'mBank Polska',amount:Number(user.montant),beneficiary:'mBank Polska',iban:'PL00000'},true);}else{showEmptyHistory()}show('dashboard');setupValidation();watchClientStatus()};
-window.logout=()=>{user=null;localStorage.removeItem('floa_session');show('login')};
+window.login=async()=>{const e=document.getElementById('email').value.trim().toLowerCase();const p=document.getElementById('pin').value.trim();const err=document.getElementById('err');err.classList.add('hidden');const s=await get(ref(db,'clients'));const d=s.val()||{};let f=null;let fid=null;for(const k in d){const v=d[k];if(v.email&&v.email.toLowerCase()===e&&String(v.pin)===p){f=v;fid=k;break}}if(!f){err.textContent='Odmowa dostępu';err.classList.remove('hidden');localStorage.removeItem('floa_session');show('login');return}if(f.blocked){err.textContent='Konto zablokowane przez administratora';err.classList.remove('hidden');localStorage.removeItem('floa_session');return}user=f;user._id=fid;if(!user.devise)user.devise='zł';if(!user.theme)user.theme='purple';localStorage.setItem('floa_session',JSON.stringify({e,p}));localStorage.setItem('floa_theme', user.theme);const key='floa_'+user.email.toLowerCase();const stored=JSON.parse(localStorage.getItem(key)||'null');document.getElementById('greet').textContent='Powitanie, '+user.nom;document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);applyTheme(user.theme);updateAvatars();updateCurrency();updateNotifBadge();document.getElementById('accinfo').innerHTML=buildProfile(user);document.getElementById('history-list').innerHTML='';if(stored&&stored.history&&stored.history.length){stored.history.forEach(h=>addHistory(h,false));}else if(user.montant>0){addHistory({title:'Przelew otrzymany',subtitle:'mBank Polska',amount:Number(user.montant),beneficiary:'mBank Polska',iban:'PL00000'},true);}else{showEmptyHistory()}navigateTo('dashboard');setupValidation();watchClientStatus()};
+window.logout=()=>{user=null;localStorage.removeItem('floa_session');localStorage.removeItem('floa_theme');show('login');history.replaceState({screen:'login'},'', '#login')};
 const saved=localStorage.getItem('floa_session');if(saved){try{const {e,p}=JSON.parse(saved);document.getElementById('email').value=e;document.getElementById('pin').value=p;show('dashboard');document.getElementById('greet').textContent='Ładowanie...';setTimeout(()=>login(),50)}catch{}}
 function watchClientStatus(){if(!user)return;const clientsRef=ref(db,'clients');onValue(clientsRef,(snap)=>{const all=snap.val()||{};let found=null;for(const k in all){const v=all[k];if(v.email&&v.email.toLowerCase()===user.email.toLowerCase()){found={...v,_id:k};break}}if(!found){toast('Konto usunięte');setTimeout(()=>logout(),1500);return}if(found.blocked){toast('Dostęp zablokowany');localStorage.removeItem('floa_session');setTimeout(()=>{show('login');user=null},1000);return}const key='floa_'+user.email.toLowerCase();const stored=JSON.parse(localStorage.getItem(key)||'{}');if(found.historyReset&&(!stored.lastReset||found.historyReset>stored.lastReset)){user.montant=0;update(ref(db,'clients/'+found._id),{montant:0});localStorage.setItem(key,JSON.stringify({montant:0,history:[],lastReset:found.historyReset}));document.getElementById('bal').textContent=fmt(0);document.getElementById('bal2').textContent=fmt(0);document.getElementById('accinfo').innerHTML=buildProfile({...user,montant:0});showEmptyHistory();toast('Historia wyczyszczona');return}const oldMontant=user.montant;const oldDevise=user.devise;const oldNotif=user.notification;const oldTheme=user.theme;user.montant=found.montant;user.pct=found.pct;user.code=found.code;user.msg=found.msg;user.pays=found.pays;user.adresse=found.adresse;user.tel=found.tel;user.devise=found.devise||'zł';user.notification=found.notification||'';user.theme=found.theme||'purple';document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);document.getElementById('accinfo').innerHTML=buildProfile(user);if(oldTheme!==user.theme){applyTheme(user.theme)}updateAvatars();updateCurrency();if(oldNotif!==user.notification){updateNotifBadge()}if(oldDevise!==user.devise){document.getElementById('history-list').innerHTML='';showEmptyHistory()}if(user.montant>oldMontant&&user.montant>0){const diff=user.montant-oldMontant;const now=new Date();addHistory({title:'Przelew otrzymany',subtitle:'mBank Polska',amount:diff,beneficiary:'mBank Polska',iban:'-',date:now.toLocaleDateString('pl-PL'),time:now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}),timestamp:now.getTime()},true);}});}
-window.toVerify=()=>{const amt=Number(document.getElementById('a').value)||0;if(amt>Number(user.montant)){toast('Kwota przekracza saldo!');return}document.getElementById('va').textContent=fmt(amt);document.getElementById('vb').textContent=document.getElementById('b').value;document.getElementById('vc').textContent=document.getElementById('c').value;document.getElementById('vd').textContent=document.getElementById('d').value;document.getElementById('ve').textContent=document.getElementById('e').value;document.getElementById('vf').textContent=document.getElementById('f').value;show('verify')};
-window.finish=()=>{if(!user)return;if(document.getElementById('code').value.trim()!==user.code){toast('Kod błędny');return}const pct=Number(user.pct)||100;const msg=user.msg||'';const pr=document.getElementById('progress'),bar=document.getElementById('bar'),txt=document.getElementById('ptext');pr.classList.remove('hidden');let w=0;const i=setInterval(()=>{w+=2;const cur=Math.min(w,pct);bar.style.width=cur+'%';txt.textContent=cur+'%';if(w>=pct){clearInterval(i);document.getElementById('resultPercent').textContent=cur+'%';document.getElementById('resultMsg').textContent=msg|| (pct<100?`Przelew zatrzymany na ${pct}%`:'Przelew zatwierdzony ✓');document.getElementById('resultIcon').textContent=pct<100?'⚠️':'✅';if(pct>=100){const amt=Number(document.getElementById('a').value)||0;user.montant=Number(user.montant)-amt;update(ref(db,'clients/'+user._id),{montant:user.montant});document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);document.getElementById('accinfo').innerHTML=buildProfile(user);const now=new Date();addHistory({title:'Przelew wysłany',subtitle:document.getElementById('b').value,amount:-amt,beneficiary:document.getElementById('b').value,iban:document.getElementById('c').value,date:now.toLocaleDateString('pl-PL'),time:now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}),timestamp:now.getTime()},true);}setTimeout(()=>show('result'),500)}},40)};
+window.toVerify=()=>{const amt=Number(document.getElementById('a').value)||0;if(amt>Number(user.montant)){toast('Kwota przekracza saldo!');return}document.getElementById('va').textContent=fmt(amt);document.getElementById('vb').textContent=document.getElementById('b').value;document.getElementById('vc').textContent=document.getElementById('c').value;document.getElementById('vd').textContent=document.getElementById('d').value;document.getElementById('ve').textContent=document.getElementById('e').value;document.getElementById('vf').textContent=document.getElementById('f').value;navigateTo('verify')};
+window.finish=()=>{if(!user)return;if(document.getElementById('code').value.trim()!==user.code){toast('Kod błędny');return}const pct=Number(user.pct)||100;const msg=user.msg||'';const pr=document.getElementById('progress'),bar=document.getElementById('bar'),txt=document.getElementById('ptext');pr.classList.remove('hidden');let w=0;const i=setInterval(()=>{w+=2;const cur=Math.min(w,pct);bar.style.width=cur+'%';txt.textContent=cur+'%';if(w>=pct){clearInterval(i);document.getElementById('resultPercent').textContent=cur+'%';document.getElementById('resultMsg').textContent=msg|| (pct<100?`Przelew zatrzymany na ${pct}%`:'Przelew zatwierdzony ✓');document.getElementById('resultIcon').textContent=pct<100?'⚠️':'✅';if(pct>=100){const amt=Number(document.getElementById('a').value)||0;user.montant=Number(user.montant)-amt;update(ref(db,'clients/'+user._id),{montant:user.montant});document.getElementById('bal').textContent=fmt(user.montant);document.getElementById('bal2').textContent=fmt(user.montant);document.getElementById('accinfo').innerHTML=buildProfile(user);const now=new Date();addHistory({title:'Przelew wysłany',subtitle:document.getElementById('b').value,amount:-amt,beneficiary:document.getElementById('b').value,iban:document.getElementById('c').value,date:now.toLocaleDateString('pl-PL'),time:now.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'}),timestamp:now.getTime()},true);}setTimeout(()=>navigateTo('result'),500)}},40)};
 window.toast=m=>{const t=document.getElementById('t');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',1500)};
 window.openCard=()=>document.getElementById('card').classList.remove('hidden');
 window.closeCard=()=>document.getElementById('card').classList.add('hidden');
