@@ -36,7 +36,7 @@
     font-family: 'Inter', -apple-system, system-ui, sans-serif;
     background: var(--bg);
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     line-height: 1.6;
     min-height: 100vh;
     padding-bottom: 80px;
@@ -87,7 +87,7 @@
     background: #EF4444;
     color: #fff;
     border: 2px solid #fff;
-    font-size: 19px;
+    font-size: 18px; /* réduit de 19 à 18 */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -107,7 +107,7 @@
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 17px;
+    font-size: 16px; /* réduit de 17 à 16 */
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
@@ -141,7 +141,7 @@
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 16px;
+    font-size: 15px; /* réduit de 16 à 15 */
     font-family: inherit;
     color: var(--text-primary);
   }
@@ -174,13 +174,13 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 19px;
+    font-size: 18px; /* réduit de 19 à 18 */
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
   }
   .logo i {
-    font-size: 24px;
+    font-size: 22px; /* réduit de 24 à 22 */
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -193,8 +193,8 @@
   }
 
   .badge-icon {
-    width: 42px;
-    height: 42px;
+    width: 40px; /* réduit de 42 à 40 */
+    height: 40px;
     border-radius: 50%;
     background: var(--p-soft);
     border: 1px solid var(--border-light);
@@ -203,7 +203,7 @@
     justify-content: center;
     color: var(--p);
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px; /* réduit de 14 à 13 */
     cursor: pointer;
     position: relative;
   }
@@ -215,9 +215,9 @@
     background: #EF4444;
     color: #fff;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    font-size: 9px; /* réduit de 10 à 9 */
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -237,7 +237,7 @@
 
   /* ===== GREETING ===== */
   #greet {
-    font-size: 21px;
+    font-size: 20px; /* réduit de 21 à 20 */
     font-weight: 800;
     margin-bottom: 20px;
     letter-spacing: -0.02em;
@@ -280,14 +280,14 @@
     pointer-events: none;
   }
   .balance-panel .label {
-    font-size: 14px;
+    font-size: 13px; /* réduit de 14 à 13 */
     text-transform: uppercase;
     letter-spacing: 1px;
     opacity: 0.8;
     margin-bottom: 4px;
   }
   .balance-panel .amount {
-    font-size: 39px;
+    font-size: 37px; /* réduit de 39 à 37 */
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -295,7 +295,7 @@
     white-space: nowrap;
   }
   .balance-panel .sub {
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     opacity: 0.7;
     margin-top: 4px;
   }
@@ -317,14 +317,14 @@
     overflow: visible;
   }
   .stat-item .stat-value {
-    font-size: 23px;
+    font-size: 22px; /* réduit de 23 à 22 */
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
   }
   .stat-item .stat-label {
-    font-size: 12px;
+    font-size: 11px; /* réduit de 12 à 11 */
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -351,7 +351,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 16px;
+    font-size: 15px; /* réduit de 16 à 15 */
     box-shadow: var(--shadow-soft);
   }
   .action-btn.primary {
@@ -361,7 +361,7 @@
     box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
   }
 
-  /* ===== HISTORIQUE ===== */
+  /* ===== HISTORIQUE (INCHANGÉ) ===== */
   .history-header {
     display: flex;
     align-items: center;
@@ -469,7 +469,7 @@
     box-shadow: var(--shadow-soft);
   }
 
-  /* ===== TRANSFERT – polices légèrement réduites ===== */
+  /* ===== TRANSFERT – polices réduites ===== */
   .transfer-card {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -483,7 +483,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
-    font-size: 16px; /* réduit de 17 à 16 */
+    font-size: 15px; /* réduit de 16 à 15 */
     color: var(--text-secondary);
   }
   .transfer-balance b {
@@ -496,7 +496,7 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 22px;
-    font-size: 16px; /* réduit de 17 à 16 */
+    font-size: 15px; /* réduit de 16 à 15 */
     color: var(--p);
     font-weight: 600;
   }
@@ -510,7 +510,7 @@
     border-bottom-right-radius: 0;
     text-align: left;
     font-weight: 700;
-    font-size: 19px; /* réduit de 20 à 19 */
+    font-size: 18px; /* réduit de 19 à 18 */
     padding: 14px 18px;
   }
   .amount-input-wrap .currency-symbol {
@@ -522,7 +522,7 @@
     font-weight: 700;
     display: flex;
     align-items: center;
-    font-size: 17px; /* réduit de 18 à 17 */
+    font-size: 16px; /* réduit de 17 à 16 */
     color: var(--text-secondary);
   }
 
@@ -531,7 +531,7 @@
   }
   .field-group label {
     display: block;
-    font-size: 13px; /* réduit de 14 à 13 */
+    font-size: 12px; /* réduit de 13 à 12 */
     font-weight: 600;
     color: var(--text-secondary);
     margin-bottom: 4px;
@@ -539,7 +539,7 @@
     letter-spacing: 0.3px;
   }
 
-  /* ===== VERIFY – polices légèrement réduites ===== */
+  /* ===== VERIFY – polices réduites ===== */
   .verify-details {
     background: #FAFBFC;
     padding: 18px;
@@ -554,7 +554,7 @@
     margin-bottom: 0;
   }
   .verify-details .label {
-    font-size: 11px; /* réduit de 12 à 11 */
+    font-size: 10px; /* réduit de 11 à 10 */
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -562,7 +562,7 @@
   }
   .verify-details .value {
     font-weight: 700;
-    font-size: 17px; /* réduit de 18 à 17 */
+    font-size: 16px; /* réduit de 17 à 16 */
     word-break: break-all;
     color: var(--text-primary);
   }
@@ -573,7 +573,7 @@
     color: #EF4444;
     background: transparent;
     border-radius: var(--radius-sm);
-    font-size: 14px; /* réduit de 15 à 14 */
+    font-size: 13px; /* réduit de 14 à 13 */
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -587,12 +587,12 @@
     align-items: center;
     gap: 10px;
     font-weight: 500;
-    font-size: 16px; /* réduit de 17 à 16 */
+    font-size: 15px; /* réduit de 16 à 15 */
     color: var(--text-primary);
     margin-bottom: 14px;
   }
   .verify-code-section .lock-line i {
-    font-size: 18px; /* réduit de 19 à 18 */
+    font-size: 17px; /* réduit de 18 à 17 */
     color: var(--p);
   }
   .verify-code-section .code-input {
@@ -601,7 +601,7 @@
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 19px; /* réduit de 20 à 19 */
+    font-size: 18px; /* réduit de 19 à 18 */
     text-align: center;
     letter-spacing: 4px;
     font-weight: 600;
@@ -636,7 +636,7 @@
     width: 0%;
   }
   .progress-text {
-    font-size: 16px;
+    font-size: 15px; /* réduit de 16 à 15 */
     font-weight: 700;
     text-align: center;
     margin-top: 8px;
@@ -655,18 +655,18 @@
   }
 
   .result-icon {
-    font-size: 65px;
+    font-size: 60px; /* réduit de 65 à 60 */
     margin-bottom: 12px;
     color: var(--p);
   }
   .result-percent {
-    font-size: 38px;
+    font-size: 36px; /* réduit de 38 à 36 */
     font-weight: 800;
     color: var(--p);
     margin-bottom: 6px;
   }
   .result-status {
-    font-size: 20px;
+    font-size: 19px; /* réduit de 20 à 19 */
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 16px;
@@ -683,7 +683,7 @@
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
-    font-size: 16px;
+    font-size: 15px; /* réduit de 16 à 15 */
     border-bottom: 1px solid var(--border-light);
   }
   .result-details .row:last-child {
@@ -701,7 +701,7 @@
     max-width: 60%;
   }
   .result-msg {
-    font-size: 17px;
+    font-size: 16px; /* réduit de 17 à 16 */
     color: var(--text-secondary);
     line-height: 1.6;
     margin: 8px 0 16px 0;
@@ -730,7 +730,7 @@
 
   .nav-item {
     color: var(--text-muted);
-    font-size: 11px;
+    font-size: 10px; /* réduit de 11 à 10 */
     font-weight: 600;
     text-align: center;
     cursor: pointer;
@@ -743,7 +743,7 @@
     letter-spacing: 0.3px;
   }
   .nav-item i {
-    font-size: 22px;
+    font-size: 20px; /* réduit de 22 à 20 */
   }
   .nav-item.active {
     color: var(--p);
@@ -769,15 +769,15 @@
   }
 
   .login-logo {
-    width: 78px;
-    height: 78px;
+    width: 76px; /* réduit de 78 à 76 */
+    height: 76px;
     border-radius: 50%;
     background: var(--p-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 22px;
-    font-size: 33px;
+    font-size: 32px; /* réduit de 33 à 32 */
     font-weight: 800;
     color: #fff;
     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
@@ -785,7 +785,7 @@
 
   .login-title {
     text-align: center;
-    font-size: 23px;
+    font-size: 22px; /* réduit de 23 à 22 */
     font-weight: 800;
     margin-bottom: 22px;
     letter-spacing: -0.3px;
@@ -795,7 +795,7 @@
     padding: 14px;
     border-radius: var(--radius-sm);
     text-align: center;
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     color: var(--text-secondary);
     margin-bottom: 24px;
     border: 1px solid var(--border-light);
@@ -803,7 +803,7 @@
   .login-error {
     color: #EF4444;
     margin-top: 12px;
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     text-align: center;
     font-weight: 600;
   }
@@ -819,7 +819,7 @@
     color: #fff;
     padding: 12px 28px;
     border-radius: 50px;
-    font-size: 14px;
+    font-size: 13px; /* réduit de 14 à 13 */
     font-weight: 600;
     z-index: 200;
     display: none;
@@ -893,19 +893,19 @@
     gap: 8px;
   }
   .card-chip i {
-    font-size: 32px;
+    font-size: 30px; /* réduit de 32 à 30 */
     opacity: 0.7;
     color: #ffd700;
     filter: drop-shadow(0 0 4px rgba(255,215,0,0.3));
   }
   .card-brand {
-    font-size: 32px;
+    font-size: 30px; /* réduit de 32 à 30 */
     opacity: 0.9;
     filter: drop-shadow(0 0 6px rgba(255,255,255,0.2));
   }
 
   .card-number {
-    font-size: 18px;
+    font-size: 17px; /* réduit de 18 à 17 */
     font-weight: 700;
     letter-spacing: 2px;
     font-family: 'Inter', monospace;
@@ -930,13 +930,13 @@
     flex-direction: column;
   }
   .card-holder .label {
-    font-size: 9px;
+    font-size: 8px; /* réduit de 9 à 8 */
     text-transform: uppercase;
     opacity: 0.6;
     letter-spacing: 1px;
   }
   .card-holder .name {
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -947,18 +947,18 @@
     align-items: flex-end;
   }
   .card-expiry .label {
-    font-size: 9px;
+    font-size: 8px; /* réduit de 9 à 8 */
     text-transform: uppercase;
     opacity: 0.6;
     letter-spacing: 1px;
   }
   .card-expiry .date {
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     font-weight: 600;
     letter-spacing: 0.5px;
   }
   .card-cvv {
-    font-size: 15px;
+    font-size: 14px; /* réduit de 15 à 14 */
     font-weight: 600;
     letter-spacing: 1px;
     opacity: 0.7;
@@ -978,9 +978,9 @@
         <div class="login-logo">F</div>
         <h1 class="login-title">FLOA BK</h1>
         <div class="login-info">Zaloguj się kontem admin</div>
-        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
+        <label style="font-size:13px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
         <input id="email" type="email" class="input" style="margin-bottom:14px">
-        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
+        <label style="font-size:13px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
         <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
@@ -1032,7 +1032,7 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:700;font-size:24px;margin-bottom:18px">Wykonaj przelew</h1>
+      <h1 style="font-weight:700;font-size:23px;margin-bottom:18px">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -1043,7 +1043,7 @@
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:19px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:18px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1069,10 +1069,10 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:24px;margin-bottom:16px">Weryfikacja przelewu</h1>
+      <h1 style="font-weight:600;font-size:23px;margin-bottom:16px">Weryfikacja przelewu</h1>
       <div class="transfer-card" style="padding:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:17px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:16px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
           <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
         </div>
         <div class="verify-details">
@@ -1092,7 +1092,7 @@
             <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
           </div>
           <input id="code" class="code-input" placeholder="********" maxlength="20" autocomplete="off">
-          <button onclick="finish()" class="btn" style="font-size:17px;padding:16px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" style="font-size:16px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -1142,7 +1142,7 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:700;margin-bottom:16px;font-size:20px">💳 Karta wirtualna</p>
+      <p style="font-weight:700;margin-bottom:16px;font-size:19px">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
@@ -1168,7 +1168,7 @@
           <span class="card-cvv">CVV: 556</span>
         </div>
       </div>
-      <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -1176,9 +1176,9 @@
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:20px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-      <div id="accinfo" style="font-size:16px;line-height:2.2;color:var(--text-secondary)"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:14px;font-weight:600;width:100%;font-family:inherit;cursor:pointer"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+      <div id="accinfo" style="font-size:15px;line-height:2.2;color:var(--text-secondary)"></div>
+      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1186,8 +1186,8 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:20px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:16px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:15px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
     </div>
   </div>
 
@@ -1196,11 +1196,11 @@
     <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:28px">
       <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
       <div style="padding:36px 24px 24px">
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-id">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-amount">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-benef">-</div></div>
-        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
-        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-date">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-id">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-amount">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-benef">-</div></div>
+        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
+        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -1259,7 +1259,7 @@
         const container = document.getElementById('greet');
         if (container) {
           const containerWidth = container.clientWidth - 80;
-          const baseSize = 21;
+          const baseSize = 20;
           const avgCharWidth = baseSize * 0.55;
           const maxChars = Math.floor(containerWidth / avgCharWidth);
           adjustFontSize(greetSpan, baseSize, maxChars, 12);
@@ -1273,7 +1273,7 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 40;
-      const baseSize = 39;
+      const baseSize = 37;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
       adjustFontSize(element, baseSize, maxChars, 12);
@@ -1285,45 +1285,19 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 20;
-      const baseSize = 23;
+      const baseSize = 22;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
       adjustFontSize(element, baseSize, maxChars, 11);
     }
 
-    function adjustHistoryAmountFontSize() {
-      document.querySelectorAll('.history-amount').forEach(el => {
-        const text = el.textContent || '';
-        const container = el.parentElement;
-        if (!container) return;
-        const containerWidth = container.clientWidth - 20;
-        const baseSize = 17;
-        const avgCharWidth = baseSize * 0.55;
-        const maxChars = Math.floor(containerWidth / avgCharWidth);
-        adjustFontSize(el, baseSize, maxChars, 10);
-      });
-    }
-
-    function adjustHistoryTitleFontSize() {
-      document.querySelectorAll('.history-info .title').forEach(el => {
-        const text = el.textContent || '';
-        const container = el.parentElement;
-        if (!container) return;
-        const containerWidth = container.clientWidth - 10;
-        const baseSize = 16;
-        const avgCharWidth = baseSize * 0.55;
-        const maxChars = Math.floor(containerWidth / avgCharWidth);
-        adjustFontSize(el, baseSize, maxChars, 11);
-      });
-    }
-
+    // L'HISTORIQUE N'EST PAS AJUSTÉ – on conserve ses tailles
     function adjustAllTexts() {
       adjustGreetingFontSize();
       const bal = document.getElementById('bal');
       if (bal) adjustBalanceFontSize(bal);
       document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
-      adjustHistoryAmountFontSize();
-      adjustHistoryTitleFontSize();
+      // Pas d'ajustement pour l'historique
     }
 
     function updateBalanceDisplay(balanceElement, statElement, amount) {
@@ -1448,8 +1422,6 @@
         }
         localStorage.setItem(key, JSON.stringify(stored));
       }
-
-      setTimeout(() => adjustAllTexts(), 10);
     }
 
     function buildProfile(u) {
