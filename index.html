@@ -5,108 +5,106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOA BK</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== VARIABLES PAR DÉFAUT (violet) ===== */
   :root {
+    --bg: #F4F6FA;
+    --card-bg: #FFFFFF;
+    --border-light: rgba(0, 0, 0, 0.04);
+    --text-primary: #0B0F19;
+    --text-secondary: #4B5563;
+    --text-muted: #9CA3AF;
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
+    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.06);
+    --radius: 18px;
+    --radius-sm: 12px;
     --p: #7C3AED;
     --p-light: #EDE9FE;
     --p-dark: #5B21B6;
     --p-gradient: linear-gradient(135deg, #7C3AED, #6D28D9);
-    --bg: #F3F4F6;
-    --card-bg: #ffffff;
-    --text: #111827;
-    --muted: #6B7280;
-    --border: #E5E7EB;
-    --success: #10B981;
-    --danger: #EF4444;
-    --radius: 16px;
-    --shadow: 0 8px 30px rgba(0,0,0,0.08);
-    --shadow-hover: 0 12px 40px rgba(0,0,0,0.12);
-    --transition: all 0.25s ease;
+    --p-soft: rgba(124, 58, 237, 0.08);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ===== THÈMES (appliqués dynamiquement via JS) ===== */
   * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
   }
 
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-primary);
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
     min-height: 100vh;
     padding-bottom: 80px;
-    transition: background 0.3s ease;
+    -webkit-font-smoothing: antialiased;
   }
 
   .screen {
     display: none;
     min-height: 100vh;
-    animation: fadeIn 0.3s ease;
+    animation: fadeSlide 0.35s ease;
   }
   .screen.active {
     display: block;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes fadeSlide {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(11, 15, 25, 0.5);
     backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     padding: 16px;
-    animation: modalIn 0.25s ease;
+    animation: modalIn 0.3s ease;
   }
   .modal.hidden {
     display: none !important;
   }
 
   @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
+    0% { opacity: 0; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
   }
 
   .modal-content {
-    background: #fff;
+    background: #FFFFFF;
     border-radius: var(--radius);
     max-width: 400px;
     width: 100%;
-    padding: 24px;
+    padding: 28px 24px;
     position: relative;
-    box-shadow: var(--shadow-hover);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
   }
 
   .modal-close {
     position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 32px;
-    height: 32px;
+    top: -14px;
+    right: -14px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: var(--danger);
+    background: #EF4444;
     color: #fff;
     border: 2px solid #fff;
     font-size: 18px;
-    line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: var(--transition);
-    box-shadow: 0 4px 10px rgba(239,68,68,0.3);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
   }
   .modal-close:hover {
     transform: scale(1.08);
@@ -116,23 +114,23 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    padding: 14px 20px;
+    padding: 16px 24px;
     background: var(--p-gradient);
     color: #fff;
     border: none;
-    border-radius: 12px;
+    border-radius: var(--radius-sm);
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: var(--transition);
     font-family: inherit;
-    box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
   }
   .btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(124,58,237,0.4);
+    box-shadow: 0 10px 28px rgba(124, 58, 237, 0.3);
   }
   .btn:disabled {
     opacity: 0.5;
@@ -142,55 +140,64 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--p);
     border: 1.5px solid var(--p);
+    color: var(--p);
     box-shadow: none;
   }
   .btn-outline:hover {
     background: var(--p-light);
+    box-shadow: none;
   }
 
   .input {
     width: 100%;
-    padding: 12px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
+    padding: 14px 18px;
+    background: #FAFBFC;
+    border: 1.5px solid #E5E7EB;
+    border-radius: var(--radius-sm);
     font-size: 15px;
     font-family: inherit;
+    color: var(--text-primary);
     transition: var(--transition);
-    background: #FAFBFC;
   }
   .input:focus {
     outline: none;
     border-color: var(--p);
-    box-shadow: 0 0 0 4px rgba(124,58,237,0.15);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
     background: #fff;
+  }
+  .input::placeholder {
+    color: var(--text-muted);
   }
 
   header {
-    background: #fff;
-    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 16px 22px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     position: sticky;
     top: 0;
     z-index: 50;
-    backdrop-filter: blur(8px);
-    background: rgba(255,255,255,0.92);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
   }
 
   .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--p);
+    letter-spacing: -0.3px;
   }
   .logo i {
-    font-size: 22px;
+    font-size: 24px;
+    background: var(--p-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .header-actions {
@@ -200,33 +207,36 @@
   }
 
   .badge-icon {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: var(--p-light);
+    background: var(--p-soft);
+    border: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--p);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     cursor: pointer;
     transition: var(--transition);
     position: relative;
   }
   .badge-icon:hover {
-    background: color-mix(in srgb, var(--p-light) 70%, #000 10%);
+    background: var(--p-light);
+    border-color: var(--p);
+    transform: translateY(-2px);
   }
 
   .notif-badge {
     position: absolute;
     top: -2px;
     right: -2px;
-    background: var(--danger);
+    background: #EF4444;
     color: #fff;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     font-size: 10px;
     font-weight: 700;
     display: flex;
@@ -239,300 +249,356 @@
   }
 
   main {
-    padding: 20px 18px;
-    max-width: 600px;
+    padding: 24px 20px 40px;
+    max-width: 640px;
     margin: 0 auto;
   }
 
   #greet {
-    font-weight: 400;
-    font-size: 20px;
-    margin-bottom: 16px;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 20px;
     letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  #greet span {
+    color: var(--p);
   }
 
-  .balance-card {
+  .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
-    padding: 24px 20px;
-    color: #fff;
+    padding: 28px 24px;
     margin-bottom: 24px;
-    box-shadow: 0 12px 40px rgba(124,58,237,0.25);
+    color: #fff;
     position: relative;
     overflow: hidden;
-    transition: background 0.3s ease;
+    box-shadow: 0 12px 36px rgba(124, 58, 237, 0.18);
   }
-  .balance-card::after {
+  .balance-panel::after {
     content: '';
     position: absolute;
     top: -40%;
     right: -20%;
     width: 200px;
     height: 200px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 50%;
     pointer-events: none;
   }
-  .balance-card .label {
-    font-size: 13px;
-    opacity: 0.85;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .balance-card .amount {
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  .balance-panel .label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
     margin-bottom: 4px;
   }
-  .balance-card .sub {
+  .balance-panel .amount {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .balance-panel .sub {
     font-size: 13px;
-    opacity: 0.75;
-    margin-bottom: 18px;
+    opacity: 0.7;
+    margin-top: 4px;
   }
 
-  .balance-actions {
+  .quick-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+  }
+  .stat-item:hover {
+    box-shadow: var(--shadow-medium);
+  }
+  .stat-item .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .stat-item .stat-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .action-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 28px;
   }
-  .balance-actions .btn-action {
-    padding: 12px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 500;
+  .action-btn {
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     font-family: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 10px;
+    font-size: 14px;
+    box-shadow: var(--shadow-soft);
   }
-  .balance-actions .btn-action:hover {
-    background: rgba(255,255,255,0.25);
+  .action-btn:hover {
+    border-color: var(--p);
+    color: var(--p);
     transform: translateY(-2px);
   }
-  .balance-actions .btn-action.full {
-    grid-column: 1 / -1;
+  .action-btn.primary {
+    background: var(--p-gradient);
+    border-color: var(--p);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
+  }
+  .action-btn.primary:hover {
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+    color: #fff;
   }
 
   .history-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 14px;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
   }
 
   .history-item {
-    background: #fff;
-    border-radius: 12px;
-    padding: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--border);
     cursor: pointer;
     transition: var(--transition);
+    box-shadow: var(--shadow-soft);
   }
   .history-item:hover {
     border-color: var(--p);
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-medium);
+    transform: translateX(4px);
   }
 
   .history-left {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     align-items: center;
     min-width: 0;
   }
 
   .history-icon {
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 14px;
   }
   .history-icon.credit {
     background: #D1FAE5;
-    color: var(--success);
+    color: #10B981;
   }
   .history-icon.debit {
     background: #FEE2E2;
-    color: var(--danger);
+    color: #EF4444;
   }
 
-  .history-info {
-    min-width: 0;
-  }
   .history-info .title {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .history-info .meta {
     font-size: 11px;
-    color: var(--muted);
+    color: var(--text-secondary);
   }
 
   .history-amount {
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 15px;
     white-space: nowrap;
     flex-shrink: 0;
   }
   .history-amount.credit {
-    color: var(--success);
+    color: #10B981;
   }
   .history-amount.debit {
-    color: var(--danger);
+    color: #EF4444;
   }
 
   .empty-history {
     text-align: center;
-    color: var(--muted);
+    color: var(--text-secondary);
     padding: 40px 16px;
-    background: #fff;
-    border-radius: 12px;
-    border: 1px dashed var(--border);
+    background: var(--card-bg);
+    border: 1.5px dashed var(--border-light);
+    border-radius: var(--radius-sm);
     font-size: 14px;
+    box-shadow: var(--shadow-soft);
   }
 
   .transfer-card {
-    background: #fff;
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius);
-    padding: 20px;
-    border: 1px solid var(--border);
+    padding: 24px;
+    box-shadow: var(--shadow-soft);
   }
 
   .transfer-balance {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     font-size: 15px;
+    color: var(--text-secondary);
   }
   .transfer-balance b {
+    color: var(--text-primary);
     font-weight: 700;
   }
 
   .transfer-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 18px;
+    gap: 10px;
+    margin-bottom: 22px;
     font-size: 15px;
     color: var(--p);
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .amount-input-wrap {
     display: flex;
-    margin: 6px 0 16px;
+    margin: 6px 0 18px;
   }
   .amount-input-wrap .input {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     text-align: left;
-    font-weight: 600;
-    font-size: 17px;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 14px 18px;
   }
   .amount-input-wrap .currency-symbol {
-    padding: 12px 16px;
-    border: 1.5px solid var(--border);
-    border-left: none;
-    border-radius: 0 12px 12px 0;
+    padding: 14px 20px;
     background: #FAFBFC;
-    font-weight: 600;
+    border: 1.5px solid #E5E7EB;
+    border-left: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    font-size: 15px;
+    font-size: 16px;
+    color: var(--text-secondary);
   }
 
   .field-group {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
   .field-group label {
     display: block;
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
     margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
 
   .verify-details {
     background: #FAFBFC;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 12px;
+    padding: 18px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 14px;
+    border: 1px solid var(--border-light);
   }
   .verify-details .row {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .verify-details .row:last-child {
     margin-bottom: 0;
   }
   .verify-details .label {
-    font-size: 12px;
-    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   .verify-details .value {
-    font-weight: 600;
-    font-size: 15px;
+    font-weight: 700;
+    font-size: 16px;
     word-break: break-all;
+    color: var(--text-primary);
   }
 
   .verify-cancel {
-    padding: 8px 16px;
-    border: 1px solid #FCA5A5;
-    color: var(--danger);
-    background: #fff;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border: 1.5px solid #FCA5A5;
+    color: #EF4444;
+    background: transparent;
+    border-radius: var(--radius-sm);
     font-size: 13px;
+    font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     transition: var(--transition);
   }
   .verify-cancel:hover {
     background: #FEE2E2;
+    border-color: #EF4444;
   }
 
-  .verify-code {
-    margin-top: 28px;
-  }
   .verify-code .lock {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 500;
+    gap: 10px;
+    font-weight: 600;
     font-size: 15px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    color: var(--text-primary);
   }
   .verify-code .lock i {
-    font-size: 18px;
+    font-size: 20px;
+    color: var(--p);
   }
 
   .progress-wrap {
-    margin-top: 16px;
+    margin-top: 20px;
   }
   .progress-bar {
     height: 6px;
     background: #E5E7EB;
-    border-radius: 4px;
+    border-radius: 8px;
     overflow: hidden;
   }
   .progress-bar .fill {
@@ -542,31 +608,36 @@
     transition: width 0.2s ease;
   }
   .progress-text {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     text-align: center;
-    margin-top: 6px;
+    margin-top: 8px;
+    color: var(--p);
   }
 
   .result-card {
     text-align: center;
     max-width: 340px;
     margin: 0 auto;
+    padding: 32px 24px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-medium);
   }
   .result-icon {
-    font-size: 54px;
-    margin-bottom: 12px;
+    font-size: 60px;
+    margin-bottom: 16px;
   }
   .result-percent {
-    font-size: 34px;
-    font-weight: 700;
+    font-size: 38px;
+    font-weight: 800;
     color: var(--p);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
   .result-msg {
-    font-size: 15px;
-    color: var(--text);
-    line-height: 1.6;
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
   }
 
   nav {
@@ -574,17 +645,19 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: #fff;
-    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-light);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    padding: 8px 0 12px;
+    padding: 8px 0 14px;
     z-index: 100;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
   }
   .nav-item {
-    color: var(--muted);
-    font-size: 11px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
@@ -593,16 +666,18 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
   .nav-item i {
-    font-size: 20px;
+    font-size: 22px;
     transition: var(--transition);
   }
   .nav-item.active {
     color: var(--p);
   }
   .nav-item.active i {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
   }
   .nav-item:hover {
     color: var(--p);
@@ -613,83 +688,204 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--p-light), var(--bg));
-    transition: background 0.3s ease;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--p-light) 0%, var(--bg) 70%);
   }
   .login-card {
-    background: #fff;
+    background: #FFFFFF;
     border-radius: var(--radius);
-    padding: 32px 28px;
+    padding: 36px 32px;
     width: 100%;
-    max-width: 380px;
-    box-shadow: var(--shadow-hover);
+    max-width: 400px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-light);
   }
   .login-logo {
-    width: 70px;
-    height: 70px;
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
     background: var(--p-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 28px;
-    font-weight: 700;
+    margin: 0 auto 22px;
+    font-size: 32px;
+    font-weight: 800;
     color: #fff;
-    box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
   }
   .login-title {
     text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 22px;
+    letter-spacing: -0.3px;
   }
   .login-info {
     background: #F3F4F6;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: var(--radius-sm);
     text-align: center;
     font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    border: 1px solid var(--border-light);
   }
   .login-error {
-    color: var(--danger);
-    margin-top: 10px;
+    color: #EF4444;
+    margin-top: 12px;
     font-size: 13px;
     text-align: center;
+    font-weight: 600;
   }
 
   #t {
     position: fixed;
-    bottom: 90px;
+    bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: #1F2937;
+    background: rgba(11, 15, 25, 0.92);
+    backdrop-filter: blur(8px);
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 12px;
+    padding: 12px 28px;
+    border-radius: 50px;
     font-size: 13px;
+    font-weight: 600;
     z-index: 200;
     display: none;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    backdrop-filter: blur(4px);
-    background: rgba(31,41,55,0.9);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     max-width: 90%;
     text-align: center;
   }
 
-  @media (max-width: 480px) {
-    .balance-card .amount {
-      font-size: 28px;
-    }
-    .login-card {
-      padding: 24px 20px;
-    }
-    .modal-content {
-      padding: 20px;
-    }
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--p);
+    border-radius: 8px;
+  }
+
+  /* ===== CARTE RÉALISTE ===== */
+  .real-card {
+    background: var(--p-gradient);
+    border-radius: 18px;
+    padding: 22px 20px 18px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.20), inset 0 0 80px rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 12px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .real-card::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .real-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+  }
+  .card-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-chip i {
+    font-size: 32px;
+    opacity: 0.7;
+    color: #ffd700;
+    filter: drop-shadow(0 0 4px rgba(255,215,0,0.3));
+  }
+  .card-brand {
+    font-size: 32px;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.2));
+  }
+  .card-number {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-family: 'Inter', monospace;
+    margin: 12px 0 8px;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .card-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 2;
+  }
+  .card-holder {
+    display: flex;
+    flex-direction: column;
+  }
+  .card-holder .label {
+    font-size: 9px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    letter-spacing: 1px;
+  }
+  .card-holder .name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .card-expiry {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .card-expiry .label {
+    font-size: 9px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    letter-spacing: 1px;
+  }
+  .card-expiry .date {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .card-cvv {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    margin-top: 4px;
   }
 
   .hidden {
@@ -703,12 +899,12 @@
     <div class="login-wrapper">
       <div class="login-card">
         <div class="login-logo">F</div>
-        <h1 class="login-title">FLOA BK - Twoja strefa klienta</h1>
-        <div class="login-info">Zaloguj się kontem z panelu admin</div>
-        <label style="font-size:13px;color:var(--muted);margin-bottom:4px;display:block">Twój adres e-mail</label>
-        <input id="email" type="email" class="input" style="margin-bottom:14px" placeholder="email z admin">
-        <label style="font-size:13px;color:var(--muted);margin-bottom:4px;display:block">Twój kod PIN</label>
-        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px" placeholder="••••••">
+        <h1 class="login-title">FLOA BK</h1>
+        <div class="login-info">Zaloguj się kontem admin</div>
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
+        <input id="email" type="email" class="input" style="margin-bottom:14px">
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
+        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
       </div>
@@ -720,27 +916,31 @@
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
       <div class="header-actions">
-        <div class="badge-icon" onclick="openNotifications()">
-          <i class="fa-regular fa-bell"></i>
-          <span id="notif-badge" class="notif-badge hidden">1</span>
-        </div>
+        <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
         <div class="badge-icon" onclick="openAcc()" id="avatar">FB</div>
       </div>
     </header>
     <main>
-      <h2 id="greet">Powitanie</h2>
-      <div class="balance-card">
-        <div class="label"><i class="fa-solid fa-circle-check"></i> Dostępne saldo</div>
+      <h2 id="greet">Witaj, <span>Power</span></h2>
+
+      <div class="balance-panel">
+        <div class="label">Dostępne saldo</div>
         <div class="amount" id="bal">0,00 zł</div>
-        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
-        <div class="balance-actions">
-          <button class="btn-action" onclick="toast('IBAN')"><i class="fa-regular fa-credit-card"></i> IBAN</button>
-          <button class="btn-action" onclick="navigateTo('transfer')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Przelew</button>
-          <button class="btn-action full" onclick="openCard()"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
-        </div>
+        <div class="sub">Stan konta w czasie rzeczywistym</div>
       </div>
 
-      <div class="history-header"><i class="fa-solid fa-bars"></i> Historia</div>
+      <div class="quick-stats">
+        <div class="stat-item"><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
+        <div class="stat-item"><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
+        <div class="stat-item"><div class="stat-value" id="stat-devise">zł</div><div class="stat-label">Waluta</div></div>
+      </div>
+
+      <div class="action-grid">
+        <button class="action-btn primary" onclick="navigateTo('transfer')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Nowy przelew</button>
+        <button class="action-btn" onclick="openCard()"><i class="fa-regular fa-credit-card"></i> Karta wirtualna</button>
+      </div>
+
+      <div class="history-header"><i class="fa-solid fa-clock-rotate-left"></i> Historia transakcji</div>
       <div id="history-list"></div>
     </main>
   </section>
@@ -755,7 +955,7 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;margin-bottom:18px;font-size:22px">Wykonaj przelew</h1>
+      <h1 style="font-weight:700;font-size:22px;margin-bottom:18px">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -766,7 +966,7 @@
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" placeholder="0,00" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:17px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:18px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -777,7 +977,7 @@
         <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
         <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
 
-        <button onclick="toVerify()" class="btn" id="continueBtn" style="background:var(--p);margin-top:4px">Kontynuuj →</button>
+        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:4px">Kontynuuj →</button>
       </div>
     </main>
   </section>
@@ -792,27 +992,26 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:500;margin-bottom:16px;font-size:22px">Weryfikacja tożsamości</h1>
+      <h1 style="font-weight:600;font-size:22px;margin-bottom:16px">Weryfikacja przelewu</h1>
       <div class="transfer-card" style="padding:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px"><i class="fa-regular fa-file-lines"></i> Szczegóły oczekującego przelewu</div>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
           <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
         </div>
         <div class="verify-details">
-          <div class="row"><div class="label">Kwota przelewu:</div><div class="value" id="va">-</div></div>
-          <div class="row"><div class="label">Imię i nazwisko beneficjenta:</div><div class="value" id="vb">-</div></div>
+          <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
+          <div class="row"><div class="label">Beneficjent:</div><div class="value" id="vb">-</div></div>
           <div class="row"><div class="label">IBAN / Numer konta:</div><div class="value" id="vc">-</div></div>
           <div class="row"><div class="label">Kod banku (BIC / SWIFT):</div><div class="value" id="vd">-</div></div>
           <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
           <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
         </div>
-        <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj transfer →</button>
+        <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj przelew →</button>
 
         <div class="verify-code">
-          <div class="lock"><i class="fa-solid fa-lock"></i> Proszę wprowadzić kod aktywacyjny transferu.</div>
-          <label style="font-size:13px;color:var(--muted);margin-bottom:4px;display:block">Kod aktywacyjny</label>
-          <input id="code" class="input" placeholder="********" style="margin-bottom:20px;text-align:center;letter-spacing:3px;font-size:17px;padding:14px">
-          <button onclick="finish()" class="btn" style="background:var(--p);font-size:16px;padding:16px">Kontynuuj →</button>
+          <div class="lock"><i class="fa-solid fa-lock"></i> Kod aktywacyjny</div>
+          <input id="code" class="input" style="margin-bottom:20px;text-align:center;letter-spacing:4px;font-size:18px;padding:14px">
+          <button onclick="finish()" class="btn" style="font-size:16px;padding:16px">Zatwierdź i wyślij →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -836,7 +1035,7 @@
         <div class="result-icon" id="resultIcon">⏳</div>
         <div class="result-percent" id="resultPercent">0%</div>
         <p class="result-msg" id="resultMsg"></p>
-        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:22px;max-width:240px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:22px;max-width:220px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
       </div>
     </main>
   </section>
@@ -850,18 +1049,39 @@
   </nav>
 
   <!-- ========== MODALS ========== -->
-  <!-- CARD -->
+  <!-- CARD (vraie carte réaliste) -->
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:600;margin-bottom:12px">Karta wirtualna</p>
-      <div style="background:var(--p-gradient);color:#fff;padding:18px;border-radius:12px;transition:background 0.3s ease">
-        <div style="text-align:right"><i class="fa-brands fa-cc-visa" style="font-size:26px"></i></div>
-        <p style="margin:12px 0;font-weight:700">FLOA BK CARD</p>
-        <p style="margin:12px 0;letter-spacing:2px;font-size:16px">4556 5518 8867 XXXX</p>
-        <div style="display:flex;gap:20px;font-size:13px"><span>02/28</span><span>CVV: 556</span></div>
+      <p style="font-weight:700;margin-bottom:16px;font-size:18px">💳 Karta wirtualna</p>
+
+      <div class="real-card">
+        <div class="card-top">
+          <div class="card-chip">
+            <i class="fa-solid fa-microchip"></i>
+            <span style="font-size:10px;opacity:0.6;letter-spacing:1px;">FLOA</span>
+          </div>
+          <div class="card-brand">
+            <i class="fa-brands fa-cc-visa"></i>
+          </div>
+        </div>
+        <div class="card-number">4556 5518 8867 <span style="opacity:0.5;">XXXX</span></div>
+        <div class="card-details">
+          <div class="card-holder">
+            <span class="label">Posiadacz</span>
+            <span class="name" id="cardHolderName">JAN KOWALSKI</span>
+          </div>
+          <div class="card-expiry">
+            <span class="label">Ważna do</span>
+            <span class="date">02/28</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:6px;position:relative;z-index:2">
+          <span class="card-cvv">CVV: 556</span>
+        </div>
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.4">Ze względów bezpieczeństwa ostatnie 4 cyfry są ukryte. Pełne dane zostaną wyświetlone po dodatkowej weryfikacji.</p>
+
+      <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -869,9 +1089,9 @@
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:12px;display:flex;align-items:center;gap:8px"><i class="fa-regular fa-circle-user" style="color:var(--p);font-size:20px"></i> Konto</h3>
-      <div id="accinfo" style="font-size:14px;line-height:2"></div>
-      <button onclick="logout()" style="margin-top:14px;padding:9px 12px;border:1px solid #fecaca;background:#fef2f2;color:#dc2626;border-radius:8px;font-size:13px;width:100%;font-family:inherit;cursor:pointer"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:18px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+      <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary)"></div>
+      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -879,21 +1099,21 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:8px;flex-shrink:0"><i class="fa-regular fa-bell" style="color:var(--p);font-size:20px"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;padding-right:4px"></div>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
     </div>
   </div>
 
   <!-- TRANSACTION DETAIL -->
   <div id="txDetail" class="modal hidden" style="z-index:60">
     <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:28px">
-      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:var(--danger);color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.3);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
       <div style="padding:36px 24px 24px">
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--muted);margin-bottom:4px">Identyfikator:</div><div style="font-weight:700;font-size:17px" id="tx-id">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--muted);margin-bottom:4px" id="tx-label-amount">Wysłana kwota:</div><div style="font-weight:700;font-size:17px" id="tx-amount">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--muted);margin-bottom:4px" id="tx-label-benef">Imię i nazwisko beneficjenta:</div><div style="font-weight:700;font-size:17px" id="tx-benef">-</div></div>
-        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:13px;color:var(--muted);margin-bottom:4px">IBAN/Rachunek beneficjenta:</div><div style="font-weight:700;font-size:17px;word-break:break-all" id="tx-iban">-</div></div>
-        <div><div style="font-size:13px;color:var(--muted);margin-bottom:4px" id="tx-label-date">Data przelewu:</div><div style="font-weight:700;font-size:17px" id="tx-date">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-id">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-amount">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-benef">-</div></div>
+        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
+        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -901,7 +1121,7 @@
   <!-- TOAST -->
   <div id="t"></div>
 
-  <!-- ========== SCRIPTS ========== -->
+  <!-- ========== SCRIPTS (inchangés) ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -920,17 +1140,14 @@
     const db = getDatabase(app);
     let user = null;
 
-    // Appliquer le thème sauvegardé immédiatement
     const savedTheme = localStorage.getItem('floa_theme') || 'purple';
     applyTheme(savedTheme);
 
-    // ===== FORMATAGE =====
     const fmt = n => {
       const dev = (user && user.devise) ? user.devise : 'zł';
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
 
-    // ===== NAVIGATION =====
     const show = id => {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -960,7 +1177,6 @@
 
     if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
 
-    // ===== THÈMES =====
     function applyTheme(theme) {
       const themes = {
         purple: { p: '#7C3AED', l: '#EDE9FE' },
@@ -971,6 +1187,7 @@
       document.documentElement.style.setProperty('--p', t.p);
       document.documentElement.style.setProperty('--p-light', t.l);
       document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
+      document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
       localStorage.setItem('floa_theme', theme);
     }
 
@@ -982,9 +1199,8 @@
       return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
     }
 
-    // ===== HISTORIQUE =====
     function showEmptyHistory() {
-      document.getElementById('history-list').innerHTML = '<div class="empty-history">Brak historii transakcji</div>';
+      document.getElementById('history-list').innerHTML = '<div class="empty-history">Brak transakcji</div>';
     }
 
     function genId(prefix) {
@@ -1011,7 +1227,7 @@
         <div class="history-left">
           <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
           <div class="history-info">
-            <div class="title">${data.title} <span style="color:var(--muted)">• ${data.subtitle}</span></div>
+            <div class="title">${data.title} <span style="color:var(--text-secondary)">• ${data.subtitle}</span></div>
             <div class="meta">${data.date} • ${data.time}</div>
           </div>
         </div>
@@ -1029,15 +1245,14 @@
       }
     }
 
-    // ===== PROFIL =====
     function buildProfile(u) {
       return `
-        <div><i class="fa-solid fa-id-card" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Imię i nazwisko:</span> <b>${u.nom}</b></div>
-        <div><i class="fa-solid fa-wallet" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Saldo:</span> <b>${fmt(u.montant)}</b></div>
-        <div><i class="fa-solid fa-envelope" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Adres e-mail:</span> <b>${u.email}</b></div>
-        <div><i class="fa-solid fa-flag" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Kraj:</span> <b>${u.pays || '-'}</b></div>
-        <div><i class="fa-solid fa-location-dot" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Adres zamieszkania:</span> <b>${u.adresse || '-'}</b></div>
-        <div><i class="fa-solid fa-phone" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Numer telefonu:</span> <b>${u.tel || '-'}</b></div>
+        <div><i class="fa-solid fa-id-card" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Imię i nazwisko:</span> <b style="color:var(--text-primary)">${u.nom}</b></div>
+        <div><i class="fa-solid fa-wallet" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Saldo konta:</span> <b style="color:var(--text-primary)">${fmt(u.montant)}</b></div>
+        <div><i class="fa-solid fa-envelope" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres e-mail:</span> <b style="color:var(--text-primary)">${u.email}</b></div>
+        <div><i class="fa-solid fa-flag" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Kraj:</span> <b style="color:var(--text-primary)">${u.pays || '-'}</b></div>
+        <div><i class="fa-solid fa-location-dot" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres zamieszkania:</span> <b style="color:var(--text-primary)">${u.adresse || '-'}</b></div>
+        <div><i class="fa-solid fa-phone" style="width:18px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Numer telefonu:</span> <b style="color:var(--text-primary)">${u.tel || '-'}</b></div>
       `;
     }
 
@@ -1048,6 +1263,9 @@
         const el = document.getElementById(id);
         if (el) el.textContent = initials;
       });
+      // Mettre à jour le nom sur la carte
+      const holder = document.getElementById('cardHolderName');
+      if (holder) holder.textContent = user.nom.toUpperCase();
     }
 
     function updateCurrency() {
@@ -1055,6 +1273,7 @@
       const dev = user.devise || 'zł';
       const cs = document.getElementById('currency-symbol');
       if (cs) cs.textContent = dev;
+      document.getElementById('stat-devise').textContent = dev;
     }
 
     function updateNotifBadge() {
@@ -1068,7 +1287,6 @@
       });
     }
 
-    // ===== LOGIN =====
     window.login = async () => {
       const e = document.getElementById('email').value.trim().toLowerCase();
       const p = document.getElementById('pin').value.trim();
@@ -1087,14 +1305,14 @@
         }
       }
       if (!f) {
-        err.textContent = 'Odmowa dostępu';
+        err.textContent = 'Błąd logowania – sprawdź email i PIN';
         err.classList.remove('hidden');
         localStorage.removeItem('floa_session');
         show('login');
         return;
       }
       if (f.blocked) {
-        err.textContent = 'Konto zablokowane przez administratora';
+        err.textContent = 'Konto zostało zablokowane';
         err.classList.remove('hidden');
         localStorage.removeItem('floa_session');
         return;
@@ -1107,9 +1325,10 @@
       localStorage.setItem('floa_theme', user.theme);
       const key = 'floa_' + user.email.toLowerCase();
       const stored = JSON.parse(localStorage.getItem(key) || 'null');
-      document.getElementById('greet').textContent = 'Powitanie, ' + user.nom;
+      document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom.split(' ')[0]}</span>`;
       document.getElementById('bal').textContent = fmt(user.montant);
       document.getElementById('bal2').textContent = fmt(user.montant);
+      document.getElementById('stat-balance').textContent = fmt(user.montant);
       applyTheme(user.theme);
       updateAvatars();
       updateCurrency();
@@ -1118,10 +1337,13 @@
       document.getElementById('history-list').innerHTML = '';
       if (stored && stored.history && stored.history.length) {
         stored.history.forEach(h => addHistory(h, false));
+        document.getElementById('stat-tx').textContent = stored.history.length;
       } else if (user.montant > 0) {
-        addHistory({ title: 'Przelew otrzymany', subtitle: 'mBank Polska', amount: Number(user.montant), beneficiary: 'mBank Polska', iban: 'PL00000' }, true);
+        addHistory({ title: 'Przelew otrzymany', subtitle: 'mBank', amount: Number(user.montant), beneficiary: 'mBank', iban: 'PL00000' }, true);
+        document.getElementById('stat-tx').textContent = 1;
       } else {
         showEmptyHistory();
+        document.getElementById('stat-tx').textContent = 0;
       }
       navigateTo('dashboard');
       setupValidation();
@@ -1143,12 +1365,11 @@
         document.getElementById('email').value = e;
         document.getElementById('pin').value = p;
         show('dashboard');
-        document.getElementById('greet').textContent = 'Ładowanie...';
+        document.getElementById('greet').innerHTML = 'Ładowanie...';
         setTimeout(() => login(), 50);
       } catch {}
     }
 
-    // ===== SURVEILLANCE EN TEMPS RÉEL (CORRIGÉE) =====
     function watchClientStatus() {
       if (!user) return;
       const clientsRef = ref(db, 'clients');
@@ -1168,24 +1389,23 @@
           return;
         }
         if (found.blocked) {
-          toast('Dostęp zablokowany');
+          toast('Konto zablokowane');
           localStorage.removeItem('floa_session');
           setTimeout(() => { show('login'); user = null; }, 1000);
           return;
         }
-
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
-
-        // Gestion du reset d'historique (inchangée)
         if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
           user.montant = 0;
           update(ref(db, 'clients/' + found._id), { montant: 0 });
           localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: found.historyReset }));
           document.getElementById('bal').textContent = fmt(0);
           document.getElementById('bal2').textContent = fmt(0);
+          document.getElementById('stat-balance').textContent = fmt(0);
           document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
           showEmptyHistory();
+          document.getElementById('stat-tx').textContent = 0;
           toast('Historia wyczyszczona');
           return;
         }
@@ -1195,7 +1415,6 @@
         const oldNotif = user.notification;
         const oldTheme = user.theme;
 
-        // Mise à jour des champs non-monétaires
         user.pct = found.pct;
         user.code = found.code;
         user.msg = found.msg;
@@ -1206,51 +1425,38 @@
         user.notification = found.notification || '';
         user.theme = found.theme || 'purple';
 
-        // ----- GESTION INTELLIGENTE DU SOLDE -----
         const newMontant = Number(found.montant) || 0;
         const diff = newMontant - oldMontant;
 
         if (diff > 0) {
-          // Crédit : on accepte toujours
           user.montant = newMontant;
-          // On ajoute une ligne d'historique pour le crédit
           const now = new Date();
           addHistory({
             title: 'Przelew otrzymany',
-            subtitle: 'mBank Polska',
+            subtitle: 'mBank',
             amount: diff,
-            beneficiary: 'mBank Polska',
+            beneficiary: 'mBank',
             iban: '-',
             date: now.toLocaleDateString('pl-PL'),
             time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
             timestamp: now.getTime()
           }, true);
-          toast(`Otrzymano ${fmt(diff)}`);
+          toast(`+${fmt(diff)}`);
         } else if (diff < 0) {
-          // Débit : on vérifie si cela correspond à un virement récent effectué par l'utilisateur
           const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
           const now = Date.now();
           const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
           if (isRecent) {
-            // Virement légitime : on accepte la baisse
             user.montant = newMontant;
-            // On efface l'indicateur de virement
             localStorage.removeItem('floa_last_transfer');
-          } else {
-            // Sinon, on ignore la baisse (on garde l'ancien montant)
-            // On affiche une notification pour informer
-            toast('⚠️ Changement de solde non reconnu ignoré');
-            // Ne pas modifier user.montant
           }
         }
-        // si diff === 0, rien à faire
 
-        // Mise à jour de l'affichage
         document.getElementById('bal').textContent = fmt(user.montant);
         document.getElementById('bal2').textContent = fmt(user.montant);
+        document.getElementById('stat-balance').textContent = fmt(user.montant);
         document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-        // Application du thème si changé
         if (oldTheme !== user.theme) {
           applyTheme(user.theme);
           document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
@@ -1266,7 +1472,6 @@
       });
     }
 
-    // ===== TRANSFERT (avec enregistrement du dernier virement) =====
     window.toVerify = () => {
       const amt = Number(document.getElementById('a').value) || 0;
       if (amt > Number(user.montant)) {
@@ -1285,7 +1490,7 @@
     window.finish = () => {
       if (!user) return;
       if (document.getElementById('code').value.trim() !== user.code) {
-        toast('Kod błędny');
+        toast('Nieprawidłowy kod');
         return;
       }
       const pct = Number(user.pct) || 100;
@@ -1303,24 +1508,18 @@
         if (w >= pct) {
           clearInterval(i);
           document.getElementById('resultPercent').textContent = cur + '%';
-          document.getElementById('resultMsg').textContent = msg || (pct < 100 ? `Przelew zatrzymany na ${pct}%` : 'Przelew zatwierdzony ✓');
+          document.getElementById('resultMsg').textContent = msg || (pct < 100 ? `Zatrzymano na ${pct}%` : 'Przelew zatwierdzony ✓');
           document.getElementById('resultIcon').textContent = pct < 100 ? '⚠️' : '✅';
           if (pct >= 100) {
             const amt = Number(document.getElementById('a').value) || 0;
             const newMontant = Number(user.montant) - amt;
             user.montant = newMontant;
-            // Enregistrer le virement pour validation ultérieure
-            localStorage.setItem('floa_last_transfer', JSON.stringify({
-              amount: amt,
-              timestamp: Date.now()
-            }));
-            // Mettre à jour Firebase
+            localStorage.setItem('floa_last_transfer', JSON.stringify({ amount: amt, timestamp: Date.now() }));
             update(ref(db, 'clients/' + user._id), { montant: newMontant });
-            // Mettre à jour l'UI
             document.getElementById('bal').textContent = fmt(user.montant);
             document.getElementById('bal2').textContent = fmt(user.montant);
+            document.getElementById('stat-balance').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
-            // Ajouter à l'historique
             const now = new Date();
             addHistory({
               title: 'Przelew wysłany',
@@ -1332,13 +1531,13 @@
               time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
               timestamp: now.getTime()
             }, true);
+            document.getElementById('stat-tx').textContent = (Number(document.getElementById('stat-tx').textContent) || 0) + 1;
           }
           setTimeout(() => navigateTo('result'), 500);
         }
       }, 40);
     };
 
-    // ===== TOAST =====
     window.toast = m => {
       const t = document.getElementById('t');
       t.textContent = m;
@@ -1346,7 +1545,6 @@
       setTimeout(() => t.style.display = 'none', 1500);
     };
 
-    // ===== MODALS =====
     window.openCard = () => document.getElementById('card').classList.remove('hidden');
     window.closeCard = () => document.getElementById('card').classList.add('hidden');
     window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
@@ -1354,8 +1552,8 @@
     window.openNotifications = () => {
       const n = user && user.notification ? user.notification : '';
       document.getElementById('notif-content').innerHTML = n ?
-        `<div style="background:#F9FAFB;padding:14px;border-radius:10px;border-left:3px solid var(--p);white-space:pre-wrap">${n}</div>` :
-        '<p style="color:var(--muted);text-align:center;padding:20px">Brak powiadomień</p>';
+        `<div style="background:#F8FAFC;padding:14px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
+        '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
       document.getElementById('notifications').classList.remove('hidden');
     };
     window.closeNotifications = () => document.getElementById('notifications').classList.add('hidden');
@@ -1368,14 +1566,13 @@
       document.getElementById('tx-iban').textContent = d.iban || '-';
       document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
       document.getElementById('tx-label-amount').textContent = isCredit ? 'Otrzymana kwota:' : 'Wysłana kwota:';
-      document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Imię i nazwisko beneficjenta:';
+      document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Beneficjent:';
       document.getElementById('tx-label-date').textContent = isCredit ? 'Data otrzymania:' : 'Data przelewu:';
       document.getElementById('tx-iban-row').style.display = isCredit ? 'none' : 'block';
       document.getElementById('txDetail').classList.remove('hidden');
     };
     window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
 
-    // ===== VALIDATION FORMULAIRE =====
     function setupValidation() {
       const btn = document.getElementById('continueBtn');
       const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -1385,7 +1582,7 @@
           const all = ids.every(i => document.getElementById(i).value.trim() !== '');
           const amt = Number(document.getElementById('a').value) || 0;
           btn.disabled = !(all && amt > 0 && user && amt <= Number(user.montant));
-          if (amt > Number(user.montant)) toast('Kwota przekracza dostępne saldo!');
+          if (amt > Number(user.montant)) toast('Kwota przekracza saldo!');
         });
       });
     }
