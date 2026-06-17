@@ -44,7 +44,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== ANIMATIONS ===== */
+  /* ===== ANIMATIONS (hors historique) ===== */
   @keyframes fadeSlideIn {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
@@ -68,11 +68,6 @@
   @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
   }
 
   /* ===== ÉCRANS ===== */
@@ -273,18 +268,19 @@
     animation: slideUp 0.4s ease;
   }
 
+  /* ===== LOGO – TAILLE AUGMENTÉE ===== */
   .logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 18px;
+    font-size: 24px; /* augmenté de 18px à 24px */
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
     transition: var(--transition);
   }
   .logo i {
-    font-size: 22px;
+    font-size: 28px; /* augmenté de 22px à 28px */
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -507,7 +503,7 @@
     color: #fff;
   }
 
-  /* ===== HISTORIQUE ===== */
+  /* ===== HISTORIQUE – AUCUNE ANIMATION ===== */
   .history-header {
     display: flex;
     align-items: center;
@@ -532,16 +528,12 @@
     box-shadow: var(--shadow-soft);
     width: 100%;
     min-height: 58px;
-    transition: var(--transition);
-    animation: fadeSlideIn 0.4s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .history-item:hover {
     border-color: var(--p);
     box-shadow: var(--shadow-medium);
-    transform: translateX(4px) scale(1.01);
-  }
-  .history-item:active {
-    transform: scale(0.99);
+    transform: translateX(4px);
   }
 
   .history-left {
@@ -561,7 +553,7 @@
     justify-content: center;
     flex-shrink: 0;
     font-size: 13px;
-    transition: var(--transition);
+    transition: transform 0.2s ease;
   }
   .history-icon.credit {
     background: #D1FAE5;
@@ -610,7 +602,7 @@
     text-align: right;
     margin-left: auto;
     line-height: 1.3;
-    transition: font-size 0.3s ease;
+    transition: font-size 0.2s ease;
   }
   .history-amount.credit {
     color: #10B981;
@@ -628,7 +620,6 @@
     border-radius: var(--radius-sm);
     font-size: 16px;
     box-shadow: var(--shadow-soft);
-    animation: fadeIn 0.5s ease;
   }
 
   /* ===== TRANSFERT ===== */
@@ -952,13 +943,15 @@
     transform: scale(1.05) rotate(-4deg);
   }
 
+  /* ===== TITRE DE CONNEXION – TAILLE AUGMENTÉE ===== */
   .login-title {
     text-align: center;
-    font-size: 22px;
+    font-size: 28px; /* augmenté de 22px à 28px */
     font-weight: 800;
     margin-bottom: 18px;
     letter-spacing: -0.3px;
   }
+
   .login-info {
     background: #F3F4F6;
     padding: 12px;
@@ -1386,7 +1379,7 @@
   <!-- TOAST -->
   <div id="t"></div>
 
-  <!-- ========== SCRIPTS (avec correction historique) ========== -->
+  <!-- ========== SCRIPTS ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1488,25 +1481,18 @@
       adjustAllTexts();
     }
 
-    // ===== SORTING DES ÉLÉMENTS DE L'HISTORIQUE =====
     function sortHistoryList() {
       const list = document.getElementById('history-list');
       const items = Array.from(list.children);
-      // Filtrer pour ne garder que les .history-item
       const historyItems = items.filter(el => el.classList.contains('history-item'));
       if (historyItems.length <= 1) return;
       
       historyItems.sort((a, b) => {
-        // Récupérer les données depuis les attributs data ou depuis l'ID
-        const idA = a.getAttribute('data-id') || a.querySelector('.history-info .title')?.textContent || '';
-        const idB = b.getAttribute('data-id') || b.querySelector('.history-info .title')?.textContent || '';
-        // Comparer par timestamp stocké dans data-timestamp
         const tsA = parseInt(a.getAttribute('data-timestamp')) || 0;
         const tsB = parseInt(b.getAttribute('data-timestamp')) || 0;
         return tsB - tsA;
       });
       
-      // Réordonner
       historyItems.forEach(item => list.appendChild(item));
     }
 
@@ -1612,7 +1598,6 @@
       card.onclick = () => showTxDetail(data);
       list.appendChild(card);
       
-      // Trier immédiatement
       sortHistoryList();
 
       if (save && user) {
