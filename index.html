@@ -268,19 +268,18 @@
     animation: slideUp 0.4s ease;
   }
 
-  /* ===== LOGO – TAILLE AUGMENTÉE ===== */
   .logo {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 24px; /* augmenté de 18px à 24px */
+    font-size: 24px;
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
     transition: var(--transition);
   }
   .logo i {
-    font-size: 28px; /* augmenté de 22px à 28px */
+    font-size: 28px;
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -751,6 +750,7 @@
     color: var(--text-primary);
     margin-bottom: 14px;
     transition: var(--transition);
+    placeholder: "******"; /* ajout du placeholder */
   }
   .verify-code-section .code-input:focus {
     outline: none;
@@ -943,10 +943,9 @@
     transform: scale(1.05) rotate(-4deg);
   }
 
-  /* ===== TITRE DE CONNEXION – TAILLE AUGMENTÉE ===== */
   .login-title {
     text-align: center;
-    font-size: 28px; /* augmenté de 22px à 28px */
+    font-size: 28px;
     font-weight: 800;
     margin-bottom: 18px;
     letter-spacing: -0.3px;
@@ -1262,7 +1261,7 @@
             <i class="fa-solid fa-lock"></i>
             <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
           </div>
-          <input id="code" class="code-input" maxlength="20" autocomplete="off">
+          <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
           <button onclick="finish()" class="btn" style="font-size:16px;padding:14px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
