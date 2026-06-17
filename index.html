@@ -384,11 +384,12 @@
     color: var(--text-primary);
   }
 
+  /* ===== HISTORIQUE CORRIGÉ ===== */
   .history-item {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-sm);
-    padding: 16px 18px;
+    padding: 14px 16px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
@@ -396,6 +397,8 @@
     cursor: pointer;
     transition: var(--transition);
     box-shadow: var(--shadow-soft);
+    flex-wrap: nowrap;
+    gap: 12px;
   }
   .history-item:hover {
     border-color: var(--p);
@@ -408,6 +411,7 @@
     gap: 14px;
     align-items: center;
     min-width: 0;
+    flex: 1 1 auto;
   }
 
   .history-icon {
@@ -429,12 +433,23 @@
     color: #EF4444;
   }
 
+  .history-info {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
   .history-info .title {
     font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .history-info .title .sub {
+    color: var(--text-secondary);
+    font-weight: 400;
   }
   .history-info .meta {
     font-size: 11px;
@@ -446,6 +461,8 @@
     font-size: 15px;
     white-space: nowrap;
     flex-shrink: 0;
+    margin-left: auto;
+    text-align: right;
   }
   .history-amount.credit {
     color: #10B981;
@@ -578,22 +595,52 @@
     border-color: #EF4444;
   }
 
-  .verify-code .lock {
+  /* ===== Code section (conforme à l'image) ===== */
+  .verify-code-section {
+    margin-top: 24px;
+  }
+  .verify-code-section .lock-line {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 15px;
-    margin-bottom: 14px;
     color: var(--text-primary);
+    margin-bottom: 14px;
   }
-  .verify-code .lock i {
-    font-size: 20px;
+  .verify-code-section .lock-line i {
+    font-size: 18px;
     color: var(--p);
+  }
+  .verify-code-section .code-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #FAFBFC;
+    border: 1.5px solid #E5E7EB;
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 4px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-primary);
+    transition: var(--transition);
+    margin-bottom: 16px;
+  }
+  .verify-code-section .code-input:focus {
+    outline: none;
+    border-color: var(--p);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
+    background: #fff;
+  }
+  .verify-code-section .code-input::placeholder {
+    letter-spacing: 2px;
+    font-weight: 400;
+    color: var(--text-muted);
   }
 
   .progress-wrap {
-    margin-top: 20px;
+    margin-top: 18px;
   }
   .progress-bar {
     height: 6px;
@@ -982,7 +1029,7 @@
     </main>
   </section>
 
-  <!-- ========== VERIFY ========== -->
+  <!-- ========== VERIFY (conforme à l'image) ========== -->
   <section id="verify" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
@@ -1006,12 +1053,16 @@
           <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
           <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
         </div>
+
         <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj przelew →</button>
 
-        <div class="verify-code">
-          <div class="lock"><i class="fa-solid fa-lock"></i> Kod aktywacyjny</div>
-          <input id="code" class="input" style="margin-bottom:20px;text-align:center;letter-spacing:4px;font-size:18px;padding:14px">
-          <button onclick="finish()" class="btn" style="font-size:16px;padding:16px">Zatwierdź i wyślij →</button>
+        <div class="verify-code-section">
+          <div class="lock-line">
+            <i class="fa-solid fa-lock"></i>
+            <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
+          </div>
+          <input id="code" class="code-input" placeholder="********" maxlength="20" autocomplete="off">
+          <button onclick="finish()" class="btn" style="font-size:16px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -1049,12 +1100,11 @@
   </nav>
 
   <!-- ========== MODALS ========== -->
-  <!-- CARD (vraie carte réaliste) -->
+  <!-- CARD -->
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
       <p style="font-weight:700;margin-bottom:16px;font-size:18px">💳 Karta wirtualna</p>
-
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
@@ -1080,7 +1130,6 @@
           <span class="card-cvv">CVV: 556</span>
         </div>
       </div>
-
       <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
@@ -1212,22 +1261,28 @@
       const list = document.getElementById('history-list');
       const empty = document.querySelector('.empty-history');
       if (empty) empty.remove();
+
       if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
-      if (!data.time) {
+
+      if (!data.time || !data.timestamp) {
         const now = new Date();
-        data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-        data.timestamp = now.getTime();
+        if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+        if (!data.timestamp) data.timestamp = now.getTime();
       }
-      if (!data.date) data.date = new Date().toLocaleDateString('pl-PL');
+      if (!data.date) {
+        const now = new Date();
+        data.date = now.toLocaleDateString('pl-PL');
+      }
 
       const card = document.createElement('div');
       card.className = 'history-item';
       const pos = data.amount >= 0;
+      const subtitleHtml = data.subtitle ? `<span class="sub">• ${data.subtitle}</span>` : '';
       card.innerHTML = `
         <div class="history-left">
           <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
           <div class="history-info">
-            <div class="title">${data.title} <span style="color:var(--text-secondary)">• ${data.subtitle}</span></div>
+            <div class="title">${data.title} ${subtitleHtml}</div>
             <div class="meta">${data.date} • ${data.time}</div>
           </div>
         </div>
@@ -1240,7 +1295,10 @@
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{"montant":0,"history":[]}');
         stored.montant = user.montant;
-        stored.history.push(data);
+        const exists = stored.history.some(h => h.id === data.id);
+        if (!exists) {
+          stored.history.push(data);
+        }
         localStorage.setItem(key, JSON.stringify(stored));
       }
     }
@@ -1263,7 +1321,6 @@
         const el = document.getElementById(id);
         if (el) el.textContent = initials;
       });
-      // Mettre à jour le nom sur la carte
       const holder = document.getElementById('cardHolderName');
       if (holder) holder.textContent = user.nom.toUpperCase();
     }
@@ -1336,10 +1393,21 @@
       document.getElementById('accinfo').innerHTML = buildProfile(user);
       document.getElementById('history-list').innerHTML = '';
       if (stored && stored.history && stored.history.length) {
-        stored.history.forEach(h => addHistory(h, false));
-        document.getElementById('stat-tx').textContent = stored.history.length;
+        const sorted = [...stored.history].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        sorted.forEach(h => addHistory(h, false));
+        document.getElementById('stat-tx').textContent = sorted.length;
       } else if (user.montant > 0) {
-        addHistory({ title: 'Przelew otrzymany', subtitle: 'mBank', amount: Number(user.montant), beneficiary: 'mBank', iban: 'PL00000' }, true);
+        const now = new Date();
+        addHistory({
+          title: 'Przelew otrzymany',
+          subtitle: 'mBank',
+          amount: Number(user.montant),
+          beneficiary: 'mBank',
+          iban: 'PL00000',
+          date: now.toLocaleDateString('pl-PL'),
+          time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+          timestamp: now.getTime()
+        }, true);
         document.getElementById('stat-tx').textContent = 1;
       } else {
         showEmptyHistory();
@@ -1431,7 +1499,9 @@
         if (diff > 0) {
           user.montant = newMontant;
           const now = new Date();
+          const id = genId('CR');
           addHistory({
+            id: id,
             title: 'Przelew otrzymany',
             subtitle: 'mBank',
             amount: diff,
@@ -1442,6 +1512,8 @@
             timestamp: now.getTime()
           }, true);
           toast(`+${fmt(diff)}`);
+          const hist = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
+          document.getElementById('stat-tx').textContent = (hist.history?.length || 0);
         } else if (diff < 0) {
           const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
           const now = Date.now();
@@ -1521,7 +1593,9 @@
             document.getElementById('stat-balance').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
             const now = new Date();
+            const id = genId('DE');
             addHistory({
+              id: id,
               title: 'Przelew wysłany',
               subtitle: document.getElementById('b').value,
               amount: -amt,
@@ -1531,7 +1605,9 @@
               time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
               timestamp: now.getTime()
             }, true);
-            document.getElementById('stat-tx').textContent = (Number(document.getElementById('stat-tx').textContent) || 0) + 1;
+            const key = 'floa_' + user.email.toLowerCase();
+            const stored = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
+            document.getElementById('stat-tx').textContent = (stored.history?.length || 0);
           }
           setTimeout(() => navigateTo('result'), 500);
         }
