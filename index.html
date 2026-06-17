@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* ===== TOUS LES STYLES RESTENT IDENTIQUES ===== */
   :root {
     --bg: #F4F6FA;
     --card-bg: #FFFFFF;
@@ -268,7 +269,7 @@
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
-    padding: 28px 24px;
+    padding: 32px 28px;
     margin-bottom: 24px;
     color: #fff;
     position: relative;
@@ -297,6 +298,10 @@
     font-size: 36px;
     font-weight: 800;
     letter-spacing: -0.02em;
+    line-height: 1.2;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .balance-panel .sub {
     font-size: 13px;
@@ -326,6 +331,9 @@
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .stat-item .stat-label {
     font-size: 10px;
@@ -384,7 +392,6 @@
     color: var(--text-primary);
   }
 
-  /* ===== HISTORIQUE CORRIGÉ ===== */
   .history-item {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -595,7 +602,6 @@
     border-color: #EF4444;
   }
 
-  /* ===== Code section (conforme à l'image) ===== */
   .verify-code-section {
     margin-top: 24px;
   }
@@ -662,9 +668,10 @@
     color: var(--p);
   }
 
+  /* ===== PAGE DE RÉSULTAT AMÉLIORÉE ===== */
   .result-card {
     text-align: center;
-    max-width: 340px;
+    max-width: 380px;
     margin: 0 auto;
     padding: 32px 24px;
     background: var(--card-bg);
@@ -672,19 +679,61 @@
     box-shadow: var(--shadow-medium);
   }
   .result-icon {
-    font-size: 60px;
-    margin-bottom: 16px;
+    font-size: 64px;
+    margin-bottom: 12px;
+    color: var(--p);
   }
   .result-percent {
-    font-size: 38px;
+    font-size: 34px;
     font-weight: 800;
     color: var(--p);
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+  }
+  .result-status {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+  .result-details {
+    background: #FAFBFC;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin: 12px 0 18px 0;
+    text-align: left;
+    border: 1px solid var(--border-light);
+  }
+  .result-details .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .result-details .row:last-child {
+    border-bottom: none;
+  }
+  .result-details .row .label {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .result-details .row .value {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    word-break: break-all;
+    max-width: 60%;
   }
   .result-msg {
-    font-size: 16px;
+    font-size: 15px;
     color: var(--text-secondary);
-    line-height: 1.7;
+    line-height: 1.6;
+    margin: 8px 0 16px 0;
+    padding: 12px 16px;
+    background: var(--p-soft);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--p);
+    text-align: left;
   }
 
   nav {
@@ -817,7 +866,6 @@
     border-radius: 8px;
   }
 
-  /* ===== CARTE RÉALISTE ===== */
   .real-card {
     background: var(--p-gradient);
     border-radius: 18px;
@@ -973,7 +1021,7 @@
       <div class="balance-panel">
         <div class="label">Dostępne saldo</div>
         <div class="amount" id="bal">0,00 zł</div>
-        <div class="sub">Stan konta w czasie rzeczywistym</div>
+        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
       </div>
 
       <div class="quick-stats">
@@ -1029,7 +1077,7 @@
     </main>
   </section>
 
-  <!-- ========== VERIFY (conforme à l'image) ========== -->
+  <!-- ========== VERIFY ========== -->
   <section id="verify" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
@@ -1072,7 +1120,7 @@
     </main>
   </section>
 
-  <!-- ========== RESULT ========== -->
+  <!-- ========== RESULT (page de résultat améliorée) ========== -->
   <section id="result" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
@@ -1083,10 +1131,26 @@
     </header>
     <main style="display:flex;align-items:center;justify-content:center;min-height:70vh">
       <div class="result-card">
-        <div class="result-icon" id="resultIcon">⏳</div>
+        <!-- Icône (remplace l'emoji) -->
+        <div class="result-icon" id="resultIcon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <!-- Pourcentage -->
         <div class="result-percent" id="resultPercent">0%</div>
-        <p class="result-msg" id="resultMsg"></p>
-        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:22px;max-width:220px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+        <!-- Statut -->
+        <div class="result-status" id="resultStatus">-</div>
+
+        <!-- Détails du virement -->
+        <div class="result-details" id="resultDetails">
+          <div class="row"><span class="label">Beneficjent</span><span class="value" id="resultBenef">-</span></div>
+          <div class="row"><span class="label">Kwota</span><span class="value" id="resultAmount">-</span></div>
+          <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
+        </div>
+
+        <!-- Message admin (msg) -->
+        <div class="result-msg" id="resultMsg"></div>
+
+        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:12px;max-width:220px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
       </div>
     </main>
   </section>
@@ -1170,7 +1234,7 @@
   <!-- TOAST -->
   <div id="t"></div>
 
-  <!-- ========== SCRIPTS (inchangés) ========== -->
+  <!-- ========== SCRIPTS (modifié uniquement pour la page result) ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1188,6 +1252,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     let user = null;
+    // Variables pour stocker les détails du virement avant d'aller sur result
+    let transferDetails = { beneficiary: '', amount: '', account: '' };
 
     const savedTheme = localStorage.getItem('floa_theme') || 'purple';
     applyTheme(savedTheme);
@@ -1196,6 +1262,29 @@
       const dev = (user && user.devise) ? user.devise : 'zł';
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
+
+    function adjustBalanceFontSize(element, text, baseSize, maxChars) {
+      if (!element) return;
+      const maxLength = maxChars || 14;
+      let newSize = baseSize;
+      const len = text.length;
+      if (len > maxLength) {
+        newSize = Math.max(12, baseSize * (maxLength / len));
+      }
+      element.style.fontSize = newSize + 'px';
+    }
+
+    function updateBalanceDisplay(balanceElement, statElement, amount) {
+      const formatted = fmt(amount);
+      if (balanceElement) {
+        balanceElement.textContent = formatted;
+        adjustBalanceFontSize(balanceElement, formatted, 36, 14);
+      }
+      if (statElement) {
+        statElement.textContent = formatted;
+        adjustBalanceFontSize(statElement, formatted, 20, 12);
+      }
+    }
 
     const show = id => {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1383,9 +1472,12 @@
       const key = 'floa_' + user.email.toLowerCase();
       const stored = JSON.parse(localStorage.getItem(key) || 'null');
       document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom.split(' ')[0]}</span>`;
-      document.getElementById('bal').textContent = fmt(user.montant);
+
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+
       document.getElementById('bal2').textContent = fmt(user.montant);
-      document.getElementById('stat-balance').textContent = fmt(user.montant);
       applyTheme(user.theme);
       updateAvatars();
       updateCurrency();
@@ -1468,9 +1560,10 @@
           user.montant = 0;
           update(ref(db, 'clients/' + found._id), { montant: 0 });
           localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: found.historyReset }));
-          document.getElementById('bal').textContent = fmt(0);
+          const balElement = document.getElementById('bal');
+          const statBalElement = document.getElementById('stat-balance');
+          updateBalanceDisplay(balElement, statBalElement, 0);
           document.getElementById('bal2').textContent = fmt(0);
-          document.getElementById('stat-balance').textContent = fmt(0);
           document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
           showEmptyHistory();
           document.getElementById('stat-tx').textContent = 0;
@@ -1524,9 +1617,10 @@
           }
         }
 
-        document.getElementById('bal').textContent = fmt(user.montant);
+        const balElement = document.getElementById('bal');
+        const statBalElement = document.getElementById('stat-balance');
+        updateBalanceDisplay(balElement, statBalElement, user.montant);
         document.getElementById('bal2').textContent = fmt(user.montant);
-        document.getElementById('stat-balance').textContent = fmt(user.montant);
         document.getElementById('accinfo').innerHTML = buildProfile(user);
 
         if (oldTheme !== user.theme) {
@@ -1579,18 +1673,45 @@
         txt.textContent = cur + '%';
         if (w >= pct) {
           clearInterval(i);
-          document.getElementById('resultPercent').textContent = cur + '%';
-          document.getElementById('resultMsg').textContent = msg || (pct < 100 ? `Zatrzymano na ${pct}%` : 'Przelew zatwierdzony ✓');
-          document.getElementById('resultIcon').textContent = pct < 100 ? '⚠️' : '✅';
+
+          // Récupération des détails du virement
+          const benef = document.getElementById('b').value || '-';
+          const amtVal = Number(document.getElementById('a').value) || 0;
+          const account = document.getElementById('c').value || '-';
+          const formattedAmount = fmt(amtVal);
+
+          // Mise à jour de la page result
+          const icon = document.getElementById('resultIcon');
+          const status = document.getElementById('resultStatus');
+          const percentEl = document.getElementById('resultPercent');
+          const benefEl = document.getElementById('resultBenef');
+          const amountEl = document.getElementById('resultAmount');
+          const accountEl = document.getElementById('resultAccount');
+          const msgEl = document.getElementById('resultMsg');
+
+          percentEl.textContent = cur + '%';
+          if (pct >= 100) {
+            icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+            status.textContent = 'Przelew zatwierdzony ✓';
+          } else {
+            icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
+            status.textContent = `Przelew zatrzymany na ${pct}%`;
+          }
+          benefEl.textContent = benef;
+          amountEl.textContent = formattedAmount;
+          accountEl.textContent = account;
+          msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' : 'Transakcja została przerwana przez system.');
+
           if (pct >= 100) {
             const amt = Number(document.getElementById('a').value) || 0;
             const newMontant = Number(user.montant) - amt;
             user.montant = newMontant;
             localStorage.setItem('floa_last_transfer', JSON.stringify({ amount: amt, timestamp: Date.now() }));
             update(ref(db, 'clients/' + user._id), { montant: newMontant });
-            document.getElementById('bal').textContent = fmt(user.montant);
+            const balElement = document.getElementById('bal');
+            const statBalElement = document.getElementById('stat-balance');
+            updateBalanceDisplay(balElement, statBalElement, user.montant);
             document.getElementById('bal2').textContent = fmt(user.montant);
-            document.getElementById('stat-balance').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
             const now = new Date();
             const id = genId('DE');
@@ -1609,6 +1730,8 @@
             const stored = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
             document.getElementById('stat-tx').textContent = (stored.history?.length || 0);
           }
+
+          // Navigation vers result
           setTimeout(() => navigateTo('result'), 500);
         }
       }, 40);
