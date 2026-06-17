@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== VARIABLES & RESET ===== */
+  /* ===== VARIABLES PAR DÉFAUT (violet) ===== */
   :root {
     --p: #7C3AED;
     --p-light: #EDE9FE;
@@ -26,6 +26,9 @@
     --transition: all 0.25s ease;
   }
 
+  /* ===== THÈMES (appliqués dynamiquement via JS) ===== */
+  /* Les variables --p et --p-light sont modifiées par applyTheme() */
+
   * {
     box-sizing: border-box;
     margin: 0;
@@ -40,9 +43,9 @@
     line-height: 1.5;
     min-height: 100vh;
     padding-bottom: 80px;
+    transition: background 0.3s ease;
   }
 
-  /* ===== SCREENS ===== */
   .screen {
     display: none;
     min-height: 100vh;
@@ -57,7 +60,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ===== MODALS ===== */
   .modal {
     position: fixed;
     inset: 0;
@@ -112,7 +114,6 @@
     transform: scale(1.08);
   }
 
-  /* ===== BUTTONS & INPUTS ===== */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -168,7 +169,6 @@
     background: #fff;
   }
 
-  /* ===== HEADER ===== */
   header {
     background: #fff;
     padding: 14px 20px;
@@ -217,7 +217,7 @@
     position: relative;
   }
   .badge-icon:hover {
-    background: #D8CCF5;
+    background: color-mix(in srgb, var(--p-light) 70%, #000 10%);
   }
 
   .notif-badge {
@@ -240,14 +240,12 @@
     display: none;
   }
 
-  /* ===== MAIN CONTENT ===== */
   main {
     padding: 20px 18px;
     max-width: 600px;
     margin: 0 auto;
   }
 
-  /* ===== GREETING ===== */
   #greet {
     font-weight: 400;
     font-size: 20px;
@@ -255,7 +253,6 @@
     letter-spacing: -0.02em;
   }
 
-  /* ===== BALANCE CARD ===== */
   .balance-card {
     background: var(--p-gradient);
     border-radius: var(--radius);
@@ -265,6 +262,7 @@
     box-shadow: 0 12px 40px rgba(124,58,237,0.25);
     position: relative;
     overflow: hidden;
+    transition: background 0.3s ease;
   }
   .balance-card::after {
     content: '';
@@ -327,7 +325,6 @@
     grid-column: 1 / -1;
   }
 
-  /* ===== HISTORY ===== */
   .history-header {
     display: flex;
     align-items: center;
@@ -418,7 +415,6 @@
     font-size: 14px;
   }
 
-  /* ===== TRANSFER FORM ===== */
   .transfer-card {
     background: #fff;
     border-radius: var(--radius);
@@ -480,7 +476,6 @@
     margin-bottom: 4px;
   }
 
-  /* ===== VERIFY ===== */
   .verify-details {
     background: #FAFBFC;
     padding: 16px;
@@ -555,7 +550,6 @@
     margin-top: 6px;
   }
 
-  /* ===== RESULT ===== */
   .result-card {
     text-align: center;
     max-width: 340px;
@@ -577,7 +571,6 @@
     line-height: 1.6;
   }
 
-  /* ===== BOTTOM NAV ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -617,14 +610,14 @@
     color: var(--p);
   }
 
-  /* ===== LOGIN ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 16px;
-    background: linear-gradient(135deg, #EDE9FE, #F3F4F6);
+    background: linear-gradient(135deg, var(--p-light), var(--bg));
+    transition: background 0.3s ease;
   }
   .login-card {
     background: #fff;
@@ -670,7 +663,6 @@
     text-align: center;
   }
 
-  /* ===== TOAST ===== */
   #t {
     position: fixed;
     bottom: 90px;
@@ -690,7 +682,6 @@
     text-align: center;
   }
 
-  /* ===== RESPONSIVE ===== */
   @media (max-width: 480px) {
     .balance-card .amount {
       font-size: 28px;
@@ -703,7 +694,6 @@
     }
   }
 
-  /* ===== UTILITY ===== */
   .hidden {
     display: none !important;
   }
@@ -789,7 +779,7 @@
         <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
         <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
 
-        <button onclick="toVerify()" class="btn" id="continueBtn" style="background:#8B5CF6;margin-top:4px">Kontynuuj →</button>
+        <button onclick="toVerify()" class="btn" id="continueBtn" style="background:var(--p);margin-top:4px">Kontynuuj →</button>
       </div>
     </main>
   </section>
@@ -824,7 +814,7 @@
           <div class="lock"><i class="fa-solid fa-lock"></i> Proszę wprowadzić kod aktywacyjny transferu.</div>
           <label style="font-size:13px;color:var(--muted);margin-bottom:4px;display:block">Kod aktywacyjny</label>
           <input id="code" class="input" placeholder="********" style="margin-bottom:20px;text-align:center;letter-spacing:3px;font-size:17px;padding:14px">
-          <button onclick="finish()" class="btn" style="background:#6A0DAD;font-size:16px;padding:16px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" style="background:var(--p);font-size:16px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -867,7 +857,7 @@
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
       <p style="font-weight:600;margin-bottom:12px">Karta wirtualna</p>
-      <div style="background:linear-gradient(135deg,var(--p),#6D28D9);color:#fff;padding:18px;border-radius:12px">
+      <div style="background:var(--p-gradient);color:#fff;padding:18px;border-radius:12px;transition:background 0.3s ease">
         <div style="text-align:right"><i class="fa-brands fa-cc-visa" style="font-size:26px"></i></div>
         <p style="margin:12px 0;font-weight:700">FLOA BK CARD</p>
         <p style="margin:12px 0;letter-spacing:2px;font-size:16px">4556 5518 8867 XXXX</p>
@@ -932,19 +922,22 @@
     const db = getDatabase(app);
     let user = null;
 
+    // Appliquer le thème sauvegardé immédiatement
     const savedTheme = localStorage.getItem('floa_theme') || 'purple';
     applyTheme(savedTheme);
 
+    // ===== FORMATAGE =====
     const fmt = n => {
       const dev = (user && user.devise) ? user.devise : 'zł';
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
 
+    // ===== NAVIGATION =====
     const show = id => {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
-      // update active nav
+      // Mettre à jour l'élément actif dans la nav
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       const map = { 'dashboard': 0, 'transfer': 1 };
       if (map[id] !== undefined) {
@@ -970,6 +963,7 @@
 
     if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
 
+    // ===== THÈMES =====
     function applyTheme(theme) {
       const themes = {
         purple: { p: '#7C3AED', l: '#EDE9FE' },
@@ -979,9 +973,21 @@
       const t = themes[theme] || themes.purple;
       document.documentElement.style.setProperty('--p', t.p);
       document.documentElement.style.setProperty('--p-light', t.l);
+      // Ajuster le dégradé en fonction de la couleur
+      document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
       localStorage.setItem('floa_theme', theme);
     }
 
+    // Fonction utilitaire pour assombrir légèrement une couleur hex
+    function adjustBrightness(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+      return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+    }
+
+    // ===== HISTORIQUE =====
     function showEmptyHistory() {
       document.getElementById('history-list').innerHTML = '<div class="empty-history">Brak historii transakcji</div>';
     }
@@ -1028,6 +1034,7 @@
       }
     }
 
+    // ===== PROFIL =====
     function buildProfile(u) {
       return `
         <div><i class="fa-solid fa-id-card" style="color:var(--muted);width:16px"></i> <span style="color:var(--muted)">Imię i nazwisko:</span> <b>${u.nom}</b></div>
@@ -1066,6 +1073,7 @@
       });
     }
 
+    // ===== LOGIN =====
     window.login = async () => {
       const e = document.getElementById('email').value.trim().toLowerCase();
       const p = document.getElementById('pin').value.trim();
@@ -1145,6 +1153,7 @@
       } catch {}
     }
 
+    // ===== SURVEILLANCE EN TEMPS RÉEL =====
     function watchClientStatus() {
       if (!user) return;
       const clientsRef = ref(db, 'clients');
@@ -1199,7 +1208,12 @@
         document.getElementById('bal').textContent = fmt(user.montant);
         document.getElementById('bal2').textContent = fmt(user.montant);
         document.getElementById('accinfo').innerHTML = buildProfile(user);
-        if (oldTheme !== user.theme) applyTheme(user.theme);
+        // Appliquer le thème si changé
+        if (oldTheme !== user.theme) {
+          applyTheme(user.theme);
+          // Re-appliquer sur les éléments qui en dépendent
+          document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+        }
         updateAvatars();
         updateCurrency();
         if (oldNotif !== user.notification) updateNotifBadge();
@@ -1224,6 +1238,7 @@
       });
     }
 
+    // ===== TRANSFERT =====
     window.toVerify = () => {
       const amt = Number(document.getElementById('a').value) || 0;
       if (amt > Number(user.montant)) {
@@ -1286,6 +1301,7 @@
       }, 40);
     };
 
+    // ===== TOAST =====
     window.toast = m => {
       const t = document.getElementById('t');
       t.textContent = m;
@@ -1293,6 +1309,7 @@
       setTimeout(() => t.style.display = 'none', 1500);
     };
 
+    // ===== MODALS =====
     window.openCard = () => document.getElementById('card').classList.remove('hidden');
     window.closeCard = () => document.getElementById('card').classList.add('hidden');
     window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
@@ -1321,6 +1338,7 @@
     };
     window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
 
+    // ===== VALIDATION FORMULAIRE =====
     function setupValidation() {
       const btn = document.getElementById('continueBtn');
       const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -1334,6 +1352,11 @@
         });
       });
     }
+
+    // Appliquer le thème initial sur les boutons après le chargement
+    setTimeout(() => {
+      document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+    }, 100);
   </script>
 </body>
 </html>
