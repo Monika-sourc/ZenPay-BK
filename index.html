@@ -24,7 +24,6 @@
     --p-dark: #5B21B6;
     --p-gradient: linear-gradient(135deg, #7C3AED, #6D28D9);
     --p-soft: rgba(124, 58, 237, 0.08);
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * {
@@ -37,7 +36,7 @@
     font-family: 'Inter', -apple-system, system-ui, sans-serif;
     background: var(--bg);
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
     padding-bottom: 80px;
@@ -47,17 +46,12 @@
   .screen {
     display: none;
     min-height: 100vh;
-    animation: fadeSlide 0.35s ease;
   }
   .screen.active {
     display: block;
   }
 
-  @keyframes fadeSlide {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-
+  /* ===== MODALS ===== */
   .modal {
     position: fixed;
     inset: 0;
@@ -68,15 +62,9 @@
     justify-content: center;
     z-index: 1000;
     padding: 16px;
-    animation: modalIn 0.3s ease;
   }
   .modal.hidden {
     display: none !important;
-  }
-
-  @keyframes modalIn {
-    0% { opacity: 0; transform: scale(0.96); }
-    100% { opacity: 1; transform: scale(1); }
   }
 
   .modal-content {
@@ -99,18 +87,15 @@
     background: #EF4444;
     color: #fff;
     border: 2px solid #fff;
-    font-size: 18px;
+    font-size: 19px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
   }
-  .modal-close:hover {
-    transform: scale(1.08);
-  }
 
+  /* ===== BOUTONS ===== */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -122,21 +107,24 @@
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition);
     font-family: inherit;
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
+    position: relative;
+    overflow: hidden;
   }
-  .btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(124, 58, 237, 0.3);
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    pointer-events: none;
   }
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none !important;
   }
 
   .btn-outline {
@@ -145,21 +133,17 @@
     color: var(--p);
     box-shadow: none;
   }
-  .btn-outline:hover {
-    background: var(--p-light);
-    box-shadow: none;
-  }
 
+  /* ===== CHAMPS ===== */
   .input {
     width: 100%;
     padding: 14px 18px;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 15px;
+    font-size: 16px;
     font-family: inherit;
     color: var(--text-primary);
-    transition: var(--transition);
   }
   .input:focus {
     outline: none;
@@ -171,6 +155,7 @@
     color: var(--text-muted);
   }
 
+  /* ===== HEADER ===== */
   header {
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
@@ -189,7 +174,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
@@ -208,8 +193,8 @@
   }
 
   .badge-icon {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background: var(--p-soft);
     border: 1px solid var(--border-light);
@@ -220,13 +205,7 @@
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    transition: var(--transition);
     position: relative;
-  }
-  .badge-icon:hover {
-    background: var(--p-light);
-    border-color: var(--p);
-    transform: translateY(-2px);
   }
 
   .notif-badge {
@@ -249,21 +228,33 @@
     display: none;
   }
 
+  /* ===== MAIN ===== */
   main {
     padding: 24px 20px 40px;
     max-width: 640px;
     margin: 0 auto;
   }
 
+  /* ===== GREETING ===== */
   #greet {
-    font-size: 24px;
+    font-size: 21px;
     font-weight: 800;
     margin-bottom: 20px;
     letter-spacing: -0.02em;
     color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
   }
   #greet span {
     color: var(--p);
+    white-space: nowrap;
+    overflow: hidden;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   /* ===== PANEL SOLDE ===== */
@@ -289,14 +280,14 @@
     pointer-events: none;
   }
   .balance-panel .label {
-    font-size: 12px;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
     opacity: 0.8;
     margin-bottom: 4px;
   }
   .balance-panel .amount {
-    font-size: 36px;
+    font-size: 39px;
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -304,7 +295,7 @@
     white-space: nowrap;
   }
   .balance-panel .sub {
-    font-size: 13px;
+    font-size: 15px;
     opacity: 0.7;
     margin-top: 4px;
   }
@@ -323,27 +314,24 @@
     padding: 16px 12px;
     text-align: center;
     box-shadow: var(--shadow-soft);
-    transition: var(--transition);
     overflow: visible;
   }
-  .stat-item:hover {
-    box-shadow: var(--shadow-medium);
-  }
   .stat-item .stat-value {
-    font-size: 20px;
+    font-size: 23px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
   }
   .stat-item .stat-label {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: 2px;
   }
 
+  /* ===== ACTIONS ===== */
   .action-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -358,19 +346,13 @@
     color: var(--text-secondary);
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
     font-family: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    font-size: 14px;
+    font-size: 16px;
     box-shadow: var(--shadow-soft);
-  }
-  .action-btn:hover {
-    border-color: var(--p);
-    color: var(--p);
-    transform: translateY(-2px);
   }
   .action-btn.primary {
     background: var(--p-gradient);
@@ -378,18 +360,14 @@
     color: #fff;
     box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
   }
-  .action-btn.primary:hover {
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
-    color: #fff;
-  }
 
-  /* ===== HISTORIQUE – Version optimisée ===== */
+  /* ===== HISTORIQUE ===== */
   .history-header {
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px;
     margin-bottom: 16px;
     color: var(--text-primary);
   }
@@ -405,15 +383,9 @@
     justify-content: space-between;
     gap: 10px;
     cursor: pointer;
-    transition: var(--transition);
     box-shadow: var(--shadow-soft);
     width: 100%;
     min-height: 58px;
-  }
-  .history-item:hover {
-    border-color: var(--p);
-    box-shadow: var(--shadow-medium);
-    transform: translateX(4px);
   }
 
   .history-left {
@@ -425,8 +397,8 @@
   }
 
   .history-icon {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -451,7 +423,7 @@
     overflow: hidden;
   }
   .history-info .title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -463,7 +435,7 @@
     font-weight: 400;
   }
   .history-info .meta {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
@@ -472,7 +444,7 @@
 
   .history-amount {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 17px;
     white-space: nowrap;
     flex-shrink: 0;
     text-align: right;
@@ -493,10 +465,11 @@
     background: var(--card-bg);
     border: 1.5px dashed var(--border-light);
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 16px;
     box-shadow: var(--shadow-soft);
   }
 
+  /* ===== TRANSFERT – polices légèrement réduites ===== */
   .transfer-card {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -510,7 +483,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
-    font-size: 15px;
+    font-size: 16px; /* réduit de 17 à 16 */
     color: var(--text-secondary);
   }
   .transfer-balance b {
@@ -523,7 +496,7 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 22px;
-    font-size: 15px;
+    font-size: 16px; /* réduit de 17 à 16 */
     color: var(--p);
     font-weight: 600;
   }
@@ -537,7 +510,7 @@
     border-bottom-right-radius: 0;
     text-align: left;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 19px; /* réduit de 20 à 19 */
     padding: 14px 18px;
   }
   .amount-input-wrap .currency-symbol {
@@ -549,7 +522,7 @@
     font-weight: 700;
     display: flex;
     align-items: center;
-    font-size: 16px;
+    font-size: 17px; /* réduit de 18 à 17 */
     color: var(--text-secondary);
   }
 
@@ -558,7 +531,7 @@
   }
   .field-group label {
     display: block;
-    font-size: 12px;
+    font-size: 13px; /* réduit de 14 à 13 */
     font-weight: 600;
     color: var(--text-secondary);
     margin-bottom: 4px;
@@ -566,6 +539,7 @@
     letter-spacing: 0.3px;
   }
 
+  /* ===== VERIFY – polices légèrement réduites ===== */
   .verify-details {
     background: #FAFBFC;
     padding: 18px;
@@ -580,7 +554,7 @@
     margin-bottom: 0;
   }
   .verify-details .label {
-    font-size: 10px;
+    font-size: 11px; /* réduit de 12 à 11 */
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -588,7 +562,7 @@
   }
   .verify-details .value {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 17px; /* réduit de 18 à 17 */
     word-break: break-all;
     color: var(--text-primary);
   }
@@ -599,15 +573,10 @@
     color: #EF4444;
     background: transparent;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 14px; /* réduit de 15 à 14 */
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
-    transition: var(--transition);
-  }
-  .verify-cancel:hover {
-    background: #FEE2E2;
-    border-color: #EF4444;
   }
 
   .verify-code-section {
@@ -618,12 +587,12 @@
     align-items: center;
     gap: 10px;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 16px; /* réduit de 17 à 16 */
     color: var(--text-primary);
     margin-bottom: 14px;
   }
   .verify-code-section .lock-line i {
-    font-size: 18px;
+    font-size: 18px; /* réduit de 19 à 18 */
     color: var(--p);
   }
   .verify-code-section .code-input {
@@ -632,13 +601,12 @@
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 18px;
+    font-size: 19px; /* réduit de 20 à 19 */
     text-align: center;
     letter-spacing: 4px;
     font-weight: 600;
     font-family: inherit;
     color: var(--text-primary);
-    transition: var(--transition);
     margin-bottom: 16px;
   }
   .verify-code-section .code-input:focus {
@@ -666,16 +634,16 @@
     height: 100%;
     background: var(--p-gradient);
     width: 0%;
-    transition: width 0.2s ease;
   }
   .progress-text {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 700;
     text-align: center;
     margin-top: 8px;
     color: var(--p);
   }
 
+  /* ===== RESULT ===== */
   .result-card {
     text-align: center;
     max-width: 380px;
@@ -685,19 +653,20 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow-medium);
   }
+
   .result-icon {
-    font-size: 64px;
+    font-size: 65px;
     margin-bottom: 12px;
     color: var(--p);
   }
   .result-percent {
-    font-size: 34px;
+    font-size: 38px;
     font-weight: 800;
     color: var(--p);
     margin-bottom: 6px;
   }
   .result-status {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 16px;
@@ -714,7 +683,7 @@
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
-    font-size: 14px;
+    font-size: 16px;
     border-bottom: 1px solid var(--border-light);
   }
   .result-details .row:last-child {
@@ -732,7 +701,7 @@
     max-width: 60%;
   }
   .result-msg {
-    font-size: 15px;
+    font-size: 17px;
     color: var(--text-secondary);
     line-height: 1.6;
     margin: 8px 0 16px 0;
@@ -743,6 +712,7 @@
     text-align: left;
   }
 
+  /* ===== BOTTOM NAV ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -757,13 +727,13 @@
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
   }
+
   .nav-item {
     color: var(--text-muted);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     text-align: center;
     cursor: pointer;
-    transition: var(--transition);
     padding: 4px 0;
     display: flex;
     flex-direction: column;
@@ -774,18 +744,12 @@
   }
   .nav-item i {
     font-size: 22px;
-    transition: var(--transition);
   }
   .nav-item.active {
     color: var(--p);
   }
-  .nav-item.active i {
-    transform: translateY(-4px);
-  }
-  .nav-item:hover {
-    color: var(--p);
-  }
 
+  /* ===== LOGIN ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -803,23 +767,25 @@
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-light);
   }
+
   .login-logo {
-    width: 76px;
-    height: 76px;
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
     background: var(--p-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 22px;
-    font-size: 32px;
+    font-size: 33px;
     font-weight: 800;
     color: #fff;
     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
   }
+
   .login-title {
     text-align: center;
-    font-size: 22px;
+    font-size: 23px;
     font-weight: 800;
     margin-bottom: 22px;
     letter-spacing: -0.3px;
@@ -829,7 +795,7 @@
     padding: 14px;
     border-radius: var(--radius-sm);
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-secondary);
     margin-bottom: 24px;
     border: 1px solid var(--border-light);
@@ -837,11 +803,12 @@
   .login-error {
     color: #EF4444;
     margin-top: 12px;
-    font-size: 13px;
+    font-size: 15px;
     text-align: center;
     font-weight: 600;
   }
 
+  /* ===== TOAST ===== */
   #t {
     position: fixed;
     bottom: 100px;
@@ -852,7 +819,7 @@
     color: #fff;
     padding: 12px 28px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     z-index: 200;
     display: none;
@@ -862,6 +829,7 @@
     text-align: center;
   }
 
+  /* ===== SCROLLBAR ===== */
   ::-webkit-scrollbar {
     width: 4px;
   }
@@ -873,6 +841,7 @@
     border-radius: 8px;
   }
 
+  /* ===== CARTE RÉALISTE ===== */
   .real-card {
     background: var(--p-gradient);
     border-radius: 18px;
@@ -910,6 +879,7 @@
     border-radius: 50%;
     pointer-events: none;
   }
+
   .card-top {
     display: flex;
     justify-content: space-between;
@@ -933,16 +903,21 @@
     opacity: 0.9;
     filter: drop-shadow(0 0 6px rgba(255,255,255,0.2));
   }
+
   .card-number {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     font-family: 'Inter', monospace;
     margin: 12px 0 8px;
     position: relative;
     z-index: 2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
   .card-details {
     display: flex;
     justify-content: space-between;
@@ -961,7 +936,7 @@
     letter-spacing: 1px;
   }
   .card-holder .name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -978,12 +953,12 @@
     letter-spacing: 1px;
   }
   .card-expiry .date {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
   .card-cvv {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 1px;
     opacity: 0.7;
@@ -1003,9 +978,9 @@
         <div class="login-logo">F</div>
         <h1 class="login-title">FLOA BK</h1>
         <div class="login-info">Zaloguj się kontem admin</div>
-        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
+        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
         <input id="email" type="email" class="input" style="margin-bottom:14px">
-        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
+        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
         <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
@@ -1023,7 +998,7 @@
       </div>
     </header>
     <main>
-      <h2 id="greet">Witaj, <span>Power</span></h2>
+      <h2 id="greet">Powitanie, <span>Power</span></h2>
 
       <div class="balance-panel">
         <div class="label">Dostępne saldo</div>
@@ -1057,7 +1032,7 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:700;font-size:22px;margin-bottom:18px">Wykonaj przelew</h1>
+      <h1 style="font-weight:700;font-size:24px;margin-bottom:18px">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -1068,7 +1043,7 @@
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:18px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:19px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1094,10 +1069,10 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:22px;margin-bottom:16px">Weryfikacja przelewu</h1>
+      <h1 style="font-weight:600;font-size:24px;margin-bottom:16px">Weryfikacja przelewu</h1>
       <div class="transfer-card" style="padding:16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:17px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
           <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
         </div>
         <div class="verify-details">
@@ -1117,7 +1092,7 @@
             <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
           </div>
           <input id="code" class="code-input" placeholder="********" maxlength="20" autocomplete="off">
-          <button onclick="finish()" class="btn" style="font-size:16px;padding:16px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" style="font-size:17px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -1167,7 +1142,7 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:700;margin-bottom:16px;font-size:18px">💳 Karta wirtualna</p>
+      <p style="font-weight:700;margin-bottom:16px;font-size:20px">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
@@ -1193,7 +1168,7 @@
           <span class="card-cvv">CVV: 556</span>
         </div>
       </div>
-      <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -1201,9 +1176,9 @@
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:18px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-      <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary)"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:20px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+      <div id="accinfo" style="font-size:16px;line-height:2.2;color:var(--text-secondary)"></div>
+      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:14px;font-weight:600;width:100%;font-family:inherit;cursor:pointer"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1211,8 +1186,8 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:20px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:16px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
     </div>
   </div>
 
@@ -1221,11 +1196,11 @@
     <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:28px">
       <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
       <div style="padding:36px 24px 24px">
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-id">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-amount">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-benef">-</div></div>
-        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
-        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary)" id="tx-date">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-id">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-amount">-</div></div>
+        <div style="margin-bottom:18px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-benef">-</div></div>
+        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
+        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary)" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -1233,7 +1208,7 @@
   <!-- TOAST -->
   <div id="t"></div>
 
-  <!-- ========== SCRIPTS (optimisés) ========== -->
+  <!-- ========== SCRIPTS ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1260,72 +1235,108 @@
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
 
-    // ===== AJUSTEMENT DE LA POLICE POUR LE SOLDE PRINCIPAL =====
-    function adjustBalanceFontSize(element, text, baseSize) {
+    // ===== FONCTION GÉNÉRIQUE D'AJUSTEMENT DE POLICE =====
+    function adjustFontSize(element, baseSize, maxChars, minSize) {
       if (!element) return;
-      const containerWidth = element.parentElement ? element.parentElement.clientWidth - 40 : 400;
-      const avgCharWidth = baseSize * 0.6;
-      const maxChars = Math.floor(containerWidth / avgCharWidth);
-      let newSize = baseSize;
-      if (text.length > maxChars) {
-        newSize = Math.max(10, baseSize * (maxChars / text.length));
-      }
-      element.style.fontSize = newSize + 'px';
+      requestAnimationFrame(() => {
+        const text = element.textContent || '';
+        const container = element.parentElement;
+        if (!container) return;
+        const containerWidth = container.clientWidth - 10;
+        const avgCharWidth = baseSize * 0.55;
+        const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
+        let newSize = baseSize;
+        if (text.length > maxCharsLocal) {
+          newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
+        }
+        element.style.fontSize = newSize + 'px';
+      });
     }
 
-    // ===== AJUSTEMENT DE LA POLICE POUR LES STATISTIQUES =====
-    function adjustStatFontSize(element, baseSize) {
+    function adjustGreetingFontSize() {
+      const greetSpan = document.querySelector('#greet span');
+      if (greetSpan) {
+        const container = document.getElementById('greet');
+        if (container) {
+          const containerWidth = container.clientWidth - 80;
+          const baseSize = 21;
+          const avgCharWidth = baseSize * 0.55;
+          const maxChars = Math.floor(containerWidth / avgCharWidth);
+          adjustFontSize(greetSpan, baseSize, maxChars, 12);
+        }
+      }
+    }
+
+    function adjustBalanceFontSize(element) {
       if (!element) return;
       const text = element.textContent || '';
-      const containerWidth = element.parentElement ? element.parentElement.clientWidth - 20 : 100;
-      const avgCharWidth = baseSize * 0.6;
+      const container = element.parentElement;
+      if (!container) return;
+      const containerWidth = container.clientWidth - 40;
+      const baseSize = 39;
+      const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
-      let newSize = baseSize;
-      if (text.length > maxChars) {
-        newSize = Math.max(8, baseSize * (maxChars / text.length));
-      }
-      element.style.fontSize = newSize + 'px';
+      adjustFontSize(element, baseSize, maxChars, 12);
     }
 
-    function adjustAllStats() {
-      const statBalance = document.getElementById('stat-balance');
-      const statTx = document.getElementById('stat-tx');
-      const statDevise = document.getElementById('stat-devise');
-      if (statBalance) adjustStatFontSize(statBalance, 20);
-      if (statTx) adjustStatFontSize(statTx, 20);
-      if (statDevise) adjustStatFontSize(statDevise, 20);
+    function adjustStatFontSize(element) {
+      if (!element) return;
+      const text = element.textContent || '';
+      const container = element.parentElement;
+      if (!container) return;
+      const containerWidth = container.clientWidth - 20;
+      const baseSize = 23;
+      const avgCharWidth = baseSize * 0.55;
+      const maxChars = Math.floor(containerWidth / avgCharWidth);
+      adjustFontSize(element, baseSize, maxChars, 11);
+    }
+
+    function adjustHistoryAmountFontSize() {
+      document.querySelectorAll('.history-amount').forEach(el => {
+        const text = el.textContent || '';
+        const container = el.parentElement;
+        if (!container) return;
+        const containerWidth = container.clientWidth - 20;
+        const baseSize = 17;
+        const avgCharWidth = baseSize * 0.55;
+        const maxChars = Math.floor(containerWidth / avgCharWidth);
+        adjustFontSize(el, baseSize, maxChars, 10);
+      });
+    }
+
+    function adjustHistoryTitleFontSize() {
+      document.querySelectorAll('.history-info .title').forEach(el => {
+        const text = el.textContent || '';
+        const container = el.parentElement;
+        if (!container) return;
+        const containerWidth = container.clientWidth - 10;
+        const baseSize = 16;
+        const avgCharWidth = baseSize * 0.55;
+        const maxChars = Math.floor(containerWidth / avgCharWidth);
+        adjustFontSize(el, baseSize, maxChars, 11);
+      });
+    }
+
+    function adjustAllTexts() {
+      adjustGreetingFontSize();
+      const bal = document.getElementById('bal');
+      if (bal) adjustBalanceFontSize(bal);
+      document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
+      adjustHistoryAmountFontSize();
+      adjustHistoryTitleFontSize();
     }
 
     function updateBalanceDisplay(balanceElement, statElement, amount) {
       const formatted = fmt(amount);
       if (balanceElement) {
         balanceElement.textContent = formatted;
-        adjustBalanceFontSize(balanceElement, formatted, 36);
+        adjustBalanceFontSize(balanceElement);
       }
       if (statElement) {
         statElement.textContent = formatted;
-        adjustStatFontSize(statElement, 20);
+        adjustStatFontSize(statElement);
       }
-      adjustAllStats();
-    }
-
-    // ===== AJUSTEMENT DE LA POLICE POUR LES MONTANTS DE L'HISTORIQUE =====
-    function adjustHistoryAmountFontSize() {
-      const items = document.querySelectorAll('.history-amount');
-      items.forEach(el => {
-        const text = el.textContent || '';
-        const container = el.parentElement;
-        if (!container) return;
-        const containerWidth = container.clientWidth - 20;
-        const baseSize = 15;
-        const avgCharWidth = baseSize * 0.6;
-        const maxChars = Math.floor(containerWidth / avgCharWidth);
-        let newSize = baseSize;
-        if (text.length > maxChars) {
-          newSize = Math.max(9, baseSize * (maxChars / text.length));
-        }
-        el.style.fontSize = newSize + 'px';
-      });
+      adjustAllTexts();
     }
 
     const show = id => {
@@ -1337,8 +1348,11 @@
       if (map[id] !== undefined) {
         document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
       }
-      // Ajuster la police de l'historique après affichage
-      setTimeout(adjustHistoryAmountFontSize, 50);
+      if (id === 'dashboard') {
+        setTimeout(() => {
+          adjustAllTexts();
+        }, 50);
+      }
     };
     window.show = show;
 
@@ -1435,8 +1449,7 @@
         localStorage.setItem(key, JSON.stringify(stored));
       }
 
-      // Ajuster la police des montants après ajout
-      setTimeout(adjustHistoryAmountFontSize, 10);
+      setTimeout(() => adjustAllTexts(), 10);
     }
 
     function buildProfile(u) {
@@ -1467,7 +1480,7 @@
       const cs = document.getElementById('currency-symbol');
       if (cs) cs.textContent = dev;
       document.getElementById('stat-devise').textContent = dev;
-      adjustAllStats();
+      adjustAllTexts();
     }
 
     function updateNotifBadge() {
@@ -1519,7 +1532,9 @@
       localStorage.setItem('floa_theme', user.theme);
       const key = 'floa_' + user.email.toLowerCase();
       const stored = JSON.parse(localStorage.getItem(key) || 'null');
-      document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom.split(' ')[0]}</span>`;
+
+      document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
+      adjustGreetingFontSize();
 
       const balElement = document.getElementById('bal');
       const statBalElement = document.getElementById('stat-balance');
@@ -1553,8 +1568,7 @@
         showEmptyHistory();
         document.getElementById('stat-tx').textContent = 0;
       }
-      adjustAllStats();
-      setTimeout(adjustHistoryAmountFontSize, 100);
+      adjustAllTexts();
       navigateTo('dashboard');
       setupValidation();
       watchClientStatus();
@@ -1617,8 +1631,7 @@
           document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
           showEmptyHistory();
           document.getElementById('stat-tx').textContent = 0;
-          adjustAllStats();
-          setTimeout(adjustHistoryAmountFontSize, 50);
+          adjustAllTexts();
           toast('Historia wyczyszczona');
           return;
         }
@@ -1687,8 +1700,7 @@
           document.getElementById('history-list').innerHTML = '';
           showEmptyHistory();
         }
-        adjustAllStats();
-        setTimeout(adjustHistoryAmountFontSize, 50);
+        adjustAllTexts();
       });
     }
 
@@ -1837,16 +1849,20 @@
       });
     }
 
-    // Ajustement initial après le chargement
+    window.addEventListener('resize', () => {
+      adjustAllTexts();
+    });
+
+    setInterval(() => {
+      if (user && document.getElementById('dashboard').classList.contains('active')) {
+        adjustAllTexts();
+      }
+    }, 3000);
+
     setTimeout(() => {
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-      adjustHistoryAmountFontSize();
+      adjustAllTexts();
     }, 100);
-
-    // Recalculer la taille des polices de l'historique au redimensionnement
-    window.addEventListener('resize', () => {
-      adjustHistoryAmountFontSize();
-    });
   </script>
 </body>
 </html>
