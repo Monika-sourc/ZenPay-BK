@@ -24,6 +24,7 @@
     --p-dark: #5B21B6;
     --p-gradient: linear-gradient(135deg, #7C3AED, #6D28D9);
     --p-soft: rgba(124, 58, 237, 0.08);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * {
@@ -43,9 +44,42 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeSlideIn {
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    0% { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slideUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* ===== ÉCRANS ===== */
   .screen {
     display: none;
     min-height: 100vh;
+    animation: fadeSlideIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .screen.active {
     display: block;
@@ -56,12 +90,13 @@
     position: fixed;
     inset: 0;
     background: rgba(11, 15, 25, 0.5);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     padding: 16px;
+    animation: fadeIn 0.3s ease;
   }
   .modal.hidden {
     display: none !important;
@@ -75,6 +110,7 @@
     padding: 28px 24px;
     position: relative;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+    animation: scaleIn 0.3s ease;
   }
 
   .modal-close {
@@ -92,7 +128,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: var(--transition);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  }
+  .modal-close:hover {
+    transform: rotate(90deg) scale(1.08);
   }
 
   /* ===== BOUTONS ===== */
@@ -114,6 +154,7 @@
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
     position: relative;
     overflow: hidden;
+    transition: var(--transition);
   }
   .btn::after {
     content: '';
@@ -122,9 +163,18 @@
     background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
     pointer-events: none;
   }
+  .btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
   }
 
   .btn-outline {
@@ -133,8 +183,11 @@
     color: var(--p);
     box-shadow: none;
   }
+  .btn-outline:hover {
+    background: var(--p-light);
+  }
 
-  /* ===== CHAMPS – TAILLE RÉDUITE, SANS PLACEHOLDER ===== */
+  /* ===== CHAMPS ===== */
   .input {
     width: 100%;
     padding: 10px 14px;
@@ -144,7 +197,7 @@
     font-size: 14px;
     font-family: inherit;
     color: var(--text-primary);
-    transition: all 0.2s ease;
+    transition: var(--transition);
   }
   .input:focus {
     outline: none;
@@ -153,10 +206,10 @@
     background: #fff;
   }
 
-  /* ===== CHAMP MONTANT + SYMBOLE – ALIGNEMENT CORRIGÉ ===== */
+  /* ===== CHAMP MONTANT ===== */
   .amount-input-wrap {
     display: flex;
-    align-items: center; /* alignement vertical parfait */
+    align-items: center;
     margin: 4px 0 14px;
   }
   .amount-input-wrap .input {
@@ -180,12 +233,11 @@
     justify-content: center;
     font-size: 15px;
     color: var(--text-secondary);
-    height: 100%; /* prend la même hauteur que le champ */
-    min-height: 42px; /* correspond au padding du champ */
+    height: 100%;
+    min-height: 42px;
     line-height: 1;
   }
 
-  /* Textarea */
   .field textarea {
     padding: 10px 14px;
     font-size: 14px;
@@ -196,7 +248,7 @@
     border-radius: var(--radius-sm);
     width: 100%;
     color: var(--text-primary);
-    transition: all 0.2s ease;
+    transition: var(--transition);
   }
   .field textarea:focus {
     outline: none;
@@ -218,6 +270,7 @@
     top: 0;
     z-index: 50;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+    animation: slideUp 0.4s ease;
   }
 
   .logo {
@@ -228,12 +281,17 @@
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
+    transition: var(--transition);
   }
   .logo i {
     font-size: 22px;
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    transition: var(--transition);
+  }
+  .logo:hover {
+    transform: scale(1.02);
   }
 
   .header-actions {
@@ -256,6 +314,15 @@
     font-size: 13px;
     cursor: pointer;
     position: relative;
+    transition: var(--transition);
+  }
+  .badge-icon:hover {
+    background: var(--p-light);
+    border-color: var(--p);
+    transform: translateY(-3px) scale(1.04);
+  }
+  .badge-icon:active {
+    transform: scale(0.95);
   }
 
   .notif-badge {
@@ -273,6 +340,7 @@
     align-items: center;
     justify-content: center;
     border: 2px solid #fff;
+    animation: pulse 2s infinite;
   }
   .notif-badge.hidden {
     display: none;
@@ -305,6 +373,7 @@
     overflow: hidden;
     flex: 1 1 auto;
     min-width: 0;
+    transition: font-size 0.3s ease;
   }
 
   /* ===== PANEL SOLDE ===== */
@@ -317,6 +386,11 @@
     position: relative;
     overflow: hidden;
     box-shadow: 0 12px 36px rgba(124, 58, 237, 0.18);
+    transition: var(--transition);
+  }
+  .balance-panel:hover {
+    box-shadow: 0 16px 48px rgba(124, 58, 237, 0.25);
+    transform: translateY(-2px);
   }
   .balance-panel::after {
     content: '';
@@ -328,6 +402,7 @@
     background: rgba(255, 255, 255, 0.06);
     border-radius: 50%;
     pointer-events: none;
+    animation: pulse 6s ease-in-out infinite;
   }
   .balance-panel .label {
     font-size: 13px;
@@ -343,6 +418,7 @@
     line-height: 1.2;
     overflow: visible;
     white-space: nowrap;
+    transition: font-size 0.3s ease;
   }
   .balance-panel .sub {
     font-size: 14px;
@@ -365,6 +441,11 @@
     text-align: center;
     box-shadow: var(--shadow-soft);
     overflow: visible;
+    transition: var(--transition);
+  }
+  .stat-item:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-4px);
   }
   .stat-item .stat-value {
     font-size: 22px;
@@ -372,6 +453,7 @@
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
+    transition: font-size 0.3s ease;
   }
   .stat-item .stat-label {
     font-size: 11px;
@@ -403,12 +485,26 @@
     gap: 10px;
     font-size: 15px;
     box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+  }
+  .action-btn:hover {
+    border-color: var(--p);
+    color: var(--p);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+  }
+  .action-btn:active {
+    transform: scale(0.97);
   }
   .action-btn.primary {
     background: var(--p-gradient);
     border-color: var(--p);
     color: #fff;
     box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
+  }
+  .action-btn.primary:hover {
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.25);
+    color: #fff;
   }
 
   /* ===== HISTORIQUE ===== */
@@ -436,6 +532,16 @@
     box-shadow: var(--shadow-soft);
     width: 100%;
     min-height: 58px;
+    transition: var(--transition);
+    animation: fadeSlideIn 0.4s ease;
+  }
+  .history-item:hover {
+    border-color: var(--p);
+    box-shadow: var(--shadow-medium);
+    transform: translateX(4px) scale(1.01);
+  }
+  .history-item:active {
+    transform: scale(0.99);
   }
 
   .history-left {
@@ -455,6 +561,7 @@
     justify-content: center;
     flex-shrink: 0;
     font-size: 13px;
+    transition: var(--transition);
   }
   .history-icon.credit {
     background: #D1FAE5;
@@ -463,6 +570,9 @@
   .history-icon.debit {
     background: #FEE2E2;
     color: #EF4444;
+  }
+  .history-item:hover .history-icon {
+    transform: scale(1.1);
   }
 
   .history-info {
@@ -500,6 +610,7 @@
     text-align: right;
     margin-left: auto;
     line-height: 1.3;
+    transition: font-size 0.3s ease;
   }
   .history-amount.credit {
     color: #10B981;
@@ -517,6 +628,7 @@
     border-radius: var(--radius-sm);
     font-size: 16px;
     box-shadow: var(--shadow-soft);
+    animation: fadeIn 0.5s ease;
   }
 
   /* ===== TRANSFERT ===== */
@@ -526,6 +638,10 @@
     border-radius: var(--radius);
     padding: 20px;
     box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+  }
+  .transfer-card:hover {
+    box-shadow: var(--shadow-medium);
   }
 
   .transfer-balance {
@@ -571,6 +687,10 @@
     border-radius: var(--radius-sm);
     margin-bottom: 12px;
     border: 1px solid var(--border-light);
+    transition: var(--transition);
+  }
+  .verify-details:hover {
+    border-color: var(--p-light);
   }
   .verify-details .row {
     margin-bottom: 8px;
@@ -602,6 +722,12 @@
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
+    transition: var(--transition);
+  }
+  .verify-cancel:hover {
+    background: #FEE2E2;
+    border-color: #EF4444;
+    transform: translateX(-3px);
   }
 
   .verify-code-section {
@@ -633,6 +759,7 @@
     font-family: inherit;
     color: var(--text-primary);
     margin-bottom: 14px;
+    transition: var(--transition);
   }
   .verify-code-section .code-input:focus {
     outline: none;
@@ -654,6 +781,7 @@
     height: 100%;
     background: var(--p-gradient);
     width: 0%;
+    transition: width 0.3s ease;
   }
   .progress-text {
     font-size: 15px;
@@ -672,12 +800,14 @@
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow-medium);
+    animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .result-icon {
     font-size: 60px;
     margin-bottom: 12px;
     color: var(--p);
+    animation: pulse 2s infinite;
   }
   .result-percent {
     font-size: 36px;
@@ -730,6 +860,7 @@
     border-radius: var(--radius-sm);
     border-left: 3px solid var(--p);
     text-align: left;
+    animation: fadeSlideIn 0.5s ease;
   }
 
   /* ===== BOTTOM NAV ===== */
@@ -746,6 +877,7 @@
     padding: 6px 0 12px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+    animation: slideUp 0.4s ease;
   }
 
   .nav-item {
@@ -761,12 +893,23 @@
     gap: 2px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    transition: var(--transition);
   }
   .nav-item i {
     font-size: 20px;
+    transition: var(--transition);
   }
   .nav-item.active {
     color: var(--p);
+  }
+  .nav-item.active i {
+    transform: translateY(-4px);
+  }
+  .nav-item:hover {
+    color: var(--p);
+  }
+  .nav-item:active {
+    transform: scale(0.95);
   }
 
   /* ===== LOGIN ===== */
@@ -777,6 +920,7 @@
     justify-content: center;
     padding: 20px;
     background: linear-gradient(135deg, var(--p-light) 0%, var(--bg) 70%);
+    animation: fadeIn 0.5s ease;
   }
   .login-card {
     background: #FFFFFF;
@@ -786,6 +930,7 @@
     max-width: 400px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-light);
+    animation: scaleIn 0.4s ease;
   }
 
   .login-logo {
@@ -801,6 +946,10 @@
     font-weight: 800;
     color: #fff;
     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
+    transition: var(--transition);
+  }
+  .login-logo:hover {
+    transform: scale(1.05) rotate(-4deg);
   }
 
   .login-title {
@@ -826,6 +975,7 @@
     font-size: 14px;
     text-align: center;
     font-weight: 600;
+    animation: fadeSlideIn 0.3s ease;
   }
 
   /* ===== TOAST ===== */
@@ -847,6 +997,7 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
     max-width: 90%;
     text-align: center;
+    animation: fadeSlideIn 0.3s ease;
   }
 
   /* ===== SCROLLBAR ===== */
@@ -876,6 +1027,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: var(--transition);
+  }
+  .real-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
   }
   .real-card::before {
     content: '';
@@ -887,6 +1043,7 @@
     background: rgba(255, 255, 255, 0.06);
     border-radius: 50%;
     pointer-events: none;
+    animation: pulse 8s ease-in-out infinite;
   }
   .real-card::after {
     content: '';
@@ -898,6 +1055,7 @@
     background: rgba(255, 255, 255, 0.04);
     border-radius: 50%;
     pointer-events: none;
+    animation: pulse 6s ease-in-out infinite reverse;
   }
 
   .card-top {
@@ -1198,7 +1356,7 @@
       <button onclick="closeAcc()" class="modal-close">×</button>
       <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
       <div id="accinfo" style="font-size:15px;line-height:2.2;color:var(--text-secondary)"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1214,7 +1372,7 @@
   <!-- TRANSACTION DETAIL -->
   <div id="txDetail" class="modal hidden" style="z-index:60">
     <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:28px">
-      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)">×</button>
       <div style="padding:36px 24px 24px">
         <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-id">-</div></div>
         <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-amount">-</div></div>
@@ -1228,7 +1386,7 @@
   <!-- TOAST -->
   <div id="t"></div>
 
-  <!-- ========== SCRIPTS (inchangés) ========== -->
+  <!-- ========== SCRIPTS (avec correction historique) ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1330,6 +1488,28 @@
       adjustAllTexts();
     }
 
+    // ===== SORTING DES ÉLÉMENTS DE L'HISTORIQUE =====
+    function sortHistoryList() {
+      const list = document.getElementById('history-list');
+      const items = Array.from(list.children);
+      // Filtrer pour ne garder que les .history-item
+      const historyItems = items.filter(el => el.classList.contains('history-item'));
+      if (historyItems.length <= 1) return;
+      
+      historyItems.sort((a, b) => {
+        // Récupérer les données depuis les attributs data ou depuis l'ID
+        const idA = a.getAttribute('data-id') || a.querySelector('.history-info .title')?.textContent || '';
+        const idB = b.getAttribute('data-id') || b.querySelector('.history-info .title')?.textContent || '';
+        // Comparer par timestamp stocké dans data-timestamp
+        const tsA = parseInt(a.getAttribute('data-timestamp')) || 0;
+        const tsB = parseInt(b.getAttribute('data-timestamp')) || 0;
+        return tsB - tsA;
+      });
+      
+      // Réordonner
+      historyItems.forEach(item => list.appendChild(item));
+    }
+
     const show = id => {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -1342,6 +1522,7 @@
       if (id === 'dashboard') {
         setTimeout(() => {
           adjustAllTexts();
+          sortHistoryList();
         }, 50);
       }
     };
@@ -1401,7 +1582,6 @@
       if (empty) empty.remove();
 
       if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
-
       if (!data.time || !data.timestamp) {
         const now = new Date();
         if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
@@ -1414,6 +1594,9 @@
 
       const card = document.createElement('div');
       card.className = 'history-item';
+      card.setAttribute('data-id', data.id);
+      card.setAttribute('data-timestamp', data.timestamp);
+      
       const pos = data.amount >= 0;
       const subtitleHtml = data.subtitle ? `<span class="sub">• ${data.subtitle}</span>` : '';
       card.innerHTML = `
@@ -1427,7 +1610,10 @@
         <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(data.amount))}</div>
       `;
       card.onclick = () => showTxDetail(data);
-      list.prepend(card);
+      list.appendChild(card);
+      
+      // Trier immédiatement
+      sortHistoryList();
 
       if (save && user) {
         const key = 'floa_' + user.email.toLowerCase();
@@ -1439,6 +1625,8 @@
         }
         localStorage.setItem(key, JSON.stringify(stored));
       }
+
+      setTimeout(() => adjustAllTexts(), 10);
     }
 
     function buildProfile(u) {
@@ -1690,6 +1878,7 @@
           showEmptyHistory();
         }
         adjustAllTexts();
+        sortHistoryList();
       });
     }
 
@@ -1845,12 +2034,14 @@
     setInterval(() => {
       if (user && document.getElementById('dashboard').classList.contains('active')) {
         adjustAllTexts();
+        sortHistoryList();
       }
     }, 3000);
 
     setTimeout(() => {
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
       adjustAllTexts();
+      sortHistoryList();
     }, 100);
   </script>
 </body>
