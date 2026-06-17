@@ -27,8 +27,6 @@
   }
 
   /* ===== THÈMES (appliqués dynamiquement via JS) ===== */
-  /* Les variables --p et --p-light sont modifiées par applyTheme() */
-
   * {
     box-sizing: border-box;
     margin: 0;
@@ -937,7 +935,6 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
-      // Mettre à jour l'élément actif dans la nav
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       const map = { 'dashboard': 0, 'transfer': 1 };
       if (map[id] !== undefined) {
@@ -973,12 +970,10 @@
       const t = themes[theme] || themes.purple;
       document.documentElement.style.setProperty('--p', t.p);
       document.documentElement.style.setProperty('--p-light', t.l);
-      // Ajuster le dégradé en fonction de la couleur
       document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
       localStorage.setItem('floa_theme', theme);
     }
 
-    // Fonction utilitaire pour assombrir légèrement une couleur hex
     function adjustBrightness(hex, percent) {
       const num = parseInt(hex.replace('#', ''), 16);
       const r = Math.min(255, Math.max(0, (num >> 16) + percent));
@@ -1153,7 +1148,7 @@
       } catch {}
     }
 
-    // ===== SURVEILLANCE EN TEMPS RÉEL =====
+    // ===== SURVEILLANCE EN TEMPS RÉEL (CORRIGÉE) =====
     function watchClientStatus() {
       if (!user) return;
       const clientsRef = ref(db, 'clients');
@@ -1178,8 +1173,11 @@
           setTimeout(() => { show('login'); user = null; }, 1000);
           return;
         }
+
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
+
+        // Gestion du reset d'historique (inchangée)
         if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
           user.montant = 0;
           update(ref(db, 'clients/' + found._id), { montant: 0 });
@@ -1191,11 +1189,13 @@
           toast('Historia wyczyszczona');
           return;
         }
+
         const oldMontant = user.montant;
         const oldDevise = user.devise;
         const oldNotif = user.notification;
         const oldTheme = user.theme;
-        user.montant = found.montant;
+
+        // Mise à jour des champs non-monétaires
         user.pct = found.pct;
         user.code = found.code;
         user.msg = found.msg;
@@ -1205,24 +1205,15 @@
         user.devise = found.devise || 'zł';
         user.notification = found.notification || '';
         user.theme = found.theme || 'purple';
-        document.getElementById('bal').textContent = fmt(user.montant);
-        document.getElementById('bal2').textContent = fmt(user.montant);
-        document.getElementById('accinfo').innerHTML = buildProfile(user);
-        // Appliquer le thème si changé
-        if (oldTheme !== user.theme) {
-          applyTheme(user.theme);
-          // Re-appliquer sur les éléments qui en dépendent
-          document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-        }
-        updateAvatars();
-        updateCurrency();
-        if (oldNotif !== user.notification) updateNotifBadge();
-        if (oldDevise !== user.devise) {
-          document.getElementById('history-list').innerHTML = '';
-          showEmptyHistory();
-        }
-        if (user.montant > oldMontant && user.montant > 0) {
-          const diff = user.montant - oldMontant;
+
+        // ----- GESTION INTELLIGENTE DU SOLDE -----
+        const newMontant = Number(found.montant) || 0;
+        const diff = newMontant - oldMontant;
+
+        if (diff > 0) {
+          // Crédit : on accepte toujours
+          user.montant = newMontant;
+          // On ajoute une ligne d'historique pour le crédit
           const now = new Date();
           addHistory({
             title: 'Przelew otrzymany',
@@ -1234,11 +1225,48 @@
             time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
             timestamp: now.getTime()
           }, true);
+          toast(`Otrzymano ${fmt(diff)}`);
+        } else if (diff < 0) {
+          // Débit : on vérifie si cela correspond à un virement récent effectué par l'utilisateur
+          const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
+          const now = Date.now();
+          const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
+          if (isRecent) {
+            // Virement légitime : on accepte la baisse
+            user.montant = newMontant;
+            // On efface l'indicateur de virement
+            localStorage.removeItem('floa_last_transfer');
+          } else {
+            // Sinon, on ignore la baisse (on garde l'ancien montant)
+            // On affiche une notification pour informer
+            toast('⚠️ Changement de solde non reconnu ignoré');
+            // Ne pas modifier user.montant
+          }
+        }
+        // si diff === 0, rien à faire
+
+        // Mise à jour de l'affichage
+        document.getElementById('bal').textContent = fmt(user.montant);
+        document.getElementById('bal2').textContent = fmt(user.montant);
+        document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+        // Application du thème si changé
+        if (oldTheme !== user.theme) {
+          applyTheme(user.theme);
+          document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+        }
+
+        updateAvatars();
+        updateCurrency();
+        if (oldNotif !== user.notification) updateNotifBadge();
+        if (oldDevise !== user.devise) {
+          document.getElementById('history-list').innerHTML = '';
+          showEmptyHistory();
         }
       });
     }
 
-    // ===== TRANSFERT =====
+    // ===== TRANSFERT (avec enregistrement du dernier virement) =====
     window.toVerify = () => {
       const amt = Number(document.getElementById('a').value) || 0;
       if (amt > Number(user.montant)) {
@@ -1279,11 +1307,20 @@
           document.getElementById('resultIcon').textContent = pct < 100 ? '⚠️' : '✅';
           if (pct >= 100) {
             const amt = Number(document.getElementById('a').value) || 0;
-            user.montant = Number(user.montant) - amt;
-            update(ref(db, 'clients/' + user._id), { montant: user.montant });
+            const newMontant = Number(user.montant) - amt;
+            user.montant = newMontant;
+            // Enregistrer le virement pour validation ultérieure
+            localStorage.setItem('floa_last_transfer', JSON.stringify({
+              amount: amt,
+              timestamp: Date.now()
+            }));
+            // Mettre à jour Firebase
+            update(ref(db, 'clients/' + user._id), { montant: newMontant });
+            // Mettre à jour l'UI
             document.getElementById('bal').textContent = fmt(user.montant);
             document.getElementById('bal2').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
+            // Ajouter à l'historique
             const now = new Date();
             addHistory({
               title: 'Przelew wysłany',
@@ -1353,7 +1390,6 @@
       });
     }
 
-    // Appliquer le thème initial sur les boutons après le chargement
     setTimeout(() => {
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
     }, 100);
