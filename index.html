@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOA BK</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   /* ===== VARIABLES & RESET ===== */
   :root {
@@ -34,13 +34,13 @@
   }
 
   body {
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    font-family: 'Roboto', -apple-system, system-ui, sans-serif;
     background: var(--bg);
     color: var(--text-primary);
-    font-size: 14px;
+    font-size: 17px;  /* réduit de 18px */
     line-height: 1.6;
     min-height: 100vh;
-    padding-bottom: 80px;
+    padding-bottom: 90px;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -91,9 +91,9 @@
   .modal-content {
     background: #FFFFFF;
     border-radius: var(--radius);
-    max-width: 400px;
+    max-width: 440px;
     width: 100%;
-    padding: 28px 24px;
+    padding: 32px 28px;
     position: relative;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
     animation: scaleIn 0.3s ease;
@@ -102,13 +102,13 @@
     position: absolute;
     top: -14px;
     right: -14px;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #EF4444;
     color: #fff;
     border: 2px solid #fff;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -123,14 +123,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 14px 20px;
+    padding: 16px 24px;
     background: var(--p-gradient);
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
@@ -168,11 +168,11 @@
   /* ===== CHAMPS ===== */
   .input {
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 16px;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 16px; /* réduit de 17px */
     font-family: inherit;
     color: var(--text-primary);
     transition: var(--transition);
@@ -187,19 +187,19 @@
   .amount-input-wrap {
     display: flex;
     align-items: center;
-    margin: 4px 0 14px;
+    margin: 6px 0 16px;
   }
   .amount-input-wrap .input {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     text-align: left;
     font-weight: 700;
-    font-size: 16px;
-    padding: 10px 14px;
+    font-size: 18px; /* réduit de 19px */
+    padding: 12px 16px;
     flex: 1;
   }
   .amount-input-wrap .currency-symbol {
-    padding: 10px 16px;
+    padding: 12px 18px;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-left: none;
@@ -208,16 +208,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 17px; /* réduit de 18px */
     color: var(--text-secondary);
     height: 100%;
-    min-height: 42px;
+    min-height: 46px;
     line-height: 1;
   }
   .field textarea {
-    padding: 10px 14px;
-    font-size: 14px;
-    min-height: 50px;
+    padding: 12px 16px;
+    font-size: 16px; /* réduit de 17px */
+    min-height: 56px;
     font-family: inherit;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
@@ -237,7 +237,7 @@
   header {
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(12px);
-    padding: 14px 20px;
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -251,25 +251,25 @@
   .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 24px;
+    gap: 12px;
+    font-size: 28px; /* réduit de 30px */
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
     transition: var(--transition);
   }
   .logo i {
-    font-size: 28px;
+    font-size: 32px; /* réduit de 34px */
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     transition: var(--transition);
   }
   .logo:hover { transform: scale(1.02); }
-  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
   .badge-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--p-soft);
     border: 1px solid var(--border-light);
@@ -278,7 +278,7 @@
     justify-content: center;
     color: var(--p);
     font-weight: 700;
-    font-size: 13px;
+    font-size: 15px; /* réduit de 16px */
     cursor: pointer;
     position: relative;
     transition: var(--transition);
@@ -296,9 +296,9 @@
     background: #EF4444;
     color: #fff;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    font-size: 9px;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -310,22 +310,22 @@
 
   /* ===== MAIN ===== */
   main {
-    padding: 24px 20px 40px;
-    max-width: 640px;
+    padding: 28px 24px 48px;
+    max-width: 720px;
     margin: 0 auto;
   }
 
-  /* ===== GREETING ===== */
+  /* ===== GREETING – TAILLE INCHANGÉE (20px) ===== */
   #greet {
     font-size: 20px;
     font-weight: 800;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     letter-spacing: -0.02em;
     color: var(--text-primary);
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 8px;
     overflow: hidden;
     white-space: nowrap;
   }
@@ -335,15 +335,16 @@
     overflow: hidden;
     flex: 1 1 auto;
     min-width: 0;
+    font-size: 20px;
     transition: font-size 0.3s ease;
   }
 
-  /* ===== PANEL SOLDE – PADDING LATÉRAL RÉDUIT ===== */
+  /* ===== PANEL SOLDE – ÉLARGI ===== */
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
-    padding: 48px 16px 48px;
-    margin-bottom: 24px;
+    padding: 52px 14px 52px;
+    margin-bottom: 28px;
     color: #fff;
     position: relative;
     overflow: hidden;
@@ -351,7 +352,7 @@
     transition: var(--transition);
     display: flex;
     flex-direction: column;
-    min-height: 240px;
+    min-height: 280px;
   }
   .balance-panel:hover {
     box-shadow: 0 16px 48px rgba(124, 58, 237, 0.25);
@@ -370,36 +371,35 @@
     animation: pulse 6s ease-in-out infinite;
   }
   .balance-panel .label {
-    font-size: 13px;
-    text-transform: uppercase;
+    font-size: 15px; /* réduit de 16px */
     letter-spacing: 1px;
     opacity: 0.8;
-    margin-bottom: 8px;
+    margin-bottom: 28px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
-  .balance-panel .label i { font-size: 14px; opacity: 0.9; }
+  .balance-panel .label i { font-size: 16px; opacity: 0.9; }
   .balance-panel .amount {
-    font-size: 24px;
+    font-size: 30px; /* réduit de 32px */
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1.2;
     overflow: visible;
     white-space: nowrap;
     transition: font-size 0.3s ease;
-    margin-bottom: 8px;
+    margin-bottom: 28px;
   }
   .balance-panel .sub {
-    font-size: 14px;
+    font-size: 16px; /* réduit de 17px */
     opacity: 0.7;
-    margin-bottom: 24px;
+    margin-bottom: 36px;
   }
 
-  /* ===== BOUTONS – AGRANDIS VERS LE BAS ===== */
+  /* ===== BOUTONS LARGES – PADDING ÉLEVÉ ===== */
   .balance-actions-wrapper {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: space-between;
     width: 100%;
     position: relative;
@@ -413,8 +413,8 @@
     color: #000000;
     border: none;
     border-radius: 60px;
-    padding: 20px 24px;          /* padding vertical augmenté (16px → 20px) */
-    font-size: 15px;
+    padding: 18px 32px;
+    font-size: 17px; /* réduit de 18px */
     font-weight: 700;
     font-family: inherit;
     cursor: pointer;
@@ -422,18 +422,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     box-shadow: 0 2px 10px rgba(0,0,0,0.10);
     line-height: 1.2;
-    min-height: 60px;            /* hauteur minimale augmentée (54px → 60px) */
+    min-height: 60px;
     text-align: center;
   }
 
   .balance-actions-wrapper .btn-action i {
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     color: #333;
     flex-shrink: 0;
   }
@@ -448,26 +448,26 @@
     transform: scale(0.96);
   }
 
-  /* Ajustement pour petits écrans */
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 420px) {
     .balance-actions-wrapper .btn-action {
-      font-size: 13px;
-      padding: 16px 18px;       /* padding vertical réduit mais reste proportionné */
-      min-height: 50px;
+      font-size: 15px;
+      padding: 16px 24px;
+      min-height: 52px;
     }
     .balance-actions-wrapper .btn-action i {
-      font-size: 13px;
+      font-size: 15px;
     }
   }
 
   @media (max-width: 360px) {
     .balance-actions-wrapper .btn-action {
-      font-size: 12px;
-      padding: 14px 14px;
-      min-height: 44px;
+      font-size: 13px;
+      padding: 14px 18px;
+      min-height: 46px;
     }
     .balance-actions-wrapper .btn-action i {
-      font-size: 11px;
+      font-size: 13px;
     }
   }
 
@@ -475,14 +475,14 @@
   .quick-stats {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 28px;
   }
   .stat-item {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-sm);
-    padding: 16px 12px;
+    padding: 18px 14px;
     text-align: center;
     box-shadow: var(--shadow-soft);
     overflow: visible;
@@ -493,7 +493,7 @@
     transform: translateY(-4px);
   }
   .stat-item .stat-value {
-    font-size: 22px;
+    font-size: 26px; /* réduit de 28px */
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
@@ -501,37 +501,36 @@
     transition: font-size 0.3s ease;
   }
   .stat-item .stat-label {
-    font-size: 11px;
+    font-size: 13px; /* réduit de 14px */
     color: var(--text-secondary);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-top: 2px;
+    margin-top: 4px;
   }
 
   /* ===== HISTORIQUE ===== */
   .history-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-weight: 700;
-    font-size: 19px;
-    margin-bottom: 16px;
+    font-size: 21px; /* réduit de 22px */
+    margin-bottom: 18px;
     color: var(--text-primary);
   }
   .history-item {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    margin-bottom: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
     box-shadow: var(--shadow-soft);
     width: 100%;
-    min-height: 58px;
+    min-height: 66px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   .history-item:hover {
@@ -542,19 +541,19 @@
   .history-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     min-width: 0;
     flex: 1 1 auto;
   }
   .history-icon {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: 15px; /* réduit de 16px */
     transition: transform 0.2s ease;
   }
   .history-icon.credit { background: #D1FAE5; color: #10B981; }
@@ -568,7 +567,7 @@
     overflow: hidden;
   }
   .history-info .title {
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -580,7 +579,7 @@
     font-weight: 400;
   }
   .history-info .meta {
-    font-size: 12px;
+    font-size: 14px; /* réduit de 15px */
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
@@ -588,7 +587,7 @@
   }
   .history-amount {
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px; /* réduit de 20px */
     white-space: nowrap;
     flex-shrink: 0;
     text-align: right;
@@ -601,11 +600,11 @@
   .empty-history {
     text-align: center;
     color: var(--text-secondary);
-    padding: 40px 16px;
+    padding: 48px 20px;
     background: var(--card-bg);
     border: 1.5px dashed var(--border-light);
     border-radius: var(--radius-sm);
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     box-shadow: var(--shadow-soft);
   }
 
@@ -614,7 +613,7 @@
     background: var(--card-bg);
     border: 1px solid var(--border-light);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 24px;
     box-shadow: var(--shadow-soft);
     transition: var(--transition);
   }
@@ -623,8 +622,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
-    font-size: 15px;
+    margin-bottom: 16px;
+    font-size: 17px; /* réduit de 18px */
     color: var(--text-secondary);
   }
   .transfer-balance b {
@@ -634,55 +633,53 @@
   .transfer-title {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    font-size: 15px;
+    gap: 12px;
+    margin-bottom: 18px;
+    font-size: 17px; /* réduit de 18px */
     color: var(--p);
     font-weight: 600;
   }
-  .field-group { margin-bottom: 14px; }
+  .field-group { margin-bottom: 16px; }
   .field-group label {
     display: block;
-    font-size: 12px;
+    font-size: 14px; /* réduit de 15px */
     font-weight: 600;
     color: var(--text-secondary);
-    margin-bottom: 3px;
-    text-transform: uppercase;
+    margin-bottom: 4px;
     letter-spacing: 0.3px;
   }
 
   /* ===== VERIFY ===== */
   .verify-details {
     background: #FAFBFC;
-    padding: 14px;
+    padding: 16px;
     border-radius: var(--radius-sm);
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     border: 1px solid var(--border-light);
     transition: var(--transition);
   }
   .verify-details:hover { border-color: var(--p-light); }
-  .verify-details .row { margin-bottom: 8px; }
+  .verify-details .row { margin-bottom: 10px; }
   .verify-details .row:last-child { margin-bottom: 0; }
   .verify-details .label {
-    font-size: 10px;
+    font-size: 12px; /* réduit de 13px */
     font-weight: 600;
     color: var(--text-secondary);
-    text-transform: uppercase;
     letter-spacing: 0.5px;
   }
   .verify-details .value {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     word-break: break-all;
     color: var(--text-primary);
   }
   .verify-cancel {
-    padding: 8px 16px;
+    padding: 10px 18px;
     border: 1.5px solid #FCA5A5;
     color: #EF4444;
     background: transparent;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 15px; /* réduit de 16px */
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -693,33 +690,33 @@
     border-color: #EF4444;
     transform: translateX(-3px);
   }
-  .verify-code-section { margin-top: 18px; }
+  .verify-code-section { margin-top: 20px; }
   .verify-code-section .lock-line {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 17px; /* réduit de 18px */
     color: var(--text-primary);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
   .verify-code-section .lock-line i {
-    font-size: 17px;
+    font-size: 19px; /* réduit de 20px */
     color: var(--p);
   }
   .verify-code-section .code-input {
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 16px;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 18px;
+    font-size: 20px; /* réduit de 21px */
     text-align: center;
     letter-spacing: 4px;
     font-weight: 600;
     font-family: inherit;
     color: var(--text-primary);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     transition: var(--transition);
     placeholder: "******";
   }
@@ -729,9 +726,9 @@
     box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
     background: #fff;
   }
-  .progress-wrap { margin-top: 14px; }
+  .progress-wrap { margin-top: 16px; }
   .progress-bar {
-    height: 6px;
+    height: 8px;
     background: #E5E7EB;
     border-radius: 8px;
     overflow: hidden;
@@ -743,55 +740,55 @@
     transition: width 0.3s ease;
   }
   .progress-text {
-    font-size: 15px;
+    font-size: 17px; /* réduit de 18px */
     font-weight: 700;
     text-align: center;
-    margin-top: 6px;
+    margin-top: 8px;
     color: var(--p);
   }
 
   /* ===== RESULT ===== */
   .result-card {
     text-align: center;
-    max-width: 380px;
+    max-width: 420px;
     margin: 0 auto;
-    padding: 32px 24px;
+    padding: 36px 28px;
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow-medium);
     animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .result-icon {
-    font-size: 60px;
-    margin-bottom: 12px;
+    font-size: 68px; /* réduit de 72px */
+    margin-bottom: 14px;
     color: var(--p);
     animation: pulse 2s infinite;
   }
   .result-percent {
-    font-size: 36px;
+    font-size: 40px; /* réduit de 42px */
     font-weight: 800;
     color: var(--p);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   .result-status {
-    font-size: 19px;
+    font-size: 21px; /* réduit de 22px */
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
   .result-details {
     background: #FAFBFC;
     border-radius: var(--radius-sm);
-    padding: 16px 18px;
-    margin: 12px 0 18px 0;
+    padding: 18px 20px;
+    margin: 14px 0 20px 0;
     text-align: left;
     border: 1px solid var(--border-light);
   }
   .result-details .row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    font-size: 15px;
+    padding: 8px 0;
+    font-size: 17px; /* réduit de 18px */
     border-bottom: 1px solid var(--border-light);
   }
   .result-details .row:last-child { border-bottom: none; }
@@ -807,11 +804,11 @@
     max-width: 60%;
   }
   .result-msg {
-    font-size: 16px;
+    font-size: 18px; /* réduit de 19px */
     color: var(--text-secondary);
     line-height: 1.6;
-    margin: 8px 0 16px 0;
-    padding: 12px 16px;
+    margin: 10px 0 18px 0;
+    padding: 14px 18px;
     background: var(--p-soft);
     border-radius: var(--radius-sm);
     border-left: 3px solid var(--p);
@@ -830,14 +827,14 @@
     border-top: 1px solid var(--border-light);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    padding: 6px 0 12px;
+    padding: 8px 0 14px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
     animation: slideUp 0.4s ease;
   }
   .nav-item {
     color: var(--text-muted);
-    font-size: 10px;
+    font-size: 12px; /* réduit de 13px */
     font-weight: 600;
     text-align: center;
     cursor: pointer;
@@ -845,13 +842,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    text-transform: uppercase;
+    gap: 3px;
     letter-spacing: 0.3px;
     transition: var(--transition);
   }
   .nav-item i {
-    font-size: 20px;
+    font-size: 22px; /* réduit de 24px */
     transition: var(--transition);
   }
   .nav-item.active { color: var(--p); }
@@ -865,30 +861,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px;
     background: linear-gradient(135deg, var(--p-light) 0%, var(--bg) 70%);
     animation: fadeIn 0.5s ease;
   }
   .login-card {
     background: #FFFFFF;
     border-radius: var(--radius);
-    padding: 32px 28px;
+    padding: 36px 32px;
     width: 100%;
-    max-width: 400px;
+    max-width: 440px;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-light);
     animation: scaleIn 0.4s ease;
   }
   .login-logo {
-    width: 76px;
-    height: 76px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
     background: var(--p-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 18px;
-    font-size: 32px;
+    margin: 0 auto 20px;
+    font-size: 36px; /* réduit de 38px */
     font-weight: 800;
     color: #fff;
     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
@@ -897,25 +893,25 @@
   .login-logo:hover { transform: scale(1.05) rotate(-4deg); }
   .login-title {
     text-align: center;
-    font-size: 28px;
+    font-size: 32px; /* réduit de 34px */
     font-weight: 800;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     letter-spacing: -0.3px;
   }
   .login-info {
     background: #F3F4F6;
-    padding: 12px;
+    padding: 14px;
     border-radius: var(--radius-sm);
     text-align: center;
-    font-size: 14px;
+    font-size: 16px; /* réduit de 17px */
     color: var(--text-secondary);
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     border: 1px solid var(--border-light);
   }
   .login-error {
     color: #EF4444;
-    margin-top: 10px;
-    font-size: 14px;
+    margin-top: 12px;
+    font-size: 16px; /* réduit de 17px */
     text-align: center;
     font-weight: 600;
     animation: fadeSlideIn 0.3s ease;
@@ -924,15 +920,15 @@
   /* ===== TOAST ===== */
   #t {
     position: fixed;
-    bottom: 100px;
+    bottom: 110px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(11, 15, 25, 0.92);
     backdrop-filter: blur(8px);
     color: #fff;
-    padding: 10px 24px;
+    padding: 12px 28px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 15px; /* réduit de 16px */
     font-weight: 600;
     z-index: 200;
     display: none;
@@ -952,14 +948,14 @@
   .real-card {
     background: var(--p-gradient);
     border-radius: 18px;
-    padding: 22px 20px 18px;
+    padding: 24px 22px 20px;
     color: #fff;
     position: relative;
     overflow: hidden;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.20), inset 0 0 80px rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    margin-bottom: 12px;
-    min-height: 180px;
+    margin-bottom: 14px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1003,25 +999,25 @@
   .card-chip {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .card-chip i {
-    font-size: 30px;
+    font-size: 34px;
     opacity: 0.7;
     color: #ffd700;
     filter: drop-shadow(0 0 4px rgba(255,215,0,0.3));
   }
   .card-brand {
-    font-size: 30px;
+    font-size: 34px;
     opacity: 0.9;
     filter: drop-shadow(0 0 6px rgba(255,255,255,0.2));
   }
   .card-number {
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 700;
     letter-spacing: 2px;
-    font-family: 'Inter', monospace;
-    margin: 12px 0 8px;
+    font-family: 'Roboto', monospace;
+    margin: 14px 0 10px;
     position: relative;
     z-index: 2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -1041,13 +1037,12 @@
     flex-direction: column;
   }
   .card-holder .label {
-    font-size: 8px;
-    text-transform: uppercase;
+    font-size: 10px;
     opacity: 0.6;
     letter-spacing: 1px;
   }
   .card-holder .name {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -1058,22 +1053,21 @@
     align-items: flex-end;
   }
   .card-expiry .label {
-    font-size: 8px;
-    text-transform: uppercase;
+    font-size: 10px;
     opacity: 0.6;
     letter-spacing: 1px;
   }
   .card-expiry .date {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
   .card-cvv {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 1px;
     opacity: 0.7;
-    margin-top: 4px;
+    margin-top: 6px;
   }
 
   .hidden { display: none !important; }
@@ -1087,10 +1081,10 @@
         <div class="login-logo">F</div>
         <h1 class="login-title">FLOA BK</h1>
         <div class="login-info">Zaloguj się kontem admin</div>
-        <label style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Adres e-mail</label>
-        <input id="email" type="email" class="input" style="margin-bottom:12px">
-        <label style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Kod PIN</label>
-        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:16px">
+        <label style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px">Adres e-mail</label>
+        <input id="email" type="email" class="input" style="margin-bottom:14px">
+        <label style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px">Kod PIN</label>
+        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
       </div>
@@ -1109,7 +1103,6 @@
     <main>
       <h2 id="greet">Powitanie, <span>Power</span></h2>
 
-      <!-- PANEL SOLDE AVEC BOUTONS AGRANDIS (HAUTEUR) -->
       <div class="balance-panel">
         <div class="label">
           <span>Dostępne saldo</span>
@@ -1134,7 +1127,6 @@
         <div class="stat-item"><div class="stat-value" id="stat-devise">zł</div><div class="stat-label">Waluta</div></div>
       </div>
 
-      <!-- Les boutons "Nowy przelew" et "Karta wirtualna" ont été supprimés -->
       <div class="history-header"><i class="fa-solid fa-clock-rotate-left"></i> Historia transakcji</div>
       <div id="history-list"></div>
     </main>
@@ -1150,18 +1142,18 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:700;font-size:23px;margin-bottom:16px">Wykonaj przelew</h1>
+      <h1 style="font-weight:700;font-size:27px;margin-bottom:18px">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.2;font-size:28px"></i>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.2;font-size:32px"></i>
         </div>
         <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
 
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:16px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:18px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1172,7 +1164,7 @@
         <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
         <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
 
-        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:4px">Kontynuuj →</button>
+        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:6px">Kontynuuj →</button>
       </div>
     </main>
   </section>
@@ -1187,11 +1179,11 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:23px;margin-bottom:14px">Weryfikacja przelewu</h1>
-      <div class="transfer-card" style="padding:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:16px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
+      <h1 style="font-weight:600;font-size:27px;margin-bottom:16px">Weryfikacja przelewu</h1>
+      <div class="transfer-card" style="padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:10px;color:var(--p);font-weight:600;font-size:18px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:36px"></i>
         </div>
         <div class="verify-details">
           <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
@@ -1210,7 +1202,7 @@
             <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
           </div>
           <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-          <button onclick="finish()" class="btn" style="font-size:16px;padding:14px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" style="font-size:18px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -1242,12 +1234,12 @@
           <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
         </div>
         <div class="result-msg" id="resultMsg"></div>
-        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:12px;max-width:220px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:14px;max-width:240px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
       </div>
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV – NOUVEAUX NOMS ========== -->
+  <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1260,12 +1252,12 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:700;margin-bottom:16px;font-size:19px">💳 Karta wirtualna</p>
+      <p style="font-weight:700;margin-bottom:18px;font-size:21px">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
             <i class="fa-solid fa-microchip"></i>
-            <span style="font-size:10px;opacity:0.6;letter-spacing:1px;">FLOA</span>
+            <span style="font-size:12px;opacity:0.6;letter-spacing:1px;">FLOA</span>
           </div>
           <div class="card-brand">
             <i class="fa-brands fa-cc-visa"></i>
@@ -1286,7 +1278,7 @@
           <span class="card-cvv">CVV: 556</span>
         </div>
       </div>
-      <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <p style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:8px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -1294,9 +1286,9 @@
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-      <div id="accinfo" style="font-size:15px;line-height:2.2;color:var(--text-secondary)"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:21px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+      <div id="accinfo" style="font-size:17px;line-height:2.4;color:var(--text-secondary)"></div>
+      <button onclick="logout()" style="margin-top:18px;padding:12px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:15px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1304,21 +1296,21 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:15px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
+      <h3 style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-shrink:0;font-size:21px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:17px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
     </div>
   </div>
 
   <!-- TRANSACTION DETAIL -->
   <div id="txDetail" class="modal hidden" style="z-index:60">
-    <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:28px">
-      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:28px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)">×</button>
-      <div style="padding:36px 24px 24px">
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-id">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-amount">-</div></div>
-        <div style="margin-bottom:18px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-benef">-</div></div>
-        <div style="margin-bottom:18px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
-        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:18px;color:var(--text-primary)" id="tx-date">-</div></div>
+    <div class="modal-content" style="max-width:420px;padding:0;overflow:visible;margin-top:28px">
+      <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:60px;height:60px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:30px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)">×</button>
+      <div style="padding:40px 28px 28px">
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-id">-</div></div>
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-amount">-</div></div>
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-benef">-</div></div>
+        <div style="margin-bottom:20px" id="tx-iban-row"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
+        <div><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -1390,7 +1382,7 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 40;
-      const baseSize = 24;
+      const baseSize = 30;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
       adjustFontSize(element, baseSize, maxChars, 10);
@@ -1402,7 +1394,7 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 20;
-      const baseSize = 22;
+      const baseSize = 26;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
       adjustFontSize(element, baseSize, maxChars, 11);
