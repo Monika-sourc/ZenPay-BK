@@ -24,6 +24,7 @@
     --p-dark: #7C3AED;
     --p-gradient: linear-gradient(135deg, #A78BFA, #8B5CF6);
     --p-soft: rgba(139, 92, 246, 0.12);
+    /* Pas de transition */
   }
 
   * {
@@ -43,25 +44,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== ANIMATIONS MINIMALES ===== */
-  @keyframes fadeSlideIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes scaleIn {
-    0% { opacity: 0; transform: scale(0.98); }
-    100% { opacity: 1; transform: scale(1); }
-  }
+  /* ===== AUCUNE ANIMATION ===== */
+  /* Suppression de toutes les animations, transitions, keyframes */
 
   /* ===== ÉCRANS ===== */
   .screen {
     display: none;
     min-height: 100vh;
-    animation: fadeSlideIn 0.25s ease;
   }
   .screen.active { display: block; }
 
@@ -70,13 +59,12 @@
     position: fixed;
     inset: 0;
     background: rgba(11, 15, 25, 0.5);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     padding: 16px;
-    animation: fadeIn 0.2s ease;
   }
   .modal.hidden { display: none !important; }
   .modal-content {
@@ -87,7 +75,6 @@
     padding: 32px 28px;
     position: relative;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
-    animation: scaleIn 0.2s ease;
   }
   .modal-close {
     position: absolute;
@@ -123,15 +110,10 @@
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    position: relative;
-    overflow: hidden;
   }
-  .btn:active { transform: scale(0.97); }
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
   }
   .btn-outline {
     background: transparent;
@@ -210,7 +192,7 @@
   /* ===== HEADER ===== */
   header {
     background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
@@ -254,7 +236,6 @@
     position: relative;
     font-family: 'Roboto', sans-serif;
   }
-  .badge-icon:active { transform: scale(0.95); }
   .notif-badge {
     position: absolute;
     top: -2px;
@@ -401,10 +382,6 @@
     flex-shrink: 0;
   }
 
-  .balance-actions-wrapper .btn-action:active {
-    transform: scale(0.96);
-  }
-
   /* Bouton IBAN – fond blanc */
   .btn-iban {
     width: 100%;
@@ -427,9 +404,6 @@
   .btn-iban i {
     font-size: 18px;
     color: #000000;
-  }
-  .btn-iban:active {
-    transform: scale(0.96);
   }
 
   /* ===== RESPONSIVE ===== */
@@ -819,7 +793,7 @@
     left: 0;
     right: 0;
     background: #D5C6E8;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(4px);
     border-top: 1px solid rgba(255, 255, 255, 0.5);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -828,7 +802,7 @@
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
   }
   .nav-item {
-    color: #2D3748;  /* gris foncé pour une excellente lisibilité */
+    color: #2D3748;
     font-size: 12px;
     font-weight: 600;
     text-align: center;
@@ -845,9 +819,8 @@
     font-size: 22px;
   }
   .nav-item.active {
-    color: var(--p);  /* violet pour l'élément actif */
+    color: var(--p);
   }
-  .nav-item:active { transform: scale(0.95); }
 
   /* ===== LOGIN – PROFESSIONNEL ===== */
   .login-wrapper {
@@ -952,7 +925,7 @@
     left: 50%;
     transform: translateX(-50%);
     background: rgba(11, 15, 25, 0.92);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(4px);
     color: #fff;
     padding: 12px 28px;
     border-radius: 50px;
@@ -1270,7 +1243,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV – TEXTES LISIBLES ========== -->
+  <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
