@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOA BK</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
   /* ===== VARIABLES & RESET ===== */
   :root {
@@ -19,12 +19,13 @@
     --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.06);
     --radius: 18px;
     --radius-sm: 12px;
-    --p: #7C3AED;
+    /* Couleurs adoucies (pastel) */
+    --p: #8B5CF6;
     --p-light: #EDE9FE;
-    --p-dark: #5B21B6;
-    --p-gradient: linear-gradient(135deg, #7C3AED, #6D28D9);
-    --p-soft: rgba(124, 58, 237, 0.08);
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --p-dark: #7C3AED;
+    --p-gradient: linear-gradient(135deg, #A78BFA, #8B5CF6);
+    --p-soft: rgba(139, 92, 246, 0.12);
+    --transition: all 0.2s ease;
   }
 
   * {
@@ -44,33 +45,25 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== ANIMATIONS ===== */
+  /* ===== ANIMATIONS RÉDUITES ===== */
   @keyframes fadeSlideIn {
-    0% { opacity: 0; transform: translateY(16px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
   @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
   }
   @keyframes scaleIn {
-    0% { opacity: 0; transform: scale(0.92); }
+    0% { opacity: 0; transform: scale(0.98); }
     100% { opacity: 1; transform: scale(1); }
-  }
-  @keyframes slideUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
   }
 
   /* ===== ÉCRANS ===== */
   .screen {
     display: none;
     min-height: 100vh;
-    animation: fadeSlideIn 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeSlideIn 0.3s ease;
   }
   .screen.active { display: block; }
 
@@ -85,7 +78,7 @@
     justify-content: center;
     z-index: 1000;
     padding: 16px;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.2s ease;
   }
   .modal.hidden { display: none !important; }
   .modal-content {
@@ -96,7 +89,7 @@
     padding: 32px 28px;
     position: relative;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
-    animation: scaleIn 0.3s ease;
+    animation: scaleIn 0.2s ease;
   }
   .modal-close {
     position: absolute;
@@ -118,6 +111,65 @@
   }
   .modal-close:hover { transform: rotate(90deg) scale(1.08); }
 
+  /* ===== MODALE IBAN SPÉCIFIQUE ===== */
+  .iban-modal .modal-content {
+    max-width: 480px;
+    padding: 36px 32px 32px;
+  }
+  .iban-modal .modal-content .iban-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .iban-modal .modal-content .iban-header i {
+    color: var(--p);
+    font-size: 28px;
+  }
+  .iban-modal .modal-content .iban-field {
+    margin-bottom: 18px;
+  }
+  .iban-modal .modal-content .iban-field .label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .iban-modal .modal-content .iban-field .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    word-break: break-all;
+  }
+  .iban-modal .modal-content .iban-field .value.small {
+    font-size: 17px;
+  }
+  .iban-modal .modal-content .iban-security {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #FFF8E7;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid #EAB308;
+    font-size: 14px;
+    color: #92400E;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .iban-modal .modal-content .iban-security i {
+    font-size: 18px;
+    color: #EAB308;
+    margin-top: 2px;
+  }
+  .iban-modal .modal-content .iban-security span {
+    flex: 1;
+  }
+
   /* ===== BOUTONS GÉNÉRIQUES ===== */
   .btn {
     display: inline-flex;
@@ -134,7 +186,7 @@
     font-weight: 700;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
-    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
     position: relative;
     overflow: hidden;
     transition: var(--transition);
@@ -147,8 +199,8 @@
     pointer-events: none;
   }
   .btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
   }
   .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn:disabled {
@@ -180,7 +232,7 @@
   .input:focus {
     outline: none;
     border-color: var(--p);
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
     background: #fff;
   }
 
@@ -230,7 +282,7 @@
   .field textarea:focus {
     outline: none;
     border-color: var(--p);
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
     background: #fff;
   }
 
@@ -247,7 +299,6 @@
     top: 0;
     z-index: 50;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
-    animation: slideUp 0.4s ease;
   }
   .logo {
     display: flex;
@@ -289,7 +340,7 @@
   .badge-icon:hover {
     background: var(--p-light);
     border-color: var(--p);
-    transform: translateY(-3px) scale(1.04);
+    transform: translateY(-2px) scale(1.02);
   }
   .badge-icon:active { transform: scale(0.95); }
   .notif-badge {
@@ -307,14 +358,13 @@
     align-items: center;
     justify-content: center;
     border: 2px solid #fff;
-    animation: pulse 2s infinite;
     font-family: 'Roboto', sans-serif;
   }
   .notif-badge.hidden { display: none; }
 
   /* ===== MAIN ===== */
   main {
-    padding: 28px 24px 48px;
+    padding: 28px 12px 48px;
     max-width: 720px;
     margin: 0 auto;
   }
@@ -344,24 +394,24 @@
     transition: font-size 0.3s ease;
   }
 
-  /* ===== PANEL SOLDE – HAUTEUR RÉDUITE ===== */
+  /* ===== PANEL SOLDE – COULEURS ADOUCIES ===== */
   .balance-panel {
-    background: var(--p-gradient);
+    background: var(--p-gradient); /* dégradé doux */
     border-radius: var(--radius);
-    padding: 36px 14px 36px;
+    padding: 36px 8px 32px;
     margin-bottom: 28px;
     color: #fff;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 12px 36px rgba(124, 58, 237, 0.18);
+    box-shadow: 0 12px 36px rgba(139, 92, 246, 0.15);
     transition: var(--transition);
     display: flex;
     flex-direction: column;
     min-height: 220px;
   }
   .balance-panel:hover {
-    box-shadow: 0 16px 48px rgba(124, 58, 237, 0.25);
-    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(139, 92, 246, 0.20);
+    transform: translateY(-1px);
   }
   .balance-panel::after {
     content: '';
@@ -370,10 +420,9 @@
     right: -20%;
     width: 200px;
     height: 200px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
     pointer-events: none;
-    animation: pulse 6s ease-in-out infinite;
   }
   .balance-panel .label {
     font-size: 15px;
@@ -395,6 +444,7 @@
     white-space: nowrap;
     transition: font-size 0.3s ease;
     margin-bottom: 20px;
+    margin-left: 8px;
     font-family: 'Roboto', sans-serif;
   }
   .balance-panel .sub {
@@ -404,7 +454,7 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOUTONS DU PANEL – CONSERVÉS ===== */
+  /* ===== BOUTONS DU PANEL ===== */
   .balance-actions-wrapper {
     display: flex;
     gap: 10px;
@@ -412,6 +462,7 @@
     width: 100%;
     position: relative;
     z-index: 2;
+    margin-bottom: 12px;
   }
 
   .balance-actions-wrapper .btn-action {
@@ -448,7 +499,7 @@
 
   .balance-actions-wrapper .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     background: #f8f8f8;
   }
 
@@ -456,7 +507,40 @@
     transform: scale(0.96);
   }
 
-  /* ===== RESPONSIVE pour le panneau ===== */
+  /* Bouton IBAN */
+  .btn-iban {
+    width: 100%;
+    background: #ffffff;
+    color: #000000;
+    border: none;
+    border-radius: 60px;
+    padding: 16px 20px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 0;
+  }
+  .btn-iban i {
+    font-size: 18px;
+    color: #333;
+  }
+  .btn-iban:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    background: #f8f8f8;
+  }
+  .btn-iban:active {
+    transform: scale(0.96);
+  }
+
+  /* ===== RESPONSIVE ===== */
   @media (max-width: 420px) {
     .balance-actions-wrapper .btn-action {
       font-size: 15px;
@@ -465,6 +549,19 @@
     }
     .balance-actions-wrapper .btn-action i {
       font-size: 15px;
+    }
+    .btn-iban {
+      font-size: 15px;
+      padding: 14px 18px;
+    }
+    .btn-iban i {
+      font-size: 15px;
+    }
+    .iban-modal .modal-content .iban-field .value {
+      font-size: 17px;
+    }
+    .balance-panel .amount {
+      margin-left: 6px;
     }
   }
 
@@ -476,6 +573,16 @@
     }
     .balance-actions-wrapper .btn-action i {
       font-size: 13px;
+    }
+    .btn-iban {
+      font-size: 13px;
+      padding: 12px 14px;
+    }
+    .btn-iban i {
+      font-size: 13px;
+    }
+    .balance-panel .amount {
+      margin-left: 4px;
     }
   }
 
@@ -498,7 +605,7 @@
   }
   .stat-item:hover {
     box-shadow: var(--shadow-medium);
-    transform: translateY(-4px);
+    transform: translateY(-3px);
   }
   .stat-item .stat-value {
     font-size: 24px;
@@ -547,7 +654,7 @@
   .history-item:hover {
     border-color: var(--p);
     box-shadow: var(--shadow-medium);
-    transform: translateX(4px);
+    transform: translateX(3px);
   }
   .history-left {
     display: flex;
@@ -569,7 +676,7 @@
   }
   .history-icon.credit { background: #D1FAE5; color: #10B981; }
   .history-icon.debit { background: #FEE2E2; color: #EF4444; }
-  .history-item:hover .history-icon { transform: scale(1.1); }
+  .history-item:hover .history-icon { transform: scale(1.05); }
   .history-info {
     min-width: 0;
     flex: 1 1 auto;
@@ -744,7 +851,7 @@
   .verify-code-section .code-input:focus {
     outline: none;
     border-color: var(--p);
-    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.10);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
     background: #fff;
   }
   .progress-wrap { margin-top: 16px; }
@@ -778,13 +885,11 @@
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow-medium);
-    animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .result-icon {
     font-size: 68px;
     margin-bottom: 14px;
     color: var(--p);
-    animation: pulse 2s infinite;
   }
   .result-percent {
     font-size: 38px;
@@ -839,25 +944,23 @@
     border-radius: var(--radius-sm);
     border-left: 3px solid var(--p);
     text-align: left;
-    animation: fadeSlideIn 0.5s ease;
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOTTOM NAV – CONSERVÉE ===== */
+  /* ===== BOTTOM NAV – COULEUR PROFESSIONNELLE RENFORCÉE ===== */
   nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: #F5F0FF;
+    background: #D0D8E2;
     backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     padding: 8px 0 14px;
     z-index: 100;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
-    animation: slideUp 0.4s ease;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
   }
   .nav-item {
     color: var(--text-muted);
@@ -879,74 +982,111 @@
     transition: var(--transition);
   }
   .nav-item.active { color: var(--p); }
-  .nav-item.active i { transform: translateY(-4px); }
+  .nav-item.active i { transform: translateY(-3px); }
   .nav-item:hover { color: var(--p); }
   .nav-item:active { transform: scale(0.95); }
 
-  /* ===== LOGIN ===== */
+  /* ===== LOGIN – PROFESSIONNEL ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: linear-gradient(135deg, var(--p-light) 0%, var(--bg) 70%);
-    animation: fadeIn 0.5s ease;
+    background: #f0f2f5;
   }
   .login-card {
-    background: #FFFFFF;
-    border-radius: var(--radius);
-    padding: 36px 32px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 40px 36px;
     width: 100%;
-    max-width: 440px;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.06);
-    border: 1px solid var(--border-light);
-    animation: scaleIn 0.4s ease;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: var(--transition);
+  }
+  .login-card:hover {
+    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.08);
   }
   .login-logo {
-    width: 84px;
-    height: 84px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     background: var(--p-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    font-size: 34px;
-    font-weight: 800;
+    font-size: 30px;
+    font-weight: 700;
     color: #fff;
-    box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
-    transition: var(--transition);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
     font-family: 'Roboto', sans-serif;
   }
-  .login-logo:hover { transform: scale(1.05) rotate(-4deg); }
+  .login-logo:hover { transform: scale(1.05) rotate(-3deg); }
   .login-title {
     text-align: center;
-    font-size: 30px;
-    font-weight: 800;
-    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
     letter-spacing: -0.3px;
+    color: var(--text-primary);
     font-family: 'Roboto', sans-serif;
   }
-  .login-info {
-    background: #F3F4F6;
-    padding: 14px;
-    border-radius: var(--radius-sm);
+  .login-sub {
     text-align: center;
     font-size: 15px;
     color: var(--text-secondary);
-    margin-bottom: 20px;
-    border: 1px solid var(--border-light);
+    margin-bottom: 28px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+  }
+  .login-info {
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    border: 1px solid #eef2f6;
     font-family: 'Roboto', sans-serif;
   }
   .login-error {
     color: #EF4444;
     margin-top: 12px;
-    font-size: 15px;
+    font-size: 14px;
     text-align: center;
-    font-weight: 600;
-    animation: fadeSlideIn 0.3s ease;
+    font-weight: 500;
     font-family: 'Roboto', sans-serif;
+  }
+  .login-card .input {
+    background: #fafbfc;
+    border-color: #e5e9ef;
+    font-size: 15px;
+  }
+  .login-card .input:focus {
+    border-color: var(--p);
+    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.06);
+  }
+  .login-card label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    display: block;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    font-family: 'Roboto', sans-serif;
+  }
+  .login-card .btn {
+    margin-top: 6px;
+    font-size: 16px;
+    padding: 14px;
+    background: var(--p-gradient);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+  }
+  .login-card .btn:hover {
+    box-shadow: 0 8px 28px rgba(139, 92, 246, 0.25);
   }
 
   /* ===== TOAST ===== */
@@ -968,7 +1108,6 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
     max-width: 90%;
     text-align: center;
-    animation: fadeSlideIn 0.3s ease;
     font-family: 'Roboto', sans-serif;
   }
 
@@ -995,8 +1134,8 @@
     transition: var(--transition);
   }
   .real-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
   }
   .real-card::before {
     content: '';
@@ -1008,7 +1147,6 @@
     background: rgba(255, 255, 255, 0.06);
     border-radius: 50%;
     pointer-events: none;
-    animation: pulse 8s ease-in-out infinite;
   }
   .real-card::after {
     content: '';
@@ -1020,7 +1158,6 @@
     background: rgba(255, 255, 255, 0.04);
     border-radius: 50%;
     pointer-events: none;
-    animation: pulse 6s ease-in-out infinite reverse;
   }
   .card-top {
     display: flex;
@@ -1112,17 +1249,18 @@
 </style>
 </head>
 <body>
-  <!-- ========== LOGIN ========== -->
+  <!-- ========== LOGIN – PROFESSIONNEL ========== -->
   <section id="login" class="screen active">
     <div class="login-wrapper">
       <div class="login-card">
         <div class="login-logo">F</div>
         <h1 class="login-title">FLOA BK</h1>
-        <div class="login-info">Zaloguj się kontem admin</div>
-        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px;font-family:'Roboto',sans-serif;">Adres e-mail</label>
-        <input id="email" type="email" class="input" style="margin-bottom:14px">
-        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px;font-family:'Roboto',sans-serif;">Kod PIN</label>
-        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
+        <p class="login-sub">Bankowość internetowa</p>
+        <div class="login-info">Zaloguj się do swojego konta</div>
+        <label>Adres e-mail</label>
+        <input id="email" type="email" class="input" style="margin-bottom:16px" autocomplete="username">
+        <label>Kod PIN</label>
+        <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:20px" autocomplete="current-password">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
       </div>
@@ -1144,7 +1282,7 @@
       <div class="balance-panel">
         <div class="label">
           <span>Dostępne saldo</span>
-          <i class="fa-solid fa-rocket"></i>   <!-- VRAI SYMBOLE (icône fusée) -->
+          <i class="fa-solid fa-rocket"></i>
         </div>
         <div class="amount" id="bal">0,00 zł</div>
         <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
@@ -1157,6 +1295,10 @@
             <i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew
           </button>
         </div>
+
+        <button class="btn-iban" onclick="openIbanModal()">
+          <i class="fa-regular fa-copy"></i> Zobacz mój IBAN
+        </button>
       </div>
 
       <div class="quick-stats">
@@ -1277,7 +1419,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV – CONSERVÉE ========== -->
+  <!-- ========== BOTTOM NAV – COULEUR PROFESSIONNELLE RENFORCÉE ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1317,6 +1459,42 @@
         </div>
       </div>
       <p style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:8px;font-family:'Roboto',sans-serif;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+    </div>
+  </div>
+
+  <!-- ===== MODALE IBAN ===== -->
+  <div id="ibanModal" class="modal hidden iban-modal">
+    <div class="modal-content">
+      <button onclick="closeIbanModal()" class="modal-close">×</button>
+      <div class="iban-header">
+        <i class="fa-regular fa-credit-card"></i>
+        <span>Dane konta</span>
+      </div>
+
+      <div class="iban-field">
+        <div class="label">Właściciel konta</div>
+        <div class="value" id="ibanOwner">KWIATKOWSKI PW</div>
+      </div>
+
+      <div class="iban-field">
+        <div class="label">IBAN</div>
+        <div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+      </div>
+
+      <div class="iban-field">
+        <div class="label">BIC / SWIFT</div>
+        <div class="value small" id="ibanBic">TTQGLTIJCJK</div>
+      </div>
+
+      <div class="iban-field">
+        <div class="label">Bank</div>
+        <div class="value small" id="ibanBank">FLOA BK FINANCE</div>
+      </div>
+
+      <div class="iban-security">
+        <i class="fa-solid fa-shield"></i>
+        <span>Ze względów bezpieczeństwa niektóre znaki Twojego numeru IBAN zostały zamaskowane.</span>
+      </div>
     </div>
   </div>
 
@@ -1510,9 +1688,9 @@
 
     function applyTheme(theme) {
       const themes = {
-        purple: { p: '#7C3AED', l: '#EDE9FE' },
-        blue: { p: '#2563EB', l: '#DBEAFE' },
-        yellow: { p: '#EAB308', l: '#FEF3C7' }
+        purple: { p: '#8B5CF6', l: '#EDE9FE' },
+        blue: { p: '#60A5FA', l: '#DBEAFE' },
+        yellow: { p: '#FBBF24', l: '#FEF3C7' }
       };
       const t = themes[theme] || themes.purple;
       document.documentElement.style.setProperty('--p', t.p);
@@ -1632,6 +1810,22 @@
         }
       });
     }
+
+    // ===== FONCTIONS POUR LA MODALE IBAN =====
+    window.openIbanModal = () => {
+      if (!user) {
+        toast('Zaloguj się, aby zobaczyć swoje dane.');
+        return;
+      }
+      document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
+      document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
+      document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
+      document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
+      document.getElementById('ibanModal').classList.remove('hidden');
+    };
+    window.closeIbanModal = () => {
+      document.getElementById('ibanModal').classList.add('hidden');
+    };
 
     window.login = async () => {
       const e = document.getElementById('email').value.trim().toLowerCase();
