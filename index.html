@@ -37,7 +37,7 @@
     font-family: 'Roboto', -apple-system, system-ui, sans-serif;
     background: var(--bg);
     color: var(--text-primary);
-    font-size: 17px;  /* réduit de 18px */
+    font-size: 16px;
     line-height: 1.6;
     min-height: 100vh;
     padding-bottom: 90px;
@@ -108,7 +108,7 @@
     background: #EF4444;
     color: #fff;
     border: 2px solid #fff;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -130,10 +130,10 @@
     color: #fff;
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     font-weight: 700;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Roboto', sans-serif;
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.2);
     position: relative;
     overflow: hidden;
@@ -172,8 +172,8 @@
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 16px; /* réduit de 17px */
-    font-family: inherit;
+    font-size: 15px;
+    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
     transition: var(--transition);
   }
@@ -194,7 +194,7 @@
     border-bottom-right-radius: 0;
     text-align: left;
     font-weight: 700;
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     padding: 12px 16px;
     flex: 1;
   }
@@ -208,7 +208,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
     color: var(--text-secondary);
     height: 100%;
     min-height: 46px;
@@ -216,9 +217,9 @@
   }
   .field textarea {
     padding: 12px 16px;
-    font-size: 16px; /* réduit de 17px */
+    font-size: 15px;
     min-height: 56px;
-    font-family: inherit;
+    font-family: 'Roboto', sans-serif;
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
@@ -252,14 +253,15 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 28px; /* réduit de 30px */
+    font-size: 26px;
     font-weight: 800;
     color: var(--p);
     letter-spacing: -0.3px;
     transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
   }
   .logo i {
-    font-size: 32px; /* réduit de 34px */
+    font-size: 30px;
     background: var(--p-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -278,10 +280,11 @@
     justify-content: center;
     color: var(--p);
     font-weight: 700;
-    font-size: 15px; /* réduit de 16px */
+    font-size: 14px;
     cursor: pointer;
     position: relative;
     transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
   }
   .badge-icon:hover {
     background: var(--p-light);
@@ -305,6 +308,7 @@
     justify-content: center;
     border: 2px solid #fff;
     animation: pulse 2s infinite;
+    font-family: 'Roboto', sans-serif;
   }
   .notif-badge.hidden { display: none; }
 
@@ -315,9 +319,9 @@
     margin: 0 auto;
   }
 
-  /* ===== GREETING – TAILLE INCHANGÉE (20px) ===== */
+  /* ===== GREETING ===== */
   #greet {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 800;
     margin-bottom: 24px;
     letter-spacing: -0.02em;
@@ -328,6 +332,7 @@
     gap: 8px;
     overflow: hidden;
     white-space: nowrap;
+    font-family: 'Roboto', sans-serif;
   }
   #greet span {
     color: var(--p);
@@ -335,15 +340,15 @@
     overflow: hidden;
     flex: 1 1 auto;
     min-width: 0;
-    font-size: 20px;
+    font-size: 19px;
     transition: font-size 0.3s ease;
   }
 
-  /* ===== PANEL SOLDE – ÉLARGI ===== */
+  /* ===== PANEL SOLDE – HAUTEUR RÉDUITE ===== */
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
-    padding: 52px 14px 52px;
+    padding: 36px 14px 36px;
     margin-bottom: 28px;
     color: #fff;
     position: relative;
@@ -352,7 +357,7 @@
     transition: var(--transition);
     display: flex;
     flex-direction: column;
-    min-height: 280px;
+    min-height: 220px;
   }
   .balance-panel:hover {
     box-shadow: 0 16px 48px rgba(124, 58, 237, 0.25);
@@ -371,32 +376,35 @@
     animation: pulse 6s ease-in-out infinite;
   }
   .balance-panel .label {
-    font-size: 15px; /* réduit de 16px */
+    font-size: 15px;
     letter-spacing: 1px;
     opacity: 0.8;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
+    font-family: 'Roboto', sans-serif;
   }
   .balance-panel .label i { font-size: 16px; opacity: 0.9; }
   .balance-panel .amount {
-    font-size: 30px; /* réduit de 32px */
+    font-size: 30px;
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1.2;
     overflow: visible;
     white-space: nowrap;
     transition: font-size 0.3s ease;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
   }
   .balance-panel .sub {
-    font-size: 16px; /* réduit de 17px */
+    font-size: 16px;
     opacity: 0.7;
-    margin-bottom: 36px;
+    margin-bottom: 24px;
+    font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOUTONS LARGES – PADDING ÉLEVÉ ===== */
+  /* ===== BOUTONS DU PANEL – CONSERVÉS ===== */
   .balance-actions-wrapper {
     display: flex;
     gap: 10px;
@@ -414,9 +422,8 @@
     border: none;
     border-radius: 60px;
     padding: 18px 32px;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 17px;
     font-weight: 700;
-    font-family: inherit;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
@@ -430,10 +437,11 @@
     line-height: 1.2;
     min-height: 60px;
     text-align: center;
+    font-family: 'Roboto', sans-serif;
   }
 
   .balance-actions-wrapper .btn-action i {
-    font-size: 18px; /* réduit de 19px */
+    font-size: 18px;
     color: #333;
     flex-shrink: 0;
   }
@@ -448,7 +456,7 @@
     transform: scale(0.96);
   }
 
-  /* ===== RESPONSIVE ===== */
+  /* ===== RESPONSIVE pour le panneau ===== */
   @media (max-width: 420px) {
     .balance-actions-wrapper .btn-action {
       font-size: 15px;
@@ -493,18 +501,20 @@
     transform: translateY(-4px);
   }
   .stat-item .stat-value {
-    font-size: 26px; /* réduit de 28px */
+    font-size: 24px;
     font-weight: 700;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
     transition: font-size 0.3s ease;
+    font-family: 'Roboto', sans-serif;
   }
   .stat-item .stat-label {
-    font-size: 13px; /* réduit de 14px */
+    font-size: 12px;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
     margin-top: 4px;
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== HISTORIQUE ===== */
@@ -513,9 +523,10 @@
     align-items: center;
     gap: 12px;
     font-weight: 700;
-    font-size: 21px; /* réduit de 22px */
+    font-size: 19px;
     margin-bottom: 18px;
     color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
   }
   .history-item {
     background: var(--card-bg);
@@ -553,7 +564,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 15px; /* réduit de 16px */
+    font-size: 15px;
     transition: transform 0.2s ease;
   }
   .history-icon.credit { background: #D1FAE5; color: #10B981; }
@@ -567,33 +578,36 @@
     overflow: hidden;
   }
   .history-info .title {
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.3;
+    font-family: 'Roboto', sans-serif;
   }
   .history-info .title .sub {
     color: var(--text-secondary);
     font-weight: 400;
   }
   .history-info .meta {
-    font-size: 14px; /* réduit de 15px */
+    font-size: 13px;
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: 'Roboto', sans-serif;
   }
   .history-amount {
     font-weight: 700;
-    font-size: 19px; /* réduit de 20px */
+    font-size: 18px;
     white-space: nowrap;
     flex-shrink: 0;
     text-align: right;
     margin-left: auto;
     line-height: 1.3;
     transition: font-size 0.2s ease;
+    font-family: 'Roboto', sans-serif;
   }
   .history-amount.credit { color: #10B981; }
   .history-amount.debit { color: #EF4444; }
@@ -604,8 +618,9 @@
     background: var(--card-bg);
     border: 1.5px dashed var(--border-light);
     border-radius: var(--radius-sm);
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     box-shadow: var(--shadow-soft);
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== TRANSFERT ===== */
@@ -623,8 +638,9 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
     color: var(--text-secondary);
+    font-family: 'Roboto', sans-serif;
   }
   .transfer-balance b {
     color: var(--text-primary);
@@ -635,18 +651,20 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 18px;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
     color: var(--p);
     font-weight: 600;
+    font-family: 'Roboto', sans-serif;
   }
   .field-group { margin-bottom: 16px; }
   .field-group label {
     display: block;
-    font-size: 14px; /* réduit de 15px */
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
     margin-bottom: 4px;
     letter-spacing: 0.3px;
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== VERIFY ===== */
@@ -662,16 +680,18 @@
   .verify-details .row { margin-bottom: 10px; }
   .verify-details .row:last-child { margin-bottom: 0; }
   .verify-details .label {
-    font-size: 12px; /* réduit de 13px */
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
+    font-family: 'Roboto', sans-serif;
   }
   .verify-details .value {
     font-weight: 700;
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     word-break: break-all;
     color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
   }
   .verify-cancel {
     padding: 10px 18px;
@@ -679,11 +699,11 @@
     color: #EF4444;
     background: transparent;
     border-radius: var(--radius-sm);
-    font-size: 15px; /* réduit de 16px */
+    font-size: 14px;
     font-weight: 600;
-    font-family: inherit;
     cursor: pointer;
     transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
   }
   .verify-cancel:hover {
     background: #FEE2E2;
@@ -696,12 +716,13 @@
     align-items: center;
     gap: 12px;
     font-weight: 500;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
     color: var(--text-primary);
     margin-bottom: 12px;
+    font-family: 'Roboto', sans-serif;
   }
   .verify-code-section .lock-line i {
-    font-size: 19px; /* réduit de 20px */
+    font-size: 18px;
     color: var(--p);
   }
   .verify-code-section .code-input {
@@ -710,11 +731,11 @@
     background: #FAFBFC;
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
-    font-size: 20px; /* réduit de 21px */
+    font-size: 19px;
     text-align: center;
     letter-spacing: 4px;
     font-weight: 600;
-    font-family: inherit;
+    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
     margin-bottom: 16px;
     transition: var(--transition);
@@ -740,11 +761,12 @@
     transition: width 0.3s ease;
   }
   .progress-text {
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
     font-weight: 700;
     text-align: center;
     margin-top: 8px;
     color: var(--p);
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== RESULT ===== */
@@ -759,22 +781,24 @@
     animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .result-icon {
-    font-size: 68px; /* réduit de 72px */
+    font-size: 68px;
     margin-bottom: 14px;
     color: var(--p);
     animation: pulse 2s infinite;
   }
   .result-percent {
-    font-size: 40px; /* réduit de 42px */
+    font-size: 38px;
     font-weight: 800;
     color: var(--p);
     margin-bottom: 8px;
+    font-family: 'Roboto', sans-serif;
   }
   .result-status {
-    font-size: 21px; /* réduit de 22px */
+    font-size: 20px;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 18px;
+    font-family: 'Roboto', sans-serif;
   }
   .result-details {
     background: #FAFBFC;
@@ -788,13 +812,14 @@
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
-    font-size: 17px; /* réduit de 18px */
+    font-size: 16px;
     border-bottom: 1px solid var(--border-light);
   }
   .result-details .row:last-child { border-bottom: none; }
   .result-details .row .label {
     color: var(--text-secondary);
     font-weight: 500;
+    font-family: 'Roboto', sans-serif;
   }
   .result-details .row .value {
     font-weight: 600;
@@ -802,9 +827,10 @@
     text-align: right;
     word-break: break-all;
     max-width: 60%;
+    font-family: 'Roboto', sans-serif;
   }
   .result-msg {
-    font-size: 18px; /* réduit de 19px */
+    font-size: 17px;
     color: var(--text-secondary);
     line-height: 1.6;
     margin: 10px 0 18px 0;
@@ -814,9 +840,10 @@
     border-left: 3px solid var(--p);
     text-align: left;
     animation: fadeSlideIn 0.5s ease;
+    font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOTTOM NAV ===== */
+  /* ===== BOTTOM NAV – CONSERVÉE ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -834,7 +861,7 @@
   }
   .nav-item {
     color: var(--text-muted);
-    font-size: 12px; /* réduit de 13px */
+    font-size: 12px;
     font-weight: 600;
     text-align: center;
     cursor: pointer;
@@ -845,9 +872,10 @@
     gap: 3px;
     letter-spacing: 0.3px;
     transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
   }
   .nav-item i {
-    font-size: 22px; /* réduit de 24px */
+    font-size: 22px;
     transition: var(--transition);
   }
   .nav-item.active { color: var(--p); }
@@ -884,37 +912,41 @@
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
-    font-size: 36px; /* réduit de 38px */
+    font-size: 34px;
     font-weight: 800;
     color: #fff;
     box-shadow: 0 12px 32px rgba(124, 58, 237, 0.20);
     transition: var(--transition);
+    font-family: 'Roboto', sans-serif;
   }
   .login-logo:hover { transform: scale(1.05) rotate(-4deg); }
   .login-title {
     text-align: center;
-    font-size: 32px; /* réduit de 34px */
+    font-size: 30px;
     font-weight: 800;
     margin-bottom: 20px;
     letter-spacing: -0.3px;
+    font-family: 'Roboto', sans-serif;
   }
   .login-info {
     background: #F3F4F6;
     padding: 14px;
     border-radius: var(--radius-sm);
     text-align: center;
-    font-size: 16px; /* réduit de 17px */
+    font-size: 15px;
     color: var(--text-secondary);
     margin-bottom: 20px;
     border: 1px solid var(--border-light);
+    font-family: 'Roboto', sans-serif;
   }
   .login-error {
     color: #EF4444;
     margin-top: 12px;
-    font-size: 16px; /* réduit de 17px */
+    font-size: 15px;
     text-align: center;
     font-weight: 600;
     animation: fadeSlideIn 0.3s ease;
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== TOAST ===== */
@@ -928,7 +960,7 @@
     color: #fff;
     padding: 12px 28px;
     border-radius: 50px;
-    font-size: 15px; /* réduit de 16px */
+    font-size: 14px;
     font-weight: 600;
     z-index: 200;
     display: none;
@@ -937,6 +969,7 @@
     max-width: 90%;
     text-align: center;
     animation: fadeSlideIn 0.3s ease;
+    font-family: 'Roboto', sans-serif;
   }
 
   /* ===== SCROLLBAR ===== */
@@ -1040,12 +1073,14 @@
     font-size: 10px;
     opacity: 0.6;
     letter-spacing: 1px;
+    font-family: 'Roboto', sans-serif;
   }
   .card-holder .name {
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    font-family: 'Roboto', sans-serif;
   }
   .card-expiry {
     display: flex;
@@ -1056,11 +1091,13 @@
     font-size: 10px;
     opacity: 0.6;
     letter-spacing: 1px;
+    font-family: 'Roboto', sans-serif;
   }
   .card-expiry .date {
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
+    font-family: 'Roboto', sans-serif;
   }
   .card-cvv {
     font-size: 16px;
@@ -1068,6 +1105,7 @@
     letter-spacing: 1px;
     opacity: 0.7;
     margin-top: 6px;
+    font-family: 'Roboto', sans-serif;
   }
 
   .hidden { display: none !important; }
@@ -1081,9 +1119,9 @@
         <div class="login-logo">F</div>
         <h1 class="login-title">FLOA BK</h1>
         <div class="login-info">Zaloguj się kontem admin</div>
-        <label style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px">Adres e-mail</label>
+        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px;font-family:'Roboto',sans-serif;">Adres e-mail</label>
         <input id="email" type="email" class="input" style="margin-bottom:14px">
-        <label style="font-size:15px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px">Kod PIN</label>
+        <label style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;display:block;font-weight:600;letter-spacing:0.5px;font-family:'Roboto',sans-serif;">Kod PIN</label>
         <input id="pin" type="password" maxlength="6" class="input" style="border:2px solid var(--p);margin-bottom:18px">
         <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
@@ -1106,7 +1144,7 @@
       <div class="balance-panel">
         <div class="label">
           <span>Dostępne saldo</span>
-          <i class="fa-regular fa-bell"></i>
+          <i class="fa-solid fa-rocket"></i>   <!-- VRAI SYMBOLE (icône fusée) -->
         </div>
         <div class="amount" id="bal">0,00 zł</div>
         <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
@@ -1142,7 +1180,7 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:700;font-size:27px;margin-bottom:18px">Wykonaj przelew</h1>
+      <h1 style="font-weight:700;font-size:26px;margin-bottom:18px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -1153,7 +1191,7 @@
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:18px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:17px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1179,10 +1217,10 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:27px;margin-bottom:16px">Weryfikacja przelewu</h1>
+      <h1 style="font-weight:600;font-size:26px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Weryfikacja przelewu</h1>
       <div class="transfer-card" style="padding:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:10px;color:var(--p);font-weight:600;font-size:18px"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <div style="display:flex;align-items:center;gap:10px;color:var(--p);font-weight:600;font-size:17px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
           <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:36px"></i>
         </div>
         <div class="verify-details">
@@ -1202,7 +1240,7 @@
             <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
           </div>
           <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-          <button onclick="finish()" class="btn" style="font-size:18px;padding:16px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" style="font-size:17px;padding:16px">Kontynuuj →</button>
           <div id="progress" class="hidden progress-wrap">
             <div class="progress-bar"><div class="fill" id="bar"></div></div>
             <p class="progress-text" id="ptext"></p>
@@ -1239,7 +1277,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV ========== -->
+  <!-- ========== BOTTOM NAV – CONSERVÉE ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1252,12 +1290,12 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:700;margin-bottom:18px;font-size:21px">💳 Karta wirtualna</p>
+      <p style="font-weight:700;margin-bottom:18px;font-size:20px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
             <i class="fa-solid fa-microchip"></i>
-            <span style="font-size:12px;opacity:0.6;letter-spacing:1px;">FLOA</span>
+            <span style="font-size:12px;opacity:0.6;letter-spacing:1px;font-family:'Roboto',sans-serif;">FLOA</span>
           </div>
           <div class="card-brand">
             <i class="fa-brands fa-cc-visa"></i>
@@ -1278,7 +1316,7 @@
           <span class="card-cvv">CVV: 556</span>
         </div>
       </div>
-      <p style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:8px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <p style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:8px;font-family:'Roboto',sans-serif;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -1286,9 +1324,9 @@
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:21px"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-      <div id="accinfo" style="font-size:17px;line-height:2.4;color:var(--text-secondary)"></div>
-      <button onclick="logout()" style="margin-top:18px;padding:12px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:15px;font-weight:600;width:100%;font-family:inherit;cursor:pointer;transition:var(--transition)"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:20px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+      <div id="accinfo" style="font-size:16px;line-height:2.4;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
+      <button onclick="logout()" style="margin-top:18px;padding:12px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:14px;font-weight:600;width:100%;cursor:pointer;transition:var(--transition);font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1296,8 +1334,8 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-shrink:0;font-size:21px"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:17px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary)"></div>
+      <h3 style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-shrink:0;font-size:20px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:16px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
     </div>
   </div>
 
@@ -1306,11 +1344,11 @@
     <div class="modal-content" style="max-width:420px;padding:0;overflow:visible;margin-top:28px">
       <button onclick="closeTxDetail()" style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:60px;height:60px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:30px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition)">×</button>
       <div style="padding:40px 28px 28px">
-        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px">ID transakcji:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-id">-</div></div>
-        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-amount">-</div></div>
-        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-benef">-</div></div>
-        <div style="margin-bottom:20px" id="tx-iban-row"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px">IBAN / Numer konta:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary);word-break:break-all" id="tx-iban">-</div></div>
-        <div><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:20px;color:var(--text-primary)" id="tx-date">-</div></div>
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
+        <div style="margin-bottom:20px"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
+        <div style="margin-bottom:20px" id="tx-iban-row"><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
+        <div><div style="font-size:14px;color:var(--text-secondary);margin-bottom:4px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:19px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -1368,7 +1406,7 @@
         const container = document.getElementById('greet');
         if (container) {
           const containerWidth = container.clientWidth - 80;
-          const baseSize = 20;
+          const baseSize = 19;
           const avgCharWidth = baseSize * 0.55;
           const maxChars = Math.floor(containerWidth / avgCharWidth);
           adjustFontSize(greetSpan, baseSize, maxChars, 12);
@@ -1394,7 +1432,7 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 20;
-      const baseSize = 26;
+      const baseSize = 24;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
       adjustFontSize(element, baseSize, maxChars, 11);
