@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOA BK</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   /* ===== VARIABLES & RESET ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
     --border-light: rgba(0, 0, 0, 0.04);
-    --text-primary: #0B0F19;
-    --text-secondary: #4B5563;
+    --text-primary: #1A1D2E;     /* noir adouci */
+    --text-secondary: #6B7280;   /* gris plus clair */
     --text-muted: #9CA3AF;
     --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
     --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.06);
@@ -102,7 +102,7 @@
     border: none;
     border-radius: var(--radius-sm);
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -145,7 +145,7 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     text-align: left;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 15px;
     padding: 10px 14px;
     flex: 1;
@@ -156,7 +156,7 @@
     border: 1.5px solid #E5E7EB;
     border-left: none;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -204,7 +204,7 @@
     align-items: center;
     gap: 10px;
     font-size: 22px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--p);
     letter-spacing: -0.3px;
     font-family: 'Roboto', sans-serif;
@@ -226,7 +226,7 @@
     align-items: center;
     justify-content: center;
     color: var(--p);
-    font-weight: 700;
+    font-weight: 600;
     font-size: 13px;
     cursor: pointer;
     position: relative;
@@ -242,7 +242,7 @@
     width: 18px;
     height: 18px;
     font-size: 9px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -251,17 +251,17 @@
   }
   .notif-badge.hidden { display: none; }
 
-  /* ===== MAIN – PADDING LATÉRAL RÉDUIT ===== */
+  /* ===== MAIN – LARGEUR RÉDUITE ===== */
   main {
     padding: 24px 6px 40px;
-    max-width: 720px;
+    max-width: 460px;
     margin: 0 auto;
   }
 
   /* ===== GREETING ===== */
   #greet {
     font-size: 17px;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 20px;
     letter-spacing: -0.02em;
     color: var(--text-primary);
@@ -274,7 +274,7 @@
     font-family: 'Roboto', sans-serif;
   }
   #greet span {
-    color: var(--text-primary);  /* ← modifié : noir au lieu de var(--p) */
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     flex: 1 1 auto;
@@ -282,11 +282,11 @@
     font-size: 17px;
   }
 
-  /* ===== PANEL SOLDE – LARGEUR RÉDUITE ===== */
+  /* ===== PANEL SOLDE – RESSERRÉ (padding 48px) ===== */
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
-    padding: 20px 20px 16px;
+    padding: 20px 48px 16px;
     margin-bottom: 20px;
     color: #fff;
     position: relative;
@@ -316,11 +316,12 @@
     align-items: center;
     gap: 8px;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .balance-panel .label i { font-size: 14px; opacity: 0.9; }
   .balance-panel .amount {
     font-size: 26px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.2;
     overflow: visible;
@@ -334,9 +335,10 @@
     opacity: 0.7;
     margin-bottom: 14px;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
 
-  /* ===== BOUTONS DU PANEL – FOND BLANC ===== */
+  /* ===== BOUTONS DU PANEL – FOND BLANC, TEXTE PLUS DOUX ===== */
   .balance-actions-wrapper {
     display: flex;
     gap: 8px;
@@ -351,12 +353,12 @@
     flex: 1;
     min-width: 0;
     background: #FFFFFF;
-    color: #000000;
+    color: #2D3748;  /* noir adouci */
     border: 1px solid rgba(0,0,0,0.06);
     border-radius: 60px;
-    padding: 12px 20px;
+    padding: 12px 14px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -374,20 +376,20 @@
 
   .balance-actions-wrapper .btn-action i {
     font-size: 16px;
-    color: #000000;
+    color: #2D3748;
     flex-shrink: 0;
   }
 
-  /* Bouton IBAN – fond blanc */
+  /* Bouton IBAN – fond blanc, texte plus doux */
   .btn-iban {
     width: 100%;
     background: #FFFFFF;
-    color: #000000;
+    color: #2D3748;
     border: 1px solid rgba(0,0,0,0.06);
     border-radius: 60px;
     padding: 12px 16px;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -399,7 +401,7 @@
   }
   .btn-iban i {
     font-size: 16px;
-    color: #000000;
+    color: #2D3748;
   }
 
   /* ===== TRANSFERT – PADDING DE LA CARTE RÉDUIT ===== */
@@ -415,7 +417,7 @@
   @media (max-width: 420px) {
     .balance-actions-wrapper .btn-action {
       font-size: 13px;
-      padding: 10px 16px;
+      padding: 10px 10px;
       min-height: 38px;
     }
     .balance-actions-wrapper .btn-action i {
@@ -438,14 +440,14 @@
       padding: 14px 6px;
     }
     .balance-panel {
-      padding: 16px 16px 14px;
+      padding: 16px 32px 14px;
     }
   }
 
   @media (max-width: 360px) {
     .balance-actions-wrapper .btn-action {
       font-size: 12px;
-      padding: 8px 12px;
+      padding: 8px 8px;
       min-height: 34px;
     }
     .balance-actions-wrapper .btn-action i {
@@ -465,7 +467,7 @@
       padding: 10px 4px;
     }
     .balance-panel {
-      padding: 14px 14px 12px;
+      padding: 14px 24px 12px;
     }
   }
 
@@ -487,7 +489,7 @@
   }
   .stat-item .stat-value {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
@@ -499,6 +501,7 @@
     letter-spacing: 0.5px;
     margin-top: 2px;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
 
   /* ===== HISTORIQUE ===== */
@@ -506,7 +509,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 17px;
     margin-bottom: 14px;
     color: var(--text-primary);
@@ -573,9 +576,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .history-amount {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 16px;
     white-space: nowrap;
     flex-shrink: 0;
@@ -596,6 +600,7 @@
     font-size: 15px;
     box-shadow: var(--shadow-soft);
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
 
   /* ===== TRANSFERT – autres éléments ===== */
@@ -607,10 +612,11 @@
     font-size: 14px;
     color: var(--text-secondary);
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .transfer-balance b {
     color: var(--text-primary);
-    font-weight: 700;
+    font-weight: 600;
   }
   .transfer-title {
     display: flex;
@@ -626,7 +632,7 @@
   .field-group label {
     display: block;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-secondary);
     margin-bottom: 3px;
     letter-spacing: 0.3px;
@@ -645,13 +651,13 @@
   .verify-details .row:last-child { margin-bottom: 0; }
   .verify-details .label {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
     font-family: 'Roboto', sans-serif;
   }
   .verify-details .value {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 15px;
     word-break: break-all;
     color: var(--text-primary);
@@ -664,7 +670,7 @@
     background: transparent;
     border-radius: var(--radius-sm);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
   }
@@ -718,7 +724,7 @@
   }
   .progress-text {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
     margin-top: 6px;
     color: var(--p);
@@ -742,7 +748,7 @@
   }
   .result-percent {
     font-size: 34px;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--p);
     margin-bottom: 6px;
     font-family: 'Roboto', sans-serif;
@@ -794,9 +800,10 @@
     border-left: 3px solid var(--p);
     text-align: left;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
 
-  /* ===== BOTTOM NAV ===== */
+  /* ===== BOTTOM NAV – TEXTES PLUS CLAIRS ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -812,9 +819,9 @@
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
   }
   .nav-item {
-    color: #2D3748;
+    color: #4A5568;  /* gris plus doux que #2D3748 */
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     text-align: center;
     cursor: pointer;
     padding: 4px 0;
@@ -892,6 +899,7 @@
     margin-bottom: 20px;
     border: 1px solid #eef2f6;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .login-error {
     color: #EF4444;
@@ -940,7 +948,7 @@
     padding: 10px 24px;
     border-radius: 50px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     z-index: 200;
     display: none;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
@@ -1018,7 +1026,7 @@
   }
   .card-number {
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 2px;
     font-family: 'Roboto', monospace;
     margin: 12px 0 8px;
@@ -1045,6 +1053,7 @@
     opacity: 0.6;
     letter-spacing: 1px;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .card-holder .name {
     font-size: 14px;
@@ -1063,6 +1072,7 @@
     opacity: 0.6;
     letter-spacing: 1px;
     font-family: 'Roboto', sans-serif;
+    font-weight: 400;
   }
   .card-expiry .date {
     font-size: 14px;
@@ -1086,7 +1096,7 @@
     gap: 10px;
     margin-bottom: 20px;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-primary);
   }
   .iban-modal .modal-content .iban-header i {
@@ -1106,7 +1116,7 @@
   }
   .iban-modal .modal-content .iban-field .value {
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--text-primary);
     word-break: break-all;
   }
@@ -1124,6 +1134,7 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
+    font-weight: 400;
   }
   .iban-modal .modal-content .iban-security i {
     font-size: 16px;
@@ -1168,7 +1179,7 @@
     <main>
       <h2 id="greet">Powitanie, <span>Power</span></h2>
 
-      <!-- PANEL SOLDE – LARGEUR RÉDUITE -->
+      <!-- PANEL SOLDE – RESSERRÉ (padding 48px) -->
       <div class="balance-panel">
         <div class="label">
           <span>Dostępne saldo</span>
@@ -1212,7 +1223,7 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:700;font-size:22px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
+      <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -1223,7 +1234,7 @@
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:15px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:15px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1309,7 +1320,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV ========== -->
+  <!-- ========== BOTTOM NAV – TEXTES PLUS CLAIRS ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1322,7 +1333,7 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:700;margin-bottom:16px;font-size:18px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
+      <p style="font-weight:600;margin-bottom:16px;font-size:18px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
           <div class="card-chip">
@@ -1394,7 +1405,7 @@
       <button onclick="closeAcc()" class="modal-close">×</button>
       <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:18px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
       <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:600;width:100%;cursor:pointer;font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:500;width:100%;cursor:pointer;font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
     </div>
   </div>
 
@@ -1412,11 +1423,11 @@
     <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
       <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
       <div style="padding:32px 24px 24px">
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
-        <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
-        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:700;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:600;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
+        <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:17px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
+        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:17px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
