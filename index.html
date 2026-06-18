@@ -9,7 +9,7 @@
 <style>
   /* ===== VARIABLES & RESET ===== */
   :root {
-    --bg: #F4F6FA;
+    --bg: #FFFFFF;
     --card-bg: #FFFFFF;
     --border-light: rgba(0, 0, 0, 0.04);
     --text-primary: #0B0F19;
@@ -19,7 +19,6 @@
     --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.06);
     --radius: 18px;
     --radius-sm: 12px;
-    /* Couleurs adoucies (pastel) */
     --p: #8B5CF6;
     --p-light: #EDE9FE;
     --p-dark: #7C3AED;
@@ -170,7 +169,7 @@
     flex: 1;
   }
 
-  /* ===== BOUTONS GÉNÉRIQUES ===== */
+  /* ===== BOUTONS GÉNÉRIQUES (sauf ceux du panneau) ===== */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -178,15 +177,15 @@
     gap: 12px;
     width: 100%;
     padding: 16px 24px;
-    background: var(--p-gradient);
-    color: #fff;
+    background: #2D2D3A;  /* fond sombre */
+    color: #FFFFFF;
     border: none;
     border-radius: var(--radius-sm);
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
-    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
     transition: var(--transition);
@@ -195,12 +194,13 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
     pointer-events: none;
   }
   .btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    background: #3D3D4A;
   }
   .btn:active:not(:disabled) { transform: scale(0.97); }
   .btn:disabled {
@@ -396,7 +396,7 @@
 
   /* ===== PANEL SOLDE – COULEURS ADOUCIES ===== */
   .balance-panel {
-    background: var(--p-gradient); /* dégradé doux */
+    background: var(--p-gradient);
     border-radius: var(--radius);
     padding: 36px 8px 32px;
     margin-bottom: 28px;
@@ -454,7 +454,7 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOUTONS DU PANEL ===== */
+  /* ===== BOUTONS DU PANEL – FOND BLANC ===== */
   .balance-actions-wrapper {
     display: flex;
     gap: 10px;
@@ -468,9 +468,9 @@
   .balance-actions-wrapper .btn-action {
     flex: 1;
     min-width: 0;
-    background: #ffffff;
+    background: #FFFFFF;
     color: #000000;
-    border: none;
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: 60px;
     padding: 18px 32px;
     font-size: 17px;
@@ -484,7 +484,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     line-height: 1.2;
     min-height: 60px;
     text-align: center;
@@ -493,26 +493,26 @@
 
   .balance-actions-wrapper .btn-action i {
     font-size: 18px;
-    color: #333;
+    color: #000000;
     flex-shrink: 0;
   }
 
   .balance-actions-wrapper .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-    background: #f8f8f8;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+    background: #F8F8FA;
   }
 
   .balance-actions-wrapper .btn-action:active {
     transform: scale(0.96);
   }
 
-  /* Bouton IBAN */
+  /* Bouton IBAN – fond blanc */
   .btn-iban {
     width: 100%;
-    background: #ffffff;
+    background: #FFFFFF;
     color: #000000;
-    border: none;
+    border: 1px solid rgba(0,0,0,0.06);
     border-radius: 60px;
     padding: 16px 20px;
     font-size: 17px;
@@ -523,18 +523,18 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     font-family: 'Roboto', sans-serif;
     margin-top: 0;
   }
   .btn-iban i {
     font-size: 18px;
-    color: #333;
+    color: #000000;
   }
   .btn-iban:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-    background: #f8f8f8;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+    background: #F8F8FA;
   }
   .btn-iban:active {
     transform: scale(0.96);
@@ -947,7 +947,7 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== BOTTOM NAV – COULEUR PROFESSIONNELLE RENFORCÉE ===== */
+  /* ===== BOTTOM NAV – COULEUR PROFESSIONNELLE ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -1082,11 +1082,13 @@
     margin-top: 6px;
     font-size: 16px;
     padding: 14px;
-    background: var(--p-gradient);
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+    background: #2D2D3A;  /* bouton login sombre */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #fff;
   }
   .login-card .btn:hover {
-    box-shadow: 0 8px 28px rgba(139, 92, 246, 0.25);
+    background: #3D3D4A;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   }
 
   /* ===== TOAST ===== */
@@ -1419,7 +1421,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV – COULEUR PROFESSIONNELLE RENFORCÉE ========== -->
+  <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1811,7 +1813,6 @@
       });
     }
 
-    // ===== FONCTIONS POUR LA MODALE IBAN =====
     window.openIbanModal = () => {
       if (!user) {
         toast('Zaloguj się, aby zobaczyć swoje dane.');
