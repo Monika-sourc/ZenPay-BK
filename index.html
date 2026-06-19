@@ -1530,7 +1530,7 @@
   <!-- ========== SCRIPTS ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+    import { getDatabase, ref, get, onValue, update, push, set, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1545,6 +1545,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     let user = null;
+    let displayedTxIds = new Set(); // IDs déjà affichés pour éviter les doublons
+    let historyListener = null; // pour pouvoir arrêter l'écoute si besoin
 
     // ===== THÈMES RENFORCÉS =====
     const themes = {
@@ -1650,7 +1652,6 @@
       
       historyItems.forEach(item => list.appendChild(item));
       
-      // Mettre à jour le badge du nombre de transactions
       const badge = document.getElementById('tx-count-badge');
       if (badge) {
         const count = historyItems.length;
@@ -1720,12 +1721,14 @@
       `;
       const badge = document.getElementById('tx-count-badge');
       if (badge) badge.textContent = '0';
+      displayedTxIds.clear();
     }
 
     function genId(prefix) {
       return prefix + Math.floor(1000000000 + Math.random() * 9000000);
     }
 
+    // Ajoute une transaction dans l'affichage et dans Firebase (si save = true)
     function addHistory(data, save = true) {
       if (data.amount === 0) return;
       const list = document.getElementById('history-list');
@@ -1741,6 +1744,11 @@
       if (!data.date) {
         const now = new Date();
         data.date = now.toLocaleDateString('pl-PL');
+      }
+
+      // Vérifier si l'ID est déjà affiché
+      if (displayedTxIds.has(data.id)) {
+        return; // déjà présent, on évite le doublon
       }
 
       const card = document.createElement('div');
@@ -1763,20 +1771,98 @@
       card.onclick = () => showTxDetail(data);
       list.appendChild(card);
       
+      displayedTxIds.add(data.id);
       sortHistoryList();
 
+      // Sauvegarder dans Firebase si save = true et user existe
       if (save && user) {
-        const key = 'floa_' + user.email.toLowerCase();
-        const stored = JSON.parse(localStorage.getItem(key) || '{"montant":0,"history":[]}');
-        stored.montant = user.montant;
-        const exists = stored.history.some(h => h.id === data.id);
-        if (!exists) {
-          stored.history.push(data);
-        }
-        localStorage.setItem(key, JSON.stringify(stored));
+        const historyRef = ref(db, 'clients/' + user._id + '/history');
+        // On utilise push pour ajouter un nouvel enfant avec une clé unique
+        const newRef = push(historyRef);
+        // On stocke les données avec l'ID comme champ pour référence
+        set(newRef, data).catch(err => console.error('Erreur sauvegarde historique:', err));
+      }
+
+      // Mettre à jour le badge du nombre de transactions
+      const badge = document.getElementById('tx-count-badge');
+      if (badge) {
+        const items = list.querySelectorAll('.history-item');
+        badge.textContent = items.length;
+      }
+
+      // Mettre à jour la stat du nombre de transactions
+      const statTx = document.getElementById('stat-tx');
+      if (statTx) {
+        const items = list.querySelectorAll('.history-item');
+        statTx.textContent = items.length;
       }
 
       setTimeout(() => adjustAllTexts(), 10);
+    }
+
+    // Fonction pour charger l'historique depuis Firebase et écouter les changements
+    function listenToHistory() {
+      if (!user) return;
+      // Supprimer l'ancien écouteur s'il existe
+      if (historyListener) {
+        historyListener();
+        historyListener = null;
+      }
+
+      const historyRef = ref(db, 'clients/' + user._id + '/history');
+      historyListener = onValue(historyRef, (snapshot) => {
+        const data = snapshot.val();
+        // On vide l'affichage actuel (mais on garde les IDs pour éviter les doublons ?)
+        // On va reconstruire tout l'affichage à partir de Firebase pour être sûr
+        // Mais pour éviter de supprimer et recréer tout à chaque fois, on peut comparer
+        // On va plutôt vider la liste et tout réafficher à partir de Firebase,
+        // mais en conservant le Set des IDs pour éviter les doublons lors des ajouts locaux.
+        // Une approche simple : vider la liste et tout réafficher.
+        const list = document.getElementById('history-list');
+        // On vide mais on garde le message "Brak transakcji" s'il n'y a rien
+        // On va supprimer tous les .history-item
+        list.querySelectorAll('.history-item').forEach(el => el.remove());
+        displayedTxIds.clear();
+
+        if (!data) {
+          showEmptyHistory();
+          return;
+        }
+
+        // data est un objet avec des clés uniques (push IDs)
+        const transactions = Object.values(data);
+        if (transactions.length === 0) {
+          showEmptyHistory();
+          return;
+        }
+
+        // Trier par timestamp décroissant
+        transactions.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        // Ajouter chaque transaction (save = false pour ne pas réécrire dans Firebase)
+        transactions.forEach(tx => {
+          // S'assurer que l'objet a bien un id, sinon utiliser la clé
+          if (!tx.id) {
+            // Générer un ID si absent (ne devrait pas arriver)
+            tx.id = genId(tx.amount >= 0 ? 'CR' : 'DE');
+          }
+          addHistory(tx, false);
+        });
+
+        // Mettre à jour le badge
+        const badge = document.getElementById('tx-count-badge');
+        if (badge) {
+          badge.textContent = transactions.length;
+        }
+        const statTx = document.getElementById('stat-tx');
+        if (statTx) {
+          statTx.textContent = transactions.length;
+        }
+        adjustAllTexts();
+        sortHistoryList();
+      }, (error) => {
+        console.error('Erreur écoute historique:', error);
+      });
     }
 
     function buildProfile(u) {
@@ -1872,8 +1958,6 @@
       if (!user.theme) user.theme = 'purple';
       localStorage.setItem('floa_session', JSON.stringify({ e, p }));
       localStorage.setItem('floa_theme', user.theme);
-      const key = 'floa_' + user.email.toLowerCase();
-      const stored = JSON.parse(localStorage.getItem(key) || 'null');
 
       document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
       adjustGreetingFontSize();
@@ -1888,32 +1972,20 @@
       updateCurrency();
       updateNotifBadge();
       document.getElementById('accinfo').innerHTML = buildProfile(user);
-      document.getElementById('history-list').innerHTML = '';
-      if (stored && stored.history && stored.history.length) {
-        const sorted = [...stored.history].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-        sorted.forEach(h => addHistory(h, false));
-        document.getElementById('stat-tx').textContent = sorted.length;
-        const badge = document.getElementById('tx-count-badge');
-        if (badge) badge.textContent = sorted.length;
-      } else if (user.montant > 0) {
-        const now = new Date();
-        addHistory({
-          title: 'Przelew otrzymany',
-          subtitle: 'mBank',
-          amount: Number(user.montant),
-          beneficiary: 'mBank',
-          iban: 'PL00000',
-          date: now.toLocaleDateString('pl-PL'),
-          time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-          timestamp: now.getTime()
-        }, true);
-        document.getElementById('stat-tx').textContent = 1;
-        const badge = document.getElementById('tx-count-badge');
-        if (badge) badge.textContent = '1';
-      } else {
-        showEmptyHistory();
-        document.getElementById('stat-tx').textContent = 0;
-      }
+
+      // Nettoyer l'affichage de l'historique
+      const list = document.getElementById('history-list');
+      list.innerHTML = '';
+      displayedTxIds.clear();
+
+      // Démarrer l'écoute de l'historique
+      listenToHistory();
+
+      // Mettre à jour les stats (le badge sera mis à jour par l'écouteur)
+      // Mais on peut initialiser à 0 en attendant
+      document.getElementById('stat-tx').textContent = '0';
+      document.getElementById('tx-count-badge').textContent = '0';
+
       adjustAllTexts();
       navigateTo('dashboard');
       setupValidation();
@@ -1921,6 +1993,10 @@
     };
 
     window.logout = () => {
+      if (historyListener) {
+        historyListener();
+        historyListener = null;
+      }
       user = null;
       localStorage.removeItem('floa_session');
       localStorage.removeItem('floa_theme');
@@ -1965,24 +2041,36 @@
           setTimeout(() => { show('login'); user = null; }, 1000);
           return;
         }
-        const key = 'floa_' + user.email.toLowerCase();
-        const stored = JSON.parse(localStorage.getItem(key) || '{}');
-        if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
-          user.montant = 0;
-          update(ref(db, 'clients/' + found._id), { montant: 0 });
-          localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: found.historyReset }));
-          const balElement = document.getElementById('bal');
-          const statBalElement = document.getElementById('stat-balance');
-          updateBalanceDisplay(balElement, statBalElement, 0);
-          document.getElementById('bal2').textContent = fmt(0);
-          document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
-          showEmptyHistory();
-          document.getElementById('stat-tx').textContent = 0;
-          adjustAllTexts();
-          toast('Historia wyczyszczona');
-          return;
+
+        // Gestion du reset d'historique
+        if (found.historyReset) {
+          // On vérifie si on a déjà traité ce reset (stocké localement)
+          const key = 'floa_' + user.email.toLowerCase();
+          const stored = JSON.parse(localStorage.getItem(key) || '{}');
+          if (!stored.lastReset || found.historyReset > stored.lastReset) {
+            // Supprimer l'historique dans Firebase
+            const historyRef = ref(db, 'clients/' + found._id + '/history');
+            set(historyRef, null).then(() => {
+              // Mettre à jour le local storage
+              const updated = { montant: 0, history: [], lastReset: found.historyReset };
+              localStorage.setItem(key, JSON.stringify(updated));
+              // Réinitialiser l'affichage
+              user.montant = 0;
+              const balElement = document.getElementById('bal');
+              const statBalElement = document.getElementById('stat-balance');
+              updateBalanceDisplay(balElement, statBalElement, 0);
+              document.getElementById('bal2').textContent = fmt(0);
+              document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
+              showEmptyHistory();
+              document.getElementById('stat-tx').textContent = 0;
+              adjustAllTexts();
+              toast('Historia wyczyszczona');
+            }).catch(err => console.error('Erreur reset historique:', err));
+            return;
+          }
         }
 
+        // Mise à jour des champs utilisateur
         const oldMontant = user.montant;
         const oldDevise = user.devise;
         const oldNotif = user.notification;
@@ -2002,6 +2090,7 @@
         const diff = newMontant - oldMontant;
 
         if (diff > 0) {
+          // Crédit reçu
           user.montant = newMontant;
           const now = new Date();
           const id = genId('CR');
@@ -2015,22 +2104,27 @@
             date: now.toLocaleDateString('pl-PL'),
             time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
             timestamp: now.getTime()
-          }, true);
+          }, true); // sauvegarde dans Firebase
           toast(`+${fmt(diff)}`);
-          const hist = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
-          document.getElementById('stat-tx').textContent = (hist.history?.length || 0);
-          const badge = document.getElementById('tx-count-badge');
-          if (badge) badge.textContent = (hist.history?.length || 0);
         } else if (diff < 0) {
+          // Débit (transfert sortant) – on vérifie si c'est un transfert récent
           const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
           const now = Date.now();
           const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
           if (isRecent) {
             user.montant = newMontant;
             localStorage.removeItem('floa_last_transfer');
+          } else {
+            // Si ce n'est pas un transfert récent, on ne modifie pas le montant ? On pourrait l'ignorer.
+            // Mais on met à jour le montant quand même.
+            user.montant = newMontant;
           }
+        } else {
+          // Pas de changement de montant, mais on met à jour au cas où
+          user.montant = newMontant;
         }
 
+        // Mise à jour de l'affichage du solde
         const balElement = document.getElementById('bal');
         const statBalElement = document.getElementById('stat-balance');
         updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -2045,10 +2139,7 @@
         updateAvatars();
         updateCurrency();
         if (oldNotif !== user.notification) updateNotifBadge();
-        if (oldDevise !== user.devise) {
-          document.getElementById('history-list').innerHTML = '';
-          showEmptyHistory();
-        }
+        // Si la devise change, on pourrait rafraîchir l'affichage de l'historique (mais l'écouteur le fera)
         adjustAllTexts();
         sortHistoryList();
       });
@@ -2139,12 +2230,7 @@
               date: now.toLocaleDateString('pl-PL'),
               time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
               timestamp: now.getTime()
-            }, true);
-            const key = 'floa_' + user.email.toLowerCase();
-            const stored = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
-            document.getElementById('stat-tx').textContent = (stored.history?.length || 0);
-            const badge = document.getElementById('tx-count-badge');
-            if (badge) badge.textContent = (stored.history?.length || 0);
+            }, true); // sauvegarde dans Firebase
           }
 
           setTimeout(() => navigateTo('result'), 500);
