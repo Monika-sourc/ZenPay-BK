@@ -1531,7 +1531,6 @@
     list.innerHTML = '';
     if (!historyArray || historyArray.length === 0) {
       list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-      // Mise à jour des compteurs
       document.getElementById('tx-count-badge').textContent = '0';
       document.getElementById('stat-tx').textContent = '0';
       return;
@@ -1557,7 +1556,6 @@
       card.onclick = () => showTxDetail(d);
       list.appendChild(card);
     });
-    // Mise à jour des compteurs
     const count = sorted.length;
     document.getElementById('tx-count-badge').textContent = count;
     document.getElementById('stat-tx').textContent = count;
@@ -1567,7 +1565,6 @@
     return prefix + Math.floor(1000000000 + Math.random() * 9000000);
   }
 
-  // Ajout d'une transaction dans Firebase (crédit ou débit)
   function addHistory(data) {
     if (!data.amount || data.amount === 0) return Promise.resolve();
     if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
@@ -1619,7 +1616,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  // ===== SURVEILLANCE DU SOLDE =====
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
@@ -1629,7 +1626,6 @@
       const oldMontant = user ? user.montant : 0;
       const diff = Number(newMontant) - oldMontant;
 
-      // Mettre à jour l'affichage
       user.montant = Number(newMontant);
       const balElement = document.getElementById('bal');
       const statBalElement = document.getElementById('stat-balance');
@@ -1637,7 +1633,6 @@
       document.getElementById('bal2').textContent = fmt(user.montant);
       document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-      // Si le montant a augmenté, traiter le crédit
       if (diff > 0) {
         const userRef = ref(db, 'clients/' + userId);
         runTransaction(userRef, (currentData) => {
@@ -1674,7 +1669,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU STATUT CLIENT (blocage, reset, etc.) =====
+  // ===== SURVEILLANCE DU STATUT CLIENT =====
   function watchClientStatus(userId) {
     if (statusListener) statusListener();
     statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
@@ -1691,12 +1686,10 @@
         return;
       }
 
-      // Gestion du reset (historyReset)
       if (data.historyReset) {
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
         if (!stored.lastReset || data.historyReset > stored.lastReset) {
-          // Réinitialisation
           update(ref(db, 'clients/' + userId), { montant: 0 });
           set(ref(db, 'clients/' + userId + '/history'), null)
             .then(() => {
@@ -1708,7 +1701,7 @@
               updateBalanceDisplay(balElement, statBalElement, 0);
               document.getElementById('bal2').textContent = fmt(0);
               document.getElementById('accinfo').innerHTML = buildProfile(user);
-              renderHistory([]); // mettra les compteurs à 0
+              renderHistory([]);
               adjustAllTexts();
               toast('Historia i saldo zresetowane');
             })
@@ -1718,7 +1711,6 @@
         return;
       }
 
-      // Mise à jour des autres propriétés
       const oldTheme = user.theme;
       user.pct = data.pct;
       user.code = data.code;
@@ -1807,17 +1799,6 @@
   }
   window.navigateTo = navigateTo;
 
-  window.addEventListener('popstate', (e) => {
-    if (user) {
-      const target = e.state?.screen || 'dashboard';
-      show(target);
-    } else {
-      show('login');
-    }
-  });
-
-  if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
-
   // ===== LOGIN / LOGOUT =====
   window.login = async () => {
     const e = document.getElementById('email').value.trim().toLowerCase();
@@ -1842,12 +1823,15 @@
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
       show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
       return;
     }
     if (f.blocked) {
       err.textContent = 'Konto zostało zablokowane';
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
+      show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
       return;
     }
 
@@ -1878,7 +1862,9 @@
     watchClientStatus(fid);
 
     adjustAllTexts();
-    navigateTo('dashboard');
+    // Remplacer l'URL pour que le bouton retour ne ramène pas à la page de login
+    history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
+    show('dashboard');
     setupValidation();
   };
 
@@ -1898,21 +1884,34 @@
     }
     localStorage.removeItem('floa_session');
     localStorage.removeItem('floa_theme');
-    show('login');
-    history.replaceState({ screen: 'login' }, '', '#login');
+    // Forcer le rechargement sur la page de login
+    window.location.href = '#login';
+    window.location.reload();
   };
 
-  // ===== GESTION DE LA SESSION =====
+  // ===== GESTION DE LA SESSION AU CHARGEMENT =====
   const saved = localStorage.getItem('floa_session');
   if (saved) {
     try {
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
+      // Tenter la connexion immédiatement, sans afficher la page de login
+      // On masque la page de login en affichant dashboard mais on lance login qui fera le reste
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
+      // Remplacer l'URL pour éviter le retour arrière
+      history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
       setTimeout(() => window.login(), 50);
-    } catch {}
+    } catch {
+      // En cas d'erreur, rester sur la page de login
+      show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
+    }
+  } else {
+    // Pas de session, on reste sur la page de login
+    show('login');
+    history.replaceState({ screen: 'login' }, '', '#login');
   }
 
   // ===== TRANSFERT =====
@@ -2082,7 +2081,7 @@
     });
   }
 
-  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE (toutes les secondes) =====
+  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE =====
   setInterval(() => {
     if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
