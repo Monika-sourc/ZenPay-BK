@@ -270,15 +270,9 @@
       margin: 0;
       padding: 24px 32px;
     }
-    .balance-panel {
-      max-width: 700px;
-    }
-    .history-container {
-      max-width: 700px;
-    }
-    .quick-stats {
-      max-width: 700px;
-    }
+    .balance-panel,
+    .history-container,
+    .quick-stats,
     .transfer-card {
       max-width: 700px;
     }
@@ -1551,7 +1545,7 @@
   <!-- ========== SCRIPTS ========== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getDatabase, ref, get, onValue, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+    import { getDatabase, ref, get, onValue, update, push } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1566,22 +1560,45 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     let user = null;
+    let currentHistory = [];
+    let historyListener = null;
 
-    // ===== THÈMES RENFORCÉS =====
+    // ===== THEMES =====
     const themes = {
       purple: { p: '#6D28D9', l: '#EDE9FE' },
       blue: { p: '#2563EB', l: '#DBEAFE' },
       yellow: { p: '#D97706', l: '#FEF3C7' }
     };
 
+    // Déclaration des fonctions avant toute utilisation
+    function adjustBrightness(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+      return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+    }
+
+    function applyTheme(theme) {
+      const t = themes[theme] || themes.purple;
+      document.documentElement.style.setProperty('--p', t.p);
+      document.documentElement.style.setProperty('--p-light', t.l);
+      document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
+      document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
+      localStorage.setItem('floa_theme', theme);
+    }
+
+    // Appliquer le thème enregistré
     const savedTheme = localStorage.getItem('floa_theme') || 'purple';
     applyTheme(savedTheme);
 
+    // ===== FORMATTEUR =====
     const fmt = n => {
       const dev = (user && user.devise) ? user.devise : 'zł';
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
 
+    // ===== FONCTIONS D'AJUSTEMENT DE TEXTE =====
     function adjustFontSize(element, baseSize, maxChars, minSize) {
       if (!element) return;
       requestAnimationFrame(() => {
@@ -1657,90 +1674,37 @@
       adjustAllTexts();
     }
 
-    function sortHistoryList() {
+    // ===== HISTORIQUE =====
+    function renderHistory(historyArray) {
       const list = document.getElementById('history-list');
-      const items = Array.from(list.children);
-      const historyItems = items.filter(el => el.classList.contains('history-item'));
-      if (historyItems.length <= 1) return;
-      
-      historyItems.sort((a, b) => {
-        const tsA = parseInt(a.getAttribute('data-timestamp')) || 0;
-        const tsB = parseInt(b.getAttribute('data-timestamp')) || 0;
-        return tsB - tsA;
+      list.innerHTML = '';
+      if (!historyArray || historyArray.length === 0) {
+        list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+        document.getElementById('tx-count-badge').textContent = '0';
+        return;
+      }
+      const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      sorted.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'history-item';
+        card.setAttribute('data-id', d.id);
+        card.setAttribute('data-timestamp', d.timestamp);
+        const pos = d.amount >= 0;
+        const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
+        card.innerHTML = `
+          <div class="history-left">
+            <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
+            <div class="history-info">
+              <div class="title">${d.title} ${subtitleHtml}</div>
+              <div class="meta">${d.date || ''} • ${d.time || ''}</div>
+            </div>
+          </div>
+          <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
+        `;
+        card.onclick = () => showTxDetail(d);
+        list.appendChild(card);
       });
-      
-      historyItems.forEach(item => list.appendChild(item));
-      
-      // Mettre à jour le badge du nombre de transactions
-      const badge = document.getElementById('tx-count-badge');
-      if (badge) {
-        const count = historyItems.length;
-        badge.textContent = count;
-      }
-    }
-
-    const show = id => {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      const map = { 'dashboard': 0, 'transfer': 1 };
-      if (map[id] !== undefined) {
-        document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
-      }
-      if (id === 'dashboard') {
-        setTimeout(() => {
-          adjustAllTexts();
-          sortHistoryList();
-        }, 50);
-      }
-    };
-    window.show = show;
-
-    function navigateTo(id) {
-      history.pushState({ screen: id }, '', '#' + id);
-      show(id);
-    }
-    window.navigateTo = navigateTo;
-
-    window.addEventListener('popstate', (e) => {
-      if (user) {
-        const target = e.state?.screen || 'dashboard';
-        show(target);
-      } else {
-        show('login');
-      }
-    });
-
-    if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
-
-    function applyTheme(theme) {
-      const t = themes[theme] || themes.purple;
-      document.documentElement.style.setProperty('--p', t.p);
-      document.documentElement.style.setProperty('--p-light', t.l);
-      document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
-      document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
-      localStorage.setItem('floa_theme', theme);
-    }
-
-    function adjustBrightness(hex, percent) {
-      const num = parseInt(hex.replace('#', ''), 16);
-      const r = Math.min(255, Math.max(0, (num >> 16) + percent));
-      const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
-      const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
-      return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
-    }
-
-    function showEmptyHistory() {
-      const container = document.getElementById('history-list');
-      container.innerHTML = `
-        <div class="empty-history">
-          <i class="fa-regular fa-receipt"></i>
-          Brak transakcji
-        </div>
-      `;
-      const badge = document.getElementById('tx-count-badge');
-      if (badge) badge.textContent = '0';
+      document.getElementById('tx-count-badge').textContent = sorted.length;
     }
 
     function genId(prefix) {
@@ -1748,58 +1712,45 @@
     }
 
     function addHistory(data, save = true) {
-      if (data.amount === 0) return;
-      const list = document.getElementById('history-list');
-      const empty = document.querySelector('.empty-history');
-      if (empty) empty.remove();
-
+      if (!data.amount || data.amount === 0) return;
       if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
+      const now = new Date();
       if (!data.time || !data.timestamp) {
-        const now = new Date();
         if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
         if (!data.timestamp) data.timestamp = now.getTime();
       }
-      if (!data.date) {
-        const now = new Date();
-        data.date = now.toLocaleDateString('pl-PL');
-      }
-
-      const card = document.createElement('div');
-      card.className = 'history-item';
-      card.setAttribute('data-id', data.id);
-      card.setAttribute('data-timestamp', data.timestamp);
-      
-      const pos = data.amount >= 0;
-      const subtitleHtml = data.subtitle ? `<span class="sub">• ${data.subtitle}</span>` : '';
-      card.innerHTML = `
-        <div class="history-left">
-          <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
-          <div class="history-info">
-            <div class="title">${data.title} ${subtitleHtml}</div>
-            <div class="meta">${data.date} • ${data.time}</div>
-          </div>
-        </div>
-        <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(data.amount))}</div>
-      `;
-      card.onclick = () => showTxDetail(data);
-      list.appendChild(card);
-      
-      sortHistoryList();
+      if (!data.date) data.date = now.toLocaleDateString('pl-PL');
 
       if (save && user) {
+        // Sauvegarde locale en cache
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{"montant":0,"history":[]}');
         stored.montant = user.montant;
         const exists = stored.history.some(h => h.id === data.id);
-        if (!exists) {
-          stored.history.push(data);
-        }
+        if (!exists) stored.history.push(data);
         localStorage.setItem(key, JSON.stringify(stored));
-      }
 
-      setTimeout(() => adjustAllTexts(), 10);
+        // Sauvegarde dans Firebase
+        push(ref(db, 'clients/' + user._id + '/history'), data).catch(err => console.error(err));
+      }
     }
 
+    function initHistoryListener(userId) {
+      if (historyListener) historyListener();
+      historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
+        const val = snap.val();
+        if (val) {
+          const arr = Object.values(val);
+          currentHistory = arr;
+          renderHistory(arr);
+        } else {
+          currentHistory = [];
+          renderHistory([]);
+        }
+      });
+    }
+
+    // ===== PROFIL =====
     function buildProfile(u) {
       return `
         <div><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Imię i nazwisko:</span> <b style="color:var(--text-primary)">${u.nom}</b></div>
@@ -1842,126 +1793,42 @@
       });
     }
 
-    window.openIbanModal = () => {
-      if (!user) {
-        toast('Zaloguj się, aby zobaczyć swoje dane.');
-        return;
+    // ===== NAVIGATION =====
+    const show = id => {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const map = { 'dashboard': 0, 'transfer': 1 };
+      if (map[id] !== undefined) {
+        document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
       }
-      document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
-      document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
-      document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
-      document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
-      document.getElementById('ibanModal').classList.remove('hidden');
+      if (id === 'dashboard') {
+        setTimeout(() => {
+          adjustAllTexts();
+        }, 50);
+      }
     };
-    window.closeIbanModal = () => {
-      document.getElementById('ibanModal').classList.add('hidden');
-    };
+    window.show = show;
 
-    window.login = async () => {
-      const e = document.getElementById('email').value.trim().toLowerCase();
-      const p = document.getElementById('pin').value.trim();
-      const err = document.getElementById('err');
-      err.classList.add('hidden');
-      const s = await get(ref(db, 'clients'));
-      const d = s.val() || {};
-      let f = null;
-      let fid = null;
-      for (const k in d) {
-        const v = d[k];
-        if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
-          f = v;
-          fid = k;
-          break;
-        }
-      }
-      if (!f) {
-        err.textContent = 'Błąd logowania – sprawdź email i PIN';
-        err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
-        show('login');
-        return;
-      }
-      if (f.blocked) {
-        err.textContent = 'Konto zostało zablokowane';
-        err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
-        return;
-      }
-      user = f;
-      user._id = fid;
-      if (!user.devise) user.devise = 'zł';
-      if (!user.theme) user.theme = 'purple';
-      localStorage.setItem('floa_session', JSON.stringify({ e, p }));
-      localStorage.setItem('floa_theme', user.theme);
-      const key = 'floa_' + user.email.toLowerCase();
-      const stored = JSON.parse(localStorage.getItem(key) || 'null');
-
-      document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
-      adjustGreetingFontSize();
-
-      const balElement = document.getElementById('bal');
-      const statBalElement = document.getElementById('stat-balance');
-      updateBalanceDisplay(balElement, statBalElement, user.montant);
-
-      document.getElementById('bal2').textContent = fmt(user.montant);
-      applyTheme(user.theme);
-      updateAvatars();
-      updateCurrency();
-      updateNotifBadge();
-      document.getElementById('accinfo').innerHTML = buildProfile(user);
-      document.getElementById('history-list').innerHTML = '';
-      if (stored && stored.history && stored.history.length) {
-        const sorted = [...stored.history].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-        sorted.forEach(h => addHistory(h, false));
-        document.getElementById('stat-tx').textContent = sorted.length;
-        const badge = document.getElementById('tx-count-badge');
-        if (badge) badge.textContent = sorted.length;
-      } else if (user.montant > 0) {
-        const now = new Date();
-        addHistory({
-          title: 'Przelew otrzymany',
-          subtitle: 'mBank',
-          amount: Number(user.montant),
-          beneficiary: 'mBank',
-          iban: 'PL00000',
-          date: now.toLocaleDateString('pl-PL'),
-          time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-          timestamp: now.getTime()
-        }, true);
-        document.getElementById('stat-tx').textContent = 1;
-        const badge = document.getElementById('tx-count-badge');
-        if (badge) badge.textContent = '1';
-      } else {
-        showEmptyHistory();
-        document.getElementById('stat-tx').textContent = 0;
-      }
-      adjustAllTexts();
-      navigateTo('dashboard');
-      setupValidation();
-      watchClientStatus();
-    };
-
-    window.logout = () => {
-      user = null;
-      localStorage.removeItem('floa_session');
-      localStorage.removeItem('floa_theme');
-      show('login');
-      history.replaceState({ screen: 'login' }, '', '#login');
-    };
-
-    // ===== GESTION DE LA PERSISTANCE DE SESSION =====
-    const saved = localStorage.getItem('floa_session');
-    if (saved) {
-      try {
-        const { e, p } = JSON.parse(saved);
-        document.getElementById('email').value = e;
-        document.getElementById('pin').value = p;
-        show('dashboard');
-        document.getElementById('greet').innerHTML = 'Ładowanie...';
-        setTimeout(() => login(), 50);
-      } catch {}
+    function navigateTo(id) {
+      history.pushState({ screen: id }, '', '#' + id);
+      show(id);
     }
+    window.navigateTo = navigateTo;
 
+    window.addEventListener('popstate', (e) => {
+      if (user) {
+        const target = e.state?.screen || 'dashboard';
+        show(target);
+      } else {
+        show('login');
+      }
+    });
+
+    if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
+
+    // ===== SURVEILLANCE DU STATUT CLIENT =====
     function watchClientStatus() {
       if (!user) return;
       const clientsRef = ref(db, 'clients');
@@ -1986,8 +1853,11 @@
           setTimeout(() => { show('login'); user = null; }, 1000);
           return;
         }
+
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
+
+        // Réinitialisation d'historique demandée
         if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
           user.montant = 0;
           update(ref(db, 'clients/' + found._id), { montant: 0 });
@@ -1997,7 +1867,7 @@
           updateBalanceDisplay(balElement, statBalElement, 0);
           document.getElementById('bal2').textContent = fmt(0);
           document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
-          showEmptyHistory();
+          renderHistory([]);
           document.getElementById('stat-tx').textContent = 0;
           adjustAllTexts();
           toast('Historia wyczyszczona');
@@ -2023,26 +1893,28 @@
         const diff = newMontant - oldMontant;
 
         if (diff > 0) {
-          user.montant = newMontant;
-          const now = new Date();
-          const id = genId('CR');
-          addHistory({
-            id: id,
-            title: 'Przelew otrzymany',
-            subtitle: 'mBank',
-            amount: diff,
-            beneficiary: 'mBank',
-            iban: '-',
-            date: now.toLocaleDateString('pl-PL'),
-            time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-            timestamp: now.getTime()
-          }, true);
-          toast(`+${fmt(diff)}`);
-          const hist = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
-          document.getElementById('stat-tx').textContent = (hist.history?.length || 0);
-          const badge = document.getElementById('tx-count-badge');
-          if (badge) badge.textContent = (hist.history?.length || 0);
+          // Vérifier que cette augmentation n'a pas déjà été enregistrée récemment
+          const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
+          if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
+            user.montant = newMontant;
+            const now = new Date();
+            const id = genId('CR');
+            const tx = {
+              id,
+              title: 'Przelew otrzymany',
+              subtitle: 'mBank',
+              amount: diff,
+              beneficiary: 'mBank',
+              iban: '-',
+              date: now.toLocaleDateString('pl-PL'),
+              time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+              timestamp: now.getTime()
+            };
+            addHistory(tx, true);
+            toast(`+${fmt(diff)}`);
+          }
         } else if (diff < 0) {
+          // Vérifier si cette baisse correspond à un transfert récent
           const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
           const now = Date.now();
           const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
@@ -2052,6 +1924,7 @@
           }
         }
 
+        // Mise à jour de l'affichage
         const balElement = document.getElementById('bal');
         const statBalElement = document.getElementById('stat-balance');
         updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -2067,14 +1940,102 @@
         updateCurrency();
         if (oldNotif !== user.notification) updateNotifBadge();
         if (oldDevise !== user.devise) {
-          document.getElementById('history-list').innerHTML = '';
-          showEmptyHistory();
+          renderHistory([]);
         }
         adjustAllTexts();
-        sortHistoryList();
       });
     }
 
+    // ===== LOGIN / LOGOUT =====
+    window.login = async () => {
+      const e = document.getElementById('email').value.trim().toLowerCase();
+      const p = document.getElementById('pin').value.trim();
+      const err = document.getElementById('err');
+      err.classList.add('hidden');
+
+      const s = await get(ref(db, 'clients'));
+      const d = s.val() || {};
+      let f = null, fid = null;
+      for (const k in d) {
+        const v = d[k];
+        if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
+          f = v;
+          fid = k;
+          break;
+        }
+      }
+
+      if (!f) {
+        err.textContent = 'Błąd logowania – sprawdź email i PIN';
+        err.classList.remove('hidden');
+        localStorage.removeItem('floa_session');
+        show('login');
+        return;
+      }
+      if (f.blocked) {
+        err.textContent = 'Konto zostało zablokowane';
+        err.classList.remove('hidden');
+        localStorage.removeItem('floa_session');
+        return;
+      }
+
+      user = f;
+      user._id = fid;
+      if (!user.devise) user.devise = 'zł';
+      if (!user.theme) user.theme = 'purple';
+
+      localStorage.setItem('floa_session', JSON.stringify({ e, p }));
+      localStorage.setItem('floa_theme', user.theme);
+
+      document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
+      adjustGreetingFontSize();
+
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+      document.getElementById('bal2').textContent = fmt(user.montant);
+
+      applyTheme(user.theme);
+      updateAvatars();
+      updateCurrency();
+      updateNotifBadge();
+      document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+      // Initialiser l'écouteur d'historique
+      initHistoryListener(fid);
+
+      adjustAllTexts();
+      navigateTo('dashboard');
+      setupValidation();
+      watchClientStatus();
+    };
+
+    window.logout = () => {
+      user = null;
+      if (historyListener) {
+        historyListener();
+        historyListener = null;
+      }
+      localStorage.removeItem('floa_session');
+      localStorage.removeItem('floa_theme');
+      show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
+    };
+
+    // ===== GESTION DE LA SESSION =====
+    const saved = localStorage.getItem('floa_session');
+    if (saved) {
+      try {
+        const { e, p } = JSON.parse(saved);
+        document.getElementById('email').value = e;
+        document.getElementById('pin').value = p;
+        show('dashboard');
+        document.getElementById('greet').innerHTML = 'Ładowanie...';
+        setTimeout(() => window.login(), 50);
+      } catch {}
+    }
+
+    // ===== TRANSFERT =====
     window.toVerify = () => {
       const amt = Number(document.getElementById('a').value) || 0;
       if (amt > Number(user.montant)) {
@@ -2103,13 +2064,13 @@
       const txt = document.getElementById('ptext');
       pr.classList.remove('hidden');
       let w = 0;
-      const i = setInterval(() => {
+      const interval = setInterval(() => {
         w += 2;
         const cur = Math.min(w, pct);
         bar.style.width = cur + '%';
         txt.textContent = cur + '%';
         if (w >= pct) {
-          clearInterval(i);
+          clearInterval(interval);
 
           const benef = document.getElementById('b').value || '-';
           const amtVal = Number(document.getElementById('a').value) || 0;
@@ -2143,15 +2104,17 @@
             user.montant = newMontant;
             localStorage.setItem('floa_last_transfer', JSON.stringify({ amount: amt, timestamp: Date.now() }));
             update(ref(db, 'clients/' + user._id), { montant: newMontant });
+
             const balElement = document.getElementById('bal');
             const statBalElement = document.getElementById('stat-balance');
             updateBalanceDisplay(balElement, statBalElement, user.montant);
             document.getElementById('bal2').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
+
             const now = new Date();
             const id = genId('DE');
-            addHistory({
-              id: id,
+            const tx = {
+              id,
               title: 'Przelew wysłany',
               subtitle: document.getElementById('b').value,
               amount: -amt,
@@ -2160,12 +2123,8 @@
               date: now.toLocaleDateString('pl-PL'),
               time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
               timestamp: now.getTime()
-            }, true);
-            const key = 'floa_' + user.email.toLowerCase();
-            const stored = JSON.parse(localStorage.getItem(key) || '{"history":[]}');
-            document.getElementById('stat-tx').textContent = (stored.history?.length || 0);
-            const badge = document.getElementById('tx-count-badge');
-            if (badge) badge.textContent = (stored.history?.length || 0);
+            };
+            addHistory(tx, true);
           }
 
           setTimeout(() => navigateTo('result'), 500);
@@ -2173,6 +2132,7 @@
       }, 40);
     };
 
+    // ===== TOAST =====
     window.toast = m => {
       const t = document.getElementById('t');
       t.textContent = m;
@@ -2180,10 +2140,12 @@
       setTimeout(() => t.style.display = 'none', 1500);
     };
 
+    // ===== MODALES =====
     window.openCard = () => document.getElementById('card').classList.remove('hidden');
     window.closeCard = () => document.getElementById('card').classList.add('hidden');
     window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
     window.closeAcc = () => document.getElementById('acc').classList.add('hidden');
+
     window.openNotifications = () => {
       const n = user && user.notification ? user.notification : '';
       document.getElementById('notif-content').innerHTML = n ?
@@ -2193,7 +2155,22 @@
     };
     window.closeNotifications = () => document.getElementById('notifications').classList.add('hidden');
 
-    window.showTxDetail = (d) => {
+    window.openIbanModal = () => {
+      if (!user) {
+        toast('Zaloguj się, aby zobaczyć swoje dane.');
+        return;
+      }
+      document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
+      document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
+      document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
+      document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
+      document.getElementById('ibanModal').classList.remove('hidden');
+    };
+    window.closeIbanModal = () => {
+      document.getElementById('ibanModal').classList.add('hidden');
+    };
+
+    window.showTxDetail = d => {
       const isCredit = d.amount >= 0;
       document.getElementById('tx-id').textContent = d.id || '';
       document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
@@ -2208,6 +2185,7 @@
     };
     window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
 
+    // ===== VALIDATION DU FORMULAIRE =====
     function setupValidation() {
       const btn = document.getElementById('continueBtn');
       const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -2222,6 +2200,7 @@
       });
     }
 
+    // ===== INIT =====
     window.addEventListener('resize', () => {
       adjustAllTexts();
     });
@@ -2229,14 +2208,12 @@
     setInterval(() => {
       if (user && document.getElementById('dashboard').classList.contains('active')) {
         adjustAllTexts();
-        sortHistoryList();
       }
     }, 3000);
 
     setTimeout(() => {
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
       adjustAllTexts();
-      sortHistoryList();
     }, 100);
   </script>
 </body>
