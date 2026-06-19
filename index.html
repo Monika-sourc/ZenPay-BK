@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES (inchangés, identiques à la version précédente) ===== */
+  /* ===== STYLES (inchangés) ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -1343,7 +1343,6 @@
   const db = getDatabase(app);
   let user = null;
   let historyListener = null;
-  let lastResetTimestamp = 0; // pour détecter les réinitialisations
 
   const themes = {
     purple: { p: '#6D28D9', l: '#EDE9FE' },
@@ -1465,7 +1464,6 @@
       showEmptyHistory();
       return;
     }
-    // Trier par timestamp décroissant
     items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     items.forEach(tx => {
       if (!tx.id) tx.id = genId(tx.amount >= 0 ? 'CR' : 'DE');
@@ -1488,7 +1486,6 @@
       card.onclick = () => showTxDetail(tx);
       list.appendChild(card);
     });
-    // Mettre à jour les badges
     const count = items.length;
     const badge = document.getElementById('tx-count-badge');
     if (badge) badge.textContent = count;
@@ -1514,7 +1511,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU CLIENT (solde, reset, etc.) =====
+  // ===== SURVEILLANCE DU CLIENT =====
   function watchClientStatus() {
     if (!user) return;
     const clientsRef = ref(db, 'clients');
@@ -1540,25 +1537,7 @@
         return;
       }
 
-      // Gestion du reset (historyReset)
-      if (found.historyReset && found.historyReset !== lastResetTimestamp) {
-        // Réinitialisation : solde = 0 et historique déjà supprimé par l'admin
-        // On met à jour le montant localement et on affiche
-        user.montant = 0;
-        // L'historique est déjà supprimé, l'écoute le reflétera
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, 0);
-        document.getElementById('bal2').textContent = fmt(0);
-        document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
-        lastResetTimestamp = found.historyReset;
-        toast('Historia wyczyszczona, saldo = 0');
-        // Mettre à jour le montant dans Firebase (si ce n'est pas déjà fait par l'admin)
-        // L'admin met déjà montant à 0, donc on ne le refait pas.
-        return;
-      }
-
-      // Mise à jour des données du client (sans créer de transactions automatiquement)
+      // Mise à jour des données du client
       const oldMontant = user.montant;
       const oldDevise = user.devise;
       const oldNotif = user.notification;
@@ -1575,20 +1554,15 @@
       user.theme = found.theme || 'purple';
 
       const newMontant = Number(found.montant) || 0;
-      const diff = newMontant - oldMontant;
+      user.montant = newMontant;
 
-      // Si le montant a changé, on met à jour l'affichage
-      // Les transactions sont déjà dans l'historique (ajoutées par l'admin ou par l'utilisateur via virement)
-      if (diff !== 0) {
-        user.montant = newMontant;
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, user.montant);
-        document.getElementById('bal2').textContent = fmt(user.montant);
-        document.getElementById('accinfo').innerHTML = buildProfile(user);
-      }
+      // Mise à jour de l'affichage du solde
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+      document.getElementById('bal2').textContent = fmt(user.montant);
+      document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-      // Mise à jour des autres champs
       if (oldTheme !== user.theme) {
         applyTheme(user.theme);
         document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
