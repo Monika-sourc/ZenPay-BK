@@ -43,14 +43,12 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== AUCUNE ANIMATION ===== */
   .screen {
     display: none;
     min-height: 100vh;
   }
   .screen.active { display: block; }
 
-  /* ===== MODALS ===== */
   .modal {
     position: fixed;
     inset: 0;
@@ -89,7 +87,6 @@
     justify-content: center;
   }
 
-  /* ===== BOUTONS GÉNÉRIQUES ===== */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -118,7 +115,6 @@
     box-shadow: none;
   }
 
-  /* ===== CHAMPS ===== */
   .input {
     width: 100%;
     padding: 10px 14px;
@@ -185,7 +181,6 @@
     background: #fff;
   }
 
-  /* ===== HEADER ===== */
   header {
     background: #ffffff;
     padding: 14px 20px;
@@ -253,7 +248,6 @@
   }
   .notif-badge.hidden { display: none; }
 
-  /* ===== MAIN – LARGEUR 400 px (mobile) ===== */
   main {
     padding: 24px 16px 40px;
     max-width: 400px;
@@ -263,7 +257,6 @@
     min-height: calc(100vh - 140px);
   }
 
-  /* ===== RESPONSIVE – ORDINATEUR ===== */
   @media (min-width: 768px) {
     main {
       max-width: 100%;
@@ -278,7 +271,6 @@
     }
   }
 
-  /* ===== GREETING ===== */
   #greet {
     font-size: 18px;
     font-weight: 700;
@@ -302,7 +294,6 @@
     font-size: 18px;
   }
 
-  /* ===== PANEL SOLDE – BORDURE FORTE ===== */
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
@@ -359,7 +350,6 @@
     font-weight: 400;
   }
 
-  /* ===== BOUTONS DU PANEL ===== */
   .balance-actions-wrapper {
     display: flex;
     gap: 8px;
@@ -424,7 +414,6 @@
     color: #2D3748;
   }
 
-  /* ===== TRANSFERT ===== */
   .transfer-card {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -433,7 +422,6 @@
     box-shadow: var(--shadow-soft);
   }
 
-  /* ===== RESPONSIVE MOBILE ===== */
   @media (max-width: 430px) {
     main {
       padding: 16px 12px 30px;
@@ -490,7 +478,6 @@
     }
   }
 
-  /* ===== STATS ===== */
   .quick-stats {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -523,7 +510,6 @@
     font-weight: 400;
   }
 
-  /* ===== HISTORIQUE – CADRE RÉGLEMENTAIRE PROFESSIONNEL ===== */
   .history-container {
     border: 1px solid #e5e7eb;
     border-radius: var(--radius-sm);
@@ -662,7 +648,6 @@
     margin-bottom: 10px;
   }
 
-  /* ===== TRANSFERT – autres ===== */
   .transfer-balance {
     display: flex;
     justify-content: space-between;
@@ -698,7 +683,6 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== VERIFY ===== */
   .verify-details {
     background: #FAFBFC;
     padding: 14px;
@@ -790,7 +774,6 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== RESULT ===== */
   .result-card {
     text-align: center;
     max-width: 400px;
@@ -862,7 +845,6 @@
     font-weight: 400;
   }
 
-  /* ===== BOTTOM NAV – BORDURE FORTE ===== */
   nav {
     position: fixed;
     bottom: 0;
@@ -902,7 +884,6 @@
     color: var(--p);
   }
 
-  /* ===== LOGIN – CHAMPS MODERNISÉS ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -1029,7 +1010,6 @@
     font-size: 17px;
   }
 
-  /* ===== TOAST ===== */
   #t {
     position: fixed;
     bottom: 100px;
@@ -1051,12 +1031,10 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== SCROLLBAR ===== */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 8px; }
 
-  /* ===== CARTE RÉALISTE ===== */
   .real-card {
     background: var(--p-gradient);
     border-radius: 18px;
@@ -1182,7 +1160,6 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  /* ===== MODALE IBAN ===== */
   .iban-modal .modal-content .iban-header {
     display: flex;
     align-items: center;
@@ -1279,7 +1256,6 @@
     <main>
       <h2 id="greet">Powitanie, <span>Power</span></h2>
 
-      <!-- PANEL SOLDE avec bordure forte -->
       <div class="balance-panel">
         <div class="label">
           <span>Dostępne saldo</span>
@@ -1308,7 +1284,6 @@
         <div class="stat-item"><div class="stat-value" id="stat-devise">zł</div><div class="stat-label">Waluta</div></div>
       </div>
 
-      <!-- ===== HISTORIQUE – CADRE RÉGLEMENTAIRE ===== -->
       <div class="history-container">
         <div class="history-header">
           <i class="fa-solid fa-clock-rotate-left"></i>
@@ -1427,7 +1402,7 @@
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV – FIXE avec bordure forte ========== -->
+  <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
     <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
@@ -1436,7 +1411,6 @@
   </nav>
 
   <!-- ========== MODALS ========== -->
-  <!-- CARD -->
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeCard()" class="modal-close">×</button>
@@ -1470,7 +1444,6 @@
     </div>
   </div>
 
-  <!-- IBAN -->
   <div id="ibanModal" class="modal hidden iban-modal">
     <div class="modal-content">
       <button onclick="closeIbanModal()" class="modal-close">×</button>
@@ -1478,27 +1451,22 @@
         <i class="fa-regular fa-credit-card"></i>
         <span>Dane konta</span>
       </div>
-
       <div class="iban-field">
         <div class="label">Właściciel konta</div>
         <div class="value" id="ibanOwner">KWIATKOWSKI PW</div>
       </div>
-
       <div class="iban-field">
         <div class="label">IBAN</div>
         <div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
       </div>
-
       <div class="iban-field">
         <div class="label">BIC / SWIFT</div>
         <div class="value small" id="ibanBic">TTQGLTIJCJK</div>
       </div>
-
       <div class="iban-field">
         <div class="label">Bank</div>
         <div class="value small" id="ibanBank">FLOA BK FINANCE</div>
       </div>
-
       <div class="iban-security">
         <i class="fa-solid fa-shield"></i>
         <span>Ze względów bezpieczeństwa niektóre znaki Twojego numeru IBAN zostały zamaskowane.</span>
@@ -1506,7 +1474,6 @@
     </div>
   </div>
 
-  <!-- ACCOUNT -->
   <div id="acc" class="modal hidden">
     <div class="modal-content">
       <button onclick="closeAcc()" class="modal-close">×</button>
@@ -1516,7 +1483,6 @@
     </div>
   </div>
 
-  <!-- NOTIFICATIONS -->
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="closeNotifications()" class="modal-close">×</button>
@@ -1525,7 +1491,6 @@
     </div>
   </div>
 
-  <!-- TRANSACTION DETAIL -->
   <div id="txDetail" class="modal hidden" style="z-index:60">
     <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
       <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
@@ -1539,7 +1504,6 @@
     </div>
   </div>
 
-  <!-- TOAST -->
   <div id="t"></div>
 
   <!-- ========== SCRIPTS ========== -->
@@ -1570,7 +1534,6 @@
       yellow: { p: '#D97706', l: '#FEF3C7' }
     };
 
-    // Déclaration des fonctions avant toute utilisation
     function adjustBrightness(hex, percent) {
       const num = parseInt(hex.replace('#', ''), 16);
       const r = Math.min(255, Math.max(0, (num >> 16) + percent));
@@ -1588,7 +1551,6 @@
       localStorage.setItem('floa_theme', theme);
     }
 
-    // Appliquer le thème enregistré
     const savedTheme = localStorage.getItem('floa_theme') || 'purple';
     applyTheme(savedTheme);
 
@@ -1721,8 +1683,8 @@
       }
       if (!data.date) data.date = now.toLocaleDateString('pl-PL');
 
-      if (save && user) {
-        // Sauvegarde locale en cache
+      if (save && user && user._id) {
+        // Sauvegarde locale (cache)
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{"montant":0,"history":[]}');
         stored.montant = user.montant;
@@ -1730,13 +1692,35 @@
         if (!exists) stored.history.push(data);
         localStorage.setItem(key, JSON.stringify(stored));
 
-        // Sauvegarde dans Firebase
-        push(ref(db, 'clients/' + user._id + '/history'), data).catch(err => console.error(err));
+        // Sauvegarde dans Firebase (source de vérité)
+        push(ref(db, 'clients/' + user._id + '/history'), data)
+          .then(() => console.log('Transaction saved to Firebase'))
+          .catch(err => console.error('Firebase push error:', err));
       }
     }
 
-    function initHistoryListener(userId) {
+    // ===== CHARGEMENT INITIAL + ÉCOUTEUR EN TEMPS RÉEL =====
+    async function initHistoryListener(userId) {
       if (historyListener) historyListener();
+
+      // 1. Charger l'historique une fois au départ
+      try {
+        const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
+        if (snapshot.exists()) {
+          const val = snapshot.val();
+          const arr = Object.values(val);
+          currentHistory = arr;
+          renderHistory(arr);
+        } else {
+          currentHistory = [];
+          renderHistory([]);
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement initial de l\'historique:', err);
+        renderHistory([]);
+      }
+
+      // 2. Mettre en place l'écouteur en temps réel pour les mises à jour
       historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
         const val = snap.val();
         if (val) {
@@ -1804,9 +1788,7 @@
         document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
       }
       if (id === 'dashboard') {
-        setTimeout(() => {
-          adjustAllTexts();
-        }, 50);
+        setTimeout(() => adjustAllTexts(), 50);
       }
     };
     window.show = show;
@@ -1857,7 +1839,6 @@
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
 
-        // Réinitialisation d'historique demandée
         if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
           user.montant = 0;
           update(ref(db, 'clients/' + found._id), { montant: 0 });
@@ -1892,8 +1873,9 @@
         const newMontant = Number(found.montant) || 0;
         const diff = newMontant - oldMontant;
 
+        // Détection d'un crédit (augmentation de solde) – on crée une transaction
         if (diff > 0) {
-          // Vérifier que cette augmentation n'a pas déjà été enregistrée récemment
+          // Éviter les doublons en vérifiant la dernière transaction
           const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
           if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
             user.montant = newMontant;
@@ -1914,7 +1896,7 @@
             toast(`+${fmt(diff)}`);
           }
         } else if (diff < 0) {
-          // Vérifier si cette baisse correspond à un transfert récent
+          // Baisse de solde – on vérifie si c'est un transfert récent
           const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
           const now = Date.now();
           const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
@@ -2001,8 +1983,8 @@
       updateNotifBadge();
       document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-      // Initialiser l'écouteur d'historique
-      initHistoryListener(fid);
+      // Charger l'historique et écouter les changements
+      await initHistoryListener(fid);
 
       adjustAllTexts();
       navigateTo('dashboard');
