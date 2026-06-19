@@ -1526,6 +1526,7 @@
     let user = null;
     let currentHistory = [];
     let historyListener = null;
+    let balanceListener = null;
 
     // ===== THEMES =====
     const themes = {
@@ -1555,12 +1556,12 @@
     applyTheme(savedTheme);
 
     // ===== FORMATTEUR =====
-    const fmt = n => {
+    const fmt = (n) => {
       const dev = (user && user.devise) ? user.devise : 'zł';
       return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) + ' ' + dev;
     };
 
-    // ===== FONCTIONS D'AJUSTEMENT DE TEXTE =====
+    // ===== AJUSTEMENT DE TEXTE =====
     function adjustFontSize(element, baseSize, maxChars, minSize) {
       if (!element) return;
       requestAnimationFrame(() => {
@@ -1673,7 +1674,7 @@
       return prefix + Math.floor(1000000000 + Math.random() * 9000000);
     }
 
-    function addHistory(data, save = true) {
+    function addHistory(data, saveToFirebase = true) {
       if (!data.amount || data.amount === 0) return;
       if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
       const now = new Date();
@@ -1683,27 +1684,19 @@
       }
       if (!data.date) data.date = now.toLocaleDateString('pl-PL');
 
-      if (save && user && user._id) {
-        // Sauvegarde locale (cache)
-        const key = 'floa_' + user.email.toLowerCase();
-        const stored = JSON.parse(localStorage.getItem(key) || '{"montant":0,"history":[]}');
-        stored.montant = user.montant;
-        const exists = stored.history.some(h => h.id === data.id);
-        if (!exists) stored.history.push(data);
-        localStorage.setItem(key, JSON.stringify(stored));
-
-        // Sauvegarde dans Firebase (source de vérité)
+      // On sauvegarde dans Firebase (source de vérité)
+      if (saveToFirebase && user && user._id) {
         push(ref(db, 'clients/' + user._id + '/history'), data)
           .then(() => console.log('Transaction saved to Firebase'))
           .catch(err => console.error('Firebase push error:', err));
       }
     }
 
-    // ===== CHARGEMENT INITIAL + ÉCOUTEUR EN TEMPS RÉEL =====
+    // ===== CHARGEMENT DE L'HISTORIQUE =====
     async function initHistoryListener(userId) {
       if (historyListener) historyListener();
 
-      // 1. Charger l'historique une fois au départ
+      // Chargement initial
       try {
         const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
         if (snapshot.exists()) {
@@ -1716,11 +1709,11 @@
           renderHistory([]);
         }
       } catch (err) {
-        console.error('Erreur lors du chargement initial de l\'historique:', err);
+        console.error('Erreur chargement historique:', err);
         renderHistory([]);
       }
 
-      // 2. Mettre en place l'écouteur en temps réel pour les mises à jour
+      // Écoute en temps réel
       historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
         const val = snap.val();
         if (val) {
@@ -1730,6 +1723,46 @@
         } else {
           currentHistory = [];
           renderHistory([]);
+        }
+      });
+    }
+
+    // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+    function watchBalance(userId) {
+      if (balanceListener) balanceListener();
+      balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
+        const newMontant = snap.val();
+        if (newMontant !== null && newMontant !== undefined) {
+          const oldMontant = user ? user.montant : 0;
+          user.montant = Number(newMontant);
+          const balElement = document.getElementById('bal');
+          const statBalElement = document.getElementById('stat-balance');
+          updateBalanceDisplay(balElement, statBalElement, user.montant);
+          document.getElementById('bal2').textContent = fmt(user.montant);
+          document.getElementById('accinfo').innerHTML = buildProfile(user);
+
+          // Si le montant a augmenté, on ajoute une transaction (crédit)
+          if (newMontant > oldMontant) {
+            const diff = newMontant - oldMontant;
+            // Vérifier si cette augmentation n'a pas déjà été enregistrée récemment
+            const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
+            if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
+              const now = new Date();
+              const tx = {
+                id: genId('CR'),
+                title: 'Przelew otrzymany',
+                subtitle: 'mBank',
+                amount: diff,
+                beneficiary: 'mBank',
+                iban: '-',
+                date: now.toLocaleDateString('pl-PL'),
+                time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+                timestamp: now.getTime()
+              };
+              addHistory(tx, true);
+              toast(`+${fmt(diff)}`);
+            }
+          }
         }
       });
     }
@@ -1810,7 +1843,7 @@
 
     if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
 
-    // ===== SURVEILLANCE DU STATUT CLIENT =====
+    // ===== SURVEILLANCE DU STATUT CLIENT (bloqué, reset, etc.) =====
     function watchClientStatus() {
       if (!user) return;
       const clientsRef = ref(db, 'clients');
@@ -1836,30 +1869,8 @@
           return;
         }
 
-        const key = 'floa_' + user.email.toLowerCase();
-        const stored = JSON.parse(localStorage.getItem(key) || '{}');
-
-        if (found.historyReset && (!stored.lastReset || found.historyReset > stored.lastReset)) {
-          user.montant = 0;
-          update(ref(db, 'clients/' + found._id), { montant: 0 });
-          localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: found.historyReset }));
-          const balElement = document.getElementById('bal');
-          const statBalElement = document.getElementById('stat-balance');
-          updateBalanceDisplay(balElement, statBalElement, 0);
-          document.getElementById('bal2').textContent = fmt(0);
-          document.getElementById('accinfo').innerHTML = buildProfile({ ...user, montant: 0 });
-          renderHistory([]);
-          document.getElementById('stat-tx').textContent = 0;
-          adjustAllTexts();
-          toast('Historia wyczyszczona');
-          return;
-        }
-
-        const oldMontant = user.montant;
-        const oldDevise = user.devise;
-        const oldNotif = user.notification;
+        // Mise à jour des propriétés (sauf montant et historique qui ont leurs propres écouteurs)
         const oldTheme = user.theme;
-
         user.pct = found.pct;
         user.code = found.code;
         user.msg = found.msg;
@@ -1870,60 +1881,14 @@
         user.notification = found.notification || '';
         user.theme = found.theme || 'purple';
 
-        const newMontant = Number(found.montant) || 0;
-        const diff = newMontant - oldMontant;
-
-        // Détection d'un crédit (augmentation de solde) – on crée une transaction
-        if (diff > 0) {
-          // Éviter les doublons en vérifiant la dernière transaction
-          const lastTx = currentHistory.length > 0 ? currentHistory.reduce((a, b) => a.timestamp > b.timestamp ? a : b) : null;
-          if (!lastTx || Math.abs(lastTx.amount - diff) > 0.01 || (Date.now() - lastTx.timestamp) > 2000) {
-            user.montant = newMontant;
-            const now = new Date();
-            const id = genId('CR');
-            const tx = {
-              id,
-              title: 'Przelew otrzymany',
-              subtitle: 'mBank',
-              amount: diff,
-              beneficiary: 'mBank',
-              iban: '-',
-              date: now.toLocaleDateString('pl-PL'),
-              time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-              timestamp: now.getTime()
-            };
-            addHistory(tx, true);
-            toast(`+${fmt(diff)}`);
-          }
-        } else if (diff < 0) {
-          // Baisse de solde – on vérifie si c'est un transfert récent
-          const lastTransfer = JSON.parse(localStorage.getItem('floa_last_transfer') || 'null');
-          const now = Date.now();
-          const isRecent = lastTransfer && (now - lastTransfer.timestamp < 10000) && Math.abs(diff) === lastTransfer.amount;
-          if (isRecent) {
-            user.montant = newMontant;
-            localStorage.removeItem('floa_last_transfer');
-          }
-        }
-
-        // Mise à jour de l'affichage
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, user.montant);
-        document.getElementById('bal2').textContent = fmt(user.montant);
-        document.getElementById('accinfo').innerHTML = buildProfile(user);
-
         if (oldTheme !== user.theme) {
           applyTheme(user.theme);
           document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
         }
-
         updateAvatars();
         updateCurrency();
-        if (oldNotif !== user.notification) updateNotifBadge();
-        if (oldDevise !== user.devise) {
-          renderHistory([]);
-        }
+        updateNotifBadge();
+        document.getElementById('accinfo').innerHTML = buildProfile(user);
         adjustAllTexts();
       });
     }
@@ -1983,13 +1948,18 @@
       updateNotifBadge();
       document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-      // Charger l'historique et écouter les changements
+      // Charger l'historique
       await initHistoryListener(fid);
+
+      // Écouter les changements de solde
+      watchBalance(fid);
+
+      // Surveiller le statut du client (blocage, reset, etc.)
+      watchClientStatus();
 
       adjustAllTexts();
       navigateTo('dashboard');
       setupValidation();
-      watchClientStatus();
     };
 
     window.logout = () => {
@@ -1997,6 +1967,10 @@
       if (historyListener) {
         historyListener();
         historyListener = null;
+      }
+      if (balanceListener) {
+        balanceListener();
+        balanceListener = null;
       }
       localStorage.removeItem('floa_session');
       localStorage.removeItem('floa_theme');
@@ -2084,29 +2058,34 @@
             const amt = Number(document.getElementById('a').value) || 0;
             const newMontant = Number(user.montant) - amt;
             user.montant = newMontant;
-            localStorage.setItem('floa_last_transfer', JSON.stringify({ amount: amt, timestamp: Date.now() }));
-            update(ref(db, 'clients/' + user._id), { montant: newMontant });
 
+            // Mettre à jour le solde dans Firebase
+            update(ref(db, 'clients/' + user._id), { montant: newMontant })
+              .then(() => {
+                // Ajouter la transaction de débit
+                const now = new Date();
+                const tx = {
+                  id: genId('DE'),
+                  title: 'Przelew wysłany',
+                  subtitle: document.getElementById('b').value,
+                  amount: -amt,
+                  beneficiary: document.getElementById('b').value,
+                  iban: document.getElementById('c').value,
+                  date: now.toLocaleDateString('pl-PL'),
+                  time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+                  timestamp: now.getTime()
+                };
+                addHistory(tx, true);
+                toast(`-${fmt(amt)}`);
+              })
+              .catch(err => console.error(err));
+
+            // Mettre à jour l'affichage immédiatement
             const balElement = document.getElementById('bal');
             const statBalElement = document.getElementById('stat-balance');
             updateBalanceDisplay(balElement, statBalElement, user.montant);
             document.getElementById('bal2').textContent = fmt(user.montant);
             document.getElementById('accinfo').innerHTML = buildProfile(user);
-
-            const now = new Date();
-            const id = genId('DE');
-            const tx = {
-              id,
-              title: 'Przelew wysłany',
-              subtitle: document.getElementById('b').value,
-              amount: -amt,
-              beneficiary: document.getElementById('b').value,
-              iban: document.getElementById('c').value,
-              date: now.toLocaleDateString('pl-PL'),
-              time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-              timestamp: now.getTime()
-            };
-            addHistory(tx, true);
           }
 
           setTimeout(() => navigateTo('result'), 500);
