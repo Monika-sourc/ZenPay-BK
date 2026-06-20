@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES (inchangés, identiques à la version précédente) ===== */
+  /* ===== STYLES (inchangés) ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -232,7 +232,6 @@
     min-height: calc(100vh - 140px);
   }
 
-  /* ===== RESPONSIVE POUR ORDINATEUR ===== */
   @media (min-width: 768px) {
     main {
       max-width: 100%;
@@ -1645,6 +1644,42 @@
     });
   }
 
+  // ===== VÉRIFICATION DES TRANSACTIONS DE CRÉDIT MANQUANTES AU LOGIN =====
+  async function checkAndCreateMissingCredit(userId, userData) {
+    const lastAmount = userData.lastCreditAmount || 0;
+    const currentAmount = Number(userData.montant) || 0;
+    if (currentAmount > lastAmount) {
+      const diff = currentAmount - lastAmount;
+      const now = new Date();
+      const tx = {
+        id: genId('CR'),
+        title: 'Przelew otrzymany',
+        subtitle: 'mBank',
+        amount: diff,
+        beneficiary: 'mBank',
+        iban: '-',
+        date: now.toLocaleDateString('pl-PL'),
+        time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+        timestamp: now.getTime()
+      };
+      // Créer la transaction dans l'historique
+      await push(ref(db, 'clients/' + userId + '/history'), tx);
+      // Mettre à jour lastCreditAmount et lastCreditTransactionId
+      await update(ref(db, 'clients/' + userId), {
+        lastCreditAmount: currentAmount,
+        lastCreditTransactionId: tx.id
+      });
+      // Ajouter la transaction à l'affichage local
+      if (user) {
+        currentHistory = [...currentHistory, tx];
+        renderHistory(currentHistory);
+        toast(`+${fmt(diff)}`);
+      }
+      return tx;
+    }
+    return null;
+  }
+
   // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
@@ -1655,6 +1690,7 @@
       const oldMontant = user ? user.montant : 0;
       const diff = Number(newMontant) - oldMontant;
 
+      // Mettre à jour l'affichage immédiat
       user.montant = Number(newMontant);
       const balElement = document.getElementById('bal');
       const statBalElement = document.getElementById('stat-balance');
@@ -1666,10 +1702,10 @@
         const userRef = ref(db, 'clients/' + userId);
         runTransaction(userRef, (currentData) => {
           if (currentData === null) return currentData;
-          const lastCreditAmount = currentData.lastCreditAmount || 0;
-          if (Number(newMontant) > Number(lastCreditAmount)) {
+          const lastAmount = currentData.lastCreditAmount || 0;
+          if (Number(newMontant) > Number(lastAmount)) {
             currentData.lastCreditAmount = Number(newMontant);
-            currentData._pendingDiff = Number(newMontant) - Number(lastCreditAmount);
+            currentData._pendingDiff = Number(newMontant) - Number(lastAmount);
             return currentData;
           }
           return currentData;
@@ -1689,7 +1725,10 @@
               timestamp: now.getTime()
             };
             addHistory(tx).then(() => {
-              update(ref(db, 'clients/' + userId), { _pendingDiff: null });
+              update(ref(db, 'clients/' + userId), {
+                _pendingDiff: null,
+                lastCreditTransactionId: tx.id
+              });
               toast(`+${fmt(pendingDiff)}`);
             }).catch(err => console.error('Erreur création transaction crédit:', err));
           }
@@ -1715,6 +1754,7 @@
         return;
       }
 
+      // Gestion du reset (historyReset)
       if (data.historyReset) {
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
@@ -1722,7 +1762,11 @@
           update(ref(db, 'clients/' + userId), { montant: 0 });
           set(ref(db, 'clients/' + userId + '/history'), null)
             .then(() => {
-              update(ref(db, 'clients/' + userId), { lastCreditAmount: 0, _pendingDiff: null });
+              update(ref(db, 'clients/' + userId), {
+                lastCreditAmount: 0,
+                _pendingDiff: null,
+                lastCreditTransactionId: null
+              });
               localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
               user.montant = 0;
               const balElement = document.getElementById('bal');
@@ -1739,6 +1783,7 @@
         return;
       }
 
+      // Mise à jour des autres propriétés
       const oldTheme = user.theme;
       user.pct = data.pct;
       user.code = data.code;
@@ -1828,9 +1873,9 @@
   window.navigateTo = navigateTo;
 
   window.addEventListener('popstate', (e) => {
+    // On ne réagit pas au popstate pour rester sur le dashboard si connecté
     if (user) {
-      const target = e.state?.screen || 'dashboard';
-      show(target);
+      show('dashboard');
     } else {
       show('login');
     }
@@ -1887,6 +1932,9 @@
     document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
+    // Vérifier et créer les transactions de crédit manquantes (avant l'affichage)
+    await checkAndCreateMissingCredit(fid, user);
+
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
     updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -1905,15 +1953,13 @@
     adjustAllTexts();
     setupValidation();
 
-    // Si on n'est pas en mode silencieux, on navigue vers dashboard
     if (!options.silent) {
       navigateTo('dashboard');
     }
-    // Sinon, on reste sur l'écran actuel (qui est déjà dashboard)
   };
 
   window.logout = () => {
-    user = null;
+    // Arrêter tous les écouteurs
     if (historyListener) {
       historyListener();
       historyListener = null;
@@ -1926,10 +1972,29 @@
       statusListener();
       statusListener = null;
     }
+    // Supprimer la session et le thème
     localStorage.removeItem('floa_session');
     localStorage.removeItem('floa_theme');
+    // Vider les données utilisateur
+    user = null;
+    currentHistory = [];
+    // Revenir à l'écran de login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
+    // Nettoyer l'affichage
+    document.getElementById('greet').innerHTML = 'Powitanie, <span>Power</span>';
+    document.getElementById('bal').textContent = '0,00 zł';
+    document.getElementById('stat-balance').textContent = '0,00 zł';
+    document.getElementById('bal2').textContent = '0,00 zł';
+    document.getElementById('stat-tx').textContent = '0';
+    document.getElementById('tx-count-badge').textContent = '0';
+    document.getElementById('history-list').innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+    document.getElementById('accinfo').innerHTML = '';
+    ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = 'FB';
+    });
+    document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
   };
 
   // ===== GESTION DE LA SESSION =====
@@ -1943,7 +2008,7 @@
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
       // Appeler login en mode silencieux pour rafraîchir les données
-      login({ silent: true });
+      login({ silent: true }).catch(() => {});
     } catch {}
   }
 
@@ -2115,10 +2180,22 @@
   }
 
   // ===== RAFRAÎCHISSEMENT AUTOMATIQUE (toutes les secondes) =====
-  setInterval(() => {
+  function refreshData() {
     if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
+      // Forcer un re-render de l'historique avec les données actuelles
+      renderHistory(currentHistory);
+      // Rafraîchir le solde depuis la mémoire
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      if (balElement && statBalElement) {
+        updateBalanceDisplay(balElement, statBalElement, user.montant);
+      }
     }
+  }
+
+  setInterval(() => {
+    refreshData();
   }, 1000);
 
   // ===== INIT =====
