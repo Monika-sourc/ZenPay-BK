@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES (inchangés, identiques à la version précédente) ===== */
+  /* ===== STYLES (inchangés) ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -25,13 +25,11 @@
     --p-gradient: linear-gradient(135deg, #8B5CF6, #6D28D9);
     --p-soft: rgba(109, 40, 217, 0.12);
   }
-
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-
   body {
     font-family: 'Roboto', -apple-system, system-ui, sans-serif;
     background: #f8fafc;
@@ -42,10 +40,8 @@
     padding-bottom: 90px;
     -webkit-font-smoothing: antialiased;
   }
-
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: block; }
-
   .modal {
     position: fixed;
     inset: 0;
@@ -83,7 +79,6 @@
     align-items: center;
     justify-content: center;
   }
-
   .btn {
     display: inline-flex;
     align-items: center;
@@ -108,7 +103,6 @@
     color: var(--p);
     box-shadow: none;
   }
-
   .input {
     width: 100%;
     padding: 10px 14px;
@@ -125,7 +119,6 @@
     box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.10);
     background: #fff;
   }
-
   .amount-input-wrap {
     display: flex;
     align-items: center;
@@ -157,7 +150,6 @@
     min-height: 40px;
     line-height: 1;
   }
-
   header {
     background: #ffffff;
     padding: 14px 20px;
@@ -222,7 +214,6 @@
     font-family: 'Roboto', sans-serif;
   }
   .notif-badge.hidden { display: none; }
-
   main {
     padding: 24px 16px 40px;
     max-width: 400px;
@@ -231,7 +222,6 @@
     box-shadow: 0 0 0 1px rgba(0,0,0,0.02);
     min-height: calc(100vh - 140px);
   }
-
   @media (min-width: 768px) {
     main {
       max-width: 100%;
@@ -245,7 +235,6 @@
       max-width: 700px;
     }
   }
-
   #greet {
     font-size: 18px;
     font-weight: 700;
@@ -268,7 +257,6 @@
     min-width: 0;
     font-size: 18px;
   }
-
   .balance-panel {
     background: var(--p-gradient);
     border-radius: var(--radius);
@@ -324,7 +312,6 @@
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
-
   .balance-actions-wrapper {
     display: flex;
     gap: 8px;
@@ -363,7 +350,6 @@
     color: #2D3748;
     flex-shrink: 0;
   }
-
   .btn-iban {
     width: 100%;
     background: #FFFFFF;
@@ -386,7 +372,6 @@
     font-size: 17px;
     color: #2D3748;
   }
-
   .transfer-card {
     background: var(--card-bg);
     border: 1px solid var(--border-light);
@@ -394,7 +379,6 @@
     padding: 16px 16px;
     box-shadow: var(--shadow-soft);
   }
-
   @media (max-width: 430px) {
     main {
       padding: 16px 12px 30px;
@@ -423,7 +407,6 @@
       padding: 14px 12px;
     }
   }
-
   @media (max-width: 360px) {
     .balance-actions-wrapper .btn-action {
       font-size: 13px;
@@ -450,7 +433,6 @@
       padding: 14px 16px 12px;
     }
   }
-
   .quick-stats {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -482,7 +464,6 @@
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
-
   .history-container {
     border: 1px solid #e5e7eb;
     border-radius: var(--radius-sm);
@@ -620,7 +601,6 @@
     color: #d1d5db;
     margin-bottom: 10px;
   }
-
   .transfer-balance {
     display: flex;
     justify-content: space-between;
@@ -655,7 +635,6 @@
     letter-spacing: 0.3px;
     font-family: 'Roboto', sans-serif;
   }
-
   .verify-details {
     background: #FAFBFC;
     padding: 14px;
@@ -746,7 +725,6 @@
     color: var(--p);
     font-family: 'Roboto', sans-serif;
   }
-
   .result-card {
     text-align: center;
     max-width: 400px;
@@ -817,7 +795,6 @@
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
-
   nav {
     position: fixed;
     bottom: 0;
@@ -856,7 +833,6 @@
   .nav-item.active i {
     color: var(--p);
   }
-
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -982,7 +958,6 @@
   .login-card .btn i {
     font-size: 17px;
   }
-
   #t {
     position: fixed;
     bottom: 100px;
@@ -1003,11 +978,9 @@
     text-align: center;
     font-family: 'Roboto', sans-serif;
   }
-
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 8px; }
-
   .real-card {
     background: var(--p-gradient);
     border-radius: 18px;
@@ -1132,7 +1105,6 @@
     margin-top: 4px;
     font-family: 'Roboto', sans-serif;
   }
-
   .iban-modal .modal-content .iban-header {
     display: flex;
     align-items: center;
@@ -1187,7 +1159,6 @@
   .iban-modal .modal-content .iban-security span {
     flex: 1;
   }
-
   .hidden { display: none !important; }
 </style>
 </head>
@@ -1558,43 +1529,42 @@
   function renderHistory(historyArray) {
     const list = document.getElementById('history-list');
     list.innerHTML = '';
-    let count = 0;
     if (!historyArray || historyArray.length === 0) {
       list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-    } else {
-      const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      count = sorted.length;
-      sorted.forEach(d => {
-        const card = document.createElement('div');
-        card.className = 'history-item';
-        card.setAttribute('data-id', d.id);
-        card.setAttribute('data-timestamp', d.timestamp);
-        const pos = d.amount >= 0;
-        const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
-        card.innerHTML = `
-          <div class="history-left">
-            <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
-            <div class="history-info">
-              <div class="title">${d.title} ${subtitleHtml}</div>
-              <div class="meta">${d.date || ''} • ${d.time || ''}</div>
-            </div>
-          </div>
-          <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
-        `;
-        card.onclick = () => showTxDetail(d);
-        list.appendChild(card);
-      });
+      document.getElementById('tx-count-badge').textContent = '0';
+      document.getElementById('stat-tx').textContent = '0';
+      return;
     }
-    // Mise à jour du compteur "Transakcje" (stat-tx) et du badge
-    document.getElementById('stat-tx').textContent = count;
+    const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    sorted.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'history-item';
+      card.setAttribute('data-id', d.id);
+      card.setAttribute('data-timestamp', d.timestamp);
+      const pos = d.amount >= 0;
+      const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
+      card.innerHTML = `
+        <div class="history-left">
+          <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
+          <div class="history-info">
+            <div class="title">${d.title} ${subtitleHtml}</div>
+            <div class="meta">${d.date || ''} • ${d.time || ''}</div>
+          </div>
+        </div>
+        <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
+      `;
+      card.onclick = () => showTxDetail(d);
+      list.appendChild(card);
+    });
+    const count = sorted.length;
     document.getElementById('tx-count-badge').textContent = count;
+    document.getElementById('stat-tx').textContent = count;
   }
 
   function genId(prefix) {
     return prefix + Math.floor(1000000000 + Math.random() * 9000000);
   }
 
-  // Ajout d'une transaction dans Firebase (crédit ou débit)
   function addHistory(data) {
     if (!data.amount || data.amount === 0) return Promise.resolve();
     if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
@@ -1646,7 +1616,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  // ===== SURVEILLANCE DU SOLDE =====
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
@@ -1656,7 +1626,6 @@
       const oldMontant = user ? user.montant : 0;
       const diff = Number(newMontant) - oldMontant;
 
-      // Mettre à jour l'affichage
       user.montant = Number(newMontant);
       const balElement = document.getElementById('bal');
       const statBalElement = document.getElementById('stat-balance');
@@ -1664,28 +1633,20 @@
       document.getElementById('bal2').textContent = fmt(user.montant);
       document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-      // Si le montant a augmenté, traiter le crédit
       if (diff > 0) {
-        // Utiliser une transaction atomique pour éviter les doublons
         const userRef = ref(db, 'clients/' + userId);
         runTransaction(userRef, (currentData) => {
           if (currentData === null) return currentData;
-          // On lit le dernier montant pour lequel une transaction de crédit a été créée
           const lastCreditAmount = currentData.lastCreditAmount || 0;
-          // On compare avec le montant actuel
           if (Number(newMontant) > Number(lastCreditAmount)) {
-            // On met à jour lastCreditAmount avec le nouveau montant
             currentData.lastCreditAmount = Number(newMontant);
-            // On stocke également la différence pour créer la transaction après
             currentData._pendingDiff = Number(newMontant) - Number(lastCreditAmount);
             return currentData;
           }
-          // Sinon, on ne fait rien
           return currentData;
         }).then((result) => {
           if (result.committed && result.snapshot.val() && result.snapshot.val()._pendingDiff) {
             const pendingDiff = result.snapshot.val()._pendingDiff;
-            // Créer la transaction de crédit
             const now = new Date();
             const tx = {
               id: genId('CR'),
@@ -1699,7 +1660,6 @@
               timestamp: now.getTime()
             };
             addHistory(tx).then(() => {
-              // Nettoyer le champ temporaire
               update(ref(db, 'clients/' + userId), { _pendingDiff: null });
               toast(`+${fmt(pendingDiff)}`);
             }).catch(err => console.error('Erreur création transaction crédit:', err));
@@ -1709,7 +1669,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU STATUT CLIENT (blocage, reset, etc.) =====
+  // ===== SURVEILLANCE DU STATUT CLIENT =====
   function watchClientStatus(userId) {
     if (statusListener) statusListener();
     statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
@@ -1726,16 +1686,13 @@
         return;
       }
 
-      // Gestion du reset (historyReset)
       if (data.historyReset) {
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
         if (!stored.lastReset || data.historyReset > stored.lastReset) {
-          // Réinitialisation : on met le montant à 0, on vide l'historique
           update(ref(db, 'clients/' + userId), { montant: 0 });
           set(ref(db, 'clients/' + userId + '/history'), null)
             .then(() => {
-              // On reset aussi lastCreditAmount
               update(ref(db, 'clients/' + userId), { lastCreditAmount: 0, _pendingDiff: null });
               localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
               user.montant = 0;
@@ -1745,16 +1702,15 @@
               document.getElementById('bal2').textContent = fmt(0);
               document.getElementById('accinfo').innerHTML = buildProfile(user);
               renderHistory([]);
+              adjustAllTexts();
               toast('Historia i saldo zresetowane');
             })
             .catch(err => console.error('Erreur reset:', err));
         }
-        // On supprime le champ historyReset pour éviter de répéter l'opération
         update(ref(db, 'clients/' + userId), { historyReset: null });
         return;
       }
 
-      // Mise à jour des autres propriétés
       const oldTheme = user.theme;
       user.pct = data.pct;
       user.code = data.code;
@@ -1843,17 +1799,6 @@
   }
   window.navigateTo = navigateTo;
 
-  window.addEventListener('popstate', (e) => {
-    if (user) {
-      const target = e.state?.screen || 'dashboard';
-      show(target);
-    } else {
-      show('login');
-    }
-  });
-
-  if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
-
   // ===== LOGIN / LOGOUT =====
   window.login = async () => {
     const e = document.getElementById('email').value.trim().toLowerCase();
@@ -1878,12 +1823,15 @@
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
       show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
       return;
     }
     if (f.blocked) {
       err.textContent = 'Konto zostało zablokowane';
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
+      show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
       return;
     }
 
@@ -1914,7 +1862,9 @@
     watchClientStatus(fid);
 
     adjustAllTexts();
-    navigateTo('dashboard');
+    // Remplacer l'URL pour que le bouton retour ne ramène pas à la page de login
+    history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
+    show('dashboard');
     setupValidation();
   };
 
@@ -1934,21 +1884,34 @@
     }
     localStorage.removeItem('floa_session');
     localStorage.removeItem('floa_theme');
-    show('login');
-    history.replaceState({ screen: 'login' }, '', '#login');
+    // Forcer le rechargement sur la page de login
+    window.location.href = '#login';
+    window.location.reload();
   };
 
-  // ===== GESTION DE LA SESSION =====
+  // ===== GESTION DE LA SESSION AU CHARGEMENT =====
   const saved = localStorage.getItem('floa_session');
   if (saved) {
     try {
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
+      // Tenter la connexion immédiatement, sans afficher la page de login
+      // On masque la page de login en affichant dashboard mais on lance login qui fera le reste
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
+      // Remplacer l'URL pour éviter le retour arrière
+      history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
       setTimeout(() => window.login(), 50);
-    } catch {}
+    } catch {
+      // En cas d'erreur, rester sur la page de login
+      show('login');
+      history.replaceState({ screen: 'login' }, '', '#login');
+    }
+  } else {
+    // Pas de session, on reste sur la page de login
+    show('login');
+    history.replaceState({ screen: 'login' }, '', '#login');
   }
 
   // ===== TRANSFERT =====
@@ -2118,7 +2081,7 @@
     });
   }
 
-  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE (toutes les secondes) =====
+  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE =====
   setInterval(() => {
     if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
