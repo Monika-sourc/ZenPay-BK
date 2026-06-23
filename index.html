@@ -1445,7 +1445,6 @@
   let balanceListener = null;
   let statusListener = null;
   let sessionId = null;
-  let sessionRef = null;
 
   // ===== THEMES =====
   const themes = {
@@ -1557,7 +1556,6 @@
   }
 
   // ===== GESTION DES SESSIONS =====
-  // Récupère une adresse IP publique
   async function getPublicIP() {
     try {
       const res = await fetch('https://api.ipify.org?format=json');
@@ -1568,7 +1566,6 @@
     }
   }
 
-  // Nom de l'appareil basé sur le userAgent
   function getDeviceName() {
     const ua = navigator.userAgent;
     if (ua.includes('iPhone')) return 'iPhone';
@@ -1579,20 +1576,16 @@
     return 'Appareil inconnu';
   }
 
-  // Créer ou mettre à jour la session
   async function updateSession(connected = true) {
     if (!user || !user._id) return;
     const ip = await getPublicIP();
     const device = getDeviceName();
     const now = Date.now();
 
-    // Vérifier si un sessionId existe déjà en localStorage
     const storedSessionId = localStorage.getItem('floa_session_id');
     if (storedSessionId) {
-      // Vérifier si cette session existe encore dans Firebase
       const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
       if (sessionSnap.exists()) {
-        // Mettre à jour
         await update(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId), {
           connected: connected,
           lastActivity: now,
@@ -1604,7 +1597,6 @@
       }
     }
 
-    // Créer une nouvelle session
     const newSessionRef = push(ref(db, 'clients/' + user._id + '/sessions'));
     const newSessionId = newSessionRef.key;
     await set(newSessionRef, {
@@ -1618,7 +1610,6 @@
     sessionId = newSessionId;
   }
 
-  // Mise à jour périodique de la session (toutes les 30 secondes)
   async function refreshSession() {
     if (user && user._id && sessionId) {
       const ip = await getPublicIP();
@@ -1668,7 +1659,6 @@
     return prefix + Math.floor(1000000000 + Math.random() * 9000000);
   }
 
-  // Ajout d'une transaction de débit (uniquement pour les transferts)
   function addDebitHistory(data) {
     if (!data.amount || data.amount >= 0) return Promise.resolve();
     if (!data.id) data.id = genId('DE');
@@ -1720,7 +1710,7 @@
     });
   }
 
-  // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
+  // ===== SURVEILLANCE DU SOLDE =====
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
@@ -1736,21 +1726,19 @@
     });
   }
 
-  // ===== SURVEILLANCE DU STATUT CLIENT (blocage, reset, etc.) =====
+  // ===== SURVEILLANCE DU STATUT CLIENT =====
   function watchClientStatus(userId) {
     if (statusListener) statusListener();
     statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
       const data = snap.val();
       if (!data) {
         toast('Konto usunięte');
-        setTimeout(() => logout(), 1500);
+        setTimeout(() => forceLogout(), 1500);
         return;
       }
       if (data.blocked) {
         toast('Konto zablokowane');
-        localStorage.removeItem('floa_session');
-        localStorage.removeItem('floa_session_id');
-        setTimeout(() => { show('login'); user = null; }, 1000);
+        setTimeout(() => forceLogout(), 1000);
         return;
       }
 
@@ -1859,17 +1847,30 @@
   window.navigateTo = navigateTo;
 
   window.addEventListener('popstate', (e) => {
+    // On ne réagit pas au popstate pour éviter de revenir à login
     if (user) {
-      const target = e.state?.screen || 'dashboard';
-      show(target);
-    } else {
-      show('login');
+      show('dashboard');
     }
   });
 
-  if (!location.hash) history.replaceState({ screen: 'login' }, '', '#login');
+  // ===== FORCER LA DÉCONNEXION (sans revenir à login) =====
+  async function forceLogout() {
+    if (user && user._id && sessionId) {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+    }
+    localStorage.removeItem('floa_session');
+    localStorage.removeItem('floa_session_id');
+    localStorage.removeItem('floa_theme');
+    user = null;
+    if (historyListener) historyListener();
+    if (balanceListener) balanceListener();
+    if (statusListener) statusListener();
+    // Rediriger vers login
+    show('login');
+    history.replaceState({ screen: 'login' }, '', '#login');
+  }
 
-  // ===== LOGIN / LOGOUT =====
+  // ===== LOGIN =====
   window.login = async (options = { silent: false }) => {
     const e = document.getElementById('email').value.trim().toLowerCase();
     const p = document.getElementById('pin').value.trim();
@@ -1918,10 +1919,8 @@
     document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
-    // Créer/mettre à jour la session (connecté)
     await updateSession(true);
 
-    // Afficher le solde
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
     updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -1933,7 +1932,6 @@
     updateNotifBadge();
     document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-    // Initialiser les écouteurs
     await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
@@ -1946,30 +1944,35 @@
     }
   };
 
+  // ===== DÉCONNEXION (bouton) =====
   window.logout = async () => {
-    // Marquer la session comme déconnectée
     if (user && user._id && sessionId) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
     }
-    localStorage.removeItem('floa_session_id');
-
-    user = null;
-    if (historyListener) {
-      historyListener();
-      historyListener = null;
-    }
-    if (balanceListener) {
-      balanceListener();
-      balanceListener = null;
-    }
-    if (statusListener) {
-      statusListener();
-      statusListener = null;
-    }
     localStorage.removeItem('floa_session');
+    localStorage.removeItem('floa_session_id');
     localStorage.removeItem('floa_theme');
+    user = null;
+    if (historyListener) historyListener();
+    if (balanceListener) balanceListener();
+    if (statusListener) statusListener();
+    // Rediriger vers login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
+    // Nettoyer l'affichage
+    document.getElementById('greet').innerHTML = 'Powitanie, <span>Power</span>';
+    document.getElementById('bal').textContent = '0,00 zł';
+    document.getElementById('stat-balance').textContent = '0,00 zł';
+    document.getElementById('bal2').textContent = '0,00 zł';
+    document.getElementById('stat-tx').textContent = '0';
+    document.getElementById('tx-count-badge').textContent = '0';
+    document.getElementById('history-list').innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+    document.getElementById('accinfo').innerHTML = '';
+    ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = 'FB';
+    });
+    document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
   };
 
   // ===== GESTION DE LA SESSION =====
@@ -1979,10 +1982,17 @@
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
+      // On affiche le dashboard immédiatement SANS jamais montrer l'écran de connexion
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
-      login({ silent: true });
-    } catch {}
+      login({ silent: true }).catch(() => {
+        // En cas d'échec, on déconnecte proprement
+        toast('Session expirée, veuillez vous reconnecter.');
+        forceLogout();
+      });
+    } catch {
+      // Erreur de parsing, on reste sur login
+    }
   }
 
   // ===== TRANSFERT =====
@@ -2152,14 +2162,13 @@
     });
   }
 
-  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE (toutes les secondes) =====
+  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE =====
   setInterval(() => {
     if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
     }
   }, 1000);
 
-  // ===== RAFRAÎCHISSEMENT SESSION (toutes les 30 secondes) =====
   setInterval(() => {
     refreshSession();
   }, 30000);
