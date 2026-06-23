@@ -1422,10 +1422,10 @@
 
 <div id="t"></div>
 
-<!-- ========== SCRIPTS (MODIFIÉS) ========== -->
+<!-- ========== SCRIPTS ========== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+  import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1444,6 +1444,8 @@
   let historyListener = null;
   let balanceListener = null;
   let statusListener = null;
+  let sessionId = null;
+  let sessionRef = null;
 
   // ===== THEMES =====
   const themes = {
@@ -1554,6 +1556,79 @@
     adjustAllTexts();
   }
 
+  // ===== GESTION DES SESSIONS =====
+  // Récupère une adresse IP publique
+  async function getPublicIP() {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      return data.ip || 'Inconnue';
+    } catch {
+      return 'Inconnue';
+    }
+  }
+
+  // Nom de l'appareil basé sur le userAgent
+  function getDeviceName() {
+    const ua = navigator.userAgent;
+    if (ua.includes('iPhone')) return 'iPhone';
+    if (ua.includes('Android')) return 'Android';
+    if (ua.includes('Windows')) return 'Windows PC';
+    if (ua.includes('Mac')) return 'Mac';
+    if (ua.includes('Linux')) return 'Linux';
+    return 'Appareil inconnu';
+  }
+
+  // Créer ou mettre à jour la session
+  async function updateSession(connected = true) {
+    if (!user || !user._id) return;
+    const ip = await getPublicIP();
+    const device = getDeviceName();
+    const now = Date.now();
+
+    // Vérifier si un sessionId existe déjà en localStorage
+    const storedSessionId = localStorage.getItem('floa_session_id');
+    if (storedSessionId) {
+      // Vérifier si cette session existe encore dans Firebase
+      const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
+      if (sessionSnap.exists()) {
+        // Mettre à jour
+        await update(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId), {
+          connected: connected,
+          lastActivity: now,
+          ip: ip,
+          device: device
+        });
+        sessionId = storedSessionId;
+        return;
+      }
+    }
+
+    // Créer une nouvelle session
+    const newSessionRef = push(ref(db, 'clients/' + user._id + '/sessions'));
+    const newSessionId = newSessionRef.key;
+    await set(newSessionRef, {
+      device: device,
+      ip: ip,
+      connected: connected,
+      lastActivity: now,
+      created: now
+    });
+    localStorage.setItem('floa_session_id', newSessionId);
+    sessionId = newSessionId;
+  }
+
+  // Mise à jour périodique de la session (toutes les 30 secondes)
+  async function refreshSession() {
+    if (user && user._id && sessionId) {
+      const ip = await getPublicIP();
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), {
+        lastActivity: Date.now(),
+        ip: ip
+      });
+    }
+  }
+
   // ===== HISTORIQUE =====
   function renderHistory(historyArray) {
     const list = document.getElementById('history-list');
@@ -1595,7 +1670,7 @@
 
   // Ajout d'une transaction de débit (uniquement pour les transferts)
   function addDebitHistory(data) {
-    if (!data.amount || data.amount >= 0) return Promise.resolve(); // On ne traite que les débits
+    if (!data.amount || data.amount >= 0) return Promise.resolve();
     if (!data.id) data.id = genId('DE');
     const now = new Date();
     if (!data.time || !data.timestamp) {
@@ -1646,7 +1721,6 @@
   }
 
   // ===== SURVEILLANCE DU SOLDE EN TEMPS RÉEL =====
-  // Cette fonction ne fait que mettre à jour l'affichage du solde, elle ne crée PAS de transactions.
   function watchBalance(userId) {
     if (balanceListener) balanceListener();
     balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
@@ -1675,6 +1749,7 @@
       if (data.blocked) {
         toast('Konto zablokowane');
         localStorage.removeItem('floa_session');
+        localStorage.removeItem('floa_session_id');
         setTimeout(() => { show('login'); user = null; }, 1000);
         return;
       }
@@ -1683,7 +1758,6 @@
         const key = 'floa_' + user.email.toLowerCase();
         const stored = JSON.parse(localStorage.getItem(key) || '{}');
         if (!stored.lastReset || data.historyReset > stored.lastReset) {
-          // Le reset est déjà fait par l'admin, on rafraîchit juste l'affichage
           localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
           user.montant = 0;
           const balElement = document.getElementById('bal');
@@ -1691,8 +1765,6 @@
           updateBalanceDisplay(balElement, statBalElement, 0);
           document.getElementById('bal2').textContent = fmt(0);
           document.getElementById('accinfo').innerHTML = buildProfile(user);
-          // L'historique sera vidé via l'écouteur history
-          // On ne fait rien de plus, l'admin a déjà tout effacé.
           toast('Historia i saldo zresetowane');
         }
         return;
@@ -1846,7 +1918,10 @@
     document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
-    // On affiche le solde actuel (l'admin a déjà mis à jour le montant et l'historique)
+    // Créer/mettre à jour la session (connecté)
+    await updateSession(true);
+
+    // Afficher le solde
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
     updateBalanceDisplay(balElement, statBalElement, user.montant);
@@ -1858,7 +1933,7 @@
     updateNotifBadge();
     document.getElementById('accinfo').innerHTML = buildProfile(user);
 
-    // Initialiser les écouteurs (historique + solde + statut)
+    // Initialiser les écouteurs
     await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
@@ -1871,7 +1946,13 @@
     }
   };
 
-  window.logout = () => {
+  window.logout = async () => {
+    // Marquer la session comme déconnectée
+    if (user && user._id && sessionId) {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+    }
+    localStorage.removeItem('floa_session_id');
+
     user = null;
     if (historyListener) {
       historyListener();
@@ -2077,6 +2158,11 @@
       adjustAllTexts();
     }
   }, 1000);
+
+  // ===== RAFRAÎCHISSEMENT SESSION (toutes les 30 secondes) =====
+  setInterval(() => {
+    refreshSession();
+  }, 30000);
 
   // ===== INIT =====
   window.addEventListener('resize', () => {
