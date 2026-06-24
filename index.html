@@ -1379,7 +1379,6 @@
   let balanceListener = null;
   let statusListener = null;
   let sessionId = null;
-  let isLoggingIn = false;
 
   // ===== TRADUCTIONS =====
   const translations = {
@@ -1458,6 +1457,7 @@
       transferSuccess: 'Transakcja została pomyślnie zrealizowana.',
       transferInterrupted: 'Transakcja została przerwana przez system.',
       loginError: 'Błąd logowania – sprawdź email i PIN',
+      loading: 'Ładowanie...',
     },
     he: {
       loginTitle: 'FLOA BK',
@@ -1534,6 +1534,7 @@
       transferSuccess: 'העסקה הושלמה בהצלחה.',
       transferInterrupted: 'העסקה הופסקה על ידי המערכת.',
       loginError: 'שגיאת התחברות – בדוק את האימייל וה-PIN',
+      loading: 'טוען...',
     }
   };
 
@@ -2022,13 +2023,7 @@
   }
   window.navigateTo = navigateTo;
 
-  window.addEventListener('popstate', (e) => {
-    if (user) {
-      show('dashboard');
-    }
-  });
-
-  // ===== FORCER LA DÉCONNEXION =====
+  // ===== FORCER LA DÉCONNEXION (appelée en cas d'erreur critique) =====
   async function forceLogout() {
     if (user && user._id && sessionId) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
@@ -2044,10 +2039,11 @@
     history.replaceState({ screen: 'login' }, '', '#login');
   }
 
-  // ===== LOGIN =====
+  // ===== LOGIN (avec gestion des erreurs) =====
+  let loginInProgress = false;
   window.login = async (options = { silent: false }) => {
-    if (isLoggingIn) return;
-    isLoggingIn = true;
+    if (loginInProgress) return;
+    loginInProgress = true;
 
     const e = document.getElementById('email').value.trim().toLowerCase();
     const p = document.getElementById('pin').value.trim();
@@ -2070,21 +2066,19 @@
       if (!f) {
         err.textContent = t('loginError');
         err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
         if (!options.silent) show('login');
-        isLoggingIn = false;
+        loginInProgress = false;
         return;
       }
       if (f.blocked) {
         err.textContent = t('accountBlocked');
         err.classList.remove('hidden');
-        localStorage.removeItem('floa_session');
         if (!options.silent) show('login');
-        isLoggingIn = false;
+        loginInProgress = false;
         return;
       }
 
-      // Nettoyer les anciens écouteurs avant de définir le nouvel utilisateur
+      // Nettoyer les anciens écouteurs
       if (historyListener) { historyListener(); historyListener = null; }
       if (balanceListener) { balanceListener(); balanceListener = null; }
       if (statusListener) { statusListener(); statusListener = null; }
@@ -2100,7 +2094,7 @@
 
       await updateSession(true);
 
-      // Appliquer la langue et la devise
+      // Appliquer langue et devise
       applyLanguage();
       const balElement = document.getElementById('bal');
       const statBalElement = document.getElementById('stat-balance');
@@ -2132,7 +2126,7 @@
       err.classList.remove('hidden');
       if (!options.silent) show('login');
     } finally {
-      isLoggingIn = false;
+      loginInProgress = false;
     }
   };
 
@@ -2150,6 +2144,7 @@
     if (statusListener) { statusListener(); statusListener = null; }
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
+    // Nettoyer l'affichage
     document.getElementById('greet').innerHTML = 'Powitanie, <span>Power</span>';
     document.getElementById('bal').textContent = '0,00 zł';
     document.getElementById('stat-balance').textContent = '0,00 zł';
@@ -2165,22 +2160,24 @@
     document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
   };
 
-  // ===== GESTION DE LA SESSION =====
+  // ===== GESTION DE LA SESSION AU CHARGEMENT =====
   const saved = localStorage.getItem('floa_session');
   if (saved) {
     try {
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
-      // On affiche le dashboard et on tente la connexion silencieuse
+      // On affiche le dashboard immédiatement
       show('dashboard');
-      document.getElementById('greet').innerHTML = 'Ładowanie...';
+      document.getElementById('greet').innerHTML = t('loading') || 'Ładowanie...';
+      // On tente une connexion silencieuse, sans bloquer l'interface
       login({ silent: true }).catch(() => {
         toast(t('sessionExpired'));
-        forceLogout();
+        // On ne force pas la déconnexion, on laisse l'utilisateur agir
+        // Mais si jamais la connexion échoue, on affiche un toast et on reste sur dashboard
       });
     } catch {
-      // Si erreur, on reste sur login
+      // Si erreur de parsing, on reste sur login
       show('login');
     }
   }
