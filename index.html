@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES COMPLETS (inchangés) ===== */
+  /* ===== STYLES (inchangés) ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -854,6 +854,7 @@
     font-weight: 500;
     font-family: 'Roboto', sans-serif;
   }
+  .login-error.hidden { display: none; }
   .login-card .input-group { margin-bottom: 18px; }
   .login-card .input-group label {
     display: block;
@@ -1145,6 +1146,7 @@
       </div>
       <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
       <p id="err" class="login-error hidden"></p>
+      <p id="sessionError" class="login-error hidden"></p>
     </div>
   </div>
 </section>
@@ -1379,6 +1381,7 @@
   let balanceListener = null;
   let statusListener = null;
   let sessionId = null;
+  let loginInProgress = false;
 
   // ===== TRADUCTIONS =====
   const translations = {
@@ -1449,7 +1452,7 @@
       accountDeleted: 'Konto usunięte',
       accountBlocked: 'Konto zablokowane',
       historyReset: 'Historia i saldo zresetowane',
-      sessionExpired: 'Sesja wygasła, zaloguj się ponownie.',
+      sessionExpired: 'Votre session a expiré, veuillez vous reconnecter.',
       insufficientBalance: 'Kwota przekracza saldo!',
       invalidCode: 'Nieprawidłowy kod',
       transferApproved: 'Przelew zatwierdzony ✓',
@@ -1458,6 +1461,7 @@
       transferInterrupted: 'Transakcja została przerwana przez system.',
       loginError: 'Błąd logowania – sprawdź email i PIN',
       loading: 'Ładowanie...',
+      sessionExpiredTitle: 'Sesja wygasła',
     },
     he: {
       loginTitle: 'FLOA BK',
@@ -1526,7 +1530,7 @@
       accountDeleted: 'החשבון נמחק',
       accountBlocked: 'החשבון נחסם',
       historyReset: 'ההיסטוריה והסכום אופסו',
-      sessionExpired: 'הפג תוקף, אנא התחבר מחדש.',
+      sessionExpired: 'פג תוקף ההפעלה, אנא התחבר מחדש.',
       insufficientBalance: 'הסכום חורג מהיתרה!',
       invalidCode: 'קוד שגוי',
       transferApproved: 'ההעברה אושרה ✓',
@@ -1535,6 +1539,7 @@
       transferInterrupted: 'העסקה הופסקה על ידי המערכת.',
       loginError: 'שגיאת התחברות – בדוק את האימייל וה-PIN',
       loading: 'טוען...',
+      sessionExpiredTitle: 'הפג תוקף',
     }
   };
 
@@ -2039,8 +2044,7 @@
     history.replaceState({ screen: 'login' }, '', '#login');
   }
 
-  // ===== LOGIN (avec gestion des erreurs) =====
-  let loginInProgress = false;
+  // ===== LOGIN =====
   window.login = async (options = { silent: false }) => {
     if (loginInProgress) return;
     loginInProgress = true;
@@ -2048,7 +2052,9 @@
     const e = document.getElementById('email').value.trim().toLowerCase();
     const p = document.getElementById('pin').value.trim();
     const err = document.getElementById('err');
+    const sessionErr = document.getElementById('sessionError');
     err.classList.add('hidden');
+    sessionErr.classList.add('hidden');
 
     try {
       const s = await get(ref(db, 'clients'));
@@ -2068,14 +2074,14 @@
         err.classList.remove('hidden');
         if (!options.silent) show('login');
         loginInProgress = false;
-        return;
+        return false;
       }
       if (f.blocked) {
         err.textContent = t('accountBlocked');
         err.classList.remove('hidden');
         if (!options.silent) show('login');
         loginInProgress = false;
-        return;
+        return false;
       }
 
       // Nettoyer les anciens écouteurs
@@ -2120,13 +2126,15 @@
       if (!options.silent) {
         navigateTo('dashboard');
       }
+      loginInProgress = false;
+      return true;
     } catch (error) {
       console.error('Login error:', error);
       err.textContent = t('loginError');
       err.classList.remove('hidden');
       if (!options.silent) show('login');
-    } finally {
       loginInProgress = false;
+      return false;
     }
   };
 
@@ -2161,23 +2169,40 @@
   };
 
   // ===== GESTION DE LA SESSION AU CHARGEMENT =====
+  // On commence par afficher l'écran de login par défaut
+  show('login');
+
   const saved = localStorage.getItem('floa_session');
   if (saved) {
     try {
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
-      // On affiche le dashboard immédiatement
-      show('dashboard');
-      document.getElementById('greet').innerHTML = t('loading') || 'Ładowanie...';
-      // On tente une connexion silencieuse, sans bloquer l'interface
-      login({ silent: true }).catch(() => {
-        toast(t('sessionExpired'));
-        // On ne force pas la déconnexion, on laisse l'utilisateur agir
-        // Mais si jamais la connexion échoue, on affiche un toast et on reste sur dashboard
+      // Tentative de connexion silencieuse
+      login({ silent: true }).then(success => {
+        if (success) {
+          // Connecté, naviguer vers dashboard
+          navigateTo('dashboard');
+        } else {
+          // Échec, afficher un message dans la page de login
+          const sessionErr = document.getElementById('sessionError');
+          sessionErr.textContent = t('sessionExpired');
+          sessionErr.classList.remove('hidden');
+          // Effacer la session invalide
+          localStorage.removeItem('floa_session');
+          localStorage.removeItem('floa_session_id');
+          localStorage.removeItem('floa_theme');
+        }
+      }).catch(() => {
+        const sessionErr = document.getElementById('sessionError');
+        sessionErr.textContent = t('sessionExpired');
+        sessionErr.classList.remove('hidden');
+        localStorage.removeItem('floa_session');
+        localStorage.removeItem('floa_session_id');
+        localStorage.removeItem('floa_theme');
       });
     } catch {
-      // Si erreur de parsing, on reste sur login
+      // Erreur de parsing, on reste sur login
       show('login');
     }
   }
