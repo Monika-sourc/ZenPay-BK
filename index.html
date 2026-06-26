@@ -860,6 +860,46 @@
     color: var(--p);
   }
 
+  /* ===== PROFIL – LIGNES SUR UNE SEULE LIGNE AVEC HAUTEUR AUGMENTÉE ===== */
+  #accinfo .profile-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 6px;
+    line-height: 2.9; /* ← hauteur augmentée de 1.9 à 2.9 */
+  }
+  #accinfo .profile-row i {
+    flex-shrink: 0;
+    width: 18px;
+    color: var(--p);
+    font-size: 16px;
+  }
+  #accinfo .profile-row .profile-label {
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    font-size: 17px;
+    font-weight: 500;
+  }
+  #accinfo .profile-row .profile-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 17px;
+    text-align: left;
+  }
+  /* Pour éviter que le conteneur ne déborde */
+  #accinfo {
+    overflow: hidden;
+  }
+
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -1725,7 +1765,7 @@
       const statBalElement = document.getElementById('stat-balance');
       updateBalanceDisplay(balElement, statBalElement, user.montant);
       document.getElementById('bal2').textContent = fmt(user.montant);
-      document.getElementById('accinfo').innerHTML = buildProfile(user);
+      updateProfileInfo();
     });
   }
 
@@ -1755,7 +1795,7 @@
           const statBalElement = document.getElementById('stat-balance');
           updateBalanceDisplay(balElement, statBalElement, 0);
           document.getElementById('bal2').textContent = fmt(0);
-          document.getElementById('accinfo').innerHTML = buildProfile(user);
+          updateProfileInfo();
           toast('Historia i saldo zresetowane');
         }
         return;
@@ -1779,82 +1819,57 @@
       updateAvatars();
       updateCurrency();
       updateNotifBadge();
-      document.getElementById('accinfo').innerHTML = buildProfile(user);
+      updateProfileInfo();
       adjustAllTexts();
     });
   }
 
-  // ===== PROFIL (VERSION PROFESSIONNELLE) =====
+  // ===== PROFIL – Saldo konta déplacé dans la section "Konto i przelew" =====
   function buildProfile(u) {
-    // Générer un avatar avec les initiales
-    const initials = u.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-    // Couleur aléatoire basée sur le nom
-    const colors = ['#6D28D9', '#2563EB', '#D97706', '#059669', '#DC2626', '#7C3AED'];
-    const colorIndex = u.nom.length % colors.length;
-    const avatarColor = colors[colorIndex];
-
-    // Date d'inscription
-    const createdDate = u.created ? new Date(u.created).toLocaleDateString('pl-PL') : new Date().toLocaleDateString('pl-PL');
-
     return `
-      <!-- Avatar + nom + adresse -->
-      <div style="text-align:center;margin-bottom:12px;">
-        <div style="width:72px;height:72px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:28px;font-weight:700;color:#fff;border:3px solid var(--p);box-shadow:0 4px 12px rgba(0,0,0,0.1);">${initials}</div>
-        <div style="font-weight:700;font-size:18px;color:var(--text-primary);">${u.nom}</div>
-        <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;gap:4px;">
-          <i class="fa-solid fa-location-dot" style="font-size:12px;color:var(--p);"></i> ${u.adresse || '-'}
-        </div>
-      </div>
-
-      <hr style="margin:10px 0;border-color:var(--border-light);">
-
-      <!-- Informations personnelles (2 colonnes) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:8px;">
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
-          <i class="fa-solid fa-envelope" style="width:16px;color:var(--p);"></i>
-          <span style="color:var(--text-secondary);">${u.email}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
-          <i class="fa-solid fa-phone" style="width:16px;color:var(--p);"></i>
-          <span style="color:var(--text-secondary);">${u.tel || '-'}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;grid-column:1/-1;">
-          <i class="fa-solid fa-calendar-check" style="width:16px;color:var(--p);"></i>
-          <span style="color:var(--text-secondary);">Dołączył: <b>${createdDate}</b></span>
-        </div>
-      </div>
-
-      <hr style="margin:8px 0;border-color:var(--border-light);">
-
-      <!-- Informacje o koncie (2 colonnes) -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Saldo konta</span>
-          <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px;color:var(--p);">
-            <i class="fa-solid fa-money-bill-1" style="font-size:14px;color:var(--p);"></i> ${fmt(u.montant)}
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Typ konta</span>
-          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;">
-            <i class="fa-solid fa-briefcase" style="font-size:14px;color:var(--p);"></i> Profesjonalne
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Status</span>
-          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:#10B981;">
-            <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
-            <i class="fa-solid fa-circle-check" style="font-size:14px;color:#10B981;"></i> Aktywny
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Oczekiwany przelew</span>
-          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;">
-            <i class="fa-solid fa-money-bill-transfer" style="font-size:14px;color:var(--p);"></i> Klasyczny
-          </div>
-        </div>
-      </div>
+      <div class="profile-row"><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span class="profile-label">Imię i nazwisko:</span> <span class="profile-value">${u.nom}</span></div>
+      <div class="profile-row"><i class="fa-solid fa-envelope" style="width:16px;color:var(--p)"></i> <span class="profile-label">Adres e-mail:</span> <span class="profile-value">${u.email}</span></div>
+      <div class="profile-row"><i class="fa-solid fa-flag" style="width:16px;color:var(--p)"></i> <span class="profile-label">Kraj:</span> <span class="profile-value">${u.pays || '-'}</span></div>
+      <div class="profile-row"><i class="fa-solid fa-location-dot" style="width:16px;color:var(--p)"></i> <span class="profile-label">Adres zamieszkania:</span> <span class="profile-value">${u.adresse || '-'}</span></div>
+      <div class="profile-row"><i class="fa-solid fa-phone" style="width:16px;color:var(--p)"></i> <span class="profile-label">Numer telefonu:</span> <span class="profile-value">${u.tel || '-'}</span></div>
+      <hr style="margin:12px 0;border-color:var(--border-light);">
+      <div class="profile-row"><i class="fa-solid fa-wallet" style="width:16px;color:var(--p)"></i> <span class="profile-label">Saldo konta:</span> <span class="profile-value">${fmt(u.montant)}</span></div>
+      <div class="profile-row"><i class="fa-solid fa-briefcase" style="width:16px;color:var(--p)"></i> <span class="profile-label">Typ konta:</span> <span class="profile-value">Profesjonalne</span></div>
+      <div class="profile-row"><i class="fa-solid fa-circle-check" style="width:16px;color:var(--p)"></i> <span class="profile-label">Status konta:</span> <span class="profile-value">🔑 Aktywny</span></div>
+      <div class="profile-row"><i class="fa-solid fa-money-bill-transfer" style="width:16px;color:var(--p)"></i> <span class="profile-label">Oczekiwany przelew bankowy:</span> <span class="profile-value">Klasyczny</span></div>
     `;
+  }
+
+  function updateProfileInfo() {
+    if (!user) {
+      document.getElementById('accinfo').innerHTML = '';
+      return;
+    }
+    document.getElementById('accinfo').innerHTML = buildProfile(user);
+    adjustProfileFontSize();
+  }
+
+  // ===== AJUSTEMENT DE LA POLICE DU PROFIL (taille de base 17px, hauteur 2.9) =====
+  function adjustProfileFontSize() {
+    const rows = document.querySelectorAll('#accinfo .profile-row');
+    const container = document.getElementById('accinfo');
+    if (!container || rows.length === 0) return;
+    requestAnimationFrame(() => {
+      const containerWidth = container.clientWidth - 20;
+      rows.forEach(row => {
+        const value = row.querySelector('.profile-value');
+        const label = row.querySelector('.profile-label');
+        if (!value) return;
+        let fontSize = 17;
+        while (fontSize > 10) {
+          value.style.fontSize = fontSize + 'px';
+          label.style.fontSize = fontSize + 'px';
+          const rowWidth = row.scrollWidth;
+          if (rowWidth <= containerWidth) break;
+          fontSize -= 0.5;
+        }
+      });
+    });
   }
 
   function updateAvatars() {
@@ -1911,12 +1926,13 @@
   window.navigateTo = navigateTo;
 
   window.addEventListener('popstate', (e) => {
+    // On ne réagit pas au popstate pour éviter de revenir à login
     if (user) {
       show('dashboard');
     }
   });
 
-  // ===== FORCER LA DÉCONNEXION =====
+  // ===== FORCER LA DÉCONNEXION (sans revenir à login) =====
   async function forceLogout() {
     if (user && user._id && sessionId) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
@@ -1928,6 +1944,7 @@
     if (historyListener) historyListener();
     if (balanceListener) balanceListener();
     if (statusListener) statusListener();
+    // Rediriger vers login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
   }
@@ -1955,14 +1972,18 @@
       err.textContent = 'Błąd logowania – sprawdź email i PIN';
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
-      if (!options.silent) show('login');
+      if (!options.silent) {
+        show('login');
+      }
       return;
     }
     if (f.blocked) {
       err.textContent = 'Konto zostało zablokowane';
       err.classList.remove('hidden');
       localStorage.removeItem('floa_session');
-      if (!options.silent) show('login');
+      if (!options.silent) {
+        show('login');
+      }
       return;
     }
 
@@ -1988,7 +2009,7 @@
     updateAvatars();
     updateCurrency();
     updateNotifBadge();
-    document.getElementById('accinfo').innerHTML = buildProfile(user);
+    updateProfileInfo();
 
     await initHistoryListener(fid);
     watchBalance(fid);
@@ -2014,8 +2035,10 @@
     if (historyListener) historyListener();
     if (balanceListener) balanceListener();
     if (statusListener) statusListener();
+    // Rediriger vers login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
+    // Nettoyer l'affichage
     document.getElementById('greet').innerHTML = 'Powitanie, <span>Power</span>';
     document.getElementById('bal').textContent = '0,00 zł';
     document.getElementById('stat-balance').textContent = '0,00 zł';
@@ -2038,13 +2061,17 @@
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
+      // On affiche le dashboard immédiatement SANS jamais montrer l'écran de connexion
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
       login({ silent: true }).catch(() => {
+        // En cas d'échec, on déconnecte proprement
         toast('Session expirée, veuillez vous reconnecter.');
         forceLogout();
       });
-    } catch {}
+    } catch {
+      // Erreur de parsing, on reste sur login
+    }
   }
 
   // ===== TRANSFERT =====
@@ -2138,7 +2165,7 @@
           const statBalElement = document.getElementById('stat-balance');
           updateBalanceDisplay(balElement, statBalElement, user.montant);
           document.getElementById('bal2').textContent = fmt(user.montant);
-          document.getElementById('accinfo').innerHTML = buildProfile(user);
+          updateProfileInfo();
         }
 
         setTimeout(() => navigateTo('result'), 500);
@@ -2199,7 +2226,7 @@
   };
   window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
 
-  // ===== VALIDATION =====
+  // ===== VALIDATION DU FORMULAIRE =====
   function setupValidation() {
     const btn = document.getElementById('continueBtn');
     const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -2214,7 +2241,7 @@
     });
   }
 
-  // ===== RAFRAÎCHISSEMENT =====
+  // ===== RAFRAÎCHISSEMENT AUTOMATIQUE =====
   setInterval(() => {
     if (user && document.getElementById('dashboard').classList.contains('active')) {
       adjustAllTexts();
@@ -2228,29 +2255,13 @@
   // ===== INIT =====
   window.addEventListener('resize', () => {
     adjustAllTexts();
+    if (user) adjustProfileFontSize();
   });
 
   setTimeout(() => {
     document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
     adjustAllTexts();
   }, 100);
-
-  window.login = login;
-  window.logout = logout;
-  window.navigateTo = navigateTo;
-  window.toVerify = toVerify;
-  window.finish = finish;
-  window.toast = toast;
-  window.openCard = openCard;
-  window.closeCard = closeCard;
-  window.openAcc = openAcc;
-  window.closeAcc = closeAcc;
-  window.openIbanModal = openIbanModal;
-  window.closeIbanModal = closeIbanModal;
-  window.openNotifications = openNotifications;
-  window.closeNotifications = closeNotifications;
-  window.showTxDetail = showTxDetail;
-  window.closeTxDetail = closeTxDetail;
 </script>
 </body>
 </html>
