@@ -1784,53 +1784,74 @@
     });
   }
 
-  // ===== PROFIL (VERSION COMPACTE) =====
+  // ===== PROFIL (VERSION PROFESSIONNELLE) =====
   function buildProfile(u) {
+    // Générer un avatar avec les initiales
     const initials = u.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    // Couleur aléatoire basée sur le nom
     const colors = ['#6D28D9', '#2563EB', '#D97706', '#059669', '#DC2626', '#7C3AED'];
     const colorIndex = u.nom.length % colors.length;
     const avatarColor = colors[colorIndex];
 
+    // Date d'inscription
+    const createdDate = u.created ? new Date(u.created).toLocaleDateString('pl-PL') : new Date().toLocaleDateString('pl-PL');
+
     return `
-      <div style="text-align:center;padding:12px 0 8px;background:linear-gradient(135deg, var(--p), #7C3AED);border-radius:var(--radius-sm);color:#fff;margin-bottom:12px;">
-        <div style="width:60px;height:60px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:22px;font-weight:700;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.2);">${initials}</div>
-        <div style="font-weight:700;font-size:16px;">${u.nom}</div>
-        <div style="opacity:0.8;font-size:12px;">${u.email}</div>
+      <!-- Avatar + nom + adresse -->
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:28px;font-weight:700;color:#fff;border:3px solid var(--p);box-shadow:0 4px 12px rgba(0,0,0,0.1);">${initials}</div>
+        <div style="font-weight:700;font-size:18px;color:var(--text-primary);">${u.nom}</div>
+        <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;gap:4px;">
+          <i class="fa-solid fa-location-dot" style="font-size:12px;color:var(--p);"></i> ${u.adresse || '-'}
+        </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:10px;">
+      <hr style="margin:10px 0;border-color:var(--border-light);">
+
+      <!-- Informations personnelles (2 colonnes) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
-          <i class="fa-solid fa-phone" style="width:14px;color:var(--p);font-size:12px;"></i>
+          <i class="fa-solid fa-envelope" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">${u.email}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <i class="fa-solid fa-phone" style="width:16px;color:var(--p);"></i>
           <span style="color:var(--text-secondary);">${u.tel || '-'}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
-          <i class="fa-solid fa-location-dot" style="width:14px;color:var(--p);font-size:12px;"></i>
-          <span style="color:var(--text-secondary);">${u.adresse || '-'}</span>
-        </div>
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;grid-column:1/-1;">
-          <i class="fa-solid fa-flag" style="width:14px;color:var(--p);font-size:12px;"></i>
-          <span style="color:var(--text-secondary);">${u.pays || '-'}</span>
+          <i class="fa-solid fa-calendar-check" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Dołączył: <b>${createdDate}</b></span>
         </div>
       </div>
 
       <hr style="margin:8px 0;border-color:var(--border-light);">
 
+      <!-- Informacje o koncie (2 colonnes) -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
-        <div style="display:flex;flex-direction:column;gap:1px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Saldo</span>
-          <span style="font-weight:700;font-size:16px;color:var(--p);">${fmt(u.montant)}</span>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Saldo konta</span>
+          <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:16px;color:var(--p);">
+            <i class="fa-solid fa-money-bill-1" style="font-size:14px;color:var(--p);"></i> ${fmt(u.montant)}
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:1px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Typ konta</span>
-          <span style="font-weight:600;font-size:13px;">Profesjonalne</span>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Typ konta</span>
+          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;">
+            <i class="fa-solid fa-briefcase" style="font-size:14px;color:var(--p);"></i> Profesjonalne
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:1px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Status</span>
-          <span style="font-weight:600;font-size:13px;color:#10B981;display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#10B981;display:inline-block;"></span> Aktywny</span>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Status</span>
+          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:#10B981;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+            <i class="fa-solid fa-circle-check" style="font-size:14px;color:#10B981;"></i> Aktywny
+          </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:1px;">
-          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Przelew</span>
-          <span style="font-weight:600;font-size:13px;">Klasyczny</span>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Oczekiwany przelew</span>
+          <div style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;">
+            <i class="fa-solid fa-money-bill-transfer" style="font-size:14px;color:var(--p);"></i> Klasyczny
+          </div>
         </div>
       </div>
     `;
