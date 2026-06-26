@@ -818,20 +818,23 @@
     font-weight: 400;
   }
 
+  /* ===== MODIFICATION : BORDURE RECTANGULAIRE + ARRIÈRE-PLAN LÉGÈREMENT SOMBRE ===== */
   nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #ffffff;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: #f0f0f0;
     backdrop-filter: blur(4px);
-    border-top: 3px solid var(--p);
+    border: 3px solid var(--p);
+    border-radius: 0;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     padding: 8px 0 12px;
     z-index: 100;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
   }
+
   .nav-item {
     color: #6B7280;
     font-size: 11px;
