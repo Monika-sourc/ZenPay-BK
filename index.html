@@ -1784,15 +1784,67 @@
     });
   }
 
-  // ===== PROFIL =====
+  // ===== PROFIL (NOUVEAU FORMAT) =====
   function buildProfile(u) {
     return `
-      <div><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Imię i nazwisko:</span> <b style="color:var(--text-primary)">${u.nom}</b></div>
-      <div><i class="fa-solid fa-wallet" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Saldo konta:</span> <b style="color:var(--text-primary)">${fmt(u.montant)}</b></div>
-      <div><i class="fa-solid fa-envelope" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres e-mail:</span> <b style="color:var(--text-primary)">${u.email}</b></div>
-      <div><i class="fa-solid fa-flag" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Kraj:</span> <b style="color:var(--text-primary)">${u.pays || '-'}</b></div>
-      <div><i class="fa-solid fa-location-dot" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Adres zamieszkania:</span> <b style="color:var(--text-primary)">${u.adresse || '-'}</b></div>
-      <div><i class="fa-solid fa-phone" style="width:16px;color:var(--p)"></i> <span style="color:var(--text-secondary)">Numer telefonu:</span> <b style="color:var(--text-primary)">${u.tel || '-'}</b></div>
+      <div style="margin-bottom:10px;font-weight:700;font-size:15px;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+        <i class="fa-solid fa-user" style="width:18px;color:var(--p);"></i>
+        Informacje osobiste
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-id-card" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Właściciel konta:</span>
+          <b style="color:var(--text-primary);">${u.nom}</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-envelope" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Adres e-mail:</span>
+          <b style="color:var(--text-primary);">${u.email}</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-phone" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Numer telefonu:</span>
+          <b style="color:var(--text-primary);">${u.tel || '-'}</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-flag" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Kraj zamieszkania:</span>
+          <b style="color:var(--text-primary);">${u.pays || '-'}</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-location-dot" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Adres zamieszkania:</span>
+          <b style="color:var(--text-primary);">${u.adresse || '-'}</b>
+        </div>
+      </div>
+      <hr style="margin:10px 0;border-color:var(--border-light);">
+      <div style="margin-bottom:10px;font-weight:700;font-size:15px;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+        <i class="fa-solid fa-wallet" style="width:18px;color:var(--p);"></i>
+        Konto i przelew
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-money-bill-1" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Saldo konta:</span>
+          <b style="color:var(--text-primary);">${fmt(u.montant)}</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-briefcase" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Typ konta:</span>
+          <b style="color:var(--text-primary);">Profesjonalne</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-circle-check" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Status konta:</span>
+          <b style="color:var(--text-primary);">🔗 Aktywny</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <i class="fa-solid fa-money-bill-transfer" style="width:16px;color:var(--p);"></i>
+          <span style="color:var(--text-secondary);">Oczekiwany przelew bankowy:</span>
+          <b style="color:var(--text-primary);">Klasyczny</b>
+        </div>
+      </div>
     `;
   }
 
