@@ -1784,7 +1784,7 @@
     });
   }
 
-  // ===== PROFIL (VERSION AVEC AVATAR, INFORMATIONS PERSONNELLES PUIS COMPTE) =====
+  // ===== PROFIL (VERSION COMPACTE) =====
   function buildProfile(u) {
     const initials = u.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     const colors = ['#6D28D9', '#2563EB', '#D97706', '#059669', '#DC2626', '#7C3AED'];
@@ -1792,73 +1792,45 @@
     const avatarColor = colors[colorIndex];
 
     return `
-      <!-- AVATAR -->
-      <div style="text-align:center;margin-bottom:16px;">
-        <div style="width:72px;height:72px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;font-weight:700;color:#fff;border:3px solid var(--p);box-shadow:0 4px 12px rgba(0,0,0,0.15);">${initials}</div>
+      <div style="text-align:center;padding:12px 0 8px;background:linear-gradient(135deg, var(--p), #7C3AED);border-radius:var(--radius-sm);color:#fff;margin-bottom:12px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:22px;font-weight:700;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.2);">${initials}</div>
+        <div style="font-weight:700;font-size:16px;">${u.nom}</div>
+        <div style="opacity:0.8;font-size:12px;">${u.email}</div>
       </div>
 
-      <!-- INFORMATIONS PERSONNELLES -->
-      <div style="margin-bottom:16px;">
-        <div style="font-weight:700;font-size:16px;margin-bottom:10px;color:var(--text-primary);">
-          <i class="fa-solid fa-user" style="width:18px;color:var(--p);"></i> Informacje osobiste
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <i class="fa-solid fa-phone" style="width:14px;color:var(--p);font-size:12px;"></i>
+          <span style="color:var(--text-secondary);">${u.tel || '-'}</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-id-card" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Imię i nazwisko:</span>
-            <b style="color:var(--text-primary);">${u.nom}</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-envelope" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Adres e-mail:</span>
-            <b style="color:var(--text-primary);">${u.email}</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-phone" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Numer telefonu:</span>
-            <b style="color:var(--text-primary);">${u.tel || '-'}</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-location-dot" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Adres zamieszkania:</span>
-            <b style="color:var(--text-primary);">${u.adresse || '-'}</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-flag" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Kraj zamieszkania:</span>
-            <b style="color:var(--text-primary);">${u.pays || '-'}</b>
-          </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <i class="fa-solid fa-location-dot" style="width:14px;color:var(--p);font-size:12px;"></i>
+          <span style="color:var(--text-secondary);">${u.adresse || '-'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;grid-column:1/-1;">
+          <i class="fa-solid fa-flag" style="width:14px;color:var(--p);font-size:12px;"></i>
+          <span style="color:var(--text-secondary);">${u.pays || '-'}</span>
         </div>
       </div>
 
-      <hr style="margin:12px 0;border-color:var(--border-light);">
+      <hr style="margin:8px 0;border-color:var(--border-light);">
 
-      <!-- INFORMATIONS DE COMPTE -->
-      <div>
-        <div style="font-weight:700;font-size:16px;margin-bottom:10px;color:var(--text-primary);">
-          <i class="fa-solid fa-wallet" style="width:18px;color:var(--p);"></i> Konto i przelew
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Saldo</span>
+          <span style="font-weight:700;font-size:16px;color:var(--p);">${fmt(u.montant)}</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-money-bill-1" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Saldo konta:</span>
-            <b style="color:var(--text-primary);">${fmt(u.montant)}</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-briefcase" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Typ konta:</span>
-            <b style="color:var(--text-primary);">Profesjonalne</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-circle-check" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Status konta:</span>
-            <b style="color:var(--text-primary);display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span> Aktywny</b>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <i class="fa-solid fa-money-bill-transfer" style="width:16px;color:var(--p);"></i>
-            <span style="color:var(--text-secondary);">Oczekiwany przelew bankowy:</span>
-            <b style="color:var(--text-primary);">Klasyczny</b>
-          </div>
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Typ konta</span>
+          <span style="font-weight:600;font-size:13px;">Profesjonalne</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Status</span>
+          <span style="font-weight:600;font-size:13px;color:#10B981;display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#10B981;display:inline-block;"></span> Aktywny</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1px;">
+          <span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Przelew</span>
+          <span style="font-weight:600;font-size:13px;">Klasyczny</span>
         </div>
       </div>
     `;
