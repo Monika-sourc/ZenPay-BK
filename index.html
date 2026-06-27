@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ===== STYLES (inchangés) ===== */
+  /* ===== STYLES DE BASE ===== */
   :root {
     --bg: #FFFFFF;
     --card-bg: #FFFFFF;
@@ -26,14 +26,15 @@
     --p-soft: rgba(109, 40, 217, 0.12);
   }
 
+  /* === POLICE ROBOOT APPLIQUÉE À TOUS LES ÉLÉMENTS === */
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Roboto', -apple-system, system-ui, sans-serif;
   }
 
   body {
-    font-family: 'Roboto', -apple-system, system-ui, sans-serif;
     background: #f8fafc;
     color: var(--text-primary);
     font-size: 14px;
@@ -61,27 +62,39 @@
   .modal-content {
     background: #FFFFFF;
     border-radius: var(--radius);
-    max-width: 480px;
+    max-width: 520px;
     width: 100%;
-    padding: 28px 24px;
+    padding: 24px 24px 18px;
     position: relative;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12);
+    max-height: none;
+    overflow: visible;
   }
+
+  /* Bouton de fermeture (×) amélioré */
   .modal-close {
     position: absolute;
-    top: -14px;
-    right: -14px;
-    width: 34px;
-    height: 34px;
+    top: -18px;
+    right: -18px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #EF4444;
+    background: #DC2626;
     color: #fff;
-    border: 2px solid #fff;
-    font-size: 16px;
+    border: 3px solid #fff;
+    font-size: 20px;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 10;
+  }
+  .modal-close:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(220, 38, 38, 0.5);
   }
 
   .btn {
@@ -98,7 +111,6 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -116,7 +128,6 @@
     border: 1.5px solid #E5E7EB;
     border-radius: var(--radius-sm);
     font-size: 14px;
-    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
   }
   .input:focus {
@@ -151,7 +162,6 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    font-family: 'Roboto', sans-serif;
     color: var(--text-secondary);
     height: 100%;
     min-height: 40px;
@@ -178,7 +188,6 @@
     font-weight: 700;
     color: var(--p);
     letter-spacing: -0.3px;
-    font-family: 'Roboto', sans-serif;
   }
   .logo i {
     font-size: 26px;
@@ -201,7 +210,6 @@
     font-size: 16px;
     cursor: pointer;
     position: relative;
-    font-family: 'Roboto', sans-serif;
   }
   .badge-icon i { font-size: 20px; }
   .notif-badge {
@@ -219,7 +227,6 @@
     align-items: center;
     justify-content: center;
     border: 2px solid #fff;
-    font-family: 'Roboto', sans-serif;
   }
   .notif-badge.hidden { display: none; }
 
@@ -258,7 +265,6 @@
     gap: 6px;
     overflow: hidden;
     white-space: nowrap;
-    font-family: 'Roboto', sans-serif;
   }
   #greet span {
     color: var(--text-primary);
@@ -302,7 +308,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .balance-panel .label i { font-size: 14px; opacity: 0.9; }
@@ -315,13 +320,11 @@
     white-space: nowrap;
     margin-bottom: 10px;
     margin-left: 6px;
-    font-family: 'Roboto', sans-serif;
   }
   .balance-panel .sub {
     font-size: 14px;
     opacity: 0.7;
     margin-bottom: 14px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
 
@@ -356,7 +359,6 @@
     line-height: 1.2;
     min-height: 44px;
     text-align: center;
-    font-family: 'Roboto', sans-serif;
   }
   .balance-actions-wrapper .btn-action i {
     font-size: 17px;
@@ -379,7 +381,6 @@
     justify-content: center;
     gap: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    font-family: 'Roboto', sans-serif;
     margin-top: 0;
   }
   .btn-iban i {
@@ -472,14 +473,12 @@
     color: var(--text-primary);
     white-space: nowrap;
     overflow: visible;
-    font-family: 'Roboto', sans-serif;
   }
   .stat-item .stat-label {
     font-size: 11px;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
     margin-top: 2px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
 
@@ -500,7 +499,6 @@
     padding: 12px 16px 10px 16px;
     border-bottom: 2px solid var(--p);
     margin-bottom: 0;
-    font-family: 'Roboto', sans-serif;
     background: #ffffff;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
@@ -576,7 +574,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.3;
-    font-family: 'Roboto', sans-serif;
   }
   .history-info .title .sub {
     color: var(--text-secondary);
@@ -588,7 +585,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .history-amount {
@@ -599,7 +595,6 @@
     text-align: right;
     margin-left: auto;
     line-height: 1.3;
-    font-family: 'Roboto', sans-serif;
   }
   .history-amount.credit { color: #10B981; }
   .history-amount.debit { color: #EF4444; }
@@ -611,7 +606,6 @@
     border: none;
     border-radius: 0;
     font-size: 15px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .empty-history i {
@@ -628,7 +622,6 @@
     margin-bottom: 14px;
     font-size: 14px;
     color: var(--text-secondary);
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .transfer-balance b {
@@ -643,7 +636,6 @@
     font-size: 14px;
     color: var(--p);
     font-weight: 600;
-    font-family: 'Roboto', sans-serif;
   }
   .field-group { margin-bottom: 14px; }
   .field-group label {
@@ -653,7 +645,6 @@
     color: var(--text-secondary);
     margin-bottom: 3px;
     letter-spacing: 0.3px;
-    font-family: 'Roboto', sans-serif;
   }
 
   .verify-details {
@@ -670,14 +661,12 @@
     font-weight: 500;
     color: var(--text-secondary);
     letter-spacing: 0.5px;
-    font-family: 'Roboto', sans-serif;
   }
   .verify-details .value {
     font-weight: 600;
     font-size: 15px;
     word-break: break-all;
     color: var(--text-primary);
-    font-family: 'Roboto', sans-serif;
   }
   .verify-cancel {
     padding: 8px 16px;
@@ -688,7 +677,6 @@
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
   }
   .verify-code-section { margin-top: 16px; }
   .verify-code-section .lock-line {
@@ -699,7 +687,6 @@
     font-size: 14px;
     color: var(--text-primary);
     margin-bottom: 10px;
-    font-family: 'Roboto', sans-serif;
   }
   .verify-code-section .lock-line i {
     font-size: 16px;
@@ -715,7 +702,6 @@
     text-align: center;
     letter-spacing: 4px;
     font-weight: 600;
-    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
     margin-bottom: 14px;
     placeholder: "******";
@@ -744,7 +730,6 @@
     text-align: center;
     margin-top: 6px;
     color: var(--p);
-    font-family: 'Roboto', sans-serif;
   }
 
   .result-card {
@@ -766,14 +751,12 @@
     font-weight: 700;
     color: var(--p);
     margin-bottom: 6px;
-    font-family: 'Roboto', sans-serif;
   }
   .result-status {
     font-size: 19px;
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: 14px;
-    font-family: 'Roboto', sans-serif;
   }
   .result-details {
     background: #FAFBFC;
@@ -794,7 +777,6 @@
   .result-details .row .label {
     color: var(--text-secondary);
     font-weight: 500;
-    font-family: 'Roboto', sans-serif;
   }
   .result-details .row .value {
     font-weight: 600;
@@ -802,7 +784,6 @@
     text-align: right;
     word-break: break-all;
     max-width: 60%;
-    font-family: 'Roboto', sans-serif;
   }
   .result-msg {
     font-size: 15px;
@@ -814,11 +795,10 @@
     border-radius: var(--radius-sm);
     border-left: 3px solid var(--p);
     text-align: left;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
 
-  /* ===== MODIFICATION : BORDURE RECTANGULAIRE + ARRIÈRE-PLAN LÉGÈREMENT SOMBRE ===== */
+  /* ===== BARRE DE NAVIGATION AVEC BORDURE RECTANGULAIRE ===== */
   nav {
     position: fixed;
     bottom: 10px;
@@ -847,7 +827,6 @@
     align-items: center;
     gap: 2px;
     letter-spacing: 0.3px;
-    font-family: 'Roboto', sans-serif;
   }
   .nav-item i {
     font-size: 20px;
@@ -860,46 +839,108 @@
     color: var(--p);
   }
 
-  /* ===== PROFIL – LIGNES SUR UNE SEULE LIGNE AVEC HAUTEUR AUGMENTÉE ===== */
-  #accinfo .profile-row {
+  /* ===== STYLE PROFIL – POLICES ROBOTO + DEUX-POINTS ===== */
+  .profile-section {
+    border: 1.5px solid var(--p-light);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    background: #FAFBFC;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+  }
+  .profile-section:last-child {
+    margin-bottom: 0;
+  }
+  .profile-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--p);
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-    margin-bottom: 6px;
-    line-height: 2.9; /* ← hauteur augmentée de 1.9 à 2.9 */
+    gap: 8px;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 6px;
   }
-  #accinfo .profile-row i {
+  .profile-section-title i {
+    font-size: 17px;
+  }
+  #accinfo .profile-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  #accinfo .profile-row:last-child {
+    margin-bottom: 0;
+  }
+  #accinfo .profile-row .profile-icon {
     flex-shrink: 0;
-    width: 18px;
+    width: 20px;
     color: var(--p);
-    font-size: 16px;
+    font-size: 15px;
+    text-align: center;
   }
   #accinfo .profile-row .profile-label {
     flex-shrink: 0;
     color: var(--text-secondary);
-    font-size: 17px;
     font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.2px;
+    min-width: 140px;
   }
   #accinfo .profile-row .profile-value {
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-primary);
-    font-size: 17px;
-    text-align: left;
-  }
-  /* Pour éviter que le conteneur ne déborde */
-  #accinfo {
-    overflow: hidden;
+    font-size: 15px;
+    word-break: break-word;
   }
 
+  /* Ajustements pour petits écrans */
+  @media (max-width: 480px) {
+    .modal-content {
+      padding: 16px 14px 12px;
+      max-width: 100%;
+      margin: 0 8px;
+    }
+    .profile-section {
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    #accinfo .profile-row {
+      gap: 4px 8px;
+      margin-bottom: 6px;
+    }
+    #accinfo .profile-row .profile-icon {
+      width: 16px;
+      font-size: 13px;
+    }
+    #accinfo .profile-row .profile-label {
+      font-size: 13px;
+      min-width: 100px;
+    }
+    #accinfo .profile-row .profile-value {
+      font-size: 14px;
+    }
+    .profile-section-title {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      top: -16px;
+      right: -16px;
+      font-size: 18px;
+    }
+  }
+
+  /* ===== AUTRES STYLES EXISTANTS ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -930,7 +971,6 @@
     font-weight: 700;
     color: #fff;
     box-shadow: 0 8px 24px rgba(109, 40, 217, 0.25);
-    font-family: 'Roboto', sans-serif;
   }
   .login-title {
     text-align: center;
@@ -939,14 +979,12 @@
     margin-bottom: 4px;
     letter-spacing: -0.3px;
     color: var(--text-primary);
-    font-family: 'Roboto', sans-serif;
   }
   .login-sub {
     text-align: center;
     font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 24px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .login-info {
@@ -958,7 +996,6 @@
     color: var(--text-secondary);
     margin-bottom: 20px;
     border: 1px solid #eef2f6;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .login-error {
@@ -967,7 +1004,6 @@
     font-size: 13px;
     text-align: center;
     font-weight: 500;
-    font-family: 'Roboto', sans-serif;
   }
   .login-card .input-group {
     margin-bottom: 18px;
@@ -979,7 +1015,6 @@
     color: var(--text-secondary);
     margin-bottom: 4px;
     letter-spacing: 0.3px;
-    font-family: 'Roboto', sans-serif;
   }
   .login-card .input {
     background: #fafbfc;
@@ -989,7 +1024,6 @@
     padding: 12px 16px;
     transition: border-color 0.2s, box-shadow 0.2s;
     width: 100%;
-    font-family: 'Roboto', sans-serif;
     color: var(--text-primary);
   }
   .login-card .input:focus {
@@ -1044,7 +1078,6 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
     max-width: 90%;
     text-align: center;
-    font-family: 'Roboto', sans-serif;
   }
 
   ::-webkit-scrollbar { width: 4px; }
@@ -1139,7 +1172,6 @@
     font-size: 9px;
     opacity: 0.6;
     letter-spacing: 1px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .card-holder .name {
@@ -1147,7 +1179,6 @@
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    font-family: 'Roboto', sans-serif;
   }
   .card-expiry {
     display: flex;
@@ -1158,14 +1189,12 @@
     font-size: 9px;
     opacity: 0.6;
     letter-spacing: 1px;
-    font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
   .card-expiry .date {
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    font-family: 'Roboto', sans-serif;
   }
   .card-cvv {
     font-size: 14px;
@@ -1173,7 +1202,6 @@
     letter-spacing: 1px;
     opacity: 0.7;
     margin-top: 4px;
-    font-family: 'Roboto', sans-serif;
   }
 
   .iban-modal .modal-content .iban-header {
@@ -1305,7 +1333,7 @@
     </div>
   </header>
   <main>
-    <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;font-family:'Roboto',sans-serif;">Wykonaj przelew</h1>
+    <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;">Wykonaj przelew</h1>
     <div class="transfer-card">
       <div class="transfer-balance">
         <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
@@ -1339,10 +1367,10 @@
     </div>
   </header>
   <main>
-    <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;font-family:'Roboto',sans-serif;">Weryfikacja przelewu</h1>
+    <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;">Weryfikacja przelewu</h1>
     <div class="transfer-card" style="padding:16px 16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+        <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
         <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
       </div>
       <div class="verify-details">
@@ -1404,10 +1432,10 @@
 <div id="card" class="modal hidden">
   <div class="modal-content">
     <button onclick="closeCard()" class="modal-close">×</button>
-    <p style="font-weight:600;margin-bottom:16px;font-size:19px;font-family:'Roboto',sans-serif;">💳 Karta wirtualna</p>
+    <p style="font-weight:600;margin-bottom:16px;font-size:19px;">💳 Karta wirtualna</p>
     <div class="real-card">
       <div class="card-top">
-        <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:11px;opacity:0.6;letter-spacing:1px;font-family:'Roboto',sans-serif;">FLOA</span></div>
+        <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:11px;opacity:0.6;letter-spacing:1px;">FLOA</span></div>
         <div class="card-brand"><i class="fa-brands fa-cc-visa"></i></div>
       </div>
       <div class="card-number">4556 5518 8867 <span style="opacity:0.5;">XXXX</span></div>
@@ -1417,7 +1445,7 @@
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:4px;position:relative;z-index:2"><span class="card-cvv">CVV: 556</span></div>
     </div>
-    <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;font-family:'Roboto',sans-serif;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+    <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
   </div>
 </div>
 
@@ -1433,39 +1461,44 @@
   </div>
 </div>
 
+<!-- ========== PROFIL MODAL (Roboto partout) ========== -->
 <div id="acc" class="modal hidden">
-  <div class="modal-content">
+  <div class="modal-content" style="max-height:none; overflow:visible; padding:20px 24px 18px;">
     <button onclick="closeAcc()" class="modal-close">×</button>
-    <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-circle-user" style="color:var(--p)"></i> Moje konto</h3>
-    <div id="accinfo" style="font-size:14px;line-height:2.2;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
-    <button onclick="logout()" style="margin-top:16px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:12px;font-size:13px;font-weight:500;width:100%;cursor:pointer;font-family:'Roboto',sans-serif;"><i class="fa-solid fa-right-from-bracket"></i> Wyloguj się</button>
+    <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:20px;color:var(--text-primary);">
+      <i class="fa-solid fa-circle-user" style="color:var(--p)"></i> Moje konto
+    </h3>
+    <div id="accinfo" style="font-size:15px;line-height:2.0;color:var(--text-secondary);"></div>
+    <button onclick="logout()" style="margin-top:16px;padding:12px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:15px;font-weight:500;width:100%;cursor:pointer;">
+      <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
+    </button>
   </div>
 </div>
 
 <div id="notifications" class="modal hidden">
   <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
     <button onclick="closeNotifications()" class="modal-close">×</button>
-    <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;font-family:'Roboto',sans-serif;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-    <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);font-family:'Roboto',sans-serif;"></div>
+    <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+    <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);"></div>
   </div>
 </div>
 
 <div id="txDetail" class="modal hidden" style="z-index:60">
   <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
-    <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#EF4444;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(239,68,68,0.25);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
     <div style="padding:32px 24px 24px">
-      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-id">-</div></div>
-      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-amount">-</div></div>
-      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-benef">-</div></div>
-      <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;font-family:'Roboto',sans-serif;" id="tx-iban">-</div></div>
-      <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;font-family:'Roboto',sans-serif;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);font-family:'Roboto',sans-serif;" id="tx-date">-</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-id">-</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-amount">-</div></div>
+      <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-benef">-</div></div>
+      <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
+      <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-date">-</div></div>
     </div>
   </div>
 </div>
 
 <div id="t"></div>
 
-<!-- ========== SCRIPTS ========== -->
+<!-- ========== SCRIPTS (inchangés) ========== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
   import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1824,19 +1857,65 @@
     });
   }
 
-  // ===== PROFIL – Saldo konta déplacé dans la section "Konto i przelew" =====
+  // ===== FONCTION buildProfile AVEC ROBOTO ET DEUX-POINTS =====
   function buildProfile(u) {
     return `
-      <div class="profile-row"><i class="fa-solid fa-id-card" style="width:16px;color:var(--p)"></i> <span class="profile-label">Imię i nazwisko:</span> <span class="profile-value">${u.nom}</span></div>
-      <div class="profile-row"><i class="fa-solid fa-envelope" style="width:16px;color:var(--p)"></i> <span class="profile-label">Adres e-mail:</span> <span class="profile-value">${u.email}</span></div>
-      <div class="profile-row"><i class="fa-solid fa-flag" style="width:16px;color:var(--p)"></i> <span class="profile-label">Kraj:</span> <span class="profile-value">${u.pays || '-'}</span></div>
-      <div class="profile-row"><i class="fa-solid fa-location-dot" style="width:16px;color:var(--p)"></i> <span class="profile-label">Adres zamieszkania:</span> <span class="profile-value">${u.adresse || '-'}</span></div>
-      <div class="profile-row"><i class="fa-solid fa-phone" style="width:16px;color:var(--p)"></i> <span class="profile-label">Numer telefonu:</span> <span class="profile-value">${u.tel || '-'}</span></div>
-      <hr style="margin:12px 0;border-color:var(--border-light);">
-      <div class="profile-row"><i class="fa-solid fa-wallet" style="width:16px;color:var(--p)"></i> <span class="profile-label">Saldo konta:</span> <span class="profile-value">${fmt(u.montant)}</span></div>
-      <div class="profile-row"><i class="fa-solid fa-briefcase" style="width:16px;color:var(--p)"></i> <span class="profile-label">Typ konta:</span> <span class="profile-value">Profesjonalne</span></div>
-      <div class="profile-row"><i class="fa-solid fa-circle-check" style="width:16px;color:var(--p)"></i> <span class="profile-label">Status konta:</span> <span class="profile-value">🔑 Aktywny</span></div>
-      <div class="profile-row"><i class="fa-solid fa-money-bill-transfer" style="width:16px;color:var(--p)"></i> <span class="profile-label">Oczekiwany przelew bankowy:</span> <span class="profile-value">Klasyczny</span></div>
+      <div class="profile-section">
+        <div class="profile-section-title">
+          <i class="fa-solid fa-user"></i> Informacje osobiste
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-user"></i></span>
+          <span class="profile-label">Właściciel konta :</span>
+          <span class="profile-value">${u.nom || '—'}</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-envelope"></i></span>
+          <span class="profile-label">Adres e-mail :</span>
+          <span class="profile-value">${u.email || '—'}</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-phone"></i></span>
+          <span class="profile-label">Numer telefonu :</span>
+          <span class="profile-value">${u.tel || '—'}</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-flag"></i></span>
+          <span class="profile-label">Kraj zamieszkania :</span>
+          <span class="profile-value">${u.pays || '—'}</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-location-dot"></i></span>
+          <span class="profile-label">Adres zamieszkania :</span>
+          <span class="profile-value">${u.adresse || '—'}</span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-section-title">
+          <i class="fa-solid fa-credit-card"></i> Konto i przelew
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-wallet"></i></span>
+          <span class="profile-label">Saldo konta :</span>
+          <span class="profile-value">${fmt(u.montant)}</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-briefcase"></i></span>
+          <span class="profile-label">Typ konta :</span>
+          <span class="profile-value">Profesjonalne</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-circle-check"></i></span>
+          <span class="profile-label">Status konta :</span>
+          <span class="profile-value">🔗 Aktywny</span>
+        </div>
+        <div class="profile-row">
+          <span class="profile-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+          <span class="profile-label">Oczekiwany przelew bankowy :</span>
+          <span class="profile-value">Klasyczny</span>
+        </div>
+      </div>
     `;
   }
 
@@ -1846,32 +1925,9 @@
       return;
     }
     document.getElementById('accinfo').innerHTML = buildProfile(user);
-    adjustProfileFontSize();
   }
 
-  // ===== AJUSTEMENT DE LA POLICE DU PROFIL (taille de base 17px, hauteur 2.9) =====
-  function adjustProfileFontSize() {
-    const rows = document.querySelectorAll('#accinfo .profile-row');
-    const container = document.getElementById('accinfo');
-    if (!container || rows.length === 0) return;
-    requestAnimationFrame(() => {
-      const containerWidth = container.clientWidth - 20;
-      rows.forEach(row => {
-        const value = row.querySelector('.profile-value');
-        const label = row.querySelector('.profile-label');
-        if (!value) return;
-        let fontSize = 17;
-        while (fontSize > 10) {
-          value.style.fontSize = fontSize + 'px';
-          label.style.fontSize = fontSize + 'px';
-          const rowWidth = row.scrollWidth;
-          if (rowWidth <= containerWidth) break;
-          fontSize -= 0.5;
-        }
-      });
-    });
-  }
-
+  // ===== AUTRES FONCTIONS =====
   function updateAvatars() {
     if (!user) return;
     const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
@@ -1926,13 +1982,12 @@
   window.navigateTo = navigateTo;
 
   window.addEventListener('popstate', (e) => {
-    // On ne réagit pas au popstate pour éviter de revenir à login
     if (user) {
       show('dashboard');
     }
   });
 
-  // ===== FORCER LA DÉCONNEXION (sans revenir à login) =====
+  // ===== FORCER LA DÉCONNEXION =====
   async function forceLogout() {
     if (user && user._id && sessionId) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
@@ -1944,7 +1999,6 @@
     if (historyListener) historyListener();
     if (balanceListener) balanceListener();
     if (statusListener) statusListener();
-    // Rediriger vers login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
   }
@@ -2035,10 +2089,8 @@
     if (historyListener) historyListener();
     if (balanceListener) balanceListener();
     if (statusListener) statusListener();
-    // Rediriger vers login
     show('login');
     history.replaceState({ screen: 'login' }, '', '#login');
-    // Nettoyer l'affichage
     document.getElementById('greet').innerHTML = 'Powitanie, <span>Power</span>';
     document.getElementById('bal').textContent = '0,00 zł';
     document.getElementById('stat-balance').textContent = '0,00 zł';
@@ -2061,16 +2113,14 @@
       const { e, p } = JSON.parse(saved);
       document.getElementById('email').value = e;
       document.getElementById('pin').value = p;
-      // On affiche le dashboard immédiatement SANS jamais montrer l'écran de connexion
       show('dashboard');
       document.getElementById('greet').innerHTML = 'Ładowanie...';
       login({ silent: true }).catch(() => {
-        // En cas d'échec, on déconnecte proprement
         toast('Session expirée, veuillez vous reconnecter.');
         forceLogout();
       });
     } catch {
-      // Erreur de parsing, on reste sur login
+      // reste sur login
     }
   }
 
@@ -2184,7 +2234,9 @@
   // ===== MODALES =====
   window.openCard = () => document.getElementById('card').classList.remove('hidden');
   window.closeCard = () => document.getElementById('card').classList.add('hidden');
-  window.openAcc = () => document.getElementById('acc').classList.remove('hidden');
+  window.openAcc = () => {
+    document.getElementById('acc').classList.remove('hidden');
+  };
   window.closeAcc = () => document.getElementById('acc').classList.add('hidden');
 
   window.openNotifications = () => {
@@ -2255,7 +2307,6 @@
   // ===== INIT =====
   window.addEventListener('resize', () => {
     adjustAllTexts();
-    if (user) adjustProfileFontSize();
   });
 
   setTimeout(() => {
