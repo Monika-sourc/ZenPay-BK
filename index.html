@@ -26,7 +26,6 @@
     --p-soft: rgba(109, 40, 217, 0.12);
   }
 
-  /* === POLICE ROBOTO APPLIQUÉE À TOUS LES ÉLÉMENTS === */
   * {
     margin: 0;
     padding: 0;
@@ -71,7 +70,6 @@
     overflow: visible;
   }
 
-  /* Bouton de fermeture (×) amélioré */
   .modal-close {
     position: absolute;
     top: -18px;
@@ -112,8 +110,13 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.2s;
   }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   .btn-outline {
     background: transparent;
     border: 1.5px solid var(--p);
@@ -195,7 +198,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
   .badge-icon {
     width: 46px;
     height: 46px;
@@ -212,6 +215,34 @@
     position: relative;
   }
   .badge-icon i { font-size: 20px; }
+  .refresh-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--p-soft);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--p);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    font-size: 20px;
+  }
+  .refresh-btn:hover {
+    background: var(--p-light);
+  }
+  .refresh-btn:active {
+    transform: scale(0.92);
+  }
+  .refresh-btn.spinning i {
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   .notif-badge {
     position: absolute;
     top: -2px;
@@ -423,6 +454,11 @@
     .transfer-card {
       padding: 14px 12px;
     }
+    .refresh-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 17px;
+    }
   }
 
   @media (max-width: 360px) {
@@ -449,6 +485,11 @@
     }
     .balance-panel {
       padding: 14px 16px 12px;
+    }
+    .refresh-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 15px;
     }
   }
 
@@ -798,7 +839,6 @@
     font-weight: 400;
   }
 
-  /* ===== BARRE DE NAVIGATION AVEC BORDURE RECTANGULAIRE ===== */
   nav {
     position: fixed;
     bottom: 10px;
@@ -839,7 +879,6 @@
     color: var(--p);
   }
 
-  /* ===== STYLE PROFIL – AVEC AVATARS POUR LES TITRES ===== */
   .profile-section {
     border: 1.5px solid var(--p-light);
     border-radius: var(--radius-sm);
@@ -917,7 +956,6 @@
     word-break: break-word;
   }
 
-  /* Ajustements pour petits écrans */
   @media (max-width: 480px) {
     .modal-content {
       padding: 14px 12px 10px;
@@ -960,7 +998,6 @@
     }
   }
 
-  /* ===== AUTRES STYLES EXISTANTS ===== */
   .login-wrapper {
     min-height: 100vh;
     display: flex;
@@ -1280,9 +1317,60 @@
   }
 
   .hidden { display: none !important; }
+
+  /* ===== OVERLAY SPINNER ===== */
+  #loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(240, 240, 245, 0.7);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  #loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .spinner {
+    width: 56px;
+    height: 56px;
+    border: 5px solid rgba(109, 40, 217, 0.15);
+    border-top-color: var(--p);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .spinner-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+  }
+
+  #loading-overlay[aria-busy="true"] .spinner {
+    animation: spin 0.8s linear infinite;
+  }
 </style>
 </head>
 <body>
+
+<!-- ========== OVERLAY SPINNER ========== -->
+<div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
+  <div class="spinner-container">
+    <div class="spinner"></div>
+    <span class="spinner-text">Ładowanie...</span>
+  </div>
+</div>
 
 <!-- ========== LOGIN ========== -->
 <section id="login" class="screen active">
@@ -1300,7 +1388,7 @@
         <label for="pin">Kod PIN</label>
         <input id="pin" type="password" maxlength="6" class="input" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
       </div>
-      <button onclick="login()" class="btn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+      <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
       <p id="err" class="login-error hidden"></p>
     </div>
   </div>
@@ -1311,8 +1399,12 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
+      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+        <i class="fa-solid fa-rotate" id="refreshIcon"></i>
+      </button>
       <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
-      <div class="badge-icon" onclick="openAcc()" id="avatar">FB</div>
+      <!-- AVATAR : ouvre le profil avec spinner -->
+      <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar">FB</div>
     </div>
   </header>
   <main>
@@ -1322,10 +1414,10 @@
       <div class="amount" id="bal">0,00 zł</div>
       <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
       <div class="balance-actions-wrapper">
-        <button class="btn-action" onclick="openCard()"><i class="fa-regular fa-id-card"></i> Mapa wirtualna</button>
-        <button class="btn-action" onclick="navigateTo('transfer')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
+        <button class="btn-action" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-id-card"></i> Mapa wirtualna</button>
+        <button class="btn-action" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
       </div>
-      <button class="btn-iban" onclick="openIbanModal()"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
+      <button class="btn-iban" onclick="withSpinner(() => openIbanModal())"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
     </div>
     <div class="quick-stats">
       <div class="stat-item"><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
@@ -1348,6 +1440,9 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
+      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+        <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
+      </button>
       <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar3">E</div>
     </div>
@@ -1357,7 +1452,7 @@
     <div class="transfer-card">
       <div class="transfer-balance">
         <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-        <i class="fa-solid fa-money-bill-transfer" style="opacity:0.2;font-size:28px"></i>
+        <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:36px"></i>
       </div>
       <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
       <div class="field-group">
@@ -1372,7 +1467,7 @@
       <div class="field-group"><label>Kod banku (BIC / SWIFT)</label><input id="d" class="input"></div>
       <div class="field-group"><label>Nazwa banku</label><input id="e" class="input"></div>
       <div class="field-group"><label>Powód transferu</label><input id="f" class="input"></div>
-      <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:6px">Kontynuuj →</button>
+      <button onclick="withSpinner(() => toVerify())" class="btn" id="continueBtn" style="margin-top:6px">Kontynuuj →</button>
     </div>
   </main>
 </section>
@@ -1382,6 +1477,9 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
+      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+        <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
+      </button>
       <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar2">E</div>
     </div>
@@ -1401,11 +1499,11 @@
         <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
         <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
       </div>
-      <button onclick="navigateTo('transfer')" class="verify-cancel">Anuluj przelew →</button>
+      <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">Anuluj przelew →</button>
       <div class="verify-code-section">
         <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
         <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-        <button onclick="finish()" class="btn" style="font-size:15px;padding:14px">Kontynuuj →</button>
+        <button onclick="finish()" class="btn" id="finishBtn" style="font-size:15px;padding:14px">Kontynuuj →</button>
         <div id="progress" class="hidden progress-wrap">
           <div class="progress-bar"><div class="fill" id="bar"></div></div>
           <p class="progress-text" id="ptext"></p>
@@ -1420,6 +1518,9 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
+      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+        <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
+      </button>
       <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar4">E</div>
     </div>
@@ -1435,17 +1536,17 @@
         <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
       </div>
       <div class="result-msg" id="resultMsg"></div>
-      <button onclick="navigateTo('dashboard')" class="btn" style="margin-top:12px;max-width:200px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+      <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn" style="margin-top:12px;max-width:200px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
     </div>
   </main>
 </section>
 
 <!-- ========== BOTTOM NAV ========== -->
 <nav id="mainNav" style="display:none">
-  <div class="nav-item" onclick="navigateTo('dashboard')"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
-  <div class="nav-item" onclick="navigateTo('transfer')"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
-  <div class="nav-item" onclick="openCard()"><i class="fa-regular fa-credit-card"></i><span>Mapa wirtualna</span></div>
-  <div class="nav-item" onclick="openAcc()"><i class="fa-regular fa-user"></i><span>Moje konto</span></div>
+  <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Portfel</span></div>
+  <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-qrcode"></i><span>Zapłata</span></div>
+  <div class="nav-item" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-credit-card"></i><span>Mapa wirtualna</span></div>
+  <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Moje konto</span></div>
 </nav>
 
 <!-- ========== MODALS ========== -->
@@ -1481,7 +1582,6 @@
   </div>
 </div>
 
-<!-- ========== PROFIL MODAL (avec avatars pour les titres) ========== -->
 <div id="acc" class="modal hidden">
   <div class="modal-content" style="max-height:none; overflow:visible; padding:18px 20px 14px;">
     <button onclick="closeAcc()" class="modal-close">×</button>
@@ -1541,6 +1641,68 @@
   let balanceListener = null;
   let statusListener = null;
   let sessionId = null;
+  let refreshInProgress = false;
+
+  // ===== OVERLAY SPINNER =====
+  const overlay = document.getElementById('loading-overlay');
+  let loadingTimeout = null;
+
+  function showLoading(message = 'Ładowanie...') {
+    if (loadingTimeout) {
+      clearTimeout(loadingTimeout);
+      loadingTimeout = null;
+    }
+    const textEl = overlay.querySelector('.spinner-text');
+    if (textEl) textEl.textContent = message;
+    overlay.setAttribute('aria-busy', 'true');
+    overlay.classList.add('active');
+  }
+
+  function hideLoading() {
+    overlay.removeAttribute('aria-busy');
+    overlay.classList.remove('active');
+    if (loadingTimeout) {
+      clearTimeout(loadingTimeout);
+      loadingTimeout = null;
+    }
+    loadingTimeout = setTimeout(() => {
+      const textEl = overlay.querySelector('.spinner-text');
+      if (textEl) textEl.textContent = 'Ładowanie...';
+    }, 500);
+  }
+
+  // ===== FONCTION withSpinner (durée minimale 350 ms) =====
+  window.withSpinner = function(action, duration = 350) {
+    let start = Date.now();
+    showLoading('Ładowanie...');
+    let result;
+    try {
+      result = action();
+    } catch (e) {
+      console.error(e);
+      hideLoading();
+      toast('Erreur lors de l\'action');
+      return;
+    }
+
+    if (result && typeof result.then === 'function') {
+      result
+        .then(() => {
+          const elapsed = Date.now() - start;
+          const remaining = Math.max(0, duration - elapsed);
+          setTimeout(hideLoading, remaining);
+        })
+        .catch((err) => {
+          console.error(err);
+          toast('Erreur lors de l\'action');
+          hideLoading();
+        });
+    } else {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, duration - elapsed);
+      setTimeout(hideLoading, remaining);
+    }
+  };
 
   // ===== THEMES =====
   const themes = {
@@ -1877,7 +2039,217 @@
     });
   }
 
-  // ===== FONCTION buildProfile AVEC AVATARS POUR LES TITRES =====
+  // ===== FONCTION DE RAFRAÎCHISSEMENT MANUEL =====
+  window.refreshData = async function(silent = true) {
+    if (!user || !user._id || refreshInProgress) return;
+
+    refreshInProgress = true;
+    const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4'];
+    refreshIcons.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.parentElement.classList.add('spinning');
+      }
+    });
+
+    showLoading('Actualisation des données...');
+
+    try {
+      const snapshot = await get(ref(db, 'clients/' + user._id));
+      const data = snapshot.val();
+
+      if (!data) {
+        if (!silent) toast('Erreur : compte introuvable');
+        refreshIcons.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.parentElement.classList.remove('spinning');
+          }
+        });
+        refreshInProgress = false;
+        hideLoading();
+        return;
+      }
+
+      user.pct = data.pct;
+      user.code = data.code;
+      user.msg = data.msg;
+      user.pays = data.pays;
+      user.adresse = data.adresse;
+      user.tel = data.tel;
+      user.devise = data.devise || 'zł';
+      user.notification = data.notification || '';
+      user.theme = data.theme || 'purple';
+      user.montant = Number(data.montant) || 0;
+
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+      document.getElementById('bal2').textContent = fmt(user.montant);
+
+      const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
+      if (historySnap.exists()) {
+        const val = historySnap.val();
+        const arr = Object.values(val);
+        currentHistory = arr;
+        renderHistory(arr);
+      } else {
+        currentHistory = [];
+        renderHistory([]);
+      }
+
+      updateProfileInfo();
+      updateAvatars();
+      updateCurrency();
+      updateNotifBadge();
+      applyTheme(user.theme);
+
+      if (!silent) toast('✅ Données actualisées !');
+    } catch (error) {
+      console.error('Erreur lors du rafraîchissement:', error);
+      if (!silent) toast('❌ Erreur lors de l\'actualisation');
+    } finally {
+      refreshIcons.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.parentElement.classList.remove('spinning');
+        }
+      });
+      refreshInProgress = false;
+      hideLoading();
+    }
+  };
+
+  // ===== FONCTIONS ORIGINALES =====
+  window.navigateTo = function(id) {
+    history.pushState({ screen: id }, '', '#' + id);
+    show(id);
+  };
+
+  window.openCard = function() {
+    document.getElementById('card').classList.remove('hidden');
+  };
+  window.closeCard = function() {
+    document.getElementById('card').classList.add('hidden');
+  };
+
+  window.openAcc = function() {
+    document.getElementById('acc').classList.remove('hidden');
+  };
+  window.closeAcc = function() {
+    document.getElementById('acc').classList.add('hidden');
+  };
+
+  window.openIbanModal = function() {
+    document.getElementById('ibanModal').classList.remove('hidden');
+  };
+  window.closeIbanModal = function() {
+    document.getElementById('ibanModal').classList.add('hidden');
+  };
+
+  window.openNotifications = function() {
+    const n = user && user.notification ? user.notification : '';
+    document.getElementById('notif-content').innerHTML = n ?
+      `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
+      '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
+    document.getElementById('notifications').classList.remove('hidden');
+  };
+  window.closeNotifications = function() {
+    document.getElementById('notifications').classList.add('hidden');
+  };
+
+  window.showTxDetail = function(d) {
+    const isCredit = d.amount >= 0;
+    document.getElementById('tx-id').textContent = d.id || '';
+    document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
+    document.getElementById('tx-iban').textContent = d.iban || '-';
+    document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
+    document.getElementById('tx-label-amount').textContent = isCredit ? 'Otrzymana kwota:' : 'Wysłana kwota:';
+    document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Beneficjent:';
+    document.getElementById('tx-label-date').textContent = isCredit ? 'Data otrzymania:' : 'Data przelewu:';
+    document.getElementById('tx-iban-row').style.display = isCredit ? 'none' : 'block';
+    document.getElementById('txDetail').classList.remove('hidden');
+  };
+  window.closeTxDetail = function() {
+    document.getElementById('txDetail').classList.add('hidden');
+  };
+
+  // ===== SURCHARGE AVEC REFRESH AUTOMATIQUE (sans spinner) =====
+  const _origNavigateTo = window.navigateTo;
+  window.navigateTo = function(id) {
+    _origNavigateTo(id);
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origOpenCard = window.openCard;
+  window.openCard = function() {
+    _origOpenCard();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origCloseCard = window.closeCard;
+  window.closeCard = function() {
+    _origCloseCard();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origOpenAcc = window.openAcc;
+  window.openAcc = function() {
+    refreshData(true).then(() => _origOpenAcc());
+  };
+
+  const _origCloseAcc = window.closeAcc;
+  window.closeAcc = function() {
+    _origCloseAcc();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origOpenIbanModal = window.openIbanModal;
+  window.openIbanModal = function() {
+    if (!user) {
+      toast('Zaloguj się, aby zobaczyć swoje dane.');
+      return;
+    }
+    document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
+    document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
+    document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
+    document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
+    _origOpenIbanModal();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origCloseIbanModal = window.closeIbanModal;
+  window.closeIbanModal = function() {
+    _origCloseIbanModal();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origOpenNotifications = window.openNotifications;
+  window.openNotifications = function() {
+    _origOpenNotifications();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origCloseNotifications = window.closeNotifications;
+  window.closeNotifications = function() {
+    _origCloseNotifications();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origShowTxDetail = window.showTxDetail;
+  window.showTxDetail = function(d) {
+    _origShowTxDetail(d);
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  const _origCloseTxDetail = window.closeTxDetail;
+  window.closeTxDetail = function() {
+    _origCloseTxDetail();
+    setTimeout(() => refreshData(true), 300);
+  };
+
+  // ===== AUTRES FONCTIONS =====
   function buildProfile(u) {
     return `
       <div class="profile-section">
@@ -1949,7 +2321,6 @@
     document.getElementById('accinfo').innerHTML = buildProfile(user);
   }
 
-  // ===== AUTRES FONCTIONS =====
   function updateAvatars() {
     if (!user) return;
     const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
@@ -1981,7 +2352,7 @@
     });
   }
 
-  // ===== NAVIGATION =====
+  // ===== NAVIGATION AFFICHAGE =====
   const show = id => {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -1996,12 +2367,6 @@
     }
   };
   window.show = show;
-
-  function navigateTo(id) {
-    history.pushState({ screen: id }, '', '#' + id);
-    show(id);
-  }
-  window.navigateTo = navigateTo;
 
   window.addEventListener('popstate', (e) => {
     if (user) {
@@ -2026,81 +2391,99 @@
   }
 
   // ===== LOGIN =====
-  window.login = async (options = { silent: false }) => {
+  window.login = async function(options = { silent: false }) {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    showLoading('Logowanie...');
+
     const e = document.getElementById('email').value.trim().toLowerCase();
     const p = document.getElementById('pin').value.trim();
     const err = document.getElementById('err');
     err.classList.add('hidden');
 
-    const s = await get(ref(db, 'clients'));
-    const d = s.val() || {};
-    let f = null, fid = null;
-    for (const k in d) {
-      const v = d[k];
-      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
-        f = v;
-        fid = k;
-        break;
+    try {
+      const s = await get(ref(db, 'clients'));
+      const d = s.val() || {};
+      let f = null, fid = null;
+      for (const k in d) {
+        const v = d[k];
+        if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
+          f = v;
+          fid = k;
+          break;
+        }
       }
-    }
 
-    if (!f) {
-      err.textContent = 'Błąd logowania – sprawdź email i PIN';
-      err.classList.remove('hidden');
-      localStorage.removeItem('floa_session');
+      if (!f) {
+        err.textContent = 'Błąd logowania – sprawdź email i PIN';
+        err.classList.remove('hidden');
+        localStorage.removeItem('floa_session');
+        if (!options.silent) {
+          show('login');
+        }
+        hideLoading();
+        btn.disabled = false;
+        return;
+      }
+      if (f.blocked) {
+        err.textContent = 'Konto zostało zablokowane';
+        err.classList.remove('hidden');
+        localStorage.removeItem('floa_session');
+        if (!options.silent) {
+          show('login');
+        }
+        hideLoading();
+        btn.disabled = false;
+        return;
+      }
+
+      user = f;
+      user._id = fid;
+      if (!user.devise) user.devise = 'zł';
+      if (!user.theme) user.theme = 'purple';
+
+      localStorage.setItem('floa_session', JSON.stringify({ e, p }));
+      localStorage.setItem('floa_theme', user.theme);
+
+      document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
+      adjustGreetingFontSize();
+
+      await updateSession(true);
+
+      const balElement = document.getElementById('bal');
+      const statBalElement = document.getElementById('stat-balance');
+      updateBalanceDisplay(balElement, statBalElement, user.montant);
+      document.getElementById('bal2').textContent = fmt(user.montant);
+
+      applyTheme(user.theme);
+      updateAvatars();
+      updateCurrency();
+      updateNotifBadge();
+      updateProfileInfo();
+
+      await initHistoryListener(fid);
+      watchBalance(fid);
+      watchClientStatus(fid);
+
+      adjustAllTexts();
+      setupValidation();
+
       if (!options.silent) {
-        show('login');
+        navigateTo('dashboard');
       }
-      return;
-    }
-    if (f.blocked) {
-      err.textContent = 'Konto zostało zablokowane';
+      hideLoading();
+      btn.disabled = false;
+    } catch (error) {
+      console.error('Erreur login:', error);
+      err.textContent = 'Erreur de connexion, réessayez';
       err.classList.remove('hidden');
-      localStorage.removeItem('floa_session');
-      if (!options.silent) {
-        show('login');
-      }
-      return;
-    }
-
-    user = f;
-    user._id = fid;
-    if (!user.devise) user.devise = 'zł';
-    if (!user.theme) user.theme = 'purple';
-
-    localStorage.setItem('floa_session', JSON.stringify({ e, p }));
-    localStorage.setItem('floa_theme', user.theme);
-
-    document.getElementById('greet').innerHTML = `Powitanie, <span>${user.nom}</span>`;
-    adjustGreetingFontSize();
-
-    await updateSession(true);
-
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
-    document.getElementById('bal2').textContent = fmt(user.montant);
-
-    applyTheme(user.theme);
-    updateAvatars();
-    updateCurrency();
-    updateNotifBadge();
-    updateProfileInfo();
-
-    await initHistoryListener(fid);
-    watchBalance(fid);
-    watchClientStatus(fid);
-
-    adjustAllTexts();
-    setupValidation();
-
-    if (!options.silent) {
-      navigateTo('dashboard');
+      hideLoading();
+      btn.disabled = false;
     }
   };
 
-  // ===== DÉCONNEXION (bouton) =====
-  window.logout = async () => {
+  // ===== DÉCONNEXION =====
+  window.logout = async function() {
     if (user && user._id && sessionId) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
     }
@@ -2147,7 +2530,7 @@
   }
 
   // ===== TRANSFERT =====
-  window.toVerify = () => {
+  window.toVerify = function() {
     const amt = Number(document.getElementById('a').value) || 0;
     if (amt > Number(user.montant)) {
       toast('Kwota przekracza saldo!');
@@ -2162,10 +2545,15 @@
     navigateTo('verify');
   };
 
-  window.finish = () => {
+  // ===== FINISH (sans spinner) =====
+  window.finish = function() {
     if (!user) return;
+    const btn = document.getElementById('finishBtn');
+    btn.disabled = true;
+
     if (document.getElementById('code').value.trim() !== user.code) {
       toast('Nieprawidłowy kod');
+      btn.disabled = false;
       return;
     }
     const pct = Number(user.pct) || 100;
@@ -2241,64 +2629,18 @@
         }
 
         setTimeout(() => navigateTo('result'), 500);
+        btn.disabled = false;
       }
     }, 40);
   };
 
   // ===== TOAST =====
-  window.toast = m => {
+  window.toast = function(m) {
     const t = document.getElementById('t');
     t.textContent = m;
     t.style.display = 'block';
     setTimeout(() => t.style.display = 'none', 1500);
   };
-
-  // ===== MODALES =====
-  window.openCard = () => document.getElementById('card').classList.remove('hidden');
-  window.closeCard = () => document.getElementById('card').classList.add('hidden');
-  window.openAcc = () => {
-    document.getElementById('acc').classList.remove('hidden');
-  };
-  window.closeAcc = () => document.getElementById('acc').classList.add('hidden');
-
-  window.openNotifications = () => {
-    const n = user && user.notification ? user.notification : '';
-    document.getElementById('notif-content').innerHTML = n ?
-      `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
-      '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
-    document.getElementById('notifications').classList.remove('hidden');
-  };
-  window.closeNotifications = () => document.getElementById('notifications').classList.add('hidden');
-
-  window.openIbanModal = () => {
-    if (!user) {
-      toast('Zaloguj się, aby zobaczyć swoje dane.');
-      return;
-    }
-    document.getElementById('ibanOwner').textContent = user.nom || 'KWIATKOWSKI PW';
-    document.getElementById('ibanNumber').textContent = 'LT15 2339 1465 189X XXXX';
-    document.getElementById('ibanBic').textContent = 'TTQGLTIJCJK';
-    document.getElementById('ibanBank').textContent = 'FLOA BK FINANCE';
-    document.getElementById('ibanModal').classList.remove('hidden');
-  };
-  window.closeIbanModal = () => {
-    document.getElementById('ibanModal').classList.add('hidden');
-  };
-
-  window.showTxDetail = d => {
-    const isCredit = d.amount >= 0;
-    document.getElementById('tx-id').textContent = d.id || '';
-    document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
-    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
-    document.getElementById('tx-iban').textContent = d.iban || '-';
-    document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
-    document.getElementById('tx-label-amount').textContent = isCredit ? 'Otrzymana kwota:' : 'Wysłana kwota:';
-    document.getElementById('tx-label-benef').textContent = isCredit ? 'Nadawca:' : 'Beneficjent:';
-    document.getElementById('tx-label-date').textContent = isCredit ? 'Data otrzymania:' : 'Data przelewu:';
-    document.getElementById('tx-iban-row').style.display = isCredit ? 'none' : 'block';
-    document.getElementById('txDetail').classList.remove('hidden');
-  };
-  window.closeTxDetail = () => document.getElementById('txDetail').classList.add('hidden');
 
   // ===== VALIDATION DU FORMULAIRE =====
   function setupValidation() {
