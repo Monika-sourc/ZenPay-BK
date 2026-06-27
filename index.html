@@ -1399,11 +1399,10 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
-      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+      <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
         <i class="fa-solid fa-rotate" id="refreshIcon"></i>
       </button>
-      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
-      <!-- AVATAR : ouvre le profil avec spinner -->
+      <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar">FB</div>
     </div>
   </header>
@@ -1440,10 +1439,10 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
-      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+      <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
         <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
       </button>
-      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar3">E</div>
     </div>
   </header>
@@ -1477,10 +1476,10 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
-      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+      <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
         <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
       </button>
-      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar2">E</div>
     </div>
   </header>
@@ -1503,6 +1502,7 @@
       <div class="verify-code-section">
         <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
         <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
+        <!-- PAS DE SPINNER ICI : finish affiche sa propre barre de progression -->
         <button onclick="finish()" class="btn" id="finishBtn" style="font-size:15px;padding:14px">Kontynuuj →</button>
         <div id="progress" class="hidden progress-wrap">
           <div class="progress-bar"><div class="fill" id="bar"></div></div>
@@ -1518,10 +1518,10 @@
   <header>
     <div class="logo"><i class="fa-solid fa-building-columns"></i> FLOA BK</div>
     <div class="header-actions">
-      <button class="refresh-btn" onclick="refreshData(false)" title="Odśwież dane konta">
+      <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
         <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
       </button>
-      <div class="badge-icon" onclick="openNotifications()"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
+      <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
       <div class="badge-icon" id="avatar4">E</div>
     </div>
   </header>
@@ -1552,7 +1552,7 @@
 <!-- ========== MODALS ========== -->
 <div id="card" class="modal hidden">
   <div class="modal-content">
-    <button onclick="closeCard()" class="modal-close">×</button>
+    <button onclick="withSpinner(() => closeCard())" class="modal-close">×</button>
     <p style="font-weight:600;margin-bottom:16px;font-size:19px;">💳 Karta wirtualna</p>
     <div class="real-card">
       <div class="card-top">
@@ -1572,7 +1572,7 @@
 
 <div id="ibanModal" class="modal hidden iban-modal">
   <div class="modal-content">
-    <button onclick="closeIbanModal()" class="modal-close">×</button>
+    <button onclick="withSpinner(() => closeIbanModal())" class="modal-close">×</button>
     <div class="iban-header"><i class="fa-regular fa-credit-card"></i><span>Dane konta</span></div>
     <div class="iban-field"><div class="label">Właściciel konta</div><div class="value" id="ibanOwner">KWIATKOWSKI PW</div></div>
     <div class="iban-field"><div class="label">IBAN</div><div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div></div>
@@ -1584,12 +1584,12 @@
 
 <div id="acc" class="modal hidden">
   <div class="modal-content" style="max-height:none; overflow:visible; padding:18px 20px 14px;">
-    <button onclick="closeAcc()" class="modal-close">×</button>
+    <button onclick="withSpinner(() => closeAcc())" class="modal-close">×</button>
     <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--text-primary);">
       <i class="fa-solid fa-circle-user" style="color:var(--p)"></i> Moje konto
     </h3>
     <div id="accinfo" style="font-size:13px;line-height:1.8;color:var(--text-secondary);"></div>
-    <button onclick="logout()" style="margin-top:14px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:14px;font-weight:500;width:100%;cursor:pointer;">
+    <button onclick="withSpinner(() => logout())" style="margin-top:14px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:14px;font-weight:500;width:100%;cursor:pointer;">
       <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
     </button>
   </div>
@@ -1597,7 +1597,7 @@
 
 <div id="notifications" class="modal hidden">
   <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
-    <button onclick="closeNotifications()" class="modal-close">×</button>
+    <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
     <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
     <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);"></div>
   </div>
@@ -1605,7 +1605,7 @@
 
 <div id="txDetail" class="modal hidden" style="z-index:60">
   <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
-    <button onclick="closeTxDetail()" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
+    <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
     <div style="padding:32px 24px 24px">
       <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-id">-</div></div>
       <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-amount">-</div></div>
@@ -2052,8 +2052,7 @@
       }
     });
 
-    showLoading('Actualisation des données...');
-
+    // Ne pas afficher le spinner ici car withSpinner l'a déjà fait
     try {
       const snapshot = await get(ref(db, 'clients/' + user._id));
       const data = snapshot.val();
@@ -2067,7 +2066,6 @@
           }
         });
         refreshInProgress = false;
-        hideLoading();
         return;
       }
 
@@ -2116,7 +2114,6 @@
         }
       });
       refreshInProgress = false;
-      hideLoading();
     }
   };
 
