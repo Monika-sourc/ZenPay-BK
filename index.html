@@ -26,7 +26,7 @@
     --p-soft: rgba(109, 40, 217, 0.12);
   }
 
-  /* === POLICE ROBOOT APPLIQUÉE À TOUS LES ÉLÉMENTS === */
+  /* === POLICE ROBOTO APPLIQUÉE À TOUS LES ÉLÉMENTS === */
   * {
     margin: 0;
     padding: 0;
@@ -839,97 +839,117 @@
     color: var(--p);
   }
 
-  /* ===== STYLE PROFIL – POLICES ROBOTO + DEUX-POINTS ===== */
+  /* ===== STYLE PROFIL – AVEC AVATARS POUR LES TITRES ===== */
   .profile-section {
     border: 1.5px solid var(--p-light);
     border-radius: var(--radius-sm);
-    padding: 16px 18px;
-    margin-bottom: 16px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
     background: #FAFBFC;
     box-shadow: 0 1px 4px rgba(0,0,0,0.02);
   }
   .profile-section:last-child {
     margin-bottom: 0;
   }
-  .profile-section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--p);
-    margin-bottom: 12px;
+
+  .profile-section-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    letter-spacing: 0.3px;
+    gap: 10px;
+    margin-bottom: 8px;
     border-bottom: 1px solid var(--border-light);
-    padding-bottom: 6px;
+    padding-bottom: 4px;
   }
-  .profile-section-title i {
-    font-size: 17px;
+
+  .section-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--p-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+    font-size: 13px;
+    box-shadow: 0 2px 6px rgba(109, 40, 217, 0.2);
   }
+
+  .profile-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--p);
+    letter-spacing: 0.3px;
+  }
+
   #accinfo .profile-row {
     display: flex;
     align-items: baseline;
-    gap: 8px 12px;
+    gap: 6px 10px;
     flex-wrap: wrap;
-    margin-bottom: 8px;
-    line-height: 1.6;
+    margin-bottom: 5px;
+    line-height: 1.5;
   }
   #accinfo .profile-row:last-child {
     margin-bottom: 0;
   }
   #accinfo .profile-row .profile-icon {
     flex-shrink: 0;
-    width: 20px;
+    width: 18px;
     color: var(--p);
-    font-size: 15px;
+    font-size: 13px;
     text-align: center;
   }
   #accinfo .profile-row .profile-label {
     flex-shrink: 0;
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: 0.2px;
-    min-width: 140px;
+    min-width: 120px;
   }
   #accinfo .profile-row .profile-value {
     flex: 1 1 auto;
     min-width: 0;
     font-weight: 500;
     color: var(--text-primary);
-    font-size: 15px;
+    font-size: 13px;
     word-break: break-word;
   }
 
   /* Ajustements pour petits écrans */
   @media (max-width: 480px) {
     .modal-content {
-      padding: 16px 14px 12px;
+      padding: 14px 12px 10px;
       max-width: 100%;
       margin: 0 8px;
     }
     .profile-section {
-      padding: 12px 14px;
-      margin-bottom: 12px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .section-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+    .profile-section-title {
+      font-size: 13px;
     }
     #accinfo .profile-row {
       gap: 4px 8px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     #accinfo .profile-row .profile-icon {
       width: 16px;
-      font-size: 13px;
+      font-size: 12px;
     }
     #accinfo .profile-row .profile-label {
-      font-size: 13px;
-      min-width: 100px;
+      font-size: 12px;
+      min-width: 90px;
     }
     #accinfo .profile-row .profile-value {
-      font-size: 14px;
-    }
-    .profile-section-title {
-      font-size: 14px;
-      margin-bottom: 8px;
+      font-size: 12px;
     }
     .modal-close {
       width: 36px;
@@ -1461,15 +1481,15 @@
   </div>
 </div>
 
-<!-- ========== PROFIL MODAL (Roboto partout) ========== -->
+<!-- ========== PROFIL MODAL (avec avatars pour les titres) ========== -->
 <div id="acc" class="modal hidden">
-  <div class="modal-content" style="max-height:none; overflow:visible; padding:20px 24px 18px;">
+  <div class="modal-content" style="max-height:none; overflow:visible; padding:18px 20px 14px;">
     <button onclick="closeAcc()" class="modal-close">×</button>
-    <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:20px;color:var(--text-primary);">
+    <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--text-primary);">
       <i class="fa-solid fa-circle-user" style="color:var(--p)"></i> Moje konto
     </h3>
-    <div id="accinfo" style="font-size:15px;line-height:2.0;color:var(--text-secondary);"></div>
-    <button onclick="logout()" style="margin-top:16px;padding:12px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:15px;font-weight:500;width:100%;cursor:pointer;">
+    <div id="accinfo" style="font-size:13px;line-height:1.8;color:var(--text-secondary);"></div>
+    <button onclick="logout()" style="margin-top:14px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:14px;font-weight:500;width:100%;cursor:pointer;">
       <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
     </button>
   </div>
@@ -1498,7 +1518,7 @@
 
 <div id="t"></div>
 
-<!-- ========== SCRIPTS (inchangés) ========== -->
+<!-- ========== SCRIPTS ========== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
   import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
@@ -1857,12 +1877,13 @@
     });
   }
 
-  // ===== FONCTION buildProfile AVEC ROBOTO ET DEUX-POINTS =====
+  // ===== FONCTION buildProfile AVEC AVATARS POUR LES TITRES =====
   function buildProfile(u) {
     return `
       <div class="profile-section">
-        <div class="profile-section-title">
-          <i class="fa-solid fa-user"></i> Informacje osobiste
+        <div class="profile-section-header">
+          <div class="section-avatar"><i class="fa-solid fa-user"></i></div>
+          <span class="profile-section-title">Informacje osobiste</span>
         </div>
         <div class="profile-row">
           <span class="profile-icon"><i class="fa-solid fa-user"></i></span>
@@ -1892,8 +1913,9 @@
       </div>
 
       <div class="profile-section">
-        <div class="profile-section-title">
-          <i class="fa-solid fa-credit-card"></i> Konto i przelew
+        <div class="profile-section-header">
+          <div class="section-avatar"><i class="fa-solid fa-credit-card"></i></div>
+          <span class="profile-section-title">Konto i przelew</span>
         </div>
         <div class="profile-row">
           <span class="profile-icon"><i class="fa-solid fa-wallet"></i></span>
