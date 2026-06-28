@@ -6,6 +6,8 @@
 <title>FLOA BK</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   /* ===== STYLES DE BASE ===== */
   :root {
@@ -1502,7 +1504,6 @@
       <div class="verify-code-section">
         <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
         <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-        <!-- PAS DE SPINNER ICI : finish affiche sa propre barre de progression -->
         <button onclick="finish()" class="btn" id="finishBtn" style="font-size:15px;padding:14px">Kontynuuj →</button>
         <div id="progress" class="hidden progress-wrap">
           <div class="progress-bar"><div class="fill" id="bar"></div></div>
@@ -1643,6 +1644,15 @@
   let sessionId = null;
   let refreshInProgress = false;
 
+  // ===== INITIALISATION EMAILJS =====
+  const emailjs = window.emailjs;
+  if (emailjs) {
+    emailjs.init("GrBJbUTmg8JUgOti4");
+    console.log("✅ EmailJS initialisé");
+  } else {
+    console.warn("⚠️ EmailJS non chargé");
+  }
+
   // ===== OVERLAY SPINNER =====
   const overlay = document.getElementById('loading-overlay');
   let loadingTimeout = null;
@@ -1671,7 +1681,7 @@
     }, 500);
   }
 
-  // ===== FONCTION withSpinner (durée minimale 350 ms) =====
+  // ===== FONCTION withSpinner =====
   window.withSpinner = function(action, duration = 350) {
     let start = Date.now();
     showLoading('Ładowanie...');
@@ -2052,7 +2062,6 @@
       }
     });
 
-    // Ne pas afficher le spinner ici car withSpinner l'a déjà fait
     try {
       const snapshot = await get(ref(db, 'clients/' + user._id));
       const data = snapshot.val();
@@ -2172,7 +2181,7 @@
     document.getElementById('txDetail').classList.add('hidden');
   };
 
-  // ===== SURCHARGE AVEC REFRESH AUTOMATIQUE (sans spinner) =====
+  // ===== SURCHARGE AVEC REFRESH AUTOMATIQUE =====
   const _origNavigateTo = window.navigateTo;
   window.navigateTo = function(id) {
     _origNavigateTo(id);
@@ -2542,7 +2551,7 @@
     navigateTo('verify');
   };
 
-  // ===== FINISH (sans spinner) =====
+  // ===== FINISH (SIMPLIFIÉE) =====
   window.finish = function() {
     if (!user) return;
     const btn = document.getElementById('finishBtn');
@@ -2624,6 +2633,46 @@
           document.getElementById('bal2').textContent = fmt(user.montant);
           updateProfileInfo();
         }
+
+        // ---- ENVOI DE L'EMAIL ----
+        if (emailjs) {
+          const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
+          const statutTexte = pct >= 100 ? '✅ Sukces' : '⚠️ Uwaga';
+          const messageExplicatif = pct >= 100
+            ? '✅ Transakcja została pomyślnie zaksięgowana na koncie odbiorcy.'
+            : '⚠️ Transakcja została przerwana – środki nie zostały przelane.';
+
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+          const fullDate = dateStr + ' ' + timeStr;
+          const refNum = genId('REF');
+          const initiale = (user.nom || 'K').charAt(0).toUpperCase();
+
+          const emailParams = {
+            nom: user.nom || 'Klient',
+            statut: statutTexte,
+            resultat: resultat,
+            montant: formattedAmount,
+            beneficiaire: benef,
+            pourcentage: pct,
+            data: fullDate,
+            ref: refNum,
+            initiale: initiale,
+            to_email: user.email,
+            messageExplicatif: messageExplicatif
+          };
+
+          emailjs.send('service_fuo6tgk', 'template_8zx6ryt', emailParams)
+            .then(function(response) {
+              console.log('✅ Email envoyé', response);
+            })
+            .catch(function(error) {
+              console.error('❌ Erreur email :', error);
+              toast('Erreur lors de l\'envoi de l\'email');
+            });
+        }
+        // ---- FIN ENVOI ----
 
         setTimeout(() => navigateTo('result'), 500);
         btn.disabled = false;
