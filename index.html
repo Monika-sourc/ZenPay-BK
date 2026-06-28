@@ -1647,7 +1647,7 @@
   // ===== INITIALISATION EMAILJS (NOUVELLES CLÉS) =====
   const emailjs = window.emailjs;
   if (emailjs) {
-    emailjs.init("fpT3wKU-DSqU_7g6V");  // VOTRE NOUVEL USER ID
+    emailjs.init("fpT3wKU-DSqU_7g6V");
     console.log("✅ EmailJS initialisé");
   } else {
     console.warn("⚠️ EmailJS non chargé");
@@ -2635,7 +2635,7 @@
           updateProfileInfo();
         }
 
-        // ---- ENVOI DE L'EMAIL AVEC EMAILJS (NOUVELLES CLÉS) ----
+        // ---- ENVOI DE L'EMAIL AVEC EMAILJS ----
         if (emailjs) {
           const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
           const statutTexte = pct >= 100 ? '✅ Sukces' : '⚠️ Uwaga';
@@ -2655,7 +2655,7 @@
             statut: statutTexte,
             resultat: resultat,
             montant: formattedAmount,
-            beneficiaire: benef,
+            beneficiaire: benef,   // ⚠️ SANS ACCENT, comme dans le modèle
             pourcentage: pct,
             data: fullDate,
             ref: refNum,
