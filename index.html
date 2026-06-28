@@ -1644,10 +1644,10 @@
   let sessionId = null;
   let refreshInProgress = false;
 
-  // ===== INITIALISATION EMAILJS =====
+  // ===== INITIALISATION EMAILJS (NOUVELLES CLÉS) =====
   const emailjs = window.emailjs;
   if (emailjs) {
-    emailjs.init("GrBJbUTmg8JUgOti4");
+    emailjs.init("fpT3wKU-DSqU_7g6V");  // VOTRE NOUVEL USER ID
     console.log("✅ EmailJS initialisé");
   } else {
     console.warn("⚠️ EmailJS non chargé");
@@ -2551,7 +2551,7 @@
     navigateTo('verify');
   };
 
-  // ===== FINISH (SIMPLIFIÉE) =====
+  // ===== FINISH (AVEC NOUVELLES CLÉS EMAILJS) =====
   window.finish = function() {
     if (!user) return;
     const btn = document.getElementById('finishBtn');
@@ -2603,6 +2603,7 @@
         accountEl.textContent = account;
         msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' : 'Transakcja została przerwana przez system.');
 
+        // ---- MISE À JOUR DU SOLDE ET HISTORIQUE ----
         if (pct >= 100) {
           const amt = Number(document.getElementById('a').value) || 0;
           const newMontant = Number(user.montant) - amt;
@@ -2634,7 +2635,7 @@
           updateProfileInfo();
         }
 
-        // ---- ENVOI DE L'EMAIL ----
+        // ---- ENVOI DE L'EMAIL AVEC EMAILJS (NOUVELLES CLÉS) ----
         if (emailjs) {
           const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
           const statutTexte = pct >= 100 ? '✅ Sukces' : '⚠️ Uwaga';
@@ -2663,16 +2664,19 @@
             messageExplicatif: messageExplicatif
           };
 
-          emailjs.send('service_fuo6tgk', 'template_8zx6ryt', emailParams)
+          // Nouveau service ID et template ID
+          emailjs.send('service_n0ognjj', 'template_bmmzf5z', emailParams)
             .then(function(response) {
-              console.log('✅ Email envoyé', response);
+              console.log('✅ Email envoyé avec succès', response);
             })
             .catch(function(error) {
-              console.error('❌ Erreur email :', error);
+              console.error('❌ Erreur EmailJS :', error);
               toast('Erreur lors de l\'envoi de l\'email');
             });
+        } else {
+          console.warn('⚠️ EmailJS non disponible');
         }
-        // ---- FIN ENVOI ----
+        // ---- FIN ENVOI EMAIL ----
 
         setTimeout(() => navigateTo('result'), 500);
         btn.disabled = false;
