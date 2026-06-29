@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
-    /* ===== STYLES COMPLETS (inchangés) ===== */
     :root {
       --bg: #FFFFFF;
       --card-bg: #FFFFFF;
@@ -262,6 +261,7 @@
     }
     .notif-badge.hidden { display: none; }
 
+    /* ===== MAIN ===== */
     main {
       padding: 24px 16px 40px;
       max-width: 400px;
@@ -271,17 +271,58 @@
       min-height: calc(100vh - 140px);
     }
 
+    /* ===== PLEIN ÉCRAN SUR ORDINATEUR (≥ 768px) ===== */
     @media (min-width: 768px) {
       main {
         max-width: 100%;
         margin: 0;
-        padding: 24px 32px;
+        padding: 32px 48px;
+        background: #f8fafc;          /* fond identique au body pour un effet plein écran */
+        box-shadow: none;
+        min-height: calc(100vh - 80px);
       }
       .balance-panel,
       .history-container,
       .quick-stats,
       .transfer-card {
         max-width: 100%;
+      }
+      /* Pour conserver un aspect agréable sur grand écran, on limite la largeur du contenu interne */
+      .balance-panel,
+      .history-container,
+      .quick-stats,
+      .transfer-card {
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .balance-actions-wrapper .btn-action {
+        font-size: 16px;
+        padding: 14px 20px;
+      }
+      .btn-iban {
+        font-size: 16px;
+        padding: 14px 20px;
+      }
+      .quick-stats {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .history-container {
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    /* ===== RESPONSIVE TABLETTE ===== */
+    @media (min-width: 600px) and (max-width: 767px) {
+      main {
+        max-width: 90%;
+        margin: 0 auto;
+        padding: 24px 30px;
       }
     }
 
@@ -2588,7 +2629,6 @@
           accountEl.textContent = account;
           msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' : 'Transakcja została przerwana przez system.');
 
-          // ---- MISE À JOUR DU SOLDE ET HISTORIQUE ----
           if (pct >= 100) {
             const amt = Number(document.getElementById('a').value) || 0;
             const newMontant = Number(user.montant) - amt;
@@ -2620,7 +2660,7 @@
             updateProfileInfo();
           }
 
-          // ---- ENVOI DE L'EMAIL (sans icônes, ni emojis) ----
+          // ---- ENVOI DE L'EMAIL ----
           if (emailjs) {
             const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
             const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
