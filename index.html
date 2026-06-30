@@ -211,38 +211,46 @@
             gap: 8px;
             align-items: center;
         }
+
+        /* ===== VISIBILITÉ RENFORCÉE POUR LES 3 ICÔNES EN HAUT À DROITE ===== */
         .badge-icon {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: var(--p-soft);
+            background: rgba(13, 148, 136, 0.25); /* fond plus opaque */
             border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--p);
+            color: #0F766E; /* couleur plus foncée */
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
             position: relative;
         }
         .badge-icon i {
+            color: #0F766E; /* icône plus foncée */
             font-size: 20px;
         }
         .refresh-btn {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: var(--p-soft);
+            background: rgba(13, 148, 136, 0.25); /* fond plus opaque */
             border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--p);
+            color: #0F766E; /* couleur plus foncée */
             cursor: pointer;
             transition: background 0.2s, transform 0.2s;
             font-size: 20px;
         }
+        .refresh-btn i {
+            color: #0F766E;
+        }
+        /* Fin des modifications de visibilité */
+
         .refresh-btn:hover {
             background: var(--p-light);
         }
@@ -933,7 +941,7 @@
             font-weight: 400;
         }
 
-        /* ===== NAVIGATION MODIFIÉE ===== */
+        /* ===== NAVIGATION ===== */
         nav {
             position: fixed;
             bottom: 10px;
@@ -951,7 +959,7 @@
         }
 
         .nav-item {
-            color: #6B7280;
+            color: #374151;
             font-size: 11px;
             font-weight: 500;
             text-align: center;
@@ -965,7 +973,7 @@
         }
         .nav-item i {
             font-size: 20px;
-            color: #9CA3AF;
+            color: #4B5563;
         }
         .nav-item.active {
             color: var(--p);
@@ -1517,7 +1525,6 @@
                 <div class="amount" id="bal">0,00 zł</div>
                 <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
                 <div class="balance-actions-wrapper">
-                    <!-- Bouton "Mapa wirtualna" → "Karta wirtualna" -->
                     <button class="btn-action" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
                     <button class="btn-action" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
                 </div>
@@ -1648,7 +1655,6 @@
     <!-- ========== BOTTOM NAV ========== -->
     <nav id="mainNav" style="display:none">
         <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Pulpit</span></div>
-        <!-- Changement de l'icône pour "Płatności" : deux flèches de virement -->
         <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Płatności</span></div>
         <div class="nav-item" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-credit-card"></i><span>Karta wirtualna</span></div>
         <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Profil</span></div>
