@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>
     <style>
-        /* ===== STYLES (inchangés) ===== */
+        /* ===== STYLES ===== */
         :root {
             --bg: #FFFFFF;
             --card-bg: #FFFFFF;
@@ -212,54 +212,63 @@
             gap: 8px;
             align-items: center;
         }
+
+        /* ===== VISIBILITÉ RENFORCÉE POUR LES 3 ICÔNES ===== */
         .badge-icon {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: var(--p-soft);
-            border: 1px solid var(--border-light);
+            background: #F0FDFA;
+            border: 2px solid var(--p);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--p);
+            color: var(--p-dark);
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
             position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.15s ease;
+        }
+        .badge-icon:hover {
+            background: #D6F3EE;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.12);
         }
         .badge-icon i {
+            color: var(--p-dark);
             font-size: 20px;
         }
+
         .refresh-btn {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: var(--p-soft);
-            border: 1px solid var(--border-light);
+            background: #F0FDFA;
+            border: 2px solid var(--p);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--p);
+            color: var(--p-dark);
             cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
+            transition: all 0.15s ease;
             font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
         .refresh-btn:hover {
-            background: var(--p-light);
+            background: #D6F3EE;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.12);
         }
-        .refresh-btn:active {
-            transform: scale(0.92);
+        .refresh-btn i {
+            color: var(--p-dark);
         }
+
         .refresh-btn.spinning i {
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .notif-badge {
@@ -1028,13 +1037,14 @@
             color: var(--p);
         }
 
+        /* ===== PROFIL MODAL : VISIBILITÉ RENFORCÉE DES CADRES ===== */
         .profile-section {
-            border: 1.5px solid var(--p-light);
+            border: 2px solid var(--p);        /* bordure colorée et plus épaisse */
+            background: #F8FAFC;               /* fond légèrement grisé */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* ombre légère */
             border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            background: #FAFBFC;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+            padding: 14px 18px;
+            margin-bottom: 14px;
         }
         .profile-section:last-child {
             margin-bottom: 0;
@@ -1043,9 +1053,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 4px;
+            margin-bottom: 10px;
+            border-bottom: 1.5px solid var(--p); /* ligne de séparation plus marquée */
+            padding-bottom: 6px;
         }
         .section-avatar {
             width: 28px;
@@ -1595,7 +1605,7 @@
                     <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
                 </button>
                 <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
-                <div class="badge-icon" id="avatar3">E</div>
+                <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar3">E</div>
             </div>
         </header>
         <main>
@@ -1632,7 +1642,7 @@
                     <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
                 </button>
                 <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
-                <div class="badge-icon" id="avatar2">E</div>
+                <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar2">E</div>
             </div>
         </header>
         <main>
@@ -1660,7 +1670,7 @@
         </main>
     </section>
 
-    <!-- ========== PROGRESS (NOUVELLE PAGE) ========== -->
+    <!-- ========== PROGRESS ========== -->
     <section id="progress" class="screen">
         <header>
             <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
@@ -1669,7 +1679,7 @@
                     <i class="fa-solid fa-rotate" id="refreshIcon5"></i>
                 </button>
                 <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
-                <div class="badge-icon" id="avatar5">E</div>
+                <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar5">E</div>
             </div>
         </header>
         <main>
@@ -1725,7 +1735,7 @@
                     <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
                 </button>
                 <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
-                <div class="badge-icon" id="avatar4">E</div>
+                <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
             </div>
         </header>
         <main style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
@@ -2791,7 +2801,7 @@
             const percentEl = document.getElementById('progressPercent');
 
             let w = 0;
-            // 🔽 RALENTISSEMENT : intervalle 80ms, incrément 1
+            // Progression lente : intervalle 80ms, incrément 1
             const interval = setInterval(() => {
                 w += 1;
                 const cur = Math.min(w, pct);
@@ -2896,7 +2906,7 @@
                         navigateTo('result');
                     }, 500);
                 }
-            }, 80); // 🔽 intervalle plus lent
+            }, 80);
         }
 
         // ===== TOAST =====
