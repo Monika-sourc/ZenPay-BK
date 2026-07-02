@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>
     <style>
+        /* ===== STYLES (inchangés) ===== */
         :root {
             --bg: #FFFFFF;
             --card-bg: #FFFFFF;
@@ -211,46 +212,38 @@
             gap: 8px;
             align-items: center;
         }
-
-        /* ===== VISIBILITÉ RENFORCÉE POUR LES 3 ICÔNES EN HAUT À DROITE ===== */
         .badge-icon {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: rgba(13, 148, 136, 0.25); /* fond plus opaque */
+            background: var(--p-soft);
             border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0F766E; /* couleur plus foncée */
+            color: var(--p);
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
             position: relative;
         }
         .badge-icon i {
-            color: #0F766E; /* icône plus foncée */
             font-size: 20px;
         }
         .refresh-btn {
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            background: rgba(13, 148, 136, 0.25); /* fond plus opaque */
+            background: var(--p-soft);
             border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #0F766E; /* couleur plus foncée */
+            color: var(--p);
             cursor: pointer;
             transition: background 0.2s, transform 0.2s;
             font-size: 20px;
         }
-        .refresh-btn i {
-            color: #0F766E;
-        }
-        /* Fin des modifications de visibilité */
-
         .refresh-btn:hover {
             background: var(--p-light);
         }
@@ -299,7 +292,6 @@
             min-height: calc(100vh - 140px);
         }
 
-        /* ===== PLEIN ÉCRAN SUR ORDINATEUR (≥ 768px) ===== */
         @media (min-width: 768px) {
             main {
                 max-width: 100%;
@@ -312,13 +304,8 @@
             .balance-panel,
             .history-container,
             .quick-stats,
-            .transfer-card {
-                max-width: 100%;
-            }
-            .balance-panel,
-            .history-container,
-            .quick-stats,
-            .transfer-card {
+            .transfer-card,
+            .progress-card {
                 max-width: 900px;
                 margin-left: auto;
                 margin-right: auto;
@@ -335,14 +322,6 @@
             }
             .quick-stats {
                 grid-template-columns: repeat(3, 1fr);
-                max-width: 900px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .history-container {
-                max-width: 900px;
-                margin-left: auto;
-                margin-right: auto;
             }
         }
 
@@ -376,7 +355,6 @@
             font-size: 18px;
         }
 
-        /* === PANEL SOLDE RÉDUIT AVEC BOUTONS PLUS LARGES === */
         .balance-panel {
             background: var(--p-gradient);
             border-radius: var(--radius);
@@ -494,7 +472,8 @@
             color: #2D3748;
         }
 
-        .transfer-card {
+        .transfer-card,
+        .progress-card {
             background: var(--card-bg);
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
@@ -528,7 +507,8 @@
             .btn-iban i {
                 font-size: 14px;
             }
-            .transfer-card {
+            .transfer-card,
+            .progress-card {
                 padding: 14px 12px;
             }
             .refresh-btn {
@@ -559,7 +539,8 @@
                 font-size: 20px;
                 margin-left: 2px;
             }
-            .transfer-card {
+            .transfer-card,
+            .progress-card {
                 padding: 10px 8px;
             }
             .balance-panel {
@@ -851,26 +832,91 @@
             box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.10);
             background: #fff;
         }
-        .progress-wrap {
-            margin-top: 14px;
+
+        /* ===== PAGE PROGRESS ===== */
+        .progress-header {
+            text-align: center;
+            margin-bottom: 24px;
         }
-        .progress-bar {
-            height: 6px;
+        .progress-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .progress-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .progress-status {
+            text-align: center;
+            margin: 16px 0 20px;
+        }
+        .progress-status .check {
+            font-size: 48px;
+            color: #10B981;
+            margin-bottom: 8px;
+        }
+        .progress-status .info {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .progress-bar-wrap {
+            margin: 20px 0 12px;
+        }
+        .progress-bar-bg {
+            height: 8px;
             background: #E5E7EB;
             border-radius: 8px;
             overflow: hidden;
         }
-        .progress-bar .fill {
+        .progress-bar-bg .fill {
             height: 100%;
             background: var(--p-gradient);
             width: 0%;
+            transition: width 0.1s linear;
         }
-        .progress-text {
-            font-size: 14px;
-            font-weight: 600;
+        .progress-percent {
             text-align: center;
-            margin-top: 6px;
+            font-size: 32px;
+            font-weight: 700;
             color: var(--p);
+            margin: 8px 0 4px;
+        }
+        .progress-details {
+            background: #FAFBFC;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid var(--border-light);
+        }
+        .progress-details .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .progress-details .row:last-child {
+            border-bottom: none;
+        }
+        .progress-details .row .label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .progress-details .row .value {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+            word-break: break-all;
+            max-width: 60%;
+        }
+        .progress-details .row .value.bank-name {
+            font-weight: 400;
+            color: var(--text-secondary);
         }
 
         .result-card {
@@ -993,7 +1039,6 @@
         .profile-section:last-child {
             margin-bottom: 0;
         }
-
         .profile-section-header {
             display: flex;
             align-items: center;
@@ -1002,7 +1047,6 @@
             border-bottom: 1px solid var(--border-light);
             padding-bottom: 4px;
         }
-
         .section-avatar {
             width: 28px;
             height: 28px;
@@ -1016,14 +1060,12 @@
             font-size: 13px;
             box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
         }
-
         .profile-section-title {
             font-size: 14px;
             font-weight: 700;
             color: var(--p);
             letter-spacing: 0.3px;
         }
-
         #accinfo .profile-row {
             display: flex;
             align-items: baseline;
@@ -1430,7 +1472,6 @@
             display: none !important;
         }
 
-        /* ===== OVERLAY SPINNER ===== */
         #loading-overlay {
             position: fixed;
             inset: 0;
@@ -1468,7 +1509,6 @@
             color: var(--text-secondary);
             letter-spacing: 0.3px;
         }
-
         #loading-overlay[aria-busy="true"] .spinner {
             animation: spin 0.8s linear infinite;
         }
@@ -1615,9 +1655,61 @@
                     <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
                     <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
                     <button onclick="finish()" class="btn" id="finishBtn" style="font-size:15px;padding:14px">Kontynuuj →</button>
-                    <div id="progress" class="hidden progress-wrap">
-                        <div class="progress-bar"><div class="fill" id="bar"></div></div>
-                        <p class="progress-text" id="ptext"></p>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- ========== PROGRESS (NOUVELLE PAGE) ========== -->
+    <section id="progress" class="screen">
+        <header>
+            <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+            <div class="header-actions">
+                <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+                    <i class="fa-solid fa-rotate" id="refreshIcon5"></i>
+                </button>
+                <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
+                <div class="badge-icon" id="avatar5">E</div>
+            </div>
+        </header>
+        <main>
+            <div class="progress-card">
+                <div class="progress-header">
+                    <h2>Twoje aktualne polecenie przelewu...</h2>
+                </div>
+                <div class="progress-status">
+                    <div class="check"><i class="fa-regular fa-circle-check"></i></div>
+                    <p class="info">
+                        <strong>Weryfikacja tożsamości zakończona pomyślnie.</strong><br>
+                        Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
+                    </p>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-bg">
+                        <div class="fill" id="progressFill" style="width:0%;"></div>
+                    </div>
+                    <div class="progress-percent" id="progressPercent">0%</div>
+                </div>
+                <div class="progress-details">
+                    <div class="row">
+                        <span class="label">Kwota przelewu:</span>
+                        <span class="value" id="pAmount">-</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Nazwa beneficjenta:</span>
+                        <span class="value" id="pBenef">-</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">IBAN/numer konta:</span>
+                        <span class="value" id="pIban">-</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Nazwa banku:</span>
+                        <span class="value bank-name" id="pBank">-</span>
+                    </div>
+                    <div class="row" id="pReasonRow" style="display:none;">
+                        <span class="label">Powód transferu:</span>
+                        <span class="value bank-name" id="pReason">-</span>
                     </div>
                 </div>
             </div>
@@ -1732,7 +1824,7 @@
     <!-- ========== SCRIPTS ========== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getDatabase, ref, get, onValue, update, push, set, runTransaction } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+        import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
@@ -1754,7 +1846,7 @@
         let sessionId = null;
         let refreshInProgress = false;
 
-        // ===== INITIALISATION EMAILJS =====
+        // ===== EMAILJS =====
         const emailjs = window.emailjs;
         if (emailjs) {
             emailjs.init("fpT3wKU-DSqU_7g6V");
@@ -1791,7 +1883,6 @@
             }, 500);
         }
 
-        // ===== withSpinner =====
         window.withSpinner = function(action, duration = 350) {
             let start = Date.now();
             showLoading('Ładowanie...');
@@ -1851,14 +1942,12 @@
         const savedTheme = localStorage.getItem('zenpay_theme') || 'teal';
         applyTheme(savedTheme);
 
-        // ===== FORMATTEUR =====
         const fmt = (n) => {
             const dev = (user && user.devise) ? user.devise : 'zł';
             return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) +
                 ' ' + dev;
         };
 
-        // ===== AJUSTEMENT DE TEXTE =====
         function adjustFontSize(element, baseSize, maxChars, minSize) {
             if (!element) return;
             requestAnimationFrame(() => {
@@ -1934,7 +2023,7 @@
             adjustAllTexts();
         }
 
-        // ===== GESTION DES SESSIONS =====
+        // ===== SESSIONS =====
         async function getPublicIP() {
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
@@ -2019,14 +2108,14 @@
                     const subtitleHtml = d.subtitle ? `<span class="sub">• ${d.subtitle}</span>` : '';
                     card.innerHTML = `
                         <div class="history-left">
-                          <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
-                          <div class="history-info">
-                            <div class="title">${d.title} ${subtitleHtml}</div>
-                            <div class="meta">${d.date || ''} • ${d.time || ''}</div>
-                          </div>
+                            <div class="history-icon ${pos ? 'credit' : 'debit'}"><i class="fa-solid ${pos ? 'fa-check' : 'fa-arrow-up'}"></i></div>
+                            <div class="history-info">
+                                <div class="title">${d.title} ${subtitleHtml}</div>
+                                <div class="meta">${d.date || ''} • ${d.time || ''}</div>
+                            </div>
                         </div>
                         <div class="history-amount ${pos ? 'credit' : 'debit'}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
-                      `;
+                    `;
                     card.onclick = () => showTxDetail(d);
                     list.appendChild(card);
                 });
@@ -2056,7 +2145,7 @@
             return Promise.resolve(null);
         }
 
-        // ===== CHARGEMENT DE L'HISTORIQUE =====
+        // ===== CHARGEMENT HISTORIQUE =====
         async function initHistoryListener(userId) {
             if (historyListener) historyListener();
             try {
@@ -2087,7 +2176,7 @@
             });
         }
 
-        // ===== SURVEILLANCE DU SOLDE =====
+        // ===== SURVEILLANCE SOLDE =====
         function watchBalance(userId) {
             if (balanceListener) balanceListener();
             balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
@@ -2102,7 +2191,7 @@
             });
         }
 
-        // ===== SURVEILLANCE DU STATUT CLIENT =====
+        // ===== SURVEILLANCE STATUT =====
         function watchClientStatus(userId) {
             if (statusListener) statusListener();
             statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
@@ -2154,11 +2243,11 @@
             });
         }
 
-        // ===== FONCTION DE RAFRAÎCHISSEMENT MANUEL =====
+        // ===== RAFRAÎCHISSEMENT =====
         window.refreshData = async function(silent = true) {
             if (!user || !user._id || refreshInProgress) return;
             refreshInProgress = true;
-            const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4'];
+            const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4', 'refreshIcon5'];
             refreshIcons.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -2225,7 +2314,7 @@
             }
         };
 
-        // ===== FONCTIONS ORIGINALES =====
+        // ===== NAVIGATION =====
         window.navigateTo = function(id) {
             history.pushState({ screen: id }, '', '#' + id);
             show(id);
@@ -2292,24 +2381,20 @@
             _origOpenCard();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origCloseCard = window.closeCard;
         window.closeCard = function() {
             _origCloseCard();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origOpenAcc = window.openAcc;
         window.openAcc = function() {
             refreshData(true).then(() => _origOpenAcc());
         };
-
         const _origCloseAcc = window.closeAcc;
         window.closeAcc = function() {
             _origCloseAcc();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origOpenIbanModal = window.openIbanModal;
         window.openIbanModal = function() {
             if (!user) {
@@ -2323,98 +2408,93 @@
             _origOpenIbanModal();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origCloseIbanModal = window.closeIbanModal;
         window.closeIbanModal = function() {
             _origCloseIbanModal();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origOpenNotifications = window.openNotifications;
         window.openNotifications = function() {
             _origOpenNotifications();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origCloseNotifications = window.closeNotifications;
         window.closeNotifications = function() {
             _origCloseNotifications();
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origShowTxDetail = window.showTxDetail;
         window.showTxDetail = function(d) {
             _origShowTxDetail(d);
             setTimeout(() => refreshData(true), 300);
         };
-
         const _origCloseTxDetail = window.closeTxDetail;
         window.closeTxDetail = function() {
             _origCloseTxDetail();
             setTimeout(() => refreshData(true), 300);
         };
 
-        // ===== AUTRES FONCTIONS =====
+        // ===== PROFIL =====
         function buildProfile(u) {
             return `
                 <div class="profile-section">
-                  <div class="profile-section-header">
-                    <div class="section-avatar"><i class="fa-solid fa-user"></i></div>
-                    <span class="profile-section-title">Informacje osobiste</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-user"></i></span>
-                    <span class="profile-label">Właściciel konta :</span>
-                    <span class="profile-value">${u.nom || '—'}</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-envelope"></i></span>
-                    <span class="profile-label">Adres e-mail :</span>
-                    <span class="profile-value">${u.email || '—'}</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-phone"></i></span>
-                    <span class="profile-label">Numer telefonu :</span>
-                    <span class="profile-value">${u.tel || '—'}</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-flag"></i></span>
-                    <span class="profile-label">Kraj zamieszkania :</span>
-                    <span class="profile-value">${u.pays || '—'}</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-location-dot"></i></span>
-                    <span class="profile-label">Adres zamieszkania :</span>
-                    <span class="profile-value">${u.adresse || '—'}</span>
-                  </div>
+                    <div class="profile-section-header">
+                        <div class="section-avatar"><i class="fa-solid fa-user"></i></div>
+                        <span class="profile-section-title">Informacje osobiste</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-user"></i></span>
+                        <span class="profile-label">Właściciel konta :</span>
+                        <span class="profile-value">${u.nom || '—'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-envelope"></i></span>
+                        <span class="profile-label">Adres e-mail :</span>
+                        <span class="profile-value">${u.email || '—'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-phone"></i></span>
+                        <span class="profile-label">Numer telefonu :</span>
+                        <span class="profile-value">${u.tel || '—'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-flag"></i></span>
+                        <span class="profile-label">Kraj zamieszkania :</span>
+                        <span class="profile-value">${u.pays || '—'}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-location-dot"></i></span>
+                        <span class="profile-label">Adres zamieszkania :</span>
+                        <span class="profile-value">${u.adresse || '—'}</span>
+                    </div>
                 </div>
                 <div class="profile-section">
-                  <div class="profile-section-header">
-                    <div class="section-avatar"><i class="fa-solid fa-credit-card"></i></div>
-                    <span class="profile-section-title">Konto i przelew</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-wallet"></i></span>
-                    <span class="profile-label">Saldo konta :</span>
-                    <span class="profile-value">${fmt(u.montant)}</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-briefcase"></i></span>
-                    <span class="profile-label">Typ konta :</span>
-                    <span class="profile-value">Profesjonalne</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-circle-check"></i></span>
-                    <span class="profile-label">Status konta :</span>
-                    <span class="profile-value">🔗 Aktywny</span>
-                  </div>
-                  <div class="profile-row">
-                    <span class="profile-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
-                    <span class="profile-label">Oczekiwany przelew bankowy :</span>
-                    <span class="profile-value">Klasyczny</span>
-                  </div>
+                    <div class="profile-section-header">
+                        <div class="section-avatar"><i class="fa-solid fa-credit-card"></i></div>
+                        <span class="profile-section-title">Konto i przelew</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-wallet"></i></span>
+                        <span class="profile-label">Saldo konta :</span>
+                        <span class="profile-value">${fmt(u.montant)}</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-briefcase"></i></span>
+                        <span class="profile-label">Typ konta :</span>
+                        <span class="profile-value">Profesjonalne</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-circle-check"></i></span>
+                        <span class="profile-label">Status konta :</span>
+                        <span class="profile-value">🔗 Aktywny</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="profile-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                        <span class="profile-label">Oczekiwany przelew bankowy :</span>
+                        <span class="profile-value">Klasyczny</span>
+                    </div>
                 </div>
-              `;
+            `;
         }
 
         function updateProfileInfo() {
@@ -2428,7 +2508,7 @@
         function updateAvatars() {
             if (!user) return;
             const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-            ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
+            ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = initials;
             });
@@ -2447,7 +2527,7 @@
 
         function updateNotifBadge() {
             const hasNotif = user && user.notification && user.notification.trim() !== '';
-            ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4'].forEach(id => {
+            ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4', 'notif-badge5'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     if (hasNotif) el.classList.remove('hidden');
@@ -2456,7 +2536,7 @@
             });
         }
 
-        // ===== NAVIGATION AFFICHAGE =====
+        // ===== AFFICHAGE =====
         const show = id => {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -2478,7 +2558,7 @@
             }
         });
 
-        // ===== FORCER LA DÉCONNEXION =====
+        // ===== FORCER DÉCONNEXION =====
         async function forceLogout() {
             if (user && user._id && sessionId) {
                 await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
@@ -2610,14 +2690,14 @@
             document.getElementById('history-list').innerHTML =
                 `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
             document.getElementById('accinfo').innerHTML = '';
-            ['avatar', 'avatar2', 'avatar3', 'avatar4'].forEach(id => {
+            ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.textContent = 'FB';
             });
             document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
         };
 
-        // ===== GESTION DE LA SESSION =====
+        // ===== GESTION SESSION =====
         const saved = localStorage.getItem('zenpay_session');
         if (saved) {
             try {
@@ -2652,6 +2732,8 @@
         };
 
         // ===== FINISH =====
+        let transferData = {};
+
         window.finish = function() {
             if (!user) return;
             const btn = document.getElementById('finishBtn');
@@ -2662,133 +2744,160 @@
                 btn.disabled = false;
                 return;
             }
+
+            const amt = Number(document.getElementById('a').value) || 0;
+            const benef = document.getElementById('b').value || '-';
+            const iban = document.getElementById('c').value || '-';
+            const swift = document.getElementById('d').value || '-';
+            const bank = document.getElementById('e').value || '-';
+            const reason = document.getElementById('f').value || '';
+
+            transferData = {
+                amount: amt,
+                amountFormatted: fmt(amt),
+                benef: benef,
+                iban: iban,
+                swift: swift,
+                bank: bank,
+                reason: reason
+            };
+
+            navigateTo('progress');
+
+            setTimeout(() => {
+                startProgress(amt, benef, iban, bank, reason);
+            }, 300);
+
+            btn.disabled = false;
+        };
+
+        // ===== DÉMARRER LA PROGRESSION =====
+        function startProgress(amount, beneficiary, iban, bank, reason) {
+            document.getElementById('pAmount').textContent = fmt(amount);
+            document.getElementById('pBenef').textContent = beneficiary;
+            document.getElementById('pIban').textContent = iban;
+            document.getElementById('pBank').textContent = bank;
+            const reasonRow = document.getElementById('pReasonRow');
+            if (reason && reason.trim() !== '') {
+                document.getElementById('pReason').textContent = reason;
+                reasonRow.style.display = 'flex';
+            } else {
+                reasonRow.style.display = 'none';
+            }
+
             const pct = Number(user.pct) || 100;
             const msg = user.msg || '';
-            const pr = document.getElementById('progress');
-            const bar = document.getElementById('bar');
-            const txt = document.getElementById('ptext');
-            pr.classList.remove('hidden');
+            const fill = document.getElementById('progressFill');
+            const percentEl = document.getElementById('progressPercent');
+
             let w = 0;
+            // 🔽 RALENTISSEMENT : intervalle 80ms, incrément 1
             const interval = setInterval(() => {
-                w += 2;
+                w += 1;
                 const cur = Math.min(w, pct);
-                bar.style.width = cur + '%';
-                txt.textContent = cur + '%';
+                fill.style.width = cur + '%';
+                percentEl.textContent = cur + '%';
                 if (w >= pct) {
                     clearInterval(interval);
+                    setTimeout(() => {
+                        const icon = document.getElementById('resultIcon');
+                        const status = document.getElementById('resultStatus');
+                        const percentResult = document.getElementById('resultPercent');
+                        const benefEl = document.getElementById('resultBenef');
+                        const amountEl = document.getElementById('resultAmount');
+                        const accountEl = document.getElementById('resultAccount');
+                        const msgEl = document.getElementById('resultMsg');
 
-                    const benef = document.getElementById('b').value || '-';
-                    const amtVal = Number(document.getElementById('a').value) || 0;
-                    const account = document.getElementById('c').value || '-';
-                    const formattedAmount = fmt(amtVal);
-
-                    const icon = document.getElementById('resultIcon');
-                    const status = document.getElementById('resultStatus');
-                    const percentEl = document.getElementById('resultPercent');
-                    const benefEl = document.getElementById('resultBenef');
-                    const amountEl = document.getElementById('resultAmount');
-                    const accountEl = document.getElementById('resultAccount');
-                    const msgEl = document.getElementById('resultMsg');
-
-                    percentEl.textContent = cur + '%';
-                    if (pct >= 100) {
-                        icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
-                        status.textContent = 'Przelew zatwierdzony ✓';
-                    } else {
-                        icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
-                        status.textContent = `Przelew zatrzymany na ${pct}%`;
-                    }
-                    benefEl.textContent = benef;
-                    amountEl.textContent = formattedAmount;
-                    accountEl.textContent = account;
-                    msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
-                        'Transakcja została przerwana przez system.');
-
-                    if (pct >= 100) {
-                        const amt = Number(document.getElementById('a').value) || 0;
-                        const newMontant = Number(user.montant) - amt;
-                        user.montant = newMontant;
-
-                        update(ref(db, 'clients/' + user._id), { montant: newMontant })
-                            .then(() => {
-                                const now = new Date();
-                                const tx = {
-                                    id: genId('DE'),
-                                    title: 'Przelew wysłany',
-                                    subtitle: document.getElementById('b').value,
-                                    amount: -amt,
-                                    beneficiary: document.getElementById('b').value,
-                                    iban: document.getElementById('c').value,
-                                    date: now.toLocaleDateString('pl-PL'),
-                                    time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-                                    timestamp: now.getTime()
-                                };
-                                addDebitHistory(tx);
-                                toast(`-${fmt(amt)}`);
-                            })
-                            .catch(err => console.error(err));
-
-                        const balElement = document.getElementById('bal');
-                        const statBalElement = document.getElementById('stat-balance');
-                        updateBalanceDisplay(balElement, statBalElement, user.montant);
-                        document.getElementById('bal2').textContent = fmt(user.montant);
-                        updateProfileInfo();
-                    }
-
-                    // ---- ENVOI DE L'EMAIL ----
-                    if (emailjs) {
-                        const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
-                        const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
-                        let messageExplicatif = '';
-
+                        percentResult.textContent = cur + '%';
                         if (pct >= 100) {
-                            messageExplicatif =
-                                'Transakcja została pomyślnie zaksięgowana na koncie odbiorcy. Dziękujemy za skorzystanie z usług ZenPay.';
+                            icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+                            status.textContent = 'Przelew zatwierdzony ✓';
+                            const amt = Number(transferData.amount) || 0;
+                            const newMontant = Number(user.montant) - amt;
+                            user.montant = newMontant;
+
+                            update(ref(db, 'clients/' + user._id), { montant: newMontant })
+                                .then(() => {
+                                    const now = new Date();
+                                    const tx = {
+                                        id: genId('DE'),
+                                        title: 'Przelew wysłany',
+                                        subtitle: transferData.benef,
+                                        amount: -amt,
+                                        beneficiary: transferData.benef,
+                                        iban: transferData.iban,
+                                        date: now.toLocaleDateString('pl-PL'),
+                                        time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
+                                        timestamp: now.getTime()
+                                    };
+                                    addDebitHistory(tx);
+                                    toast(`-${fmt(amt)}`);
+                                })
+                                .catch(err => console.error(err));
+
+                            const balElement = document.getElementById('bal');
+                            const statBalElement = document.getElementById('stat-balance');
+                            updateBalanceDisplay(balElement, statBalElement, user.montant);
+                            document.getElementById('bal2').textContent = fmt(user.montant);
+                            updateProfileInfo();
                         } else {
-                            messageExplicatif =
-                                `Transakcja została przerwana na poziomie ${pct}%. Środki nie zostały przelane. Sprawdź dane i spróbuj ponownie.`;
+                            icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
+                            status.textContent = `Przelew zatrzymany na ${pct}%`;
+                        }
+                        benefEl.textContent = transferData.benef;
+                        amountEl.textContent = transferData.amountFormatted;
+                        accountEl.textContent = transferData.iban;
+                        msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
+                            'Transakcja została przerwana przez system.');
+
+                        if (emailjs) {
+                            const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
+                            const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
+                            let messageExplicatif = '';
+                            if (pct >= 100) {
+                                messageExplicatif =
+                                    'Transakcja została pomyślnie zaksięgowana na koncie odbiorcy. Dziękujemy za skorzystanie z usług ZenPay.';
+                            } else {
+                                messageExplicatif =
+                                    `Transakcja została przerwana na poziomie ${pct}%. Środki nie zostały przelane. Sprawdź dane i spróbuj ponownie.`;
+                            }
+                            const now = new Date();
+                            const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit',
+                                year: 'numeric' });
+                            const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+                            const fullDate = dateStr + ' ' + timeStr;
+                            const refNum = genId('REF');
+                            const initiale = (user.nom || 'K').charAt(0).toUpperCase();
+
+                            const emailParams = {
+                                nom: user.nom || 'Klient',
+                                statut: statutTexte,
+                                resultat: resultat,
+                                montant: transferData.amountFormatted,
+                                beneficiaire: transferData.benef,
+                                pourcentage: pct,
+                                data: fullDate,
+                                ref: refNum,
+                                initiale: initiale,
+                                to_email: user.email,
+                                messageExplicatif: messageExplicatif
+                            };
+
+                            emailjs.send('service_n0ognjj', 'template_bmmzf5z', emailParams)
+                                .then(function(response) {
+                                    console.log('✅ Email envoyé avec succès', response);
+                                })
+                                .catch(function(error) {
+                                    console.error('❌ Erreur EmailJS :', error);
+                                    toast('Erreur lors de l\'envoi de l\'email');
+                                });
                         }
 
-                        const now = new Date();
-                        const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit',
-                            year: 'numeric' });
-                        const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-                        const fullDate = dateStr + ' ' + timeStr;
-                        const refNum = genId('REF');
-                        const initiale = (user.nom || 'K').charAt(0).toUpperCase();
-
-                        const emailParams = {
-                            nom: user.nom || 'Klient',
-                            statut: statutTexte,
-                            resultat: resultat,
-                            montant: formattedAmount,
-                            beneficiaire: benef,
-                            pourcentage: pct,
-                            data: fullDate,
-                            ref: refNum,
-                            initiale: initiale,
-                            to_email: user.email,
-                            messageExplicatif: messageExplicatif
-                        };
-
-                        emailjs.send('service_n0ognjj', 'template_bmmzf5z', emailParams)
-                            .then(function(response) {
-                                console.log('✅ Email envoyé avec succès', response);
-                            })
-                            .catch(function(error) {
-                                console.error('❌ Erreur EmailJS :', error);
-                                toast('Erreur lors de l\'envoi de l\'email');
-                            });
-                    } else {
-                        console.warn('⚠️ EmailJS non disponible');
-                    }
-                    // ---- FIN ENVOI EMAIL ----
-
-                    setTimeout(() => navigateTo('result'), 500);
-                    btn.disabled = false;
+                        navigateTo('result');
+                    }, 500);
                 }
-            }, 40);
-        };
+            }, 80); // 🔽 intervalle plus lent
+        }
 
         // ===== TOAST =====
         window.toast = function(m) {
@@ -2798,7 +2907,7 @@
             setTimeout(() => t.style.display = 'none', 1500);
         };
 
-        // ===== VALIDATION DU FORMULAIRE =====
+        // ===== VALIDATION =====
         function setupValidation() {
             const btn = document.getElementById('continueBtn');
             const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -2824,7 +2933,6 @@
             refreshSession();
         }, 30000);
 
-        // ===== INIT =====
         window.addEventListener('resize', () => {
             adjustAllTexts();
         });
