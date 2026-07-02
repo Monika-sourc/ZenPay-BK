@@ -35,8 +35,9 @@
             font-family: 'Roboto', -apple-system, system-ui, sans-serif;
         }
 
+        /* ===== FOND GRIS CLAIR POUR TOUTE L'APPLICATION ===== */
         body {
-            background: #f8fafc;
+            background: #f0f2f5; /* gris très clair */
             color: var(--text-primary);
             font-size: 14px;
             line-height: 1.6;
@@ -296,8 +297,9 @@
             padding: 24px 16px 40px;
             max-width: 400px;
             margin: 0 auto;
-            background: #ffffff;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02);
+            /* suppression du fond blanc pour laisser le body gris */
+            background: transparent;
+            box-shadow: none;
             min-height: calc(100vh - 140px);
         }
 
@@ -306,7 +308,7 @@
                 max-width: 100%;
                 margin: 0;
                 padding: 32px 48px;
-                background: #f8fafc;
+                background: transparent;
                 box-shadow: none;
                 min-height: calc(100vh - 80px);
             }
@@ -1039,9 +1041,9 @@
 
         /* ===== PROFIL MODAL : VISIBILITÉ RENFORCÉE DES CADRES ===== */
         .profile-section {
-            border: 2px solid var(--p);        /* bordure colorée et plus épaisse */
-            background: #F8FAFC;               /* fond légèrement grisé */
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* ombre légère */
+            border: 2px solid var(--p);
+            background: #F8FAFC;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border-radius: var(--radius-sm);
             padding: 14px 18px;
             margin-bottom: 14px;
@@ -1054,7 +1056,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 10px;
-            border-bottom: 1.5px solid var(--p); /* ligne de séparation plus marquée */
+            border-bottom: 1.5px solid var(--p);
             padding-bottom: 6px;
         }
         .section-avatar {
