@@ -1533,7 +1533,8 @@
   </div>
 
   <!-- ========== LOGIN ========== -->
-  <section id="login" class="screen active">
+  <!-- La classe "active" a été retirée pour cacher l'écran par défaut -->
+  <section id="login" class="screen">
     <div class="login-wrapper">
       <div class="login-card">
         <div class="login-logo">Z</div>
@@ -1831,7 +1832,7 @@
 
   <!-- ========== SCRIPTS ========== -->
   <script type="module">
-    // ===== 1. FIREBASE CONFIG (NOUVEAU) =====
+    // ===== 1. FIREBASE CONFIG =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
@@ -1848,10 +1849,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ===== 2. AUTH ANONYME (ligne unique) =====
+    // Connexion anonyme
     await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
 
-    // ===== 3. RESTE DE L'APPLICATION =====
     let user = null;
     let currentHistory = [];
     let historyListener = null;
@@ -1860,7 +1860,7 @@
     let sessionId = null;
     let refreshInProgress = false;
 
-    // ===== API ZOHO POUR ENVOI D'EMAIL =====
+    // ===== API ZOHO =====
     const sendMail = async ({ to, name, subject, html }) => {
       try {
         const res = await fetch('https://zenpay-mail.vercel.app/api/send', {
@@ -2729,6 +2729,7 @@
         const { e, p } = JSON.parse(saved);
         document.getElementById('email').value = e;
         document.getElementById('pin').value = p;
+        // Afficher le tableau de bord immédiatement (pas de flash)
         show('dashboard');
         document.getElementById('greet').innerHTML = 'Ładowanie...';
         login({ silent: true }).catch(() => {
@@ -2736,8 +2737,12 @@
           forceLogout();
         });
       } catch {
-        // reste sur login
+        // Si erreur, on montre l'écran de connexion
+        show('login');
       }
+    } else {
+      // Aucune session sauvegardée → afficher l'écran de connexion
+      show('login');
     }
 
     // ===== TRANSFERT =====
@@ -2874,7 +2879,7 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
-            // ===== ENVOI DE L'EMAIL AVEC LE TEMPLATE DEMANDÉ =====
+            // ===== ENVOI DE L'EMAIL =====
             const now = new Date();
             const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
