@@ -1831,6 +1831,7 @@
 
   <!-- ========== SCRIPTS ========== -->
   <script type="module">
+    // ===== 1. FIREBASE CONFIG (NOUVEAU) =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
@@ -1847,9 +1848,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
-    await signInAnonymously(getAuth(app)).catch(console.error);
+    // ===== 2. AUTH ANONYME (ligne unique) =====
+    await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
 
+    // ===== 3. RESTE DE L'APPLICATION =====
     let user = null;
     let currentHistory = [];
     let historyListener = null;
