@@ -6,10 +6,8 @@
   <title>ZenPay</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-  </script>
   <style>
-    /* ===== STYLES ===== */
+    /* ===== STYLES (inchangés) ===== */
     :root {
       --bg: #FFFFFF;
       --card-bg: #FFFFFF;
@@ -1837,17 +1835,21 @@
     import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNLEk",
+      apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
       authDomain: "vantex-admin-2026.firebaseapp.com",
       databaseURL: "https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "vantex-admin-2026",
       storageBucket: "vantex-admin-2026.firebasestorage.app",
       messagingSenderId: "810884502320",
-      appId: "1:810884502320:web:b5ba7c2909ddf4ccf02ef5"
+      appId: "1:810884502320:web:b8ba7c2909ddf4ccf02ef5"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+    await signInAnonymously(getAuth(app)).catch(console.error);
+
     let user = null;
     let currentHistory = [];
     let historyListener = null;
@@ -1856,14 +1858,25 @@
     let sessionId = null;
     let refreshInProgress = false;
 
-    // ===== EMAILJS =====
-    const emailjs = window.emailjs;
-    if (emailjs) {
-      emailjs.init("fpT3wKU-DSqU_7g6V");
-      console.log("✅ EmailJS initialized");
-    } else {
-      console.warn("⚠️ EmailJS not loaded");
-    }
+    // ===== API ZOHO POUR ENVOI D'EMAIL =====
+    const sendMail = async ({ to, name, subject, html }) => {
+      try {
+        const res = await fetch('https://zenpay-mail.vercel.app/api/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to, name, subject, html })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          console.error('Erreur API email:', data);
+          throw new Error(data.error || 'Erreur inconnue');
+        }
+        return data;
+      } catch (error) {
+        console.error('Erreur envoi mail:', error);
+        throw error;
+      }
+    };
 
     // ===== OVERLAY SPINNER =====
     const overlay = document.getElementById('loading-overlay');
@@ -2801,7 +2814,6 @@
       const percentEl = document.getElementById('progressPercent');
 
       let w = 0;
-      // Progression lente : intervalle 80ms, incrément 1
       const interval = setInterval(() => {
         w += 1;
         const cur = Math.min(w, pct);
@@ -2860,52 +2872,96 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
-            // ===== ENVOI DE L'EMAIL AVEC LES NOUVEAUX IDs =====
-            if (emailjs) {
-              const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
-              const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
-              let messageExplicatif = '';
-              if (pct >= 100) {
-                messageExplicatif =
-                  'Transakcja została pomyślnie zaksięgowana na koncie odbiorcy. Dziękujemy za skorzystanie z usług ZenPay.';
-              } else {
-                messageExplicatif =
-                  `Transakcja została przerwana na poziomie ${pct}%. Środki nie zostały przelane. Sprawdź dane i spróbuj ponownie.`;
-              }
-              const now = new Date();
-              const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit',
-                year: 'numeric' });
-              const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-              const fullDate = dateStr + ' ' + timeStr;
-              const refNum = genId('REF');
-              const initiale = (user.nom || 'K').charAt(0).toUpperCase();
-
-              const emailParams = {
-                nom: user.nom || 'Klient',
-                statut: statutTexte,
-                resultat: resultat,
-                montant: transferData.amountFormatted,
-                beneficiaire: transferData.benef,
-                pourcentage: pct,
-                data: fullDate,
-                ref: refNum,
-                initiale: initiale,
-                to_email: user.email,               // destinataire : le client
-                messageExplicatif: messageExplicatif
-              };
-
-              // 🔥 Modification importante : nouveaux IDs
-              emailjs.send('service_fpr02i7', 'template_cl2m65d', emailParams)
-                .then(function(response) {
-                  console.log('✅ Email envoyé avec succès', response);
-                })
-                .catch(function(error) {
-                  console.error('❌ Erreur EmailJS :', error);
-                  toast('Erreur lors de l\'envoi de l\'email');
-                });
+            // ===== ENVOI DE L'EMAIL AVEC LE TEMPLATE DEMANDÉ =====
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+            const fullDate = dateStr + ' ' + timeStr;
+            const refNum = genId('REF');
+            const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
+            const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
+            let messageExplicatif = '';
+            if (pct >= 100) {
+              messageExplicatif =
+                'Transakcja została pomyślnie zaksięgowana na koncie odbiorcy. Dziękujemy za skorzystanie z usług ZenPay.';
             } else {
-              console.warn('⚠️ EmailJS non disponible');
+              messageExplicatif =
+                `Transakcja została przerwana na poziomie ${pct}%. Środki nie zostały przelane. Sprawdź dane i spróbuj ponownie.`;
             }
+
+            const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin:0; padding:0; background:#f2f2f2; font-family:Arial, Helvetica, sans-serif;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f2f2; padding:20px 0;">
+                <tr>
+                  <td align="center">
+                    <table width="650" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:8px; border:1px solid #ddd; overflow:hidden;">
+                      <tr>
+                        <td style="background:#0D9488; padding:25px 20px; text-align:center;">
+                          <h1 style="color:#ffffff; font-size:42px; font-weight:bold; margin:0; letter-spacing:1px;">ZenPay</h1>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:30px;">
+                          <p style="font-size:22px; color:#222; margin:0 0 20px 0;">
+                            Szanowny/a <strong>${user.nom || 'Klient'}</strong>,
+                          </p>
+                          <p style="font-size:18px; color:#222; line-height:1.5; margin:0 0 12px 0;">
+                            ${statutTexte} : Twój przelew został
+                            <span style="color:#0D9488; font-weight:bold;">${resultat}</span>.
+                          </p>
+                          <p style="font-size:16px; color:#666; line-height:1.5; margin:0 0 25px 0;">
+                            ${messageExplicatif}
+                          </p>
+                          <div style="background:#fafafa; border-left:4px solid #0D9488; padding:18px 22px; margin:0 0 25px 0;">
+                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Kwota :</strong> ${transferData.amountFormatted}</p>
+                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Odbiorca :</strong> ${transferData.benef}</p>
+                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Procent realizacji :</strong> ${pct}%</p>
+                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Data :</strong> ${fullDate}</p>
+                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Nr referencyjny :</strong> ${refNum}</p>
+                          </div>
+                          <p style="text-align:center; font-size:15px; color:#666; line-height:1.5; margin:0 0 25px 0;">
+                            Niniejsza wiadomość została wygenerowana automatycznie.<br>
+                            Prosimy nie odpowiadać na tę wiadomość.
+                          </p>
+                          <div style="text-align:center; font-size:20px; color:#333; margin:0 0 15px 0;">
+                            Z poważaniem
+                            <strong style="display:block; margin-top:6px; font-size:22px; color:#0D9488;">Zespół ZenPay</strong>
+                          </div>
+                          <div style="text-align:center; color:#0D9488; font-size:16px; margin:0 0 30px 0;">
+                            <a href="mailto:hello@zenpaybj.xyz" style="color:#0D9488; text-decoration:none;">hello@zenpaybj.xyz</a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border-top:1px solid #ddd; padding:15px; text-align:center; font-size:14px; color:#999;">
+                          © ZenPay — Wiadomość wygenerowana automatycznie.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+            `;
+
+            sendMail({
+              to: user.email,
+              name: user.nom || 'Klient',
+              subject: `💳 Twoje zlecenie przelewu ZenPay zostało ${statutTexte}`,
+              html: htmlContent
+            })
+            .then(() => console.log('✅ Email envoyé via Zoho'))
+            .catch((error) => {
+              console.error('❌ Erreur envoi email via Zoho:', error);
+              toast('Erreur lors de l\'envoi de l\'email');
+            });
 
             navigateTo('result');
           }, 500);
