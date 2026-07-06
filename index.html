@@ -211,7 +211,6 @@
       align-items: center;
     }
 
-    /* ===== VISIBILITÉ RENFORCÉE POUR LES 3 ICÔNES ===== */
     .badge-icon {
       width: 46px;
       height: 46px;
@@ -260,7 +259,6 @@
     .refresh-btn i {
       color: var(--p-dark);
     }
-
     .refresh-btn.spinning i {
       animation: spin 0.8s linear infinite;
     }
@@ -289,7 +287,6 @@
       display: none;
     }
 
-    /* ===== MAIN ===== */
     main {
       padding: 24px 16px 40px;
       max-width: 400px;
@@ -994,7 +991,6 @@
       font-weight: 400;
     }
 
-    /* ===== NAVIGATION ===== */
     nav {
       position: fixed;
       bottom: 10px;
@@ -1035,7 +1031,6 @@
       color: var(--p);
     }
 
-    /* ===== PROFIL MODAL : VISIBILITÉ RENFORCÉE DES CADRES ===== */
     .profile-section {
       border: 2px solid var(--p);
       background: #F8FAFC;
@@ -1523,7 +1518,6 @@
   </style>
 </head>
 <body>
-
   <!-- ========== OVERLAY SPINNER ========== -->
   <div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
     <div class="spinner-container">
@@ -1831,7 +1825,6 @@
 
   <!-- ========== SCRIPTS ========== -->
   <script type="module">
-    // ===== 1. FIREBASE CONFIG =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
@@ -1847,8 +1840,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    // Connexion anonyme
     await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
 
     let user = null;
@@ -1859,22 +1850,28 @@
     let sessionId = null;
     let refreshInProgress = false;
 
-    // ===== ENVOI EMAIL VIA L'API EXISTANTE =====
-    const sendMail = async ({ to, name, subject, html }) => {
+    // === NOUVELLE FONCTION SENDMAIL AVEC TOUS LES CHAMPS ===
+    const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference }) => {
       try {
-        const res = await fetch('https://zenpay-mail.vercel.app/api/send', {
+        const res = await fetch('https://zenpay-bip.onrender.com/api/inscription', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ to, name, subject, html })
+          body: JSON.stringify({
+            nom: name,
+            email: to,
+            pct,
+            success,
+            montant,
+            beneficiaire,
+            compte,
+            reference
+          })
         });
         const data = await res.json();
-        if (!res.ok) {
-          console.error('Erreur API email:', data);
-          throw new Error(data.error || 'Erreur inconnue');
-        }
+        if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
         return data;
       } catch (error) {
-        console.error('Erreur envoi mail:', error);
+        console.error('Erreur envoi BIP:', error);
         throw error;
       }
     };
@@ -2875,95 +2872,23 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
-            // ===== ENVOI DE L'EMAIL AVEC L'API EXISTANTE =====
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-            const fullDate = dateStr + ' ' + timeStr;
-            const refNum = genId('REF');
-            const resultat = pct >= 100 ? 'zrealizowany' : 'przerwany';
-            const statutTexte = pct >= 100 ? 'Sukces' : 'Uwaga';
-            let messageExplicatif = '';
-            if (pct >= 100) {
-              messageExplicatif =
-                'Transakcja została pomyślnie zaksięgowana na koncie odbiorcy. Dziękujemy za skorzystanie z usług ZenPay.';
-            } else {
-              messageExplicatif =
-                `Transakcja została przerwana na poziomie ${pct}%. Środki nie zostały przelane. Sprawdź dane i spróbuj ponownie.`;
-            }
-
-            const htmlContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            </head>
-            <body style="margin:0; padding:0; background:#f2f2f2; font-family:Arial, Helvetica, sans-serif;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f2f2f2; padding:20px 0;">
-                <tr>
-                  <td align="center">
-                    <table width="650" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:8px; border:1px solid #ddd; overflow:hidden;">
-                      <tr>
-                        <td style="background:#0D9488; padding:25px 20px; text-align:center;">
-                          <h1 style="color:#ffffff; font-size:42px; font-weight:bold; margin:0; letter-spacing:1px;">ZenPay</h1>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding:30px;">
-                          <p style="font-size:22px; color:#222; margin:0 0 20px 0;">
-                            Szanowny/a <strong>${user.nom || 'Klient'}</strong>,
-                          </p>
-                          <p style="font-size:18px; color:#222; line-height:1.5; margin:0 0 12px 0;">
-                            ${statutTexte} : Twój przelew został
-                            <span style="color:#0D9488; font-weight:bold;">${resultat}</span>.
-                          </p>
-                          <p style="font-size:16px; color:#666; line-height:1.5; margin:0 0 25px 0;">
-                            ${messageExplicatif}
-                          </p>
-                          <div style="background:#fafafa; border-left:4px solid #0D9488; padding:18px 22px; margin:0 0 25px 0;">
-                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Kwota :</strong> ${transferData.amountFormatted}</p>
-                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Odbiorca :</strong> ${transferData.benef}</p>
-                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Procent realizacji :</strong> ${pct}%</p>
-                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Data :</strong> ${fullDate}</p>
-                            <p style="font-size:17px; line-height:1.7; margin:0;"><strong>Nr referencyjny :</strong> ${refNum}</p>
-                          </div>
-                          <p style="text-align:center; font-size:15px; color:#666; line-height:1.5; margin:0 0 25px 0;">
-                            Niniejsza wiadomość została wygenerowana automatycznie.<br>
-                            Prosimy nie odpowiadać na tę wiadomość.
-                          </p>
-                          <div style="text-align:center; font-size:20px; color:#333; margin:0 0 15px 0;">
-                            Z poważaniem
-                            <strong style="display:block; margin-top:6px; font-size:22px; color:#0D9488;">Zespół ZenPay</strong>
-                          </div>
-                          <div style="text-align:center; color:#0D9488; font-size:16px; margin:0 0 30px 0;">
-                            <a href="mailto:hello@zenpaybj.xyz" style="color:#0D9488; text-decoration:none;">hello@zenpaybj.xyz</a>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="border-top:1px solid #ddd; padding:15px; text-align:center; font-size:14px; color:#999;">
-                          © ZenPay — Wiadomość wygenerowana automatycznie.
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </body>
-            </html>
-            `;
-
+            // ===== ENVOI DU BIP AVEC LES NOUVELLES INFOS =====
+            const successFinal = (pct >= 100);
+            const refNum = genId('REF'); // on génère une référence pour le mail
             sendMail({
               to: user.email,
               name: user.nom || 'Klient',
-              subject: "importante",  // <-- Objet modifié
-              html: htmlContent
+              pct: pct,
+              success: successFinal,
+              montant: transferData.amountFormatted,
+              beneficiaire: transferData.benef,
+              compte: transferData.iban,
+              reference: refNum
             })
-            .then(() => console.log('✅ Email envoyé via API existante'))
+            .then(() => console.log('✅ BIP envoyé avec détails'))
             .catch((error) => {
-              console.error('❌ Erreur envoi email:', error);
-              toast('Erreur lors de l\'envoi de l\'email');
+              console.error('❌ Erreur envoi BIP:', error);
+              toast('Erreur lors de l\'envoi du BIP');
             });
 
             navigateTo('result');
