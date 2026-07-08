@@ -36,8 +36,8 @@
     body {
       background: #f0f2f5;
       color: var(--text-primary);
-      font-size: 13px; /* réduction globale */
-      line-height: 1.5;
+      font-size: 14px;
+      line-height: 1.6;
       min-height: 100vh;
       padding-bottom: 90px;
       -webkit-font-smoothing: antialiased;
@@ -108,12 +108,12 @@
       justify-content: center;
       gap: 10px;
       width: 100%;
-      padding: 12px 18px;
+      padding: 14px 20px;
       background: #2D2D3A;
       color: #FFFFFF;
       border: none;
       border-radius: var(--radius-sm);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -133,11 +133,11 @@
 
     .input {
       width: 100%;
-      padding: 9px 12px;
+      padding: 10px 14px;
       background: #FAFBFC;
       border: 1.5px solid #E5E7EB;
       border-radius: var(--radius-sm);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-primary);
     }
     .input:focus {
@@ -157,12 +157,12 @@
       border-bottom-right-radius: 0;
       text-align: left;
       font-weight: 600;
-      font-size: 14px;
-      padding: 9px 12px;
+      font-size: 15px;
+      padding: 10px 14px;
       flex: 1;
     }
     .amount-input-wrap .currency-symbol {
-      padding: 9px 14px;
+      padding: 10px 16px;
       background: #FAFBFC;
       border: 1.5px solid #E5E7EB;
       border-left: none;
@@ -171,16 +171,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
       height: 100%;
-      min-height: 36px;
+      min-height: 40px;
       line-height: 1;
     }
 
     header {
       background: #ffffff;
-      padding: 12px 18px;
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -194,26 +194,26 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: var(--p);
       letter-spacing: -0.3px;
     }
     .logo i {
-      font-size: 24px;
+      font-size: 26px;
       background: var(--p-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .header-actions {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
     }
 
     .badge-icon {
-      width: 40px;
-      height: 40px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: #F0FDFA;
       border: 2px solid var(--p);
@@ -222,7 +222,7 @@
       justify-content: center;
       color: var(--p-dark);
       font-weight: 600;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
       position: relative;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -234,12 +234,12 @@
     }
     .badge-icon i {
       color: var(--p-dark);
-      font-size: 18px;
+      font-size: 20px;
     }
 
     .refresh-btn {
-      width: 40px;
-      height: 40px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: #F0FDFA;
       border: 2px solid var(--p);
@@ -249,7 +249,7 @@
       color: var(--p-dark);
       cursor: pointer;
       transition: all 0.15s ease;
-      font-size: 18px;
+      font-size: 20px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     }
     .refresh-btn:hover {
@@ -259,7 +259,6 @@
     .refresh-btn i {
       color: var(--p-dark);
     }
-
     .refresh-btn.spinning i {
       animation: spin 0.8s linear infinite;
     }
@@ -275,9 +274,9 @@
       background: #EF4444;
       color: #fff;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      font-size: 9px;
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -289,19 +288,19 @@
     }
 
     main {
-      padding: 20px 14px 36px;
+      padding: 24px 16px 40px;
       max-width: 400px;
       margin: 0 auto;
       background: transparent;
       box-shadow: none;
-      min-height: calc(100vh - 120px);
+      min-height: calc(100vh - 140px);
     }
 
     @media (min-width: 768px) {
       main {
         max-width: 100%;
         margin: 0;
-        padding: 28px 40px;
+        padding: 32px 48px;
         background: transparent;
         box-shadow: none;
         min-height: calc(100vh - 80px);
@@ -316,14 +315,14 @@
         margin-right: auto;
       }
       .balance-actions-wrapper .btn-action {
-        font-size: 14px;
-        padding: 10px 16px;
-        min-height: 38px;
+        font-size: 16px;
+        padding: 12px 20px;
+        min-height: 44px;
       }
       .btn-iban {
-        font-size: 13px;
-        padding: 10px 16px;
-        min-height: 38px;
+        font-size: 15px;
+        padding: 12px 20px;
+        min-height: 44px;
       }
       .quick-stats {
         grid-template-columns: repeat(3, 1fr);
@@ -334,14 +333,14 @@
       main {
         max-width: 90%;
         margin: 0 auto;
-        padding: 20px 24px;
+        padding: 24px 30px;
       }
     }
 
     #greet {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       letter-spacing: -0.02em;
       color: var(--text-primary);
       display: flex;
@@ -357,21 +356,21 @@
       overflow: hidden;
       flex: 1 1 auto;
       min-width: 0;
-      font-size: 16px;
+      font-size: 18px;
     }
 
     .balance-panel {
       background: var(--p-gradient);
       border-radius: var(--radius);
-      padding: 12px 20px 10px;
-      margin-bottom: 14px;
+      padding: 14px 24px 12px;
+      margin-bottom: 16px;
       color: #fff;
       position: relative;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(13, 148, 136, 0.20);
       display: flex;
       flex-direction: column;
-      min-height: 110px;
+      min-height: 120px;
       border: 2px solid var(--p);
     }
     .balance-panel::after {
@@ -386,33 +385,33 @@
       pointer-events: none;
     }
     .balance-panel .label {
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 0.8px;
       opacity: 0.8;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 6px;
       font-weight: 400;
     }
     .balance-panel .label i {
-      font-size: 11px;
+      font-size: 12px;
       opacity: 0.9;
     }
     .balance-panel .amount {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1.2;
       overflow: visible;
       white-space: nowrap;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       margin-left: 4px;
     }
     .balance-panel .sub {
-      font-size: 11px;
+      font-size: 12px;
       opacity: 0.7;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-weight: 400;
     }
 
@@ -423,7 +422,7 @@
       width: 100%;
       position: relative;
       z-index: 2;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .balance-actions-wrapper .btn-action {
       flex: 1;
@@ -432,24 +431,24 @@
       color: #2D3748;
       border: 1px solid rgba(0, 0, 0, 0.06);
       border-radius: 40px;
-      padding: 8px 12px;
-      font-size: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       line-height: 1.2;
-      min-height: 34px;
+      min-height: 38px;
       text-align: center;
     }
     .balance-actions-wrapper .btn-action i {
-      font-size: 14px;
+      font-size: 16px;
       color: #2D3748;
       flex-shrink: 0;
     }
@@ -460,20 +459,20 @@
       color: #2D3748;
       border: 1px solid rgba(0, 0, 0, 0.06);
       border-radius: 40px;
-      padding: 8px 12px;
-      font-size: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       margin-top: 0;
-      min-height: 34px;
+      min-height: 38px;
     }
     .btn-iban i {
-      font-size: 14px;
+      font-size: 16px;
       color: #2D3748;
     }
 
@@ -482,123 +481,107 @@
       background: var(--card-bg);
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
-      padding: 14px 14px;
+      padding: 16px 16px;
       box-shadow: var(--shadow-soft);
     }
 
     @media (max-width: 430px) {
       main {
-        padding: 14px 10px 26px;
+        padding: 16px 12px 30px;
         max-width: 100%;
       }
       .balance-panel {
-        padding: 10px 14px 8px;
-        min-height: 90px;
+        padding: 12px 16px 10px;
+        min-height: 100px;
         border-width: 2px;
       }
       .balance-actions-wrapper .btn-action {
-        font-size: 11px;
-        padding: 6px 10px;
-        min-height: 30px;
+        font-size: 12px;
+        padding: 8px 12px;
+        min-height: 34px;
       }
       .balance-actions-wrapper .btn-action i {
-        font-size: 13px;
+        font-size: 14px;
       }
       .btn-iban {
-        font-size: 11px;
-        padding: 6px 10px;
-        min-height: 30px;
+        font-size: 12px;
+        padding: 8px 12px;
+        min-height: 34px;
       }
       .btn-iban i {
-        font-size: 13px;
+        font-size: 14px;
       }
       .transfer-card,
       .progress-card {
-        padding: 12px 10px;
+        padding: 14px 12px;
       }
       .refresh-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-      }
-      .badge-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 13px;
-      }
-      .badge-icon i {
-        font-size: 16px;
+        width: 40px;
+        height: 40px;
+        font-size: 17px;
       }
     }
 
     @media (max-width: 360px) {
       .balance-actions-wrapper .btn-action {
-        font-size: 10px;
-        padding: 5px 8px;
-        min-height: 26px;
+        font-size: 11px;
+        padding: 6px 10px;
+        min-height: 30px;
       }
       .balance-actions-wrapper .btn-action i {
-        font-size: 12px;
+        font-size: 13px;
       }
       .btn-iban {
-        font-size: 10px;
-        padding: 5px 8px;
-        min-height: 26px;
+        font-size: 11px;
+        padding: 6px 10px;
+        min-height: 30px;
       }
       .btn-iban i {
-        font-size: 12px;
+        font-size: 13px;
       }
       .balance-panel .amount {
-        font-size: 18px;
+        font-size: 20px;
         margin-left: 2px;
       }
       .transfer-card,
       .progress-card {
-        padding: 8px 8px;
+        padding: 10px 8px;
       }
       .balance-panel {
-        padding: 8px 10px 6px;
-        min-height: 80px;
+        padding: 10px 12px 8px;
+        min-height: 90px;
       }
       .refresh-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
-      }
-      .badge-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
-      }
-      .badge-icon i {
-        font-size: 14px;
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
       }
     }
 
     .quick-stats {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 24px;
     }
     .stat-item {
       background: var(--card-bg);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
-      padding: 12px 8px;
+      padding: 14px 10px;
       text-align: center;
       box-shadow: var(--shadow-soft);
       overflow: visible;
     }
     .stat-item .stat-value {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--text-primary);
       white-space: nowrap;
       overflow: visible;
     }
     .stat-item .stat-label {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-secondary);
       letter-spacing: 0.5px;
       margin-top: 2px;
@@ -617,45 +600,45 @@
       align-items: center;
       gap: 10px;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 16px;
       color: var(--text-primary);
-      padding: 10px 14px 8px 14px;
+      padding: 12px 16px 10px 16px;
       border-bottom: 2px solid var(--p);
       margin-bottom: 0;
       background: #ffffff;
       border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     }
     .history-header i {
-      font-size: 16px;
+      font-size: 18px;
       color: var(--p);
     }
     .history-header .badge-count {
       margin-left: auto;
       background: var(--p-soft);
       color: var(--p);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
-      padding: 2px 8px;
+      padding: 2px 10px;
       border-radius: 20px;
       border: 1px solid var(--border-light);
     }
     #history-list {
-      padding: 4px 6px 6px 6px;
+      padding: 4px 8px 8px 8px;
     }
     .history-item {
       background: #ffffff;
       border: 1px solid var(--border-light);
       border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 6px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
       width: 100%;
-      min-height: 48px;
+      min-height: 56px;
       transition: box-shadow 0.15s;
     }
     .history-item:hover {
@@ -667,19 +650,19 @@
     .history-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       min-width: 0;
       flex: 1 1 auto;
     }
     .history-icon {
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 13px;
+      font-size: 14px;
     }
     .history-icon.credit {
       background: #D1FAE5;
@@ -701,7 +684,7 @@
       overflow: hidden;
     }
     .history-info .title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -713,7 +696,7 @@
       font-weight: 400;
     }
     .history-info .meta {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-secondary);
       white-space: nowrap;
       overflow: hidden;
@@ -722,7 +705,7 @@
     }
     .history-amount {
       font-weight: 600;
-      font-size: 15px;
+      font-size: 16px;
       white-space: nowrap;
       flex-shrink: 0;
       text-align: right;
@@ -741,26 +724,26 @@
     .empty-history {
       text-align: center;
       color: var(--text-secondary);
-      padding: 24px 14px 16px;
+      padding: 30px 16px 20px;
       background: transparent;
       border: none;
       border-radius: 0;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 400;
     }
     .empty-history i {
       display: block;
-      font-size: 28px;
+      font-size: 32px;
       color: #d1d5db;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .transfer-balance {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      font-size: 13px;
+      margin-bottom: 14px;
+      font-size: 14px;
       color: var(--text-secondary);
       font-weight: 400;
     }
@@ -772,17 +755,17 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 14px;
-      font-size: 13px;
+      margin-bottom: 16px;
+      font-size: 14px;
       color: var(--p);
       font-weight: 600;
     }
     .field-group {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .field-group label {
       display: block;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
       margin-bottom: 3px;
@@ -791,67 +774,67 @@
 
     .verify-details {
       background: #FAFBFC;
-      padding: 12px;
+      padding: 14px;
       border-radius: var(--radius-sm);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       border: 1px solid var(--border-light);
     }
     .verify-details .row {
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .verify-details .row:last-child {
       margin-bottom: 0;
     }
     .verify-details .label {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
       color: var(--text-secondary);
       letter-spacing: 0.5px;
     }
     .verify-details .value {
       font-weight: 600;
-      font-size: 14px;
+      font-size: 15px;
       word-break: break-all;
       color: var(--text-primary);
     }
     .verify-cancel {
-      padding: 6px 14px;
+      padding: 8px 16px;
       border: 1.5px solid #FCA5A5;
       color: #EF4444;
       background: transparent;
       border-radius: var(--radius-sm);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
     }
     .verify-code-section {
-      margin-top: 14px;
+      margin-top: 16px;
     }
     .verify-code-section .lock-line {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 500;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-primary);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .verify-code-section .lock-line i {
-      font-size: 15px;
+      font-size: 16px;
       color: var(--p);
     }
     .verify-code-section .code-input {
       width: 100%;
-      padding: 8px 12px;
+      padding: 10px 14px;
       background: #FAFBFC;
       border: 1.5px solid #E5E7EB;
       border-radius: var(--radius-sm);
-      font-size: 16px;
+      font-size: 17px;
       text-align: center;
       letter-spacing: 4px;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       placeholder: "******";
     }
     .verify-code-section .code-input:focus {
@@ -863,39 +846,39 @@
 
     .progress-header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .progress-header h2 {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .progress-header p {
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 14px;
     }
     .progress-status {
       text-align: center;
-      margin: 14px 0 18px;
+      margin: 16px 0 20px;
     }
     .progress-status .check {
-      font-size: 44px;
+      font-size: 48px;
       color: #10B981;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .progress-status .info {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-secondary);
       line-height: 1.5;
       max-width: 320px;
       margin: 0 auto;
     }
     .progress-bar-wrap {
-      margin: 18px 0 10px;
+      margin: 20px 0 12px;
     }
     .progress-bar-bg {
-      height: 6px;
+      height: 8px;
       background: #E5E7EB;
       border-radius: 8px;
       overflow: hidden;
@@ -908,23 +891,23 @@
     }
     .progress-percent {
       text-align: center;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: 700;
       color: var(--p);
-      margin: 6px 0 4px;
+      margin: 8px 0 4px;
     }
     .progress-details {
       background: #FAFBFC;
       border-radius: var(--radius-sm);
-      padding: 14px;
-      margin-top: 14px;
+      padding: 16px;
+      margin-top: 16px;
       border: 1px solid var(--border-light);
     }
     .progress-details .row {
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
-      font-size: 13px;
+      padding: 6px 0;
+      font-size: 14px;
       border-bottom: 1px solid var(--border-light);
     }
     .progress-details .row:last-child {
@@ -950,41 +933,41 @@
       text-align: center;
       max-width: 400px;
       margin: 0 auto;
-      padding: 28px 20px;
+      padding: 32px 24px;
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--shadow-medium);
     }
     .result-icon {
-      font-size: 52px;
-      margin-bottom: 10px;
+      font-size: 60px;
+      margin-bottom: 12px;
       color: var(--p);
     }
     .result-percent {
-      font-size: 30px;
+      font-size: 34px;
       font-weight: 700;
       color: var(--p);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .result-status {
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .result-details {
       background: #FAFBFC;
       border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      margin: 10px 0 14px 0;
+      padding: 14px 16px;
+      margin: 12px 0 16px 0;
       text-align: left;
       border: 1px solid var(--border-light);
     }
     .result-details .row {
       display: flex;
       justify-content: space-between;
-      padding: 4px 0;
-      font-size: 13px;
+      padding: 6px 0;
+      font-size: 14px;
       border-bottom: 1px solid var(--border-light);
     }
     .result-details .row:last-child {
@@ -1002,11 +985,11 @@
       max-width: 60%;
     }
     .result-msg {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-secondary);
       line-height: 1.6;
-      margin: 6px 0 12px 0;
-      padding: 10px 12px;
+      margin: 8px 0 14px 0;
+      padding: 12px 14px;
       background: var(--p-soft);
       border-radius: var(--radius-sm);
       border-left: 3px solid var(--p);
@@ -1025,14 +1008,14 @@
       border-radius: 0;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      padding: 6px 0 10px;
+      padding: 8px 0 12px;
       z-index: 100;
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
     }
 
     .nav-item {
       color: #374151;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
       text-align: center;
       cursor: pointer;
@@ -1044,7 +1027,7 @@
       letter-spacing: 0.3px;
     }
     .nav-item i {
-      font-size: 18px;
+      font-size: 20px;
       color: #4B5563;
     }
     .nav-item.active {
@@ -1059,8 +1042,8 @@
       background: #F8FAFC;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 12px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
     }
     .profile-section:last-child {
       margin-bottom: 0;
@@ -1069,13 +1052,13 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       border-bottom: 1.5px solid var(--p);
-      padding-bottom: 4px;
+      padding-bottom: 6px;
     }
     .section-avatar {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: var(--p-gradient);
       display: flex;
@@ -1083,11 +1066,11 @@
       justify-content: center;
       flex-shrink: 0;
       color: #fff;
-      font-size: 12px;
+      font-size: 13px;
       box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2);
     }
     .profile-section-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--p);
       letter-spacing: 0.3px;
@@ -1097,7 +1080,7 @@
       align-items: baseline;
       gap: 6px 10px;
       flex-wrap: wrap;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       line-height: 1.5;
     }
     #accinfo .profile-row:last-child {
@@ -1105,67 +1088,67 @@
     }
     #accinfo .profile-row .profile-icon {
       flex-shrink: 0;
-      width: 16px;
+      width: 18px;
       color: var(--p);
-      font-size: 12px;
+      font-size: 13px;
       text-align: center;
     }
     #accinfo .profile-row .profile-label {
       flex-shrink: 0;
       color: var(--text-secondary);
       font-weight: 500;
-      font-size: 12px;
+      font-size: 13px;
       letter-spacing: 0.2px;
-      min-width: 100px;
+      min-width: 120px;
     }
     #accinfo .profile-row .profile-value {
       flex: 1 1 auto;
       min-width: 0;
       font-weight: 500;
       color: var(--text-primary);
-      font-size: 12px;
+      font-size: 13px;
       word-break: break-word;
     }
 
     @media (max-width: 480px) {
       .modal-content {
-        padding: 12px 10px 8px;
+        padding: 14px 12px 10px;
         max-width: 100%;
-        margin: 0 6px;
+        margin: 0 8px;
       }
       .profile-section {
-        padding: 8px 10px;
-        margin-bottom: 8px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
       }
       .section-avatar {
-        width: 22px;
-        height: 22px;
-        font-size: 10px;
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
       }
       .profile-section-title {
-        font-size: 12px;
+        font-size: 13px;
       }
       #accinfo .profile-row {
-        gap: 4px 6px;
-        margin-bottom: 3px;
+        gap: 4px 8px;
+        margin-bottom: 4px;
       }
       #accinfo .profile-row .profile-icon {
-        width: 14px;
-        font-size: 11px;
+        width: 16px;
+        font-size: 12px;
       }
       #accinfo .profile-row .profile-label {
-        font-size: 11px;
-        min-width: 80px;
+        font-size: 12px;
+        min-width: 90px;
       }
       #accinfo .profile-row .profile-value {
-        font-size: 11px;
+        font-size: 12px;
       }
       .modal-close {
-        width: 32px;
-        height: 32px;
-        top: -14px;
-        right: -14px;
-        font-size: 16px;
+        width: 36px;
+        height: 36px;
+        top: -16px;
+        right: -16px;
+        font-size: 18px;
       }
     }
 
@@ -1180,29 +1163,29 @@
     .login-card {
       background: #ffffff;
       border-radius: 24px;
-      padding: 28px 24px;
+      padding: 32px 28px;
       width: 100%;
       max-width: 400px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.02);
       border: 1px solid rgba(0, 0, 0, 0.03);
     }
     .login-logo {
-      width: 56px;
-      height: 56px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       background: var(--p-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 14px;
-      font-size: 22px;
+      margin: 0 auto 16px;
+      font-size: 26px;
       font-weight: 700;
       color: #fff;
       box-shadow: 0 8px 24px rgba(13, 148, 136, 0.25);
     }
     .login-title {
       text-align: center;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       margin-bottom: 4px;
       letter-spacing: -0.3px;
@@ -1210,46 +1193,46 @@
     }
     .login-sub {
       text-align: center;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       font-weight: 400;
     }
     .login-info {
       background: #f8fafc;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: var(--radius-sm);
       text-align: center;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-secondary);
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       border: 1px solid #eef2f6;
       font-weight: 400;
     }
     .login-error {
       color: #EF4444;
-      margin-top: 8px;
-      font-size: 12px;
+      margin-top: 10px;
+      font-size: 13px;
       text-align: center;
       font-weight: 500;
     }
     .login-card .input-group {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .login-card .input-group label {
       display: block;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
-      margin-bottom: 3px;
+      margin-bottom: 4px;
       letter-spacing: 0.3px;
     }
     .login-card .input {
       background: #fafbfc;
       border: 1.5px solid #e5e9ef;
       border-radius: var(--radius-sm);
-      font-size: 13px;
-      padding: 10px 14px;
+      font-size: 14px;
+      padding: 12px 16px;
       transition: border-color 0.2s, box-shadow 0.2s;
       width: 100%;
       color: var(--text-primary);
@@ -1265,9 +1248,9 @@
       font-weight: 400;
     }
     .login-card .btn {
-      margin-top: 4px;
-      font-size: 14px;
-      padding: 12px;
+      margin-top: 6px;
+      font-size: 15px;
+      padding: 14px;
       background: var(--p-gradient);
       box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
       color: #fff;
@@ -1285,7 +1268,7 @@
       transform: translateY(0);
     }
     .login-card .btn i {
-      font-size: 16px;
+      font-size: 17px;
     }
 
     #t {
@@ -1296,9 +1279,9 @@
       background: rgba(11, 15, 25, 0.92);
       backdrop-filter: blur(4px);
       color: #fff;
-      padding: 8px 20px;
+      padding: 10px 24px;
       border-radius: 50px;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
       z-index: 200;
       display: none;
@@ -1322,14 +1305,14 @@
     .real-card {
       background: var(--p-gradient);
       border-radius: 18px;
-      padding: 18px 16px 14px;
+      padding: 20px 18px 16px;
       color: #fff;
       position: relative;
       overflow: hidden;
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.20), inset 0 0 80px rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      margin-bottom: 10px;
-      min-height: 160px;
+      margin-bottom: 12px;
+      min-height: 180px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1366,25 +1349,25 @@
     .card-chip {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
     .card-chip i {
-      font-size: 26px;
+      font-size: 30px;
       opacity: 0.7;
       color: #ffd700;
       filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.3));
     }
     .card-brand {
-      font-size: 26px;
+      font-size: 30px;
       opacity: 0.9;
       filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
     }
     .card-number {
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 600;
       letter-spacing: 2px;
       font-family: 'Roboto', monospace;
-      margin: 10px 0 6px;
+      margin: 12px 0 8px;
       position: relative;
       z-index: 2;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1404,13 +1387,13 @@
       flex-direction: column;
     }
     .card-holder .label {
-      font-size: 8px;
+      font-size: 9px;
       opacity: 0.6;
       letter-spacing: 1px;
       font-weight: 400;
     }
     .card-holder .name {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.5px;
       text-transform: uppercase;
@@ -1421,18 +1404,18 @@
       align-items: flex-end;
     }
     .card-expiry .label {
-      font-size: 8px;
+      font-size: 9px;
       opacity: 0.6;
       letter-spacing: 1px;
       font-weight: 400;
     }
     .card-expiry .date {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.5px;
     }
     .card-cvv {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 1px;
       opacity: 0.7;
@@ -1443,20 +1426,20 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
-      font-size: 18px;
+      margin-bottom: 20px;
+      font-size: 20px;
       font-weight: 600;
       color: var(--text-primary);
     }
     .iban-modal .modal-content .iban-header i {
       color: var(--p);
-      font-size: 22px;
+      font-size: 24px;
     }
     .iban-modal .modal-content .iban-field {
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
     .iban-modal .modal-content .iban-field .label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
       text-transform: uppercase;
@@ -1464,21 +1447,21 @@
       margin-bottom: 2px;
     }
     .iban-modal .modal-content .iban-field .value {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 600;
       color: var(--text-primary);
       word-break: break-all;
     }
     .iban-modal .modal-content .iban-field .value.small {
-      font-size: 14px;
+      font-size: 15px;
     }
     .iban-modal .modal-content .iban-security {
-      margin-top: 14px;
-      padding: 10px 12px;
+      margin-top: 16px;
+      padding: 12px 14px;
       background: #FFF8E7;
       border-radius: var(--radius-sm);
       border-left: 4px solid #EAB308;
-      font-size: 12px;
+      font-size: 13px;
       color: #92400E;
       display: flex;
       align-items: flex-start;
@@ -1486,7 +1469,7 @@
       font-weight: 400;
     }
     .iban-modal .modal-content .iban-security i {
-      font-size: 14px;
+      font-size: 16px;
       color: #EAB308;
       margin-top: 2px;
     }
@@ -1522,15 +1505,15 @@
       gap: 16px;
     }
     .spinner {
-      width: 48px;
-      height: 48px;
+      width: 56px;
+      height: 56px;
       border: 5px solid rgba(13, 148, 136, 0.15);
       border-top-color: var(--p);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     .spinner-text {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       color: var(--text-secondary);
       letter-spacing: 0.3px;
@@ -1625,17 +1608,17 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:20px;margin-bottom:14px;">Wykonaj przelew</h1>
+      <h1 style="font-weight:600;font-size:22px;margin-bottom:16px;">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance">
           <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:32px"></i>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:36px"></i>
         </div>
         <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
         <div class="field-group">
           <label>Kwota przelewu</label>
           <div class="amount-input-wrap">
-            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:14px">
+            <input id="a" class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:600;font-size:15px">
             <div class="currency-symbol" id="currency-symbol">zł</div>
           </div>
         </div>
@@ -1662,11 +1645,11 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:20px;margin-bottom:12px;">Weryfikacja przelewu</h1>
-      <div class="transfer-card" style="padding:14px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:14px;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:28px"></i>
+      <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;">Weryfikacja przelewu</h1>
+      <div class="transfer-card" style="padding:16px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
         </div>
         <div class="verify-details">
           <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
@@ -1680,7 +1663,7 @@
         <div class="verify-code-section">
           <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
           <input id="code" class="code-input" maxlength="20" autocomplete="off" placeholder="******">
-          <button onclick="finish()" class="btn" id="finishBtn" style="font-size:14px;padding:12px">Kontynuuj →</button>
+          <button onclick="finish()" class="btn" id="finishBtn" style="font-size:15px;padding:14px">Kontynuuj →</button>
         </div>
       </div>
     </main>
@@ -1782,10 +1765,10 @@
   <div id="card" class="modal hidden">
     <div class="modal-content">
       <button onclick="withSpinner(() => closeCard())" class="modal-close">×</button>
-      <p style="font-weight:600;margin-bottom:14px;font-size:17px;">💳 Karta wirtualna</p>
+      <p style="font-weight:600;margin-bottom:16px;font-size:19px;">💳 Karta wirtualna</p>
       <div class="real-card">
         <div class="card-top">
-          <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:10px;opacity:0.6;letter-spacing:1px;">ZenPay</span></div>
+          <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:11px;opacity:0.6;letter-spacing:1px;">ZenPay</span></div>
           <div class="card-brand"><i class="fa-brands fa-cc-visa"></i></div>
         </div>
         <div class="card-number" id="cardNumber">4556 5518 8867 XXXX</div>
@@ -1795,7 +1778,7 @@
         </div>
         <div style="display:flex;justify-content:flex-end;margin-top:4px;position:relative;z-index:2"><span class="card-cvv" id="cardCvv">CVV: 556</span></div>
       </div>
-      <p style="font-size:12px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:4px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+      <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
     </div>
   </div>
 
@@ -1812,13 +1795,13 @@
   </div>
 
   <div id="acc" class="modal hidden">
-    <div class="modal-content" style="max-height:none; overflow:visible; padding:16px 18px 12px;">
+    <div class="modal-content" style="max-height:none; overflow:visible; padding:18px 20px 14px;">
       <button onclick="withSpinner(() => closeAcc())" class="modal-close">×</button>
-      <h3 style="margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:17px;color:var(--text-primary);">
+      <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--text-primary);">
         <i class="fa-solid fa-circle-user" style="color:var(--p)"></i> Moje konto
       </h3>
       <div id="accinfo" style="font-size:13px;line-height:1.8;color:var(--text-secondary);"></div>
-      <button onclick="withSpinner(() => logout())" style="margin-top:12px;padding:8px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:13px;font-weight:500;width:100%;cursor:pointer;">
+      <button onclick="withSpinner(() => logout())" style="margin-top:14px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:14px;font-weight:500;width:100%;cursor:pointer;">
         <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
       </button>
     </div>
@@ -1827,20 +1810,20 @@
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:17px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:13px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);"></div>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);"></div>
     </div>
   </div>
 
   <div id="txDetail" class="modal hidden" style="z-index:60">
     <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
-      <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:46px;height:46px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:22px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
-      <div style="padding:28px 20px 20px">
-        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">ID transakcji:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-id">-</div></div>
-        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-amount">-</div></div>
-        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-benef">-</div></div>
-        <div style="margin-bottom:14px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
-        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-date">-</div></div>
+      <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
+      <div style="padding:32px 24px 24px">
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">ID transakcji:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-id">-</div></div>
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-amount">-</div></div>
+        <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-benef">-</div></div>
+        <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
+        <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-date">-</div></div>
       </div>
     </div>
   </div>
@@ -2019,10 +2002,10 @@
         const container = document.getElementById('greet');
         if (container) {
           const containerWidth = container.clientWidth - 80;
-          const baseSize = 16;
+          const baseSize = 18;
           const avgCharWidth = baseSize * 0.55;
           const maxChars = Math.floor(containerWidth / avgCharWidth);
-          adjustFontSize(greetSpan, baseSize, maxChars, 11);
+          adjustFontSize(greetSpan, baseSize, maxChars, 12);
         }
       }
     }
@@ -2033,10 +2016,10 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 40;
-      const baseSize = 22;
+      const baseSize = 24;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
-      adjustFontSize(element, baseSize, maxChars, 9);
+      adjustFontSize(element, baseSize, maxChars, 10);
     }
 
     function adjustStatFontSize(element) {
@@ -2045,10 +2028,10 @@
       const container = element.parentElement;
       if (!container) return;
       const containerWidth = container.clientWidth - 20;
-      const baseSize = 18;
+      const baseSize = 20;
       const avgCharWidth = baseSize * 0.55;
       const maxChars = Math.floor(containerWidth / avgCharWidth);
-      adjustFontSize(element, baseSize, maxChars, 10);
+      adjustFontSize(element, baseSize, maxChars, 11);
     }
 
     function adjustAllTexts() {
@@ -2436,8 +2419,8 @@
     window.openNotifications = function() {
       const n = user && user.notification ? user.notification : '';
       document.getElementById('notif-content').innerHTML = n ?
-        `<div style="background:#F8FAFC;padding:10px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
-        '<p style="color:var(--text-secondary);text-align:center;padding:16px">Brak powiadomień</p>';
+        `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
+        '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
       document.getElementById('notifications').classList.remove('hidden');
     };
     window.closeNotifications = function() {
