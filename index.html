@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ===== STYLES ===== */
+    /* ===== STYLES (inchangés) ===== */
     :root {
       --bg: #FFFFFF;
       --card-bg: #FFFFFF;
@@ -2141,7 +2141,7 @@
       }
     }
 
-    // ===== HISTORIQUE (avec remboursements) =====
+    // ===== HISTORIQUE avec tri corrigé =====
     function renderHistory(historyArray) {
       const list = document.getElementById('history-list');
       list.innerHTML = '';
@@ -2150,7 +2150,32 @@
         list.innerHTML =
         `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
       } else {
-        const sorted = [...historyArray].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        // Fonction pour obtenir un timestamp à partir de date et time (fallback)
+        const getTransactionTime = (item) => {
+          if (item.timestamp && typeof item.timestamp === 'number') {
+            return item.timestamp;
+          }
+          // fallback : parser date + time (format DD.MM.YYYY HH:MM)
+          if (item.date && item.time) {
+            const parts = item.date.split('.');
+            if (parts.length === 3) {
+              const day = parseInt(parts[0], 10);
+              const month = parseInt(parts[1], 10) - 1;
+              const year = parseInt(parts[2], 10);
+              const timeParts = item.time.split(':');
+              const hours = parseInt(timeParts[0], 10);
+              const minutes = parseInt(timeParts[1], 10);
+              return new Date(year, month, day, hours, minutes).getTime();
+            }
+          }
+          return 0;
+        };
+
+        // Tri décroissant par timestamp (le plus récent en premier)
+        const sorted = [...historyArray].sort((a, b) => {
+          return getTransactionTime(b) - getTransactionTime(a);
+        });
+
         count = sorted.length;
         sorted.forEach(d => {
           const card = document.createElement('div');
