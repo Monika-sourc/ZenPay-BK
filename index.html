@@ -1860,28 +1860,85 @@
     let refreshInProgress = false;
     let banqueRef = null;
 
-    // ===== ENVOI BIP VIA L'API =====
+    // ===== NOUVELLE API – VALEURS RÉELLES =====
+    const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
+    const API_KEY = 'GETZENPAY_2026_SECRET';
+
+    // ===== Fonction pour générer un suffixe aléatoire =====
+    function generateRandomCode(length = 4) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    // ===== ENVOI EMAIL AVEC LA NOUVELLE API =====
     const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference }) => {
+      // On construit le sujet et le contenu ici, car la nouvelle API attend sujet, html, text.
+      // On utilisera les mêmes templates que précédemment, mais on les passe dans la requête.
       try {
-        const res = await fetch('https://zenpay-bip.onrender.com/api/inscription', {
+        const suffixe = generateRandomCode();
+        const sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
+        // On construit le HTML et le texte avec les mêmes données que précédemment
+        // On reprend le design existant
+        const montantFormatted = montant || '0.00 zł';
+        const benef = beneficiaire || '---';
+        const compteAffiche = compte || '---';
+        const ref = reference || '---';
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+        const statutTexte = success ? 'Sukces' : 'Odrzucenie';
+        const color = success ? '#28a745' : '#d9534f';
+        const borderColor = success ? '#28a745' : '#EAB308';
+        const bgColor = success ? '#F0FDF4' : '#FFFBEB';
+        const message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
+
+        const htmlContent = `
+        <div style="font-family:Arial,sans-serif; max-width:600px; margin:auto; padding:20px; border:1px solid #eee; border-radius:12px;">
+          <div style="background:#7B2FBE; padding:15px 20px; text-align:center; border-radius:8px 8px 0 0; color:#fff; font-size:24px; font-weight:bold;">ZenPay</div>
+          <div style="padding:20px;">
+            <p style="font-size:18px;">Szanowny/a <strong>${name}</strong>,</p>
+            <p style="font-size:16px; color:${color}; font-weight:bold;">${statutTexte} : Twój przelew został ${success ? 'zrealizowany' : 'odrzucony'}.</p>
+            <p style="font-size:14px; color:#555;">${message}</p>
+            <div style="background:${bgColor}; padding:14px 16px; border-radius:6px; border-left:6px solid ${borderColor}; margin:14px 0;">
+              <p style="margin:0 0 6px 0;"><strong>Referencja :</strong> #${ref}</p>
+              <p style="margin:0 0 6px 0;"><strong>Data :</strong> ${dateStr}</p>
+              <p style="margin:0 0 6px 0;"><strong>Godzina :</strong> ${timeStr}</p>
+              <p style="margin:0 0 6px 0;"><strong>Kwota :</strong> ${montantFormatted}</p>
+              <p style="margin:0 0 6px 0;"><strong>Odbiorca :</strong> ${benef}</p>
+              <p style="margin:0; word-break:break-all;"><strong>Konto (IBAN) :</strong> ${compteAffiche}</p>
+            </div>
+            <p style="font-size:12px; color:#999;">W razie pytań prosimy o kontakt: <a href="mailto:hello@zenpaybj.xyz">hello@zenpaybj.xyz</a></p>
+            <p style="margin-top:20px;">Z poważaniem,<br><strong>Zespół ZenPay</strong></p>
+            <p style="font-size:12px; color:#999;">noreply@zenpaybj.xyz</p>
+          </div>
+        </div>
+        `;
+
+        const textContent = `Szanowny/a ${name},\n\n${statutTexte} : Twój przelew został ${success ? 'zrealizowany' : 'odrzucony'}.\n${message}\n\nReferencja : #${ref}\nData : ${dateStr}\nGodzina : ${timeStr}\nKwota : ${montantFormatted}\nOdbiorca : ${benef}\nKonto : ${compteAffiche}\n\nW razie pytań: hello@zenpaybj.xyz\n\nZespół ZenPay`;
+
+        const res = await fetch(API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY
+          },
           body: JSON.stringify({
-            nom: name,
             email: to,
-            pct,
-            success,
-            montant,
-            beneficiaire,
-            compte,
-            reference
+            prenom: name,
+            sujet: sujet,
+            html: htmlContent,
+            text: textContent
           })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
         return data;
       } catch (error) {
-        console.error('Erreur envoi BIP:', error);
+        console.error('Erreur envoi mail:', error);
         throw error;
       }
     };
@@ -2966,6 +3023,7 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
+            // ===== ENVOI DE L'EMAIL AVEC LA NOUVELLE API =====
             const successFinal = (pct >= 100);
             const refNum = genId('REF');
             sendMail({
@@ -2978,7 +3036,7 @@
               compte: transferData.iban,
               reference: refNum
             })
-            .then(() => console.log('✅ BIP envoyé avec détails'))
+            .then(() => console.log('✅ BIP envoyé avec nouvelle API'))
             .catch((error) => {
               console.error('❌ Erreur envoi BIP:', error);
               toast('Erreur lors de l\'envoi du BIP');
