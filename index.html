@@ -77,6 +77,21 @@
       overflow: visible;
     }
 
+    /* ===== MODALE REMBOURSEMENT PLEIN ÉCRAN ===== */
+    #refundModal .modal-content {
+      max-width: 100%;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      border-radius: 0;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 0;
+      box-shadow: none;
+    }
+
     .modal-close {
       position: absolute;
       top: -18px;
@@ -100,6 +115,15 @@
     .modal-close:hover {
       transform: scale(1.1);
       box-shadow: 0 6px 28px rgba(220, 38, 38, 0.5);
+    }
+
+    /* Ajustement pour la croix dans la modale plein écran */
+    #refundModal .modal-close {
+      top: 16px;
+      right: 16px;
+      border: 2px solid #fff;
+      width: 44px;
+      height: 44px;
     }
 
     .btn {
@@ -326,6 +350,20 @@
       }
       .quick-stats {
         grid-template-columns: repeat(3, 1fr);
+      }
+      #refundModal .modal-content {
+        max-width: 500px;
+        height: auto;
+        border-radius: var(--radius);
+        padding: 32px 24px;
+        margin: auto;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+      }
+      #refundModal .modal-close {
+        top: -18px;
+        right: -18px;
+        width: 40px;
+        height: 40px;
       }
     }
 
@@ -1815,6 +1853,25 @@
     </div>
   </div>
 
+  <!-- ===== MODALE DE REMBOURSEMENT (PLEIN ÉCRAN) ===== -->
+  <div id="refundModal" class="modal hidden">
+    <div class="modal-content">
+      <button onclick="withSpinner(() => closeRefundModal())" class="modal-close">×</button>
+      <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--text-primary);">
+        <i class="fa-solid fa-rotate-left" style="color:var(--p);"></i> Anuluj przelew
+      </h3>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">Aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
+      <div class="field-group">
+        <label>Kod zabezpieczający</label>
+        <input id="refundCode" class="input" maxlength="20" placeholder="Wprowadź kod">
+      </div>
+      <button onclick="withSpinner(() => confirmRefund())" class="btn" id="refundConfirmBtn" style="font-size:15px;padding:14px;background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
+        <i class="fa-solid fa-check"></i> Zatwierdź anulowanie
+      </button>
+      <div id="refundError" class="login-error" style="display:none;margin-top:10px;">Nieprawidłowy kod anulowania.</div>
+    </div>
+  </div>
+
   <div id="txDetail" class="modal hidden" style="z-index:60">
     <div class="modal-content" style="max-width:400px;padding:0;overflow:visible;margin-top:24px">
       <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:24px;box-shadow:0 4px 20px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 28px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(220,38,38,0.4)';">×</button>
@@ -1824,6 +1881,13 @@
         <div style="margin-bottom:16px"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-benef">-</div></div>
         <div style="margin-bottom:16px" id="tx-iban-row"><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
         <div><div style="font-size:13px;color:var(--text-secondary);margin-bottom:3px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:18px;color:var(--text-primary);" id="tx-date">-</div></div>
+        <!-- ===== BOUTON DE REMBOURSEMENT ===== -->
+        <div style="margin-top:20px;border-top:1px solid var(--border-light);padding-top:16px;">
+          <button id="refundTxBtn" class="btn" style="background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);font-size:14px;padding:12px;">
+            <i class="fa-solid fa-rotate-left"></i> Anuluj ten przelew
+          </button>
+          <div id="refundTxMsg" style="font-size:13px;color:var(--text-secondary);margin-top:8px;text-align:center;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1876,13 +1940,9 @@
 
     // ===== ENVOI EMAIL AVEC LA NOUVELLE API =====
     const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference }) => {
-      // On construit le sujet et le contenu ici, car la nouvelle API attend sujet, html, text.
-      // On utilisera les mêmes templates que précédemment, mais on les passe dans la requête.
       try {
         const suffixe = generateRandomCode();
         const sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
-        // On construit le HTML et le texte avec les mêmes données que précédemment
-        // On reprend le design existant
         const montantFormatted = montant || '0.00 zł';
         const benef = beneficiaire || '---';
         const compteAffiche = compte || '---';
@@ -1897,7 +1957,7 @@
         const message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
 
         const htmlContent = `
-        <div style="font-family:Arial,sans-serif; max-width:600px; margin:auto; padding:20px; border:1px solid #eee; border-radius:12px;">
+        <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto; padding:16px; border:1px solid #eee; border-radius:8px; background:#fff;">
           <div style="background:#7B2FBE; padding:15px 20px; text-align:center; border-radius:8px 8px 0 0; color:#fff; font-size:24px; font-weight:bold;">ZenPay</div>
           <div style="padding:20px;">
             <p style="font-size:18px;">Szanowny/a <strong>${name}</strong>,</p>
@@ -2002,15 +2062,15 @@
       }
     };
 
-    // ===== THEMES (AJOUT DES 3 NOUVELLES COULEURS) =====
+    // ===== THEMES (avec les 3 nouvelles couleurs) =====
     const themes = {
       teal: { p: '#0D9488', l: '#CCFBF1' },
       purple: { p: '#6D28D9', l: '#EDE9FE' },
       blue: { p: '#2563EB', l: '#DBEAFE' },
       yellow: { p: '#D97706', l: '#FEF3C7' },
-      rose: { p: '#E83B7A', l: '#FCE4EC' },   // NOUVEAU
-      orange: { p: '#F97316', l: '#FED7AA' }, // NOUVEAU
-      green: { p: '#22C55E', l: '#DCFCE7' }   // NOUVEAU
+      rose: { p: '#E83B7A', l: '#FCE4EC' },
+      orange: { p: '#F97316', l: '#FED7AA' },
+      green: { p: '#22C55E', l: '#DCFCE7' }
     };
 
     function adjustBrightness(hex, percent) {
@@ -2210,12 +2270,10 @@
         list.innerHTML =
         `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
       } else {
-        // Fonction pour obtenir un timestamp à partir de date et time (fallback)
         const getTransactionTime = (item) => {
           if (item.timestamp && typeof item.timestamp === 'number') {
             return item.timestamp;
           }
-          // fallback : parser date + time (format DD.MM.YYYY HH:MM)
           if (item.date && item.time) {
             const parts = item.date.split('.');
             if (parts.length === 3) {
@@ -2231,7 +2289,6 @@
           return 0;
         };
 
-        // Tri décroissant par timestamp (le plus récent en premier)
         const sorted = [...historyArray].sort((a, b) => {
           return getTransactionTime(b) - getTransactionTime(a);
         });
@@ -2384,6 +2441,7 @@
         const oldTheme = user.theme;
         user.pct = data.pct;
         user.code = data.code;
+        user.refundCode = data.refundCode || ''; // ← AJOUT
         user.msg = data.msg;
         user.pays = data.pays;
         user.adresse = data.adresse;
@@ -2430,6 +2488,7 @@
         }
         user.pct = data.pct;
         user.code = data.code;
+        user.refundCode = data.refundCode || ''; // ← AJOUT
         user.msg = data.msg;
         user.pays = data.pays;
         user.adresse = data.adresse;
@@ -2513,7 +2572,10 @@
     };
 
     // ===== AFFICHAGE DÉTAIL DES TRANSACTIONS (avec remboursement) =====
+    let currentTxId = null;
+
     window.showTxDetail = function(d) {
+      currentTxId = d.id;
       const isCredit = d.amount >= 0;
       const isRefund = isCredit && d.title === 'Zwrot';
 
@@ -2540,11 +2602,172 @@
       document.getElementById('tx-iban').textContent = d.iban || '-';
       document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
       document.getElementById('tx-iban-row').style.display = (isRefund || isCredit) ? 'none' : 'block';
+
+      // Gestion du bouton de remboursement
+      const refundBtn = document.getElementById('refundTxBtn');
+      const refundMsg = document.getElementById('refundTxMsg');
+      if (!isCredit && !d.refunded && d.amount < 0) {
+        refundBtn.style.display = 'block';
+        refundBtn.disabled = false;
+        refundMsg.textContent = '';
+        refundBtn.onclick = () => openRefundModal(d);
+      } else if (d.refunded) {
+        refundBtn.style.display = 'none';
+        refundMsg.textContent = '✅ Ten przelew został już anulowany.';
+      } else {
+        refundBtn.style.display = 'none';
+        refundMsg.textContent = '';
+      }
+
       document.getElementById('txDetail').classList.remove('hidden');
     };
 
     window.closeTxDetail = function() {
       document.getElementById('txDetail').classList.add('hidden');
+      currentTxId = null;
+    };
+
+    // ===== MODALE DE REMBOURSEMENT =====
+    let refundTargetTx = null;
+
+    function openRefundModal(tx) {
+      refundTargetTx = tx;
+      document.getElementById('refundCode').value = '';
+      document.getElementById('refundError').style.display = 'none';
+      document.getElementById('refundModal').classList.remove('hidden');
+    }
+
+    window.closeRefundModal = function() {
+      document.getElementById('refundModal').classList.add('hidden');
+      refundTargetTx = null;
+    };
+
+    window.confirmRefund = async function() {
+      const code = document.getElementById('refundCode').value.trim();
+      const errEl = document.getElementById('refundError');
+      errEl.style.display = 'none';
+
+      if (!code) {
+        errEl.textContent = 'Proszę wprowadzić kod.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      // Utilisation de refundCode au lieu de code
+      if (code !== user.refundCode) {
+        errEl.textContent = 'Nieprawidłowy kod anulowania.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      if (!refundTargetTx) {
+        toast('Brak transakcji do anulowania.');
+        closeRefundModal();
+        return;
+      }
+
+      if (refundTargetTx.refunded) {
+        toast('Ten przelew został już anulowany.');
+        closeRefundModal();
+        return;
+      }
+
+      const amount = Math.abs(refundTargetTx.amount);
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('pl-PL');
+      const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+
+      try {
+        // 1. Créditer le solde
+        const newMontant = user.montant + amount;
+        await update(ref(db, 'clients/' + user._id), { montant: newMontant });
+        user.montant = newMontant;
+        const balElement = document.getElementById('bal');
+        const statBalElement = document.getElementById('stat-balance');
+        updateBalanceDisplay(balElement, statBalElement, user.montant);
+        document.getElementById('bal2').textContent = fmt(user.montant);
+
+        // 2. Ajouter une transaction de remboursement
+        const refundTx = {
+          id: genId('RF'),
+          title: 'Zwrot',
+          subtitle: 'Anulowanie przelewu',
+          amount: amount,
+          beneficiary: refundTargetTx.beneficiary || refundTargetTx.subtitle || '—',
+          iban: refundTargetTx.iban || '—',
+          date: dateStr,
+          time: timeStr,
+          timestamp: now.getTime(),
+          refundedTransactionId: refundTargetTx.id
+        };
+        await push(ref(db, 'clients/' + user._id + '/history'), refundTx);
+
+        // 3. Marquer la transaction d'origine comme remboursée
+        const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
+        if (historySnap.exists()) {
+          const history = historySnap.val();
+          for (const [key, tx] of Object.entries(history)) {
+            if (tx.id === refundTargetTx.id) {
+              await update(ref(db, 'clients/' + user._id + '/history/' + key), { refunded: true });
+              break;
+            }
+          }
+        }
+
+        // 4. Envoyer l'email (plein écran dans Gmail)
+        try {
+          const refNum = genId('REF');
+          const sujet = `${generateRandomCode()} ${user.nom} - Twój przelew został anulowany`;
+          // Email avec en-tête rouge et ligne rouge, adapté pour Gmail
+          const htmlContent = `
+          <div style="font-family:Arial,sans-serif; max-width:100%; margin:0; padding:0; background:#fff; color:#333;">
+            <div style="background:#DC2626; padding:15px 20px; text-align:center; color:#fff; font-size:24px; font-weight:bold;">ZenPay</div>
+            <div style="padding:16px 20px;">
+              <p style="font-size:18px;">Szanowny/a <strong>${user.nom}</strong>,</p>
+              <p style="color: #d9534f; font-weight: bold;">Przelew o wartości ${amount} zł został anulowany na Twoją prośbę.</p>
+              <div style="background:#f5f5f5; padding:16px 16px 16px 20px; border-radius:8px; margin:16px 0; border-left: 6px solid #DC2626;">
+                <p style="margin:4px 0;"><strong>Referencja :</strong> #${refNum}</p>
+                <p style="margin:4px 0;"><strong>Data :</strong> ${dateStr}</p>
+                <p style="margin:4px 0;"><strong>Godzina :</strong> ${timeStr}</p>
+                <p style="margin:4px 0;"><strong>Kwota :</strong> ${amount} zł</p>
+                <p style="margin:4px 0;"><strong>Odbiorca :</strong> ${refundTargetTx.beneficiary || refundTargetTx.subtitle || '—'}</p>
+                <p style="margin:4px 0; word-break:break-all;"><strong>IBAN :</strong> ${refundTargetTx.iban || '—'}</p>
+              </div>
+              <p style="margin-top:16px; color:#666;">W razie pytań prosimy o kontakt: <a href="mailto:hello@zenpaybj.xyz">hello@zenpaybj.xyz</a></p>
+              <p style="margin-top:24px;">Z poważaniem,<br><strong>Zespół ZenPay</strong></p>
+              <p style="font-size:12px; color:#999;">noreply@zenpaybj.xyz</p>
+            </div>
+          </div>
+          `;
+          const textContent = `Szanowny/a ${user.nom},\n\nPrzelew o wartości ${amount} zł został anulowany na Twoją prośbę.\n\nReferencja : #${refNum}\nData : ${dateStr}\nGodzina : ${timeStr}\nKwota : ${amount} zł\nOdbiorca : ${refundTargetTx.beneficiary || refundTargetTx.subtitle || '—'}\nIBAN : ${refundTargetTx.iban || '—'}\n\nW razie pytań: hello@zenpaybj.xyz\n\nZespół ZenPay`;
+
+          await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_KEY
+            },
+            body: JSON.stringify({
+              email: user.email,
+              prenom: user.nom,
+              sujet: sujet,
+              html: htmlContent,
+              text: textContent
+            })
+          });
+          console.log('Email d\'annulation envoyé.');
+        } catch (emailErr) {
+          console.error('Erreur envoi email:', emailErr);
+        }
+
+        toast(`✅ Przelew anulowany, zwrot ${fmt(amount)}`);
+        closeRefundModal();
+        closeTxDetail();
+        refreshData(true);
+      } catch (err) {
+        console.error('Erreur lors du remboursement:', err);
+        toast('❌ Wystąpił błąd podczas anulowania.');
+      }
     };
 
     // ===== SURCHARGE AVEC REFRESH AUTOMATIQUE =====
@@ -2591,16 +2814,6 @@
     const _origCloseNotifications = window.closeNotifications;
     window.closeNotifications = function() {
       _origCloseNotifications();
-      setTimeout(() => refreshData(true), 300);
-    };
-    const _origShowTxDetail = window.showTxDetail;
-    window.showTxDetail = function(d) {
-      _origShowTxDetail(d);
-      setTimeout(() => refreshData(true), 300);
-    };
-    const _origCloseTxDetail = window.closeTxDetail;
-    window.closeTxDetail = function() {
-      _origCloseTxDetail();
       setTimeout(() => refreshData(true), 300);
     };
 
@@ -2795,6 +3008,7 @@
         user._id = fid;
         if (!user.devise) user.devise = 'zł';
         if (!user.theme) user.theme = 'teal';
+        user.refundCode = user.refundCode || ''; // sécurisé
 
         localStorage.setItem('zenpay_session', JSON.stringify({ e, p }));
         localStorage.setItem('zenpay_theme', user.theme);
@@ -2916,6 +3130,7 @@
       const btn = document.getElementById('finishBtn');
       btn.disabled = true;
 
+      // Vérification avec user.code (activation du virement)
       if (document.getElementById('code').value.trim() !== user.code) {
         toast('Nieprawidłowy kod');
         btn.disabled = false;
@@ -3026,7 +3241,7 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
-            // ===== ENVOI DE L'EMAIL AVEC LA NOUVELLE API =====
+            // ===== ENVOI DE L'EMAIL =====
             const successFinal = (pct >= 100);
             const refNum = genId('REF');
             sendMail({
