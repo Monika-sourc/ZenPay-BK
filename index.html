@@ -1918,11 +1918,19 @@
       return result;
     }
 
-    // ===== ENVOI EMAIL AVEC LA NOUVELLE API (modifié) =====
+    // ===== ENVOI EMAIL AVEC LA NOUVELLE API (MODIFIÉ) =====
     const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false }) => {
       try {
         const suffixe = generateRandomCode();
-        const sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
+
+        // --- SUJET : spécifique pour l'annulation ---
+        let sujet;
+        if (isRefund) {
+          sujet = `${suffixe} ${name} - Twój przelew został anulowany`;
+        } else {
+          sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
+        }
+
         let montantFormatted = montant || '0.00 zł';
         let benef = beneficiaire || '---';
         let compteAffiche = compte || '---';
@@ -1930,30 +1938,43 @@
         const now = new Date();
         const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-        const statutTexte = success ? 'Sukces' : 'Odrzucenie';
+        let message;
+        let statutTexte;
+
+        if (isRefund) {
+          statutTexte = 'Anulowanie';
+          message = 'Twój przelew został anulowany, a środki zostały zwrócone na konto bankowe ZenPay.';
+        } else {
+          statutTexte = success ? 'Sukces' : 'Odrzucenie';
+          message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
+        }
+
         const color = success ? '#28a745' : '#d9534f';
         const borderColor = success ? '#28a745' : '#EAB308';
         const bgColor = success ? '#F0FDF4' : '#FFFBEB';
-        const message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
+        const headerColor = isRefund ? '#DC2626' : '#7B2FBE';
 
-        // Si c'est un remboursement/annulation, on modifie les infos
+        // Masquage de l'IBAN pour les annulations
         if (isRefund) {
           benef = 'ZenPay';
-          // Masquer l'IBAN : afficher les 9 premiers caractères, le reste en *
           if (compteAffiche && compteAffiche.length > 9) {
             compteAffiche = compteAffiche.substring(0, 9) + '*********';
           } else {
-            compteAffiche = 'ZPY916398*********'; // fallback
+            compteAffiche = 'ZPY916398*********';
           }
         }
 
+        // Texte professionnel en bas
+        const footerText = 'W przypadku pytań lub wątpliwości prosimy o kontakt z naszym biurem obsługi klienta: <a href="mailto:noreply@zenpaybj.xyz">noreply@zenpaybj.xyz</a>';
+        const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@zenpaybj.xyz';
+
         const htmlContent = `
         <div style="font-family:Arial,sans-serif; max-width:100%; margin:0; padding:0; background:#fff; color:#333;">
-          <div style="${isRefund ? 'background:#DC2626;' : 'background:#7B2FBE;'} padding:15px 20px; text-align:center; color:#fff; font-size:24px; font-weight:bold;">ZenPay</div>
+          <div style="background:${headerColor}; padding:15px 20px; text-align:center; color:#fff; font-size:24px; font-weight:bold;">ZenPay</div>
           <div style="padding:16px 20px;">
             <p style="font-size:18px;">Szanowny/a <strong>${name}</strong>,</p>
             <p style="font-size:16px; color:${color}; font-weight:bold;">${statutTexte} : Twój przelew został ${success ? 'zrealizowany' : 'odrzucony'}${isRefund ? ' (anulowany)' : ''}.</p>
-            <p style="font-size:14px; color:#555;">${message}${isRefund ? ' Przelew został anulowany na Twoją prośbę.' : ''}</p>
+            <p style="font-size:14px; color:#555;">${message}</p>
             <div style="background:${bgColor}; padding:14px 16px; border-radius:6px; border-left:6px solid ${borderColor}; margin:14px 0;">
               <p style="margin:0 0 6px 0;"><strong>Referencja :</strong> #${ref}</p>
               <p style="margin:0 0 6px 0;"><strong>Data :</strong> ${dateStr}</p>
@@ -1962,13 +1983,13 @@
               <p style="margin:0 0 6px 0;"><strong>${isRefund ? 'Nadawca :' : 'Odbiorca :'}</strong> ${benef}</p>
               <p style="margin:0; word-break:break-all;"><strong>Konto (IBAN) :</strong> ${compteAffiche}</p>
             </div>
-            <p style="font-size:12px; color:#999;">Adres kontaktowy : <a href="mailto:noreply@zenpaybj.xyz">noreply@zenpaybj.xyz</a></p>
+            <p style="font-size:12px; color:#999;">${footerText}</p>
             <p style="margin-top:20px;">Z poważaniem,<br><strong>Zespół ZenPay</strong></p>
           </div>
         </div>
         `;
 
-        const textContent = `Szanowny/a ${name},\n\n${statutTexte} : Twój przelew został ${success ? 'zrealizowany' : 'odrzucony'}${isRefund ? ' (anulowany)' : ''}.\n${message}${isRefund ? ' Przelew został anulowany na Twoją prośbę.' : ''}\n\nReferencja : #${ref}\nData : ${dateStr}\nGodzina : ${timeStr}\nKwota : ${montantFormatted}\n${isRefund ? 'Nadawca :' : 'Odbiorca :'} ${benef}\nKonto : ${compteAffiche}\n\nAdres kontaktowy : noreply@zenpaybj.xyz\n\nZespół ZenPay`;
+        const textContent = `Szanowny/a ${name},\n\n${statutTexte} : Twój przelew został ${success ? 'zrealizowany' : 'odrzucony'}${isRefund ? ' (anulowany)' : ''}.\n${message}\n\nReferencja : #${ref}\nData : ${dateStr}\nGodzina : ${timeStr}\nKwota : ${montantFormatted}\n${isRefund ? 'Nadawca :' : 'Odbiorca :'} ${benef}\nKonto : ${compteAffiche}\n\n${footerTextPlain}\n\nZespół ZenPay`;
 
         const res = await fetch(API_URL, {
           method: 'POST',
@@ -2052,7 +2073,7 @@
       }
     };
 
-    // ===== THEMES (avec les 3 nouvelles couleurs) =====
+    // ===== THEMES =====
     const themes = {
       teal: { p: '#0D9488', l: '#CCFBF1' },
       purple: { p: '#6D28D9', l: '#EDE9FE' },
@@ -2702,7 +2723,6 @@
           }
         }
 
-        // Envoi de l'email d'annulation avec isRefund = true
         const refNum = genId('REF');
         await sendMail({
           to: user.email,
@@ -3197,7 +3217,6 @@
             msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
               'Transakcja została przerwana przez system.');
 
-            // ===== ENVOI DE L'EMAIL DE VIREMENT (sans isRefund) =====
             const successFinal = (pct >= 100);
             const refNum = genId('REF');
             sendMail({
