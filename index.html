@@ -1940,28 +1940,27 @@
         const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
         let message;
         let statutTexte;
+        let headerColor = '#7B2FBE'; // violet par défaut
+        let color = success ? '#28a745' : '#d9534f';
+        let borderColor = success ? '#28a745' : '#EAB308';
+        let bgColor = success ? '#F0FDF4' : '#FFFBEB';
 
         if (isRefund) {
           statutTexte = 'Anulowanie';
           message = 'Twój przelew został anulowany, a środki zostały zwrócone na konto bankowe ZenPay.';
-        } else {
-          statutTexte = success ? 'Sukces' : 'Odrzucenie';
-          message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
-        }
-
-        const color = success ? '#28a745' : '#d9534f';
-        const borderColor = success ? '#28a745' : '#EAB308';
-        const bgColor = success ? '#F0FDF4' : '#FFFBEB';
-        const headerColor = isRefund ? '#DC2626' : '#7B2FBE';
-
-        // Masquage de l'IBAN pour les annulations
-        if (isRefund) {
+          headerColor = '#DC2626'; // rouge pour l'en-tête
+          color = '#DC2626'; // ROUGE pour le texte
+          borderColor = '#DC2626'; // ROUGE pour la ligne verticale
+          bgColor = '#FEF2F2'; // Rouge clair pour le fond de la carte
           benef = 'ZenPay';
           if (compteAffiche && compteAffiche.length > 9) {
             compteAffiche = compteAffiche.substring(0, 9) + '*********';
           } else {
             compteAffiche = 'ZPY916398*********';
           }
+        } else {
+          statutTexte = success ? 'Sukces' : 'Odrzucenie';
+          message = success ? 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane.' : 'Twoje zlecenie przelewu zostało odrzucone. Sprawdź dane i spróbuj ponownie.';
         }
 
         // Texte professionnel en bas
