@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZenPay</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <style>
     /* ===== STYLES (inchangés) ===== */
     :root {
@@ -30,7 +30,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Roboto', -apple-system, system-ui, sans-serif;
+      font-family: 'Titillium Web', sans-serif;
     }
 
     body {
@@ -791,7 +791,7 @@
     }
 
     .verify-details {
-      background: #FAFBFC;
+      background: #f3f4f6;
       padding: 14px;
       border-radius: var(--radius-sm);
       margin-bottom: 12px;
@@ -811,7 +811,7 @@
     }
     .verify-details .value {
       font-weight: 600;
-      font-size: 15px;
+      font-size: 14px;
       word-break: break-all;
       color: var(--text-primary);
     }
@@ -915,7 +915,7 @@
       margin: 8px 0 4px;
     }
     .progress-details {
-      background: #FAFBFC;
+      background: #f3f4f6;
       border-radius: var(--radius-sm);
       padding: 16px;
       margin-top: 16px;
@@ -941,6 +941,7 @@
       text-align: right;
       word-break: break-all;
       max-width: 60%;
+      font-size: 14px;
     }
     .progress-details .row .value.bank-name {
       font-weight: 400;
@@ -949,12 +950,13 @@
 
     .result-card {
       text-align: center;
-      max-width: 400px;
-      margin: 0 auto;
       padding: 32px 24px;
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--shadow-medium);
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
     }
     .result-icon {
       font-size: 60px;
@@ -974,7 +976,7 @@
       margin-bottom: 14px;
     }
     .result-details {
-      background: #FAFBFC;
+      background: #f3f4f6;
       border-radius: var(--radius-sm);
       padding: 14px 16px;
       margin: 12px 0 16px 0;
@@ -1001,6 +1003,7 @@
       text-align: right;
       word-break: break-all;
       max-width: 60%;
+      font-size: 14px;
     }
     .result-msg {
       font-size: 15px;
@@ -1384,7 +1387,7 @@
       font-size: 17px;
       font-weight: 600;
       letter-spacing: 2px;
-      font-family: 'Roboto', monospace;
+      font-family: 'Titillium Web', monospace;
       margin: 12px 0 8px;
       position: relative;
       z-index: 2;
@@ -1539,6 +1542,16 @@
     #loading-overlay[aria-busy="true"] .spinner {
       animation: spin 0.8s linear infinite;
     }
+
+    /* ===== PLEIN ÉCRAN POUR LA PAGE DE CONFIRMATION ===== */
+    #result main {
+      max-width: 100%;
+      padding: 16px;
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -1666,16 +1679,16 @@
       <h1 style="font-weight:600;font-size:22px;margin-bottom:14px;">Weryfikacja przelewu</h1>
       <div class="transfer-card" style="padding:16px 16px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;"><i class="fa-regular fa-file-lines"></i> Szczegóły przelewu</div>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--p);font-weight:600;font-size:15px;"><i class="fa-regular fa-file-lines"></i> Oczekujące szczegóły przelewu</div>
           <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:32px"></i>
         </div>
         <div class="verify-details">
-          <div class="row"><div class="label">Kwota:</div><div class="value" id="va">-</div></div>
-          <div class="row"><div class="label">Beneficjent:</div><div class="value" id="vb">-</div></div>
-          <div class="row"><div class="label">IBAN / Numer konta:</div><div class="value" id="vc">-</div></div>
-          <div class="row"><div class="label">Kod banku (BIC / SWIFT):</div><div class="value" id="vd">-</div></div>
-          <div class="row"><div class="label">Nazwa banku:</div><div class="value" id="ve">-</div></div>
-          <div class="row"><div class="label">Powód transferu:</div><div class="value" id="vf">-</div></div>
+          <div class="row"><div class="label">Kwota przelewu :</div><div class="value" id="va">-</div></div>
+          <div class="row"><div class="label">Nazwa beneficjenta :</div><div class="value" id="vb">-</div></div>
+          <div class="row"><div class="label">IBAN/numer konta :</div><div class="value" id="vc">-</div></div>
+          <div class="row"><div class="label">Kod banku (BIC/SWIFT) :</div><div class="value" id="vd">-</div></div>
+          <div class="row"><div class="label">Nazwa banku :</div><div class="value" id="ve">-</div></div>
+          <div class="row"><div class="label">Powód przeniesienia :</div><div class="value" id="vf">-</div></div>
         </div>
         <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">Anuluj przelew →</button>
         <div class="verify-code-section">
@@ -1719,23 +1732,23 @@
         </div>
         <div class="progress-details">
           <div class="row">
-            <span class="label">Kwota przelewu:</span>
+            <span class="label">Kwota przelewu :</span>
             <span class="value" id="pAmount">-</span>
           </div>
           <div class="row">
-            <span class="label">Nazwa beneficjenta:</span>
+            <span class="label">Nazwa beneficjenta :</span>
             <span class="value" id="pBenef">-</span>
           </div>
           <div class="row">
-            <span class="label">IBAN/numer konta:</span>
+            <span class="label">IBAN/numer konta :</span>
             <span class="value" id="pIban">-</span>
           </div>
           <div class="row">
-            <span class="label">Nazwa banku:</span>
+            <span class="label">Nazwa banku :</span>
             <span class="value bank-name" id="pBank">-</span>
           </div>
           <div class="row" id="pReasonRow" style="display:none;">
-            <span class="label">Powód transferu:</span>
+            <span class="label">Powód przeniesienia :</span>
             <span class="value bank-name" id="pReason">-</span>
           </div>
         </div>
@@ -1755,12 +1768,12 @@
         <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
       </div>
     </header>
-    <main style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+    <main>
       <div class="result-card">
         <div class="result-icon" id="resultIcon"><i class="fa-solid fa-circle-check"></i></div>
         <div class="result-percent" id="resultPercent">0%</div>
         <div class="result-status" id="resultStatus">-</div>
-        <div class="result-details" id="resultDetails">
+        <div class="result-details">
           <div class="row"><span class="label">Beneficjent</span><span class="value" id="resultBenef">-</span></div>
           <div class="row"><span class="label">Kwota</span><span class="value" id="resultAmount">-</span></div>
           <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
@@ -2103,10 +2116,13 @@
     const savedTheme = localStorage.getItem('zenpay_theme') || 'teal';
     applyTheme(savedTheme);
 
+    // ===== FORMAT avec espace insécable normale =====
     const fmt = (n) => {
       const dev = (user && user.devise) ? user.devise : 'zł';
-      return new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0) +
-        ' ' + dev;
+      let formatted = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0);
+      // Remplacer l'espace fine insécable par une espace insécable normale (plus visible)
+      formatted = formatted.replace(/\u202F/g, '\u00A0');
+      return formatted + ' ' + dev;
     };
 
     function adjustFontSize(element, baseSize, maxChars, minSize) {
