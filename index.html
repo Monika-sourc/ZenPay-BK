@@ -36,7 +36,7 @@
     body {
       background: #f0f2f5;
       color: var(--text-primary);
-      font-size: 16px; /* Augmenté de 15px à 16px */
+      font-size: 17px;
       line-height: 1.6;
       min-height: 100vh;
       padding-bottom: 90px;
@@ -1546,12 +1546,311 @@
     /* ===== PLEIN ÉCRAN POUR LA PAGE DE CONFIRMATION ===== */
     #result main {
       max-width: 100%;
-      padding: 16px;
+      padding: 24px 20px;
       min-height: calc(100vh - 140px);
       display: flex;
       align-items: center;
       justify-content: center;
     }
+
+    /* ===== BORDURE NOIRE POUR LES NOTIFICATIONS (avec !important) ===== */
+    #notifications .notif-item {
+      border: 1px solid #000000 !important;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: #ffffff;
+    }
+    #notifications .notif-item:last-child {
+      margin-bottom: 0;
+    }
+  
+    /* ===== STYLES PROFIL PROFESSIONNEL ===== */
+    .profile-page {
+      background: linear-gradient(180deg, #f8fafc 0%, #f0f2f5 100%);
+      min-height: calc(100vh - 80px);
+    }
+    .profile-page .profile-header-card {
+      background: var(--p-gradient);
+      border-radius: var(--radius);
+      padding: 32px 24px 24px;
+      margin-bottom: 20px;
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13, 148, 136, 0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .profile-page .profile-header-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .profile-page .profile-header-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40%;
+      left: -20%;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+    .profile-page .profile-avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      backdrop-filter: blur(4px);
+      position: relative;
+      z-index: 2;
+    }
+    .profile-page .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
+    }
+    .profile-page .profile-email {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 2;
+    }
+    .profile-page .profile-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.25);
+      position: relative;
+      z-index: 2;
+    }
+    .profile-page .profile-status-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.85); }
+    }
+    .profile-page .profile-section-pro {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius-sm);
+      padding: 0;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+    .profile-page .profile-section-header-pro {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: linear-gradient(90deg, #f8fafc, #fff);
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .profile-page .profile-section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--p-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--p);
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .profile-page .profile-section-title-pro {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.2px;
+    }
+    .profile-page .profile-section-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+    .profile-page .profile-row-pro {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f8fafc;
+      transition: background 0.15s;
+    }
+    .profile-page .profile-row-pro:hover {
+      background: #fafbfc;
+    }
+    .profile-page .profile-row-pro:last-child {
+      border-bottom: none;
+    }
+    .profile-page .profile-row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    .profile-page .profile-row-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .profile-page .profile-row-info {
+      min-width: 0;
+    }
+    .profile-page .profile-row-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .profile-page .profile-row-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+    .profile-page .profile-row-value-muted {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .profile-page .profile-row-action {
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .profile-page .profile-row-action i {
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+    .profile-page .profile-balance-highlight {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1px solid #a7f3d0;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .profile-page .profile-balance-highlight .bal-label {
+      font-size: 12px;
+      color: #059669;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .profile-page .profile-balance-highlight .bal-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #047857;
+    }
+    .profile-page .profile-balance-highlight .bal-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #10B981;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .profile-page .profile-logout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #fef2f2, #fff);
+      border: 1.5px solid #fecaca;
+      color: #dc2626;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .profile-page .profile-logout-btn:hover {
+      background: #fef2f2;
+      border-color: #f87171;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+    }
+    .profile-page .profile-footer-note {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 20px;
+      padding: 0 16px;
+      line-height: 1.5;
+    }
+    .profile-page .profile-footer-note i {
+      color: var(--p);
+      margin-right: 4px;
+    }
+    @media (max-width: 480px) {
+      .profile-page .profile-header-card {
+        padding: 24px 16px 20px;
+      }
+      .profile-page .profile-avatar-large {
+        width: 68px;
+        height: 68px;
+        font-size: 26px;
+      }
+      .profile-page .profile-name {
+        font-size: 19px;
+      }
+      .profile-page .profile-section-header-pro {
+        padding: 12px 14px;
+      }
+      .profile-page .profile-row-pro {
+        padding: 12px 14px;
+      }
+      .profile-page .profile-balance-highlight {
+        margin: 12px 14px;
+        padding: 14px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1756,7 +2055,7 @@
     </main>
   </section>
 
-  <!-- ========== RESULT ========== -->
+  <!-- ========== RESULT (CONFIRMATION) ========== -->
   <section id="result" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
@@ -1768,18 +2067,43 @@
         <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
       </div>
     </header>
-    <main>
-      <div class="result-card">
-        <div class="result-icon" id="resultIcon"><i class="fa-solid fa-circle-check"></i></div>
-        <div class="result-percent" id="resultPercent">0%</div>
-        <div class="result-status" id="resultStatus">-</div>
-        <div class="result-details">
-          <div class="row"><span class="label">Beneficjent</span><span class="value" id="resultBenef">-</span></div>
-          <div class="row"><span class="label">Kwota</span><span class="value" id="resultAmount">-</span></div>
-          <div class="row"><span class="label">Numer konta</span><span class="value" id="resultAccount">-</span></div>
+    <main style="padding:24px 20px;">
+      <div style="width:100%;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;padding:32px 28px;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+        <!-- En-tête -->
+        <div style="text-align:center;border-bottom:2px dashed #e5e7eb;padding-bottom:20px;margin-bottom:20px;">
+          <div style="font-size:13px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;font-weight:600;">Potwierdzenie przelewu</div>
+          <div style="font-size:44px;margin:6px 0;" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
+          <div style="font-size:28px;font-weight:700;color:var(--p);" id="resultPercent">100%</div>
+          <div style="font-size:17px;font-weight:600;color:var(--text-primary);" id="resultStatus">Przelew zatwierdzony</div>
         </div>
-        <div class="result-msg" id="resultMsg"></div>
-        <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn" style="margin-top:12px;max-width:200px;margin-left:auto;margin-right:auto">Powrót do portfela</button>
+        <!-- Détails -->
+        <div style="margin-bottom:18px;">
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
+            <span style="color:#6b7280;">Beneficjent</span>
+            <span style="font-weight:600;color:#1a1a2e;" id="resultBenef">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
+            <span style="color:#6b7280;">Kwota</span>
+            <span style="font-weight:700;color:#1a1a2e;" id="resultAmount">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
+            <span style="color:#6b7280;">Numer konta</span>
+            <span style="font-weight:600;color:#1a1a2e;word-break:break-all;max-width:55%;text-align:right;" id="resultAccount">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
+            <span style="color:#6b7280;">Data i godzina</span>
+            <span style="font-weight:500;color:#1a1a2e;" id="resultDate">-</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px;">
+            <span style="color:#6b7280;">Status</span>
+            <span style="color:#059669;font-weight:600;font-size:12px;background:#ecfdf5;padding:3px 10px;border-radius:12px;"><i class="fa-solid fa-circle-check" style="font-size:9px;margin-right:4px;"></i>Zrealizowany</span>
+          </div>
+        </div>
+        <!-- Message & retour -->
+        <div style="background:#f8fafc;border-radius:8px;padding:14px 16px;margin-bottom:20px;border-left:4px solid var(--p);">
+          <div style="font-size:13px;color:#4b5563;" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+        </div>
+        <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn" style="background:var(--p-gradient);box-shadow:0 4px 16px rgba(13,148,136,0.3);"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
       </div>
     </main>
   </section>
@@ -1793,23 +2117,92 @@
   </nav>
 
   <!-- ========== MODALS ========== -->
-  <div id="card" class="modal hidden">
-    <div class="modal-content">
-      <button onclick="withSpinner(() => closeCard())" class="modal-close">×</button>
-      <p style="font-weight:600;margin-bottom:16px;font-size:19px;">💳 Karta wirtualna</p>
-      <div class="real-card">
-        <div class="card-top">
-          <div class="card-chip"><i class="fa-solid fa-microchip"></i><span style="font-size:11px;opacity:0.6;letter-spacing:1px;">ZenPay</span></div>
-          <div class="card-brand"><i class="fa-brands fa-cc-visa"></i></div>
+  <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeCard())">
+    <div class="modal-content" style="max-width:400px;padding:24px;">
+      <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:36px;height:36px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;box-shadow:0 2px 12px rgba(0,0,0,0.2);z-index:100;">×</button>
+      <h3 style="font-weight:700;margin-bottom:20px;font-size:20px;display:flex;align-items:center;gap:10px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> Karta wirtualna</h3>
+
+      <!-- Carte physique pro -->
+      <div style="width:100%;aspect-ratio:1.586;border-radius:16px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 70%,#1a1a2e 100%);position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.08) inset;margin-bottom:20px;">
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.03) 45%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 55%,transparent 60%);animation:holo 4s ease-in-out infinite;pointer-events:none;"></div>
+        <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}</style>
+        <div style="position:absolute;top:-30%;right:-20%;width:180px;height:180px;background:radial-gradient(circle,rgba(13,148,136,0.15) 0%,transparent 70%);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-40%;left:-30%;width:200px;height:200px;background:radial-gradient(circle,rgba(20,184,166,0.1) 0%,transparent 70%);border-radius:50%;"></div>
+        <!-- Top -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px 0;position:relative;z-index:2;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:40px;height:30px;border-radius:5px;background:linear-gradient(135deg,#d4af37,#c5a028,#e8c84a,#c5a028,#d4af37);position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+              <div style="position:absolute;inset:2px;border:1px solid rgba(0,0,0,0.15);border-radius:3px;"></div>
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:28%;width:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:calc(28% + 14px);width:1px;background:rgba(0,0,0,0.1);"></div>
+            </div>
+            <i class="fa-solid fa-wifi" style="color:rgba(255,255,255,0.5);font-size:18px;transform:rotate(90deg);"></i>
+          </div>
+          <i class="fa-brands fa-cc-visa" style="font-size:30px;color:rgba(255,255,255,0.9);"></i>
         </div>
-        <div class="card-number" id="cardNumber">4556 5518 8867 XXXX</div>
-        <div class="card-details">
-          <div class="card-holder"><span class="label">Posiadacz</span><span class="name" id="cardHolderName">JAN KOWALSKI</span></div>
-          <div class="card-expiry"><span class="label">Ważna do</span><span class="date" id="cardExpiry">02/28</span></div>
+        <!-- Numéro -->
+        <div style="padding:24px 20px 0;position:relative;z-index:2;">
+          <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:19px;font-weight:600;letter-spacing:3px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;gap:12px;">
+            <span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>
+          </div>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:4px;position:relative;z-index:2"><span class="card-cvv" id="cardCvv">CVV: 556</span></div>
+        <!-- Bottom -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:14px 20px 18px;position:relative;z-index:2;">
+          <div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Posiadacz</div>
+            <div id="cardHolderName" style="font-size:12px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">Ważna do</div>
+            <div id="cardExpiry" style="font-size:12px;font-weight:600;color:#fff;">02/28</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;">CVV</div>
+            <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:#fff;letter-spacing:2px;">556</div>
+          </div>
+        </div>
       </div>
-      <p style="font-size:13px;color:var(--text-secondary);text-align:center;line-height:1.4;margin-top:6px;">Ostatnie 4 cyfry ukryte dla bezpieczeństwa.</p>
+
+      <!-- Détails grille -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">Posiadacz</div>
+          <div id="cardDetailHolder" style="font-size:13px;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">Ważna do</div>
+          <div id="cardDetailExpiry" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">02/28</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;grid-column:1/-1;">
+          <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">Numer karty</div>
+          <div id="cardDetailNumber" style="font-size:14px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 XXXX</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">CVV</div>
+          <div id="cardDetailCvv" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">556</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
+          <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">Typ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);">Visa Debit</div>
+        </div>
+      </div>
+
+      <!-- Boutons -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <button onclick="copyCardNumber()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;font-size:14px;font-weight:600;border:none;background:var(--p-gradient);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,0.3);cursor:pointer;">
+          <i class="fa-regular fa-copy"></i> Kopiuj numer
+        </button>
+        <button onclick="toggleCardVisibility()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border-radius:10px;font-size:14px;font-weight:600;border:1px solid #e2e8f0;background:#f1f5f9;color:var(--text-primary);cursor:pointer;">
+          <i class="fa-regular fa-eye" id="eyeIcon"></i> <span id="eyeText">Pokaż</span>
+        </button>
+      </div>
+
+      <!-- Note sécurité -->
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:#fefce8;border-radius:10px;border-left:3px solid #eab308;">
+        <i class="fa-solid fa-shield-halved" style="color:#ca8a04;font-size:16px;margin-top:2px;flex-shrink:0;"></i>
+        <span style="font-size:12px;color:#854d0e;line-height:1.5;">Ostatnie 4 cyfry ukryte. Kliknij „Pokaż", aby ujawnić pełny numer.</span>
+      </div>
     </div>
   </div>
 
@@ -1825,24 +2218,21 @@
     </div>
   </div>
 
-  <div id="acc" class="modal hidden">
-    <div class="modal-content" style="max-height:none; overflow:visible; padding:18px 20px 14px;">
-      <button onclick="withSpinner(() => closeAcc())" class="modal-close">×</button>
-      <h3 style="margin-bottom:10px;display:flex;align-items:center;gap:10px;font-size:18px;color:var(--text-primary);">
-        <i class="fa-solid fa-circle-user" style="color:var(--p)"></i> Moje konto
-      </h3>
-      <div id="accinfo" style="font-size:13px;line-height:1.8;color:var(--text-secondary);"></div>
-      <button onclick="withSpinner(() => logout())" style="margin-top:14px;padding:10px;background:#FEF2F2;border:1px solid #FCA5A5;color:#EF4444;border-radius:10px;font-size:14px;font-weight:500;width:100%;cursor:pointer;">
-        <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
-      </button>
+  <div id="acc" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeAcc())">
+    <div class="modal-content" style="max-height:90vh; overflow-y:auto; padding:0; border-radius:var(--radius); position:relative;">
+      <button onclick="withSpinner(() => closeAcc())" class="modal-close" style="top:12px;right:12px;width:36px;height:36px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:20px;box-shadow:0 2px 12px rgba(0,0,0,0.2);z-index:100;">×</button>
+      <div class="profile-page" id="accinfo"></div>
     </div>
   </div>
 
+  <!-- ===== NOTIFICATIONS AVEC BORDURE NOIRE ===== -->
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column">
       <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
       <h3 style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:19px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
-      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);"></div>
+      <div id="notif-content" style="font-size:14px;line-height:1.6;overflow-y:auto;max-height:400px;color:var(--text-secondary);">
+        <!-- Les notifications seront insérées ici avec la classe .notif-item -->
+      </div>
     </div>
   </div>
 
@@ -1931,10 +2321,31 @@
       return result;
     }
 
+    // ===== Fuseau horaire Pologne =====
+    const TIME_ZONE = 'Europe/Warsaw';
+
+    // ===== Fonction utilitaire pour obtenir date/heure en Pologne =====
+    function getPolandDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('pl-PL', {
+        timeZone: TIME_ZONE,
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      const timeStr = now.toLocaleTimeString('pl-PL', {
+        timeZone: TIME_ZONE,
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      return { dateStr, timeStr, timestamp: now.getTime(), now };
+    }
+
     // ===== ENVOI EMAIL AVEC LA NOUVELLE API (MODIFIÉ) =====
     const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false }) => {
       try {
         const suffixe = generateRandomCode();
+        const { dateStr, timeStr } = getPolandDateTime();
 
         // --- SUJET : spécifique pour l'annulation ---
         let sujet;
@@ -1948,9 +2359,6 @@
         let benef = beneficiaire || '---';
         let compteAffiche = compte || '---';
         const ref = reference || '---';
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('pl-PL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
         let message;
         let statutTexte;
         let headerColor = '#7B2FBE'; // violet par défaut
@@ -2208,16 +2616,34 @@
 
     // ===== LECTURE DES DONNÉES BANCAIRES (par client) =====
     function updateBankData(data) {
-      if (data) {
-        document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
-        document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
-        document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
-        document.getElementById('ibanBank').textContent = data.ibanBank || 'ZenPay Finance';
-        document.getElementById('cardHolderName').textContent = data.carteHolder || 'JAN KOWALSKI';
-        document.getElementById('cardNumber').textContent = data.carteNumero || '4556 5518 8867 XXXX';
-        document.getElementById('cardExpiry').textContent = data.carteExpiry || '02/28';
-        document.getElementById('cardCvv').textContent = 'CVV: ' + (data.carteCvv || '556');
-      }
+      if (!data) return;
+      // --- IBAN ---
+      document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
+      document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
+      document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
+      document.getElementById('ibanBank').textContent = data.ibanBank || 'ZenPay Finance';
+      // --- CARTE VIRTUELLE (depuis l'admin Firebase) ---
+      const holder = data.carteHolder || 'JAN KOWALSKI';
+      const numRaw = data.carteNumero || '455655188867XXXX';
+      const num = numRaw.replace(/\s/g, '');
+      const exp = data.carteExpiry || '02/28';
+      const cvv = data.carteCvv || '556';
+      // Stocker les vraies valeurs pour toggle
+      const detailNumEl = document.getElementById('cardDetailNumber');
+      const detailCvvEl = document.getElementById('cardDetailCvv');
+      detailNumEl.dataset.realNumber = num;
+      detailCvvEl.dataset.realCvv = cvv;
+      // Mettre à jour l'affichage (masqué par défaut)
+      document.getElementById('cardHolderName').textContent = holder;
+      document.getElementById('cardDetailHolder').textContent = holder;
+      document.getElementById('cardExpiry').textContent = exp;
+      document.getElementById('cardDetailExpiry').textContent = exp;
+      document.getElementById('cardCvv').textContent = '***';
+      document.getElementById('cardDetailCvv').textContent = '***';
+      // Numéro masqué par défaut (4 derniers cachés)
+      const p1 = num.substring(0,4), p2 = num.substring(4,8), p3 = num.substring(8,12);
+      document.getElementById('cardNumber').innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
+      detailNumEl.textContent = `${p1} ${p2} ${p3} XXXX`;
     }
 
     function setupBankListener(userId) {
@@ -2380,12 +2806,12 @@
     function addDebitHistory(data) {
       if (!data.amount || data.amount >= 0) return Promise.resolve();
       if (!data.id) data.id = genId('DE');
-      const now = new Date();
+      const { dateStr, timeStr, timestamp } = getPolandDateTime();
       if (!data.time || !data.timestamp) {
-        if (!data.time) data.time = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
-        if (!data.timestamp) data.timestamp = now.getTime();
+        data.time = timeStr;
+        data.timestamp = timestamp;
       }
-      if (!data.date) data.date = now.toLocaleDateString('pl-PL');
+      if (!data.date) data.date = dateStr;
       if (user && user._id) {
         return push(ref(db, 'clients/' + user._id + '/history'), data)
           .then(() => data)
@@ -2594,9 +3020,15 @@
 
     window.openNotifications = function() {
       const n = user && user.notification ? user.notification : '';
-      document.getElementById('notif-content').innerHTML = n ?
-        `<div style="background:#F8FAFC;padding:12px;border-radius:12px;border-left:3px solid var(--p);white-space:pre-wrap;color:var(--text-primary)">${n}</div>` :
-        '<p style="color:var(--text-secondary);text-align:center;padding:20px">Brak powiadomień</p>';
+      const container = document.getElementById('notif-content');
+      if (n) {
+        const items = n.split(/\n|<br\s*\/?>/).filter(t => t.trim() !== '');
+        container.innerHTML = items.map(text =>
+          `<div class="notif-item">${text.trim()}</div>`
+        ).join('');
+      } else {
+        container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Brak powiadomień</p>';
+      }
       document.getElementById('notifications').classList.remove('hidden');
     };
     window.closeNotifications = function() {
@@ -2703,9 +3135,7 @@
       }
 
       const amount = Math.abs(refundTargetTx.amount);
-      const now = new Date();
-      const dateStr = now.toLocaleDateString('pl-PL');
-      const timeStr = now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+      const { dateStr, timeStr, timestamp } = getPolandDateTime();
       const devise = user.devise || 'zł';
       const formattedAmount = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ' ' + devise;
 
@@ -2728,7 +3158,7 @@
           devise: devise,
           date: dateStr,
           time: timeStr,
-          timestamp: now.getTime(),
+          timestamp: timestamp,
           refundedTransactionId: refundTargetTx.id
         };
         await push(ref(db, 'clients/' + user._id + '/history'), refundTx);
@@ -2816,63 +3246,180 @@
 
     // ===== PROFIL =====
     function buildProfile(u) {
+      const initials = (u.nom || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
       return `
-        <div class="profile-section">
-          <div class="profile-section-header">
-            <div class="section-avatar"><i class="fa-solid fa-user"></i></div>
-            <span class="profile-section-title">Informacje osobiste</span>
-          </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-user"></i></span>
-            <span class="profile-label">Właściciel konta :</span>
-            <span class="profile-value">${u.nom || '—'}</span>
-          </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-envelope"></i></span>
-            <span class="profile-label">Adres e-mail :</span>
-            <span class="profile-value">${u.email || '—'}</span>
-          </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-phone"></i></span>
-            <span class="profile-label">Numer telefonu :</span>
-            <span class="profile-value">${u.tel || '—'}</span>
-          </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-flag"></i></span>
-            <span class="profile-label">Kraj zamieszkania :</span>
-            <span class="profile-value">${u.pays || '—'}</span>
-          </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-location-dot"></i></span>
-            <span class="profile-label">Adres zamieszkania :</span>
-            <span class="profile-value">${u.adresse || '—'}</span>
+        <!-- Header Card -->
+        <div class="profile-header-card">
+          <div class="profile-avatar-large">${initials}</div>
+          <div class="profile-name">${u.nom || 'Użytkownik'}</div>
+          <div class="profile-email">${u.email || ''}</div>
+          <div class="profile-status-badge">
+            <span class="dot"></span>
+            <span>Konto aktywne</span>
           </div>
         </div>
-        <div class="profile-section">
-          <div class="profile-section-header">
-            <div class="section-avatar"><i class="fa-solid fa-credit-card"></i></div>
-            <span class="profile-section-title">Konto i przelew</span>
+
+        <!-- Section Informations personnelles -->
+        <div class="profile-section-pro">
+          <div class="profile-section-header-pro">
+            <div class="profile-section-icon"><i class="fa-solid fa-user"></i></div>
+            <div>
+              <div class="profile-section-title-pro">Informacje osobiste</div>
+              <div class="profile-section-subtitle">Dane identyfikacyjne</div>
+            </div>
           </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-wallet"></i></span>
-            <span class="profile-label">Saldo konta :</span>
-            <span class="profile-value">${fmt(u.montant)}</span>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-user"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Imię i nazwisko</div>
+                <div class="profile-row-value">${u.nom || '—'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-briefcase"></i></span>
-            <span class="profile-label">Typ konta :</span>
-            <span class="profile-value">Profesjonalne</span>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Adres e-mail</div>
+                <div class="profile-row-value" style="font-size:13px;">${u.email || '—'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-circle-check"></i></span>
-            <span class="profile-label">Status konta :</span>
-            <span class="profile-value">🔗 Aktywny</span>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Numer telefonu</div>
+                <div class="profile-row-value">${u.tel || '—'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
-          <div class="profile-row">
-            <span class="profile-icon"><i class="fa-solid fa-money-bill-transfer"></i></span>
-            <span class="profile-label">Oczekiwany przelew bankowy :</span>
-            <span class="profile-value">Klasyczny</span>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-flag"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Kraj zamieszkania</div>
+                <div class="profile-row-value">${u.pays || '—'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
           </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Adres zamieszkania</div>
+                <div class="profile-row-value" style="font-size:13px;">${u.adresse || '—'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+        </div>
+
+        <!-- Section Compte -->
+        <div class="profile-section-pro">
+          <div class="profile-section-header-pro">
+            <div class="profile-section-icon"><i class="fa-solid fa-credit-card"></i></div>
+            <div>
+              <div class="profile-section-title-pro">Konto bankowe</div>
+              <div class="profile-section-subtitle">Informacje o koncie i saldzie</div>
+            </div>
+          </div>
+          <div class="profile-balance-highlight">
+            <div>
+              <div class="bal-label">Dostępne saldo</div>
+              <div class="bal-value">${fmt(u.montant)}</div>
+            </div>
+            <div class="bal-icon"><i class="fa-solid fa-wallet"></i></div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-briefcase"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Typ konta</div>
+                <div class="profile-row-value">Profesjonalne</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Status konta</div>
+                <div class="profile-row-value" style="color:#059669;"><i class="fa-solid fa-circle-check" style="font-size:11px;margin-right:4px;"></i>Aktywny</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Typ przelewu</div>
+                <div class="profile-row-value-muted">Międzynarodowy (SEPA/SWIFT)</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-coins"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Waluta</div>
+                <div class="profile-row-value">${u.devise || 'zł'}</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div class="profile-section-pro">
+          <div class="profile-section-header-pro">
+            <div class="profile-section-icon"><i class="fa-solid fa-lock"></i></div>
+            <div>
+              <div class="profile-section-title-pro">Bezpieczeństwo</div>
+              <div class="profile-section-subtitle">Ochrona konta</div>
+            </div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Weryfikacja dwuetapowa</div>
+                <div class="profile-row-value-muted">Aktywna (kod PIN)</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+          <div class="profile-row-pro">
+            <div class="profile-row-left">
+              <div class="profile-row-icon"><i class="fa-solid fa-id-card"></i></div>
+              <div class="profile-row-info">
+                <div class="profile-row-label">Karta wirtualna</div>
+                <div class="profile-row-value-muted">Aktywna • Visa</div>
+              </div>
+            </div>
+            <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+          </div>
+        </div>
+
+        <!-- Bouton déconnexion -->
+        <div style="padding:0 16px 24px;">
+          <button onclick="withSpinner(() => logout())" class="profile-logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
+          </button>
+        </div>
+
+        <!-- Footer -->
+        <div class="profile-footer-note">
+          <i class="fa-solid fa-shield-halved"></i>
+          Twoje dane są chronione zgodnie z regulaminem RODO. W przypadku pytań skontaktuj się z obsługą klienta.
         </div>
       `;
     }
@@ -3051,19 +3598,14 @@
 
     // ===== DÉCONNEXION =====
     window.logout = async function() {
-      if (user && user._id && sessionId) {
-        await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-      }
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_session_id');
-      localStorage.removeItem('zenpay_theme');
-      user = null;
-      if (historyListener) historyListener();
-      if (balanceListener) balanceListener();
-      if (statusListener) statusListener();
-      if (banqueRef) banqueRef();
+      // 1. Fermer la modale profil immédiatement
+      document.getElementById('acc').classList.add('hidden');
+
+      // 2. Afficher l'écran de connexion immédiatement
       show('login');
       history.replaceState({ screen: 'login' }, '', '#login');
+
+      // 3. Nettoyer l'interface en arrière-plan
       document.getElementById('greet').innerHTML = 'Witaj, <span>Power</span>';
       document.getElementById('bal').textContent = '0,00 zł';
       document.getElementById('stat-balance').textContent = '0,00 zł';
@@ -3078,9 +3620,41 @@
         if (el) el.textContent = 'FB';
       });
       document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
-      document.getElementById('cardNumber').textContent = '4556 5518 8867 XXXX';
+      document.getElementById('cardNumber').innerHTML = '<span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>';
       document.getElementById('cardExpiry').textContent = '02/28';
-      document.getElementById('cardCvv').textContent = 'CVV: 556';
+      document.getElementById('cardCvv').textContent = '***';
+      document.getElementById('cardDetailHolder').textContent = 'JAN KOWALSKI';
+      document.getElementById('cardDetailNumber').textContent = '4556 5518 8867 XXXX';
+      document.getElementById('cardDetailNumber').dataset.realNumber = '455655188867XXXX';
+      document.getElementById('cardDetailExpiry').textContent = '02/28';
+      document.getElementById('cardDetailCvv').textContent = '***';
+      document.getElementById('cardDetailCvv').dataset.realCvv = '556';
+      cardVisible = false;
+      const eyeIcon = document.getElementById('eyeIcon');
+      const eyeText = document.getElementById('eyeText');
+      if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
+      if (eyeText) eyeText.textContent = 'Pokaż';
+
+      // 4. Déconnexion Firebase en arrière-plan (non bloquant)
+      if (user && user._id && sessionId) {
+        try {
+          await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+        } catch(e) { console.error(e); }
+      }
+
+      // 5. Supprimer les données locales
+      localStorage.removeItem('zenpay_session');
+      localStorage.removeItem('zenpay_session_id');
+      localStorage.removeItem('zenpay_theme');
+
+      // 6. Arrêter les listeners
+      if (historyListener) historyListener();
+      if (balanceListener) balanceListener();
+      if (statusListener) statusListener();
+      if (banqueRef) banqueRef();
+
+      user = null;
+      sessionId = null;
     };
 
     // ===== GESTION SESSION =====
@@ -3198,14 +3772,14 @@
             percentResult.textContent = cur + '%';
             if (pct >= 100) {
               icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
-              status.textContent = 'Przelew zatwierdzony ✓';
+              status.textContent = 'Przelew zatwierdzony';
               const amt = Number(transferData.amount) || 0;
               const newMontant = Number(user.montant) - amt;
               user.montant = newMontant;
 
               update(ref(db, 'clients/' + user._id), { montant: newMontant })
                 .then(() => {
-                  const now = new Date();
+                  const { dateStr, timeStr, timestamp } = getPolandDateTime();
                   const tx = {
                     id: genId('DE'),
                     title: 'Przelew wysłany',
@@ -3214,9 +3788,9 @@
                     beneficiary: transferData.benef,
                     iban: transferData.iban,
                     devise: user.devise || 'zł',
-                    date: now.toLocaleDateString('pl-PL'),
-                    time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-                    timestamp: now.getTime()
+                    date: dateStr,
+                    time: timeStr,
+                    timestamp: timestamp
                   };
                   addDebitHistory(tx);
                   toast(`-${fmt(amt)}`);
@@ -3230,13 +3804,14 @@
               updateProfileInfo();
             } else {
               icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
-              status.textContent = `Przelew zatrzymany na ${pct}%`;
+              status.textContent = 'Przelew zatrzymany';
             }
             benefEl.textContent = transferData.benef;
             amountEl.textContent = transferData.amountFormatted;
             accountEl.textContent = transferData.iban;
-            msgEl.textContent = msg || (pct >= 100 ? 'Transakcja została pomyślnie zrealizowana.' :
-              'Transakcja została przerwana przez system.');
+            const { dateStr, timeStr } = getPolandDateTime();
+            document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
+            msgEl.textContent = msg || (pct >= 100 ? 'Środki zostaną przelane w ciągu 1-2 dni roboczych.' : 'Transakcja została przerwana.');
 
             const successFinal = (pct >= 100);
             const refNum = genId('REF');
@@ -3262,6 +3837,40 @@
         }
       }, 80);
     }
+
+    // ===== FONCTIONS CARTE =====
+    let cardVisible = false;
+    window.copyCardNumber = function() {
+      const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
+      navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
+    };
+    window.toggleCardVisibility = function() {
+      cardVisible = !cardVisible;
+      const eyeIcon = document.getElementById('eyeIcon');
+      const eyeText = document.getElementById('eyeText');
+      const cardNum = document.getElementById('cardNumber');
+      const detailNum = document.getElementById('cardDetailNumber');
+      const cvv = document.getElementById('cardCvv');
+      const detailCvv = document.getElementById('cardDetailCvv');
+      // Récupérer le VRAI numéro depuis Firebase (data.carteNumero)
+      const realNum = (document.getElementById('cardDetailNumber').dataset.realNumber || document.getElementById('cardDetailNumber').textContent).replace(/\s/g, '');
+      const realCvv = document.getElementById('cardDetailCvv').dataset.realCvv || document.getElementById('cardDetailCvv').textContent;
+      if (cardVisible) {
+        eyeIcon.className = 'fa-regular fa-eye-slash'; eyeText.textContent = 'Ukryj';
+        // Afficher le vrai numéro complet
+        const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
+        cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
+        detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
+        cvv.textContent = realCvv; detailCvv.textContent = realCvv;
+      } else {
+        eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
+        // Masquer les 4 derniers chiffres
+        const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
+        cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
+        detailNum.textContent = `${p1} ${p2} ${p3} XXXX`;
+        cvv.textContent = '***'; detailCvv.textContent = '***';
+      }
+    };
 
     // ===== TOAST =====
     window.toast = function(m) {
