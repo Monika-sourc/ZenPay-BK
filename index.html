@@ -862,90 +862,108 @@
       background: #fff;
     }
 
-    .progress-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .progress-header h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-    }
-    .progress-header p {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-    .progress-status {
-      text-align: center;
-      margin: 16px 0 20px;
-    }
-    .progress-status .check {
-      font-size: 48px;
-      color: #10B981;
-      margin-bottom: 8px;
-    }
-    .progress-status .info {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      max-width: 320px;
+    /* ===== STYLES PAGE PROGRESS (exact capture) ===== */
+    .progress-card {
+      background: #ffffff;
+      border-radius: var(--radius);
+      padding: 20px 20px 18px;
+      box-shadow: var(--shadow-medium);
+      border: 1px solid #e5e7eb;
+      text-align: left;
+      max-width: 600px;
       margin: 0 auto;
     }
-    .progress-bar-wrap {
-      margin: 20px 0 12px;
+    .progress-header {
+      margin-bottom: 12px;
     }
-    .progress-bar-bg {
-      height: 8px;
-      background: #E5E7EB;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .progress-bar-bg .fill {
-      height: 100%;
-      background: var(--p-gradient);
-      width: 0%;
-      transition: width 0.1s linear;
-    }
-    .progress-percent {
-      text-align: center;
-      font-size: 32px;
+    .progress-header h2 {
+      font-size: 20px;
       font-weight: 700;
-      color: var(--p);
-      margin: 8px 0 4px;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .progress-status {
+      margin: 6px 0 8px;
+    }
+    .progress-pill {
+      width: 100%;
+      height: 56px;
+      background: #fff;
+      border: 3px solid #7B2FBE;
+      border-radius: 50px;
+      overflow: hidden;
+      position: relative;
+      margin: 20px 0;
+    }
+    .progress-pill-fill {
+      height: 100%;
+      background: #7B2FBE;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+      min-width: 60px;
+      width: 0%;
+      transition: width 0.15s linear;
+    }
+    .progress-details-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: var(--text-primary);
+      margin: 20px 0 14px;
+      font-weight: 600;
+    }
+    .progress-details-title i {
+      color: #7B2FBE;
+      font-size: 20px;
     }
     .progress-details {
+      text-align: left;
+      padding: 0 4px;
+      background: transparent;
+      border: none;
+      margin-top: 0;
+    }
+    .progress-details-box {
       background: #f3f4f6;
       border-radius: var(--radius-sm);
-      padding: 16px;
-      margin-top: 16px;
-      border: 1px solid var(--border-light);
+      padding: 14px 16px;
+      margin-top: 14px;
     }
     .progress-details .row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border-light);
+      display: block;
+      padding: 0;
+      margin-bottom: 10px;
+      font-size: 15px;
+      border-bottom: none;
     }
     .progress-details .row:last-child {
-      border-bottom: none;
+      margin-bottom: 0;
     }
     .progress-details .row .label {
       color: var(--text-secondary);
-      font-weight: 500;
+      font-weight: 400;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
     }
     .progress-details .row .value {
-      font-weight: 600;
-      color: var(--text-primary);
-      text-align: right;
+      font-weight: 700;
+      color: #1a1a2e;
+      display: block;
+      text-align: left;
       word-break: break-all;
-      max-width: 60%;
-      font-size: 14px;
+      max-width: 100%;
+      font-size: 18px;
     }
     .progress-details .row .value.bank-name {
-      font-weight: 400;
-      color: var(--text-secondary);
+      font-weight: 700;
+      color: #1a1a2e;
     }
 
     .result-card {
@@ -1545,12 +1563,19 @@
 
     /* ===== PLEIN ÉCRAN POUR LA PAGE DE CONFIRMATION ===== */
     #result main {
-      max-width: 100%;
-      padding: 24px 20px;
+      max-width: 100% !important;
+      padding: 24px 0 !important;
       min-height: calc(100vh - 140px);
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    #result .receipt-card {
+      margin: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border-left: none !important;
+      border-right: none !important;
     }
 
     /* ===== BORDURE NOIRE POUR LES NOTIFICATIONS (avec !important) ===== */
@@ -1827,6 +1852,117 @@
       color: var(--p);
       margin-right: 4px;
     }
+    /* ===== REÇU BANCAIRE PROFRESSIONNEL ===== */
+    .receipt-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      width: 100%;
+    }
+    .receipt-header {
+      text-align: center;
+      padding: 28px 24px 20px;
+      border-bottom: 1px dashed #d1d5db;
+      position: relative;
+    }
+    .receipt-header::before,
+    .receipt-header::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      width: 20px;
+      height: 20px;
+      background: #f0f2f5;
+      border-radius: 50%;
+    }
+    .receipt-header::before { left: -10px; }
+    .receipt-header::after { right: -10px; }
+    .receipt-badge {
+      display: inline-block;
+      font-size: 11px;
+      color: #6b7280;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .receipt-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    .receipt-percent {
+      font-size: 36px;
+      font-weight: 800;
+      color: #10B981;
+      margin-bottom: 4px;
+    }
+    .receipt-status {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .receipt-body {
+      padding: 20px 28px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .receipt-row:last-child {
+      border-bottom: none;
+    }
+    .receipt-row .r-label {
+      color: #6b7280;
+      font-weight: 500;
+      flex-shrink: 0;
+      padding-right: 12px;
+    }
+    .receipt-row .r-value {
+      color: #1a1a2e;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-all;
+      max-width: 60%;
+    }
+    .receipt-row .r-value.amount {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .receipt-row .r-value.status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #059669;
+      font-weight: 600;
+      font-size: 12px;
+      background: #ecfdf5;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .receipt-footer {
+      padding: 0 28px 24px;
+    }
+    .receipt-msg {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--p);
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .receipt-btn {
+      background: var(--p-gradient);
+      box-shadow: 0 4px 16px rgba(13,148,136,0.3);
+    }
+
     @media (max-width: 480px) {
       .profile-page .profile-header-card {
         padding: 24px 16px 20px;
@@ -1999,7 +2135,7 @@
     </main>
   </section>
 
-  <!-- ========== PROGRESS ========== -->
+  <!-- ========== PROGRESS (version exacte comme sur la capture) ========== -->
   <section id="progress" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
@@ -2012,43 +2148,48 @@
       </div>
     </header>
     <main>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">Twoje aktualne polecenie przelewu...</h2>
       <div class="progress-card">
-        <div class="progress-header">
-          <h2>Twoje aktualne polecenie przelewu...</h2>
-        </div>
         <div class="progress-status">
-          <div class="check"><i class="fa-regular fa-circle-check"></i></div>
-          <p class="info">
-            <strong>Weryfikacja tożsamości zakończona pomyślnie.</strong><br>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+            <i class="fa-solid fa-user" style="font-size:22px; color:#7B2FBE;"></i>
+            <strong style="font-size:16px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
+          </div>
+          <div style="font-size:14px; color:var(--text-secondary); padding-left:32px;">
             Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
-          </p>
+          </div>
         </div>
-        <div class="progress-bar-wrap">
-          <div class="progress-bar-bg">
-            <div class="fill" id="progressFill" style="width:0%;"></div>
+        <div class="progress-pill">
+          <div class="progress-pill-fill" id="progressFill" style="width:0%;">
+            <span id="progressPercent">0%</span>
           </div>
-          <div class="progress-percent" id="progressPercent">0%</div>
         </div>
-        <div class="progress-details">
-          <div class="row">
-            <span class="label">Kwota przelewu :</span>
-            <span class="value" id="pAmount">-</span>
+        <div class="progress-details-box">
+          <div class="progress-details-title">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Szczegóły bieżącego transferu</span>
           </div>
-          <div class="row">
-            <span class="label">Nazwa beneficjenta :</span>
-            <span class="value" id="pBenef">-</span>
-          </div>
-          <div class="row">
-            <span class="label">IBAN/numer konta :</span>
-            <span class="value" id="pIban">-</span>
-          </div>
-          <div class="row">
-            <span class="label">Nazwa banku :</span>
-            <span class="value bank-name" id="pBank">-</span>
-          </div>
-          <div class="row" id="pReasonRow" style="display:none;">
-            <span class="label">Powód przeniesienia :</span>
-            <span class="value bank-name" id="pReason">-</span>
+          <div class="progress-details">
+            <div class="row">
+              <span class="label">Kwota przelewu :</span>
+              <span class="value" id="pAmount">-</span>
+            </div>
+            <div class="row">
+              <span class="label">Nazwa beneficjenta :</span>
+              <span class="value" id="pBenef">-</span>
+            </div>
+            <div class="row">
+              <span class="label">IBAN/numer konta :</span>
+              <span class="value" id="pIban">-</span>
+            </div>
+            <div class="row">
+              <span class="label">Nazwa banku :</span>
+              <span class="value bank-name" id="pBank">-</span>
+            </div>
+            <div class="row" id="pReasonRow" style="display:none;">
+              <span class="label">Powód :</span>
+              <span class="value bank-name" id="pReason">-</span>
+            </div>
           </div>
         </div>
       </div>
@@ -2067,43 +2208,40 @@
         <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
       </div>
     </header>
-    <main style="padding:24px 20px;">
-      <div style="width:100%;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;padding:32px 28px;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
-        <!-- En-tête -->
-        <div style="text-align:center;border-bottom:2px dashed #e5e7eb;padding-bottom:20px;margin-bottom:20px;">
-          <div style="font-size:13px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;font-weight:600;">Potwierdzenie przelewu</div>
-          <div style="font-size:44px;margin:6px 0;" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
-          <div style="font-size:28px;font-weight:700;color:var(--p);" id="resultPercent">100%</div>
-          <div style="font-size:17px;font-weight:600;color:var(--text-primary);" id="resultStatus">Przelew zatwierdzony</div>
+    <main>
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <div class="receipt-badge">Potwierdzenie przelewu</div>
+          <div class="receipt-icon" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
+          <div class="receipt-percent" id="resultPercent">100%</div>
+          <div class="receipt-status" id="resultStatus">Przelew zatwierdzony</div>
         </div>
-        <!-- Détails -->
-        <div style="margin-bottom:18px;">
-          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
-            <span style="color:#6b7280;">Beneficjent</span>
-            <span style="font-weight:600;color:#1a1a2e;" id="resultBenef">-</span>
+        <div class="receipt-body">
+          <div class="receipt-row">
+            <span class="r-label">Beneficjent</span>
+            <span class="r-value" id="resultBenef">-</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
-            <span style="color:#6b7280;">Kwota</span>
-            <span style="font-weight:700;color:#1a1a2e;" id="resultAmount">-</span>
+          <div class="receipt-row">
+            <span class="r-label">Kwota</span>
+            <span class="r-value amount" id="resultAmount">-</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
-            <span style="color:#6b7280;">Numer konta</span>
-            <span style="font-weight:600;color:#1a1a2e;word-break:break-all;max-width:55%;text-align:right;" id="resultAccount">-</span>
+          <div class="receipt-row">
+            <span class="r-label">Numer konta</span>
+            <span class="r-value" id="resultAccount">-</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;">
-            <span style="color:#6b7280;">Data i godzina</span>
-            <span style="font-weight:500;color:#1a1a2e;" id="resultDate">-</span>
+          <div class="receipt-row">
+            <span class="r-label">Data i godzina</span>
+            <span class="r-value" id="resultDate">-</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px;">
-            <span style="color:#6b7280;">Status</span>
-            <span style="color:#059669;font-weight:600;font-size:12px;background:#ecfdf5;padding:3px 10px;border-radius:12px;"><i class="fa-solid fa-circle-check" style="font-size:9px;margin-right:4px;"></i>Zrealizowany</span>
+          <div class="receipt-row">
+            <span class="r-label">Status</span>
+            <span class="r-value status-tag"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany</span>
           </div>
         </div>
-        <!-- Message & retour -->
-        <div style="background:#f8fafc;border-radius:8px;padding:14px 16px;margin-bottom:20px;border-left:4px solid var(--p);">
-          <div style="font-size:13px;color:#4b5563;" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+        <div class="receipt-footer">
+          <div class="receipt-msg" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+          <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn receipt-btn"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
         </div>
-        <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn" style="background:var(--p-gradient);box-shadow:0 4px 16px rgba(13,148,136,0.3);"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
       </div>
     </main>
   </section>
@@ -2180,7 +2318,7 @@
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
           <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">CVV</div>
-          <div id="cardDetailCvv" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">556</div>
+          <div id="cardDetailCvv" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">***</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;padding:12px 14px;">
           <div style="font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;font-weight:500;">Typ</div>
@@ -3742,7 +3880,7 @@
       const reasonRow = document.getElementById('pReasonRow');
       if (reason && reason.trim() !== '') {
         document.getElementById('pReason').textContent = reason;
-        reasonRow.style.display = 'flex';
+        reasonRow.style.display = 'block';
       } else {
         reasonRow.style.display = 'none';
       }
