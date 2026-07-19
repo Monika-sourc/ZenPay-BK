@@ -1461,59 +1461,10 @@
       margin-top: 4px;
     }
 
-    .iban-modal .modal-content .iban-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .iban-modal .modal-content .iban-header i {
-      color: var(--p);
-      font-size: 24px;
-    }
-    .iban-modal .modal-content .iban-field {
-      margin-bottom: 16px;
-    }
-    .iban-modal .modal-content .iban-field .label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
-    }
-    .iban-modal .modal-content .iban-field .value {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-primary);
-      word-break: break-all;
-    }
-    .iban-modal .modal-content .iban-field .value.small {
-      font-size: 15px;
-    }
-    .iban-modal .modal-content .iban-security {
-      margin-top: 16px;
-      padding: 12px 14px;
-      background: #FFF8E7;
-      border-radius: var(--radius-sm);
-      border-left: 4px solid #EAB308;
-      font-size: 13px;
-      color: #92400E;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-weight: 400;
-    }
-    .iban-modal .modal-content .iban-security i {
-      font-size: 16px;
-      color: #EAB308;
-      margin-top: 2px;
-    }
-    .iban-modal .modal-content .iban-security span {
-      flex: 1;
+    /* Styles IBAN simplifiés et professionnels */
+    .iban-modal .modal-content {
+      padding: 28px 24px 22px;
+      max-width: 420px;
     }
 
     .hidden {
@@ -2344,15 +2295,68 @@
     </div>
   </div>
 
-  <div id="ibanModal" class="modal hidden iban-modal">
-    <div class="modal-content">
-      <button onclick="withSpinner(() => closeIbanModal())" class="modal-close">×</button>
-      <div class="iban-header"><i class="fa-regular fa-credit-card"></i><span>Dane konta</span></div>
-      <div class="iban-field"><div class="label">Właściciel konta</div><div class="value" id="ibanOwner">KWIATKOWSKI PW</div></div>
-      <div class="iban-field"><div class="label">IBAN</div><div class="value" id="ibanNumber">LT15 2339 1465 189X XXXX</div></div>
-      <div class="iban-field"><div class="label">BIC / SWIFT</div><div class="value small" id="ibanBic">TTQGLTIJCJK</div></div>
-      <div class="iban-field"><div class="label">Bank</div><div class="value small" id="ibanBank">ZenPay Finance</div></div>
-      <div class="iban-security"><i class="fa-solid fa-shield"></i><span>Ze względów bezpieczeństwa niektóre znaki Twojego numeru IBAN zostały zamaskowane.</span></div>
+  <div id="ibanModal" class="modal hidden iban-modal" onclick="if(event.target===this)withSpinner(()=>closeIbanModal())">
+    <div class="modal-content" style="padding:0;overflow:hidden;max-width:420px;">
+      <button onclick="withSpinner(() => closeIbanModal())" class="modal-close" style="top:12px;right:12px;width:34px;height:34px;border:none;background:rgba(0,0,0,0.35);color:#fff;font-size:18px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:10;">×</button>
+
+      <!-- Header dégradé -->
+      <div style="background:var(--p-gradient);padding:28px 24px 22px;color:#fff;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-20px;left:-10px;width:70px;height:70px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+        <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:1;">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div>
+            <h3 style="font-size:18px;font-weight:700;margin:0;color:#fff;">Dane konta</h3>
+            <p style="font-size:12px;margin:2px 0 0;opacity:0.8;color:#fff;">ZenPay Finance</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Corps -->
+      <div style="padding:22px 24px 20px;">
+        <!-- IBAN en carte -->
+        <div style="background:#0f172a;border-radius:14px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
+          <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:relative;z-index:1;">
+            <span style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
+            <button onclick="copyIban()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background 0.2s;">
+              <i class="fa-regular fa-copy" style="font-size:10px;"></i> Kopiuj
+            </button>
+          </div>
+          <div style="font-size:15px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1.5px;word-break:break-all;position:relative;z-index:1;line-height:1.4;" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+        </div>
+
+        <!-- Infos grille -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid #f1f5f9;">
+            <span style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:4px;">Właściciel</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text-primary);" id="ibanOwner">KWIATKOWSKI PW</span>
+          </div>
+          <div style="background:#f8fafc;border-radius:10px;padding:14px 16px;border:1px solid #f1f5f9;">
+            <span style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:4px;">BIC / SWIFT</span>
+            <span style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">TTQGLTIJCJK</span>
+          </div>
+        </div>
+
+        <!-- Bank -->
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:13px;flex-shrink:0;">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+          <div>
+            <span style="font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;">Bank</span>
+            <span style="font-size:13px;font-weight:700;color:#15803d;" id="ibanBank">ZenPay Finance</span>
+          </div>
+        </div>
+
+        <!-- Alert sécurité -->
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fffbeb;border-radius:8px;border:1px solid #fef3c7;">
+          <i class="fa-solid fa-shield-halved" style="color:#d97706;font-size:13px;flex-shrink:0;"></i>
+          <span style="font-size:11px;color:#92400e;line-height:1.4;">Ze względów bezpieczeństwa niektóre znaki IBAN zostały zamaskowane.</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3981,6 +3985,10 @@
     window.copyCardNumber = function() {
       const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
       navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
+    };
+    window.copyIban = function() {
+      const iban = document.getElementById('ibanNumber').textContent.replace(/\s/g, '');
+      navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
     };
     window.toggleCardVisibility = function() {
       cardVisible = !cardVisible;
