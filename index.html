@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ZenPay</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RÉINITIALISATION + PLEIN ÉCRAN ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Titillium Web', sans-serif;
+    }
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: #f0f2f5;
+      color: var(--text-primary);
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    :root {
+      --bg: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --border-light: rgba(0, 0, 0, 0.04);
+      --text-primary: #1A1D2E;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.03);
+      --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --radius: 8px;
+      --radius-sm: 4px;
+      --p: #0D9488;
+      --p-light: #CCFBF1;
+      --p-dark: #0F766E;
+      --p-gradient: linear-gradient(135deg, #14B8A6, #0D9488);
+      --p-soft: rgba(13, 148, 136, 0.12);
+    }
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
+    }
+    #login.screen .login-wrapper {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      flex: 1;
+      background: #f0f2f5;
+    }
+
+    /* ===== EN-TÊTE FIXE EN HAUT ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: var(--p); letter-spacing: -0.5px; }
+    .logo i { font-size: 24px; background: var(--p-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header-actions { display: flex; gap: 6px; align-items: center; }
+    .badge-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: #F3F4F6; border: 1.5px solid #D1D5DB;
+      display: flex; align-items: center; justify-content: center; color: var(--p-dark);
+      font-weight: 700; font-size: 14px;
+      cursor: pointer; position: relative; box-shadow: 0 2px 10px rgba(13,148,136,0.18);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .badge-icon:hover { background: #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: #9CA3AF; }
+    .badge-icon i { color: var(--p); font-size: 20px; }
+    .refresh-btn {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: #F3F4F6; border: 1.5px solid #D1D5DB;
+      display: flex; align-items: center; justify-content: center; color: var(--p-dark);
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-size: 20px; box-shadow: 0 2px 10px rgba(13,148,136,0.18);
+    }
+    .refresh-btn:hover { background: #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: #9CA3AF; }
+    .refresh-btn i { color: var(--p); font-size: 20px; }
+    .refresh-btn.spinning i { animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px; background: #EF4444; color: #fff; border-radius: 50%;
+      width: 18px; height: 18px; font-size: 9px; font-weight: 600; display: flex; align-items: center;
+      justify-content: center; border: 2px solid #fff;
+    }
+    .notif-badge.hidden { display: none; }
+
+    /* ===== CONTENU PRINCIPAL AVEC MARGE POUR L'EN-TÊTE ===== */
+    main {
+      flex: 1;
+      padding: 16px 14px 40px;
+      background: transparent;
+      width: 100%;
+      max-width: 100%;
+    }
+    .screen:not(#login) main {
+      padding-top: 88px;
+    }
+    @media (min-width: 768px) {
+      main { padding: 20px 40px 60px; }
+      .screen:not(#login) main { padding-top: 88px; }
+    }
+    @media (max-width: 480px) {
+      main { padding: 12px 10px 60px; }
+      .screen:not(#login) main { padding-top: 88px; }
+    }
+
+    /* === ESPACE SUPPLÉMENTAIRE EN BAS DE LA PAGE D'ACCUEIL === */
+    #dashboard main {
+      padding-bottom: 100px;
+    }
+    @media (min-width: 768px) {
+      #dashboard main { padding-bottom: 120px; }
+    }
+    @media (max-width: 480px) {
+      #dashboard main { padding-bottom: 120px; }
+    }
+
+    /* === RÉDUCTION DE L'ESPACE EN BAS POUR VERIFY, PROGRESS, RESULT === */
+    #verify main,
+    #progress main,
+    #result main {
+      flex: 0 0 auto;
+      min-height: auto;
+      padding-bottom: 10px;
+    }
+    @media (min-width: 768px) {
+      #verify main, #progress main, #result main { padding-bottom: 10px; }
+    }
+    @media (max-width: 480px) {
+      #verify main, #progress main, #result main { padding-bottom: 10px; }
+    }
+
+    /* === PANEL DE SOLDE ARRONDI === */
+    .balance-panel {
+      border-radius: 18px !important;
+    }
+
+    /* ===== MODALES ===== */
+    .modal {
+      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+    }
+    .modal.hidden { display: none !important; }
+    .modal-content {
+      background: #FFFFFF; border-radius: var(--radius);
+      max-width: 520px; width: 100%;
+      padding: 20px 20px 16px;
+      position: relative; box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+      max-height: 90vh; overflow-y: auto;
+      overflow: visible;
+    }
+    .modal-close {
+      position: absolute; top: -16px; right: -16px;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #DC2626; color: #fff; border: 3px solid #fff;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+      transition: transform 0.2s, box-shadow 0.2s; z-index: 20;
+    }
+    .modal-close:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(220,38,38,0.5); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px 18px; background: #2D2D3A; color: #FFFFFF;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: opacity 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .input {
+      width: 100%; padding: 8px 12px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--text-primary);
+    }
+    .input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
+    .amount-input-wrap {
+      display: flex; align-items: center; margin: 4px 0 12px;
+    }
+    .amount-input-wrap .input {
+      border-top-right-radius: 0; border-bottom-right-radius: 0;
+      text-align: left; font-weight: 700; font-size: 14px; padding: 8px 12px; flex: 1;
+    }
+    .amount-input-wrap .currency-symbol {
+      padding: 8px 14px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-left: none; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-weight: 600; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-secondary); height: 100%; min-height: 36px; line-height: 1;
+    }
+    #greet {
+      font-size: 22px; font-weight: 600; margin-bottom: 32px;
+      letter-spacing: -0.01em; color: var(--text-secondary);
+      display: flex; align-items: center; flex-wrap: nowrap;
+      gap: 8px; overflow: hidden; white-space: nowrap;
+    }
+    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+    .balance-panel {
+      background: var(--p-gradient);
+      padding: 24px 22px 20px;
+      margin-bottom: 32px; color: #fff; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13,148,136,0.20), 0 4px 12px rgba(13,148,136,0.12);
+      display: flex; flex-direction: column;
+      min-height: 180px; border: none;
+    }
+    .balance-panel::before {
+      content: ''; position: absolute; top: -60%; right: -30%; width: 220px; height: 220px;
+      background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel::after {
+      content: ''; position: absolute; bottom: -40%; left: -20%; width: 160px; height: 160px;
+      background: rgba(255,255,255,0.04); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel .label {
+      font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
+    }
+    .balance-panel .amount {
+      font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
+      overflow: visible; white-space: nowrap; margin-bottom: 6px; margin-left: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .balance-panel .sub {
+      font-size: 12px; opacity: 0.65; margin-bottom: 20px; font-weight: 400;
+    }
+    .balance-actions-wrapper {
+      display: flex; gap: 10px; justify-content: space-between; width: 100%; position: relative; z-index: 2; margin-bottom: 0;
+    }
+    .balance-actions-wrapper .btn-action {
+      flex: 1; min-width: 0; background: rgba(255,255,255,0.12); color: #fff; border: 1.5px solid rgba(255,255,255,0.45);
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      line-height: 1.2; min-height: 44px; text-align: center;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter: blur(4px);
+    }
+    .balance-actions-wrapper .btn-action:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .balance-actions-wrapper .btn-action i { color: #fff; font-size: 15px; }
+    .btn-iban {
+      width: 100%; background: rgba(255,255,255,0.12); color: #fff; border: 1.5px solid rgba(255,255,255,0.45);
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 10px; min-height: 44px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter: blur(4px);
+    }
+    .btn-iban:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .btn-iban i { color: #fff; font-size: 15px; }
+    .quick-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;
+    }
+    .stat-item {
+      background: var(--card-bg); border: 1.5px solid #d1d5db; border-radius: 12px;
+      padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-soft); overflow: visible;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .stat-item .stat-value {
+      font-size: 20px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
+      letter-spacing: -0.02em;
+    }
+    .stat-item .stat-label {
+      font-size: 11px; color: var(--text-secondary); letter-spacing: 0.3px; margin-top: 4px; font-weight: 500;
+    }
+    .stat-item .stat-icon {
+      font-size: 18px; color: var(--p); margin-bottom: 5px; opacity: 0.85;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .history-container {
+      border: 1.5px solid #d1d5db; border-radius: 14px;
+      background: #ffffff; padding: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+    .history-header {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px; color: var(--text-primary);
+      padding: 18px 20px 14px 20px; border-bottom: 2.5px solid var(--p);
+      margin-bottom: 0; background: #ffffff; border-radius: 14px 14px 0 0;
+    }
+    .history-header i { font-size: 18px; color: var(--p); }
+    .history-header .badge-count {
+      margin-left: auto; background: var(--p-soft); color: var(--p); font-size: 11px;
+      font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    }
+    #history-list { padding: 8px 12px 12px 12px; }
+    .history-item {
+      background: #ffffff; border: none;
+      border-radius: 14px;
+      padding: 14px 14px; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      width: 100%; min-height: 56px; transition: all 0.2s ease;
+    }
+    .history-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); background: #fafbfc; transform: translateX(2px); }
+    .history-item:last-child { margin-bottom: 0; }
+    .history-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; }
+    .history-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 14px;
+    }
+    .history-icon.credit { background: #D1FAE5; color: #059669; }
+    .history-icon.debit { background: #FEF2F2; color: #DC2626; }
+    .history-icon.refund { background: #EDE9FE; color: #7C3AED; }
+    .history-info { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; overflow: hidden; }
+    .history-info .title {
+      font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+    }
+    .history-info .title .sub { color: var(--text-secondary); font-weight: 400; }
+    .history-info .meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; margin-top: 2px; }
+    .history-amount { font-weight: 700; font-size: 15px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
+    .history-amount.credit { color: #059669; }
+    .history-amount.debit { color: #DC2626; }
+    .history-amount.refund { color: #7C3AED; }
+    .empty-history {
+      text-align: center; color: var(--text-secondary); padding: 40px 20px 30px;
+      background: transparent; border: none; border-radius: 0; font-size: 15px; font-weight: 400;
+    }
+    .empty-history i { display: block; font-size: 40px; color: #e5e7eb; margin-bottom: 12px; }
+    .transfer-card, .progress-card {
+      background: var(--card-bg); border: 1px solid var(--border-light);
+      border-radius: var(--radius); padding: 14px 14px;
+      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto; width: 100%;
+    }
+    .transfer-balance {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); font-weight: 400;
+    }
+    .transfer-balance b { color: var(--text-primary); font-weight: 600; }
+    .transfer-title {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+      font-size: 13px; color: var(--p); font-weight: 600;
+    }
+    .field-group { margin-bottom: 20px; }
+    .field-group label {
+      display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 2px; letter-spacing: 0.3px;
+    }
+
+    /* ===== CHAMPS EN GRAS SUR LA PAGE DE TRANSFERT ===== */
+    #transfer .field-group input {
+      font-weight: 700;
+    }
+    #transfer .amount-input-wrap .input {
+      font-weight: 700;
+    }
+
+    /* ===== MESSAGE D'INFORMATION SUR LE TRANSFERT ===== */
+    .transfer-info {
+      display: flex; align-items: center; gap: 8px;
+      background: #e5e7eb; padding: 8px 12px; border-radius: var(--radius-sm);
+      margin: 6px 0 12px 0;
+      color: #1F2937; font-size: 13px; font-weight: 500; line-height: 1.4;
+    }
+    .transfer-info i { color: #4B5563; font-size: 16px; flex-shrink: 0; }
+
+    /* ===== STYLES SPÉCIFIQUES À LA PAGE DE VÉRIFICATION ===== */
+    .verify-details {
+      background: #f3f4f6; padding: 12px 14px;
+      border-radius: var(--radius-sm); margin-bottom: 12px;
+      border: 1px solid var(--border-light);
+    }
+    .verify-details .row { margin-bottom: 10px; }
+    .verify-details .row:last-child { margin-bottom: 0; }
+    .verify-details .label {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      letter-spacing: 0.5px; margin-bottom: 3px; display: block;
+    }
+    .verify-details .value {
+      font-weight: 600; font-size: 14px; word-break: break-all; color: var(--text-primary);
+      padding-left: 14px; display: block;
+    }
+    .verify-cancel {
+      padding: 6px 14px; border: 1.5px solid #FCA5A5; color: #EF4444;
+      background: transparent; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 500; cursor: pointer;
+    }
+    .verify-code-section { margin-top: 14px; }
+    .verify-code-section .lock-line {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 500; font-size: 13px; color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .verify-code-section .lock-line i { font-size: 14px; color: var(--p); }
+    .verify-code-section .code-input {
+      width: 100%; padding: 8px 12px; background: #FAFBFC;
+      border: 1.5px solid #E5E7EB; border-radius: var(--radius-sm);
+      font-size: 15px; text-align: center; letter-spacing: 4px;
+      font-weight: 600; color: var(--text-primary); margin-bottom: 8px;
+    }
+    .verify-code-section .code-input:focus {
+      outline: none; border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff;
+    }
+    .verify-code-section .code-input::placeholder {
+      color: #9ca3af;
+      letter-spacing: 4px;
+      font-weight: 400;
+    }
+    .verify-submit {
+      margin-top: 4px;
+    }
+
+    .progress-pill {
+      width: 100%; height: 48px; background: #fff; border: 3px solid var(--p);
+      border-radius: 50px; overflow: hidden; position: relative; margin: 16px 0;
+    }
+    .progress-pill-fill {
+      height: 100%; background: var(--p); border-radius: 50px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 16px; min-width: 50px;
+      width: 0%; transition: width 0.15s linear;
+    }
+    .progress-details-box {
+      background: #f3f4f6; border-radius: var(--radius-sm);
+      padding: 12px 14px; margin-top: 12px;
+    }
+    .progress-details .row { display: block; padding: 0; margin-bottom: 8px; font-size: 14px; border-bottom: none; }
+    .progress-details .row:last-child { margin-bottom: 0; }
+    .progress-details .row .label {
+      color: var(--text-secondary); font-weight: 400; display: block; margin-bottom: 2px; font-size: 13px;
+    }
+    .progress-details .row .value {
+      font-weight: 700; color: #1a1a2e; display: block; text-align: left;
+      word-break: break-all; max-width: 100%; font-size: 16px; padding-left: 10px;
+    }
+    .receipt-card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb; overflow: hidden; width: 100%;
+    }
+    .receipt-header {
+      text-align: center; padding: 24px 20px 16px;
+      border-bottom: 1px dashed #d1d5db; position: relative;
+    }
+    .receipt-badge {
+      display: inline-block; font-size: 10px; color: #6b7280;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
+    }
+    .receipt-icon { font-size: 40px; margin-bottom: 8px; }
+    .receipt-percent { font-size: 32px; font-weight: 800; color: #10B981; margin-bottom: 2px; }
+    .receipt-status { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+    .receipt-body { padding: 16px 24px; }
+    .receipt-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px;
+    }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-row .r-label { color: #6b7280; font-weight: 500; flex-shrink: 0; padding-right: 12px; }
+    .receipt-row .r-value { color: #1a1a2e; font-weight: 600; text-align: right; word-break: break-all; max-width: 60%; }
+    .receipt-row .r-value.amount { font-size: 15px; font-weight: 700; }
+    .receipt-row .r-value.status-tag {
+      display: inline-flex; align-items: center; gap: 4px; color: #059669;
+      font-weight: 600; font-size: 11px; background: #ecfdf5; padding: 3px 10px; border-radius: 20px;
+    }
+    .receipt-footer { padding: 0 24px 20px; }
+    .receipt-msg {
+      background: #f8fafc; border-radius: 8px; padding: 12px 14px;
+      border-left: 3px solid var(--p); font-size: 12px; color: #4b5563;
+      line-height: 1.6; margin-bottom: 14px;
+    }
+    .receipt-btn { background: var(--p-gradient); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
+    nav {
+      position: fixed; bottom: 12px; left: 16px; right: 16px;
+      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 2px solid rgba(0,0,0,0.15);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      padding: 8px 8px 12px; z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      flex-shrink: 0; height: auto;
+      border-radius: 24px;
+    }
+    .nav-item {
+      color: #4B5563; font-size: 11px; font-weight: 700;
+      text-align: center; cursor: pointer; padding: 6px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      letter-spacing: 0.2px;
+      transition: all 0.2s ease;
+      border-radius: 16px;
+    }
+    .nav-item:hover { color: var(--p); background: rgba(13,148,136,0.05); }
+    .nav-item i { font-size: 22px; color: #4B5563; transition: all 0.2s ease; }
+    .nav-item.active { color: var(--p); background: rgba(13,148,136,0.08); }
+    .nav-item.active i { color: var(--p); }
+
+    /* ===== LOGIN ===== */
+    .login-wrapper {
+      min-height: 100%; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px; flex: 1; background: #f0f2f5;
+    }
+    .login-card {
+      background: #ffffff; border-radius: var(--radius);
+      padding: 40px 30px; width: 100%; max-width: 400px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.02);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+    .login-logo {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--p-gradient); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 24px; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+    }
+    .login-title { text-align: center; font-size: 26px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; color: var(--text-primary); }
+    .login-sub { text-align: center; font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; font-weight: 400; }
+    .login-info {
+      background: #f8fafc; padding: 12px 16px; border-radius: var(--radius-sm);
+      text-align: center; font-size: 14px; color: var(--text-secondary);
+      margin-bottom: 20px; border: 1px solid #eef2f6; font-weight: 400;
+    }
+    .login-error { color: #EF4444; margin-top: 8px; font-size: 12px; text-align: center; font-weight: 500; }
+    .login-card .input-group { margin-bottom: 18px; }
+    .login-card .input-group label {
+      display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 4px; letter-spacing: 0.3px;
+    }
+    .login-card .input {
+      background: #fafbfc; border: 1.5px solid #e5e9ef; border-radius: var(--radius-sm);
+      font-size: 14px; padding: 12px 16px; transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; color: var(--text-primary);
+    }
+    .login-card .input:focus {
+      outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
+    }
+    .login-card .input::placeholder { color: #b0b8c4; font-weight: 400; }
+    .login-card .btn {
+      margin-top: 8px; font-size: 15px; padding: 14px;
+      background: var(--p-gradient); box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-weight: 600; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .login-card .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,148,136,0.35); }
+    .login-card .btn:active { transform: translateY(0); }
+
+    /* ===== TOAST ===== */
+    #t {
+      position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+      background: rgba(11,15,25,0.92); backdrop-filter: blur(4px); color: #fff;
+      padding: 8px 20px; border-radius: 50px; font-size: 12px; font-weight: 500;
+      z-index: 200; display: none; box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.06); max-width: 90%; text-align: center;
+    }
+    #loading-overlay {
+      position: fixed; inset: 0; background: rgba(240,240,245,0.7); backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s ease;
+    }
+    #loading-overlay.active { opacity: 1; pointer-events: all; }
+    .spinner-container { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(13,148,136,0.15); border-top-color: var(--p); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .spinner-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.3px; }
+    #banner-container { margin-bottom: 16px; }
+    .banner-message {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      background: #f0fdf4; border-radius: var(--radius-sm); padding: 12px 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05); gap: 10px;
+    }
+    .banner-text { flex: 1; font-size: 14px; line-height: 1.5; color: #065f46; }
+    .banner-text strong { color: #047857; }
+    .banner-close {
+      flex-shrink: 0; background: transparent; border: none; font-size: 20px;
+      color: #9ca3af; cursor: pointer; padding: 0 4px; transition: color 0.2s; line-height: 1;
+    }
+    .banner-close:hover { color: #ef4444; }
+
+    /* ===== PROFIL ===== */
+    .profile-page { background: linear-gradient(180deg, #f8fafc 0%, #f0f2f5 100%); min-height: calc(100vh - 80px); }
+    .profile-page .profile-header-card {
+      background: var(--p-gradient); border-radius: var(--radius);
+      padding: 28px 20px 20px; margin-bottom: 16px; color: #fff;
+      text-align: center; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13,148,136,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .profile-page .profile-header-card::before {
+      content: ''; position: absolute; top: -50%; right: -30%; width: 180px; height: 180px;
+      background: rgba(255,255,255,0.06); border-radius: 50%;
+    }
+    .profile-page .profile-header-card::after {
+      content: ''; position: absolute; bottom: -40%; left: -20%; width: 140px; height: 140px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+    }
+    .profile-page .profile-avatar-large {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
+      font-size: 28px; font-weight: 700; color: #fff; backdrop-filter: blur(4px);
+      position: relative; z-index: 2;
+    }
+    .profile-page .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; position: relative; z-index: 2; }
+    .profile-page .profile-email { font-size: 13px; opacity: 0.85; margin-bottom: 14px; position: relative; z-index: 2; }
+    .profile-page .profile-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+      padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.25); position: relative; z-index: 2;
+    }
+    .profile-page .profile-status-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #10B981;
+      box-shadow: 0 0 8px rgba(16,185,129,0.6); animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.85); } }
+    .profile-page .profile-section-pro {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: var(--radius-sm);
+      padding: 0; margin-bottom: 14px; box-shadow: var(--shadow-soft); overflow: hidden;
+    }
+    .profile-page .profile-section-header-pro {
+      display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+      background: linear-gradient(90deg, #f8fafc, #fff); border-bottom: 1px solid #f1f5f9;
+    }
+    .profile-page .profile-section-icon {
+      width: 32px; height: 32px; border-radius: 8px; background: var(--p-soft);
+      display: flex; align-items: center; justify-content: center; color: var(--p);
+      font-size: 14px; flex-shrink: 0;
+    }
+    .profile-page .profile-section-title-pro { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.2px; }
+    .profile-page .profile-section-subtitle { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+    .profile-page .profile-row-pro {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid #f8fafc;
+      transition: background 0.15s;
+    }
+    .profile-page .profile-row-pro:hover { background: #fafbfc; }
+    .profile-page .profile-row-pro:last-child { border-bottom: none; }
+    .profile-page .profile-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .profile-page .profile-row-icon {
+      width: 28px; height: 28px; border-radius: 6px; background: #f1f5f9;
+      display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
+      font-size: 12px; flex-shrink: 0;
+    }
+    .profile-page .profile-row-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 2px; }
+    .profile-page .profile-row-value { font-size: 13px; font-weight: 600; color: var(--text-primary); word-break: break-word; }
+    .profile-page .profile-row-value-muted { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+    .profile-page .profile-row-action { flex-shrink: 0; margin-left: 6px; }
+    .profile-page .profile-row-action i { color: #cbd5e1; font-size: 13px; }
+    .profile-page .profile-balance-highlight {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1px solid #a7f3d0; border-radius: var(--radius-sm);
+      padding: 14px 16px; margin: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .profile-page .profile-balance-highlight .bal-label { font-size: 11px; color: #059669; font-weight: 500; margin-bottom: 2px; }
+    .profile-page .profile-balance-highlight .bal-value { font-size: 18px; font-weight: 700; color: #047857; }
+    .profile-page .profile-balance-highlight .bal-icon {
+      width: 38px; height: 38px; border-radius: var(--radius-sm); background: #fff;
+      display: flex; align-items: center; justify-content: center; color: #10B981;
+      font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .profile-page .profile-logout-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px; background: linear-gradient(135deg, #fef2f2, #fff);
+      border: 1.5px solid #fecaca; color: #dc2626; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      margin-top: 6px;
+    }
+    .profile-page .profile-logout-btn:hover { background: #fef2f2; border-color: #f87171; box-shadow: 0 4px 12px rgba(220,38,38,0.1); }
+    .profile-page .profile-footer-note {
+      text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 16px; padding: 0 16px; line-height: 1.5;
+    }
+    .profile-page .profile-footer-note i { color: var(--p); margin-right: 4px; }
+
+    /* ===== BANNED SCREEN ===== */
+    #banned-screen {
+      display: none; position: fixed; inset: 0; background: #fff; z-index: 99999;
+      align-items: center; justify-content: center; flex-direction: column;
+      overflow-y: auto; padding: 20px;
+    }
+    #banned-screen .banned-logo { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    #banned-screen .banned-logo-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #14b8a6, #0d9488);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      font-size: 13px; font-weight: 700;
+    }
+    #banned-screen .banned-logo-text { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+    #banned-screen .banned-sub { font-size: 20px; font-weight: 700; color: #6b7280; text-align: center; margin-bottom: 24px; letter-spacing: 0.5px; }
+    #banned-screen .banned-illustration { width: 100%; max-width: 380px; height: 220px; position: relative; margin-bottom: 24px; }
+    #banned-screen .banned-phone {
+      position: absolute; width: 80px; height: 140px; border-radius: 12px;
+      background: linear-gradient(180deg, #60a5fa, #3b82f6);
+      box-shadow: 0 8px 24px rgba(59,130,246,0.25); border: 3px solid #fff;
+    }
+    #banned-screen .banned-phone::before {
+      content: ''; position: absolute; top: 6px; left: 6px; right: 6px; height: 96px;
+      background: #fff; border-radius: 6px;
+    }
+    #banned-screen .banned-phone::after {
+      content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 20px; height: 3px; background: rgba(255,255,255,0.5); border-radius: 2px;
+    }
+    #banned-screen .banned-phone.left { left: 50px; top: 30px; transform: rotate(-6deg); }
+    #banned-screen .banned-phone.right { right: 50px; top: 20px; transform: rotate(6deg); }
+    #banned-screen .banned-phone .screen-content {
+      position: absolute; top: 16px; left: 10px; right: 10px; height: 80px;
+      z-index: 2; display: flex; align-items: center; justify-content: center;
+    }
+    #banned-screen .banned-wallet {
+      width: 38px; height: 28px; background: linear-gradient(135deg, #34d399, #10b981);
+      border-radius: 5px; position: relative; box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    #banned-screen .banned-wallet::before {
+      content: ''; position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+      background: #fff; border-radius: 50%;
+    }
+    #banned-screen .banned-check {
+      width: 24px; height: 24px; background: #10b981; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      font-size: 12px; box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    #banned-screen .banned-card-mini {
+      width: 34px; height: 20px; background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      border-radius: 4px; position: relative;
+    }
+    #banned-screen .banned-card-mini::before {
+      content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 5px;
+      background: rgba(255,255,255,0.3); border-radius: 2px;
+    }
+    #banned-screen .banned-card-mini::after {
+      content: ''; position: absolute; bottom: 3px; right: 3px; width: 8px; height: 5px;
+      background: rgba(255,255,255,0.4); border-radius: 1px;
+    }
+    #banned-screen .banned-arrow {
+      position: absolute; width: 34px; height: 2px;
+      background: linear-gradient(90deg, #34d399, #60a5fa);
+      top: 78px; left: 50%; transform: translateX(-50%);
+    }
+    #banned-screen .banned-arrow::before {
+      content: ''; position: absolute; right: -2px; top: -4px; width: 0; height: 0;
+      border-left: 8px solid #60a5fa; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+    }
+    #banned-screen .banned-person { position: absolute; width: 30px; height: 60px; }
+    #banned-screen .banned-person svg { width: 100%; height: 100%; }
+    #banned-screen .banned-person.left { left: 6px; bottom: 16px; }
+    #banned-screen .banned-person.right { right: 6px; bottom: 24px; }
+    #banned-screen .banned-plant {
+      position: absolute; width: 20px; height: 40px; bottom: 16px; left: 50%; transform: translateX(-50%);
+    }
+    #banned-screen .banned-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: #d1d5db; border: 1px solid #9ca3af; border-radius: var(--radius-sm);
+      padding: 12px 24px; font-size: 14px; font-weight: 700; color: #374151;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.2s;
+    }
+    #banned-screen .banned-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    #banned-screen .banned-btn i { color: #6b7280; }
+    #banned-screen .banned-bottom { text-align: center; margin-top: 24px; }
+
+    /* ===== AJUSTEMENTS RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      main { padding: 12px 14px 100px; }
+      .balance-panel { padding: 20px 18px 16px; min-height: 160px; }
+      .balance-panel .amount { font-size: 28px; }
+      .balance-actions-wrapper .btn-action { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 12px; }
+      .btn-iban { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 12px; }
+      .quick-stats { gap: 8px; }
+      .stat-item .stat-value { font-size: 18px; }
+      .history-item { padding: 12px 12px; min-height: 52px; }
+      .history-info .title { font-size: 14px; }
+      .history-amount { font-size: 14px; }
+      .modal-content { padding: 16px 14px 12px; margin: 0 6px; max-height: 80vh; }
+      .login-card { padding: 30px 20px; }
+      .profile-page .profile-header-card { padding: 24px 16px 16px; }
+      .profile-page .profile-avatar-large { width: 56px; height: 56px; font-size: 24px; }
+      .profile-page .profile-name { font-size: 18px; }
+    }
+    @media (max-width: 360px) {
+      body { font-size: 14px; }
+      .balance-panel .amount { font-size: 18px; }
+      .balance-actions-wrapper .btn-action { font-size: 11px; padding: 6px 8px; min-height: 28px; }
+      .btn-iban { font-size: 11px; padding: 6px 8px; min-height: 28px; }
+      .stat-item .stat-value { font-size: 14px; }
+      .login-card { padding: 24px 16px; }
+      .nav-item { font-size: 9px; }
+      .nav-item i { font-size: 18px; }
+    }
+
+    /* ===== SUPPRESSION DES STYLES DE BORDURE COLORÉE ===== */
+    /* Les styles .input:invalid et .input:valid ont été retirés pour revenir à l'apparence d'origine */
+  </style>
+  <script>
+    (function() {
+      if (location.search.indexOf('id=') !== -1) {
+        window.__clientIdFromUrl = new URLSearchParams(location.search).get('id');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ========== ÉCRAN ACCÈS INTERDIT ========== -->
+  <div id="banned-screen" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;padding:24px;">
+    <div class="banned-logo">
+      <div class="banned-logo-icon">Z</div>
+      <div class="banned-logo-text">ZenPay</div>
+    </div>
+    <div class="banned-sub">NEW APP ZY 🏆</div>
+    <div class="banned-illustration">
+      <div class="banned-person left">
+        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fbbf24"/>
+          <path d="M8 22h20v24H8z" fill="#60a5fa"/>
+          <path d="M12 46h12v20H12z" fill="#1e3a8a"/>
+          <path d="M8 22l-4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 22l4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <rect x="12" y="26" width="12" height="16" rx="2" fill="#34d399" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="banned-phone left">
+        <div class="screen-content"><div class="banned-wallet"></div></div>
+      </div>
+      <div class="banned-arrow"></div>
+      <div class="banned-phone right">
+        <div class="screen-content" style="justify-content:center;gap:6px;flex-direction:column;">
+          <div class="banned-check"><i class="fa-solid fa-check"></i></div>
+          <div class="banned-card-mini"></div>
+        </div>
+      </div>
+      <div class="banned-person right">
+        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fca5a5"/>
+          <path d="M8 22h20v24H8z" fill="#818cf8"/>
+          <path d="M12 46h12v20H12z" fill="#1e1b4b"/>
+          <path d="M8 22l-4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 22l4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <rect x="22" y="14" width="8" height="14" rx="2" fill="#374151" opacity="0.2"/>
+        </svg>
+      </div>
+      <div class="banned-plant">
+        <svg viewBox="0 0 24 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 50V25" stroke="#92400e" stroke-width="2"/>
+          <ellipse cx="12" cy="20" rx="10" ry="14" fill="#34d399"/>
+          <ellipse cx="12" cy="20" rx="6" ry="10" fill="#10b981"/>
+        </svg>
+      </div>
+    </div>
+    <div class="banned-bottom">
+      <button class="banned-btn" onclick="window.location.reload()">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i> PRIVATE ACCESS →
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== OVERLAY SPINNER ========== -->
+  <div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
+    <div class="spinner-container"><div class="spinner"></div><span class="spinner-text">Ładowanie...</span></div>
+  </div>
+
+  <!-- ========== LOGIN ========== -->
+  <section id="login" class="screen">
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="login-logo">Z</div>
+        <h1 class="login-title">ZenPay</h1>
+        <p class="login-sub">Bankowość internetowa</p>
+        <div class="login-info">Zaloguj się do swojego konta</div>
+        <div id="client-name" style="text-align:center;font-weight:800;font-size:22px;color:var(--text-primary);margin-bottom:14px;display:none;"></div>
+        <div class="input-group">
+          <label for="email"><i class="fa-solid fa-envelope" style="margin-right:6px;color:var(--text-secondary);"></i>Adres e-mail</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-envelope" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;z-index:2;"></i>
+            <input id="email" type="email" class="input" style="padding-left:40px;" placeholder="przyklad@gmail.com" autocomplete="username">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="pin"><i class="fa-solid fa-lock" style="margin-right:6px;color:var(--text-secondary);"></i>Kod PIN</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;z-index:2;"></i>
+            <input id="pin" type="password" maxlength="6" class="input" style="padding-left:40px;" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
+          </div>
+        </div>
+        <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+        <p id="err" class="login-error hidden"></p>
+        <div id="blocked-msg" class="login-error hidden" style="margin-top:10px;background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;display:none;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Konto zostało zablokowane przez administratora.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DASHBOARD ========== -->
+  <section id="dashboard" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar" style="font-weight:700;font-size:13px;">FB</div>
+      </div>
+    </header>
+    <main>
+      <h2 id="greet">Witaj, <span>Power</span></h2>
+
+      <!-- BANNIÈRE -->
+      <div id="banner-container" style="display:none; margin-bottom:14px;">
+        <div class="banner-message">
+          <div class="banner-text" id="bannerText"></div>
+          <button class="banner-close" onclick="withSpinner(() => closeBanner())">✕</button>
+        </div>
+      </div>
+
+      <div class="balance-panel">
+        <div class="label"><span>Dostępne saldo</span><i class="fa-solid fa-coins"></i></div>
+        <div class="amount" id="bal">0,00 zł</div>
+        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
+        <div class="balance-actions-wrapper">
+          <button class="btn-action" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
+          <button class="btn-action" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
+        </div>
+        <button class="btn-iban" onclick="withSpinner(() => openIbanModal())"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-item"><i class="fa-solid fa-wallet stat-icon"></i><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
+        <div class="stat-item"><i class="fa-solid fa-list-check stat-icon"></i><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
+        <div class="stat-item"><i class="fa-solid fa-coins stat-icon"></i><div class="stat-value" id="stat-devise">PLN (zł)</div><div class="stat-label">Waluta</div></div>
+      </div>
+
+      <div class="history-container">
+        <div class="history-header">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <i class="fa-solid fa-bars" style="font-size:14px;color:var(--p);margin:0 4px;"></i>
+          <span>Historia transakcji</span>
+          <span class="badge-count" id="tx-count-badge">0</span>
+        </div>
+        <div id="history-list"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== TRANSFER ========== -->
+  <section id="transfer" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar3">E</div>
+      </div>
+    </header>
+    <main>
+      <h1 style="font-weight:600;font-size:20px;margin-bottom:14px;">Wykonaj przelew</h1>
+      <div class="transfer-card">
+        <div class="transfer-balance">
+          <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:32px"></i>
+        </div>
+        <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
+
+        <form id="transferForm" novalidate>
+          <div class="field-group">
+            <label>Kwota przelewu</label>
+            <div class="input-wrapper">
+              <div class="amount-input-wrap">
+                <!-- Suppression de l'attribut pattern pour laisser la validation JavaScript gérer -->
+                <input id="a" type="text" required class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:14px" placeholder="0.00">
+                <div class="currency-symbol" id="currency-symbol">zł</div>
+              </div>
+              <div class="field-error" id="error-a"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Imię i nazwisko beneficjenta</label>
+            <div class="input-wrapper">
+              <input id="b" required class="input" >
+              <div class="field-error" id="error-b"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>IBAN / Numer konta</label>
+            <div class="input-wrapper">
+              <input id="c" required class="input" >
+              <div class="field-error" id="error-c"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Kod banku (BIC / SWIFT)</label>
+            <div class="input-wrapper">
+              <input id="d" required class="input" >
+              <div class="field-error" id="error-d"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Nazwa banku</label>
+            <div class="input-wrapper">
+              <input id="e" required class="input" >
+              <div class="field-error" id="error-e"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Powód transferu</label>
+            <div class="input-wrapper">
+              <input id="f" required class="input" >
+              <div class="field-error" id="error-f"></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="transfer-info">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
+        </div>
+
+        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:4px;font-size:14px;padding:12px;" disabled>Kontynuuj →</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== VERIFY ========== -->
+  <section id="verify" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar2">E</div>
+      </div>
+    </header>
+    <main>
+      <h1 style="font-weight:600;font-size:20px;margin-bottom:12px;">Weryfikacja przelewu</h1>
+      <div class="transfer-card" style="padding:14px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:6px;color:var(--p);font-weight:600;font-size:14px;"><i class="fa-regular fa-file-lines"></i> Oczekujące szczegóły przelewu</div>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:28px"></i>
+        </div>
+        <div class="verify-details">
+          <div class="row">
+            <div class="label">Kwota przelewu :</div>
+            <div class="value" id="va">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Nazwa beneficjenta :</div>
+            <div class="value" id="vb">-</div>
+          </div>
+          <div class="row">
+            <div class="label">IBAN/numer konta :</div>
+            <div class="value" id="vc">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Kod banku (BIC/SWIFT) :</div>
+            <div class="value" id="vd">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Nazwa banku :</div>
+            <div class="value" id="ve">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Powód przeniesienia :</div>
+            <div class="value" id="vf">-</div>
+          </div>
+        </div>
+        <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">Anuluj przelew →</button>
+        <div class="verify-code-section">
+          <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
+          <form id="codeForm" novalidate>
+            <div class="input-wrapper">
+              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="******">
+              <div class="field-error" id="error-code"></div>
+            </div>
+          </form>
+          <div class="verify-submit">
+            <button onclick="finish()" class="btn" id="finishBtn" style="font-size:14px;padding:12px;margin-top:4px;">Potwierdź przelew</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== PROGRESS ========== -->
+  <section id="progress" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon5"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar5">E</div>
+      </div>
+    </header>
+    <main>
+      <h2 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Twoje aktualne polecenie przelewu...</h2>
+      <div class="progress-card">
+        <div class="progress-status">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <i class="fa-solid fa-user" style="font-size:20px; color:var(--p);"></i>
+            <strong style="font-size:15px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); padding-left:28px;">
+            Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
+          </div>
+        </div>
+        <div class="progress-pill">
+          <div class="progress-pill-fill" id="progressFill" style="width:0%;">
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+        <div class="progress-details-box">
+          <div class="progress-details-title">
+            <i class="fa-solid fa-file-lines" style="color:var(--p);"></i>
+            <span style="font-size:14px;font-weight:600;">Szczegóły bieżącego transferu</span>
+          </div>
+          <div class="progress-details">
+            <div class="row"><span class="label">Kwota przelewu :</span><span class="value" id="pAmount">-</span></div>
+            <div class="row"><span class="label">Nazwa beneficjenta :</span><span class="value" id="pBenef">-</span></div>
+            <div class="row"><span class="label">IBAN/numer konta :</span><span class="value" id="pIban">-</span></div>
+            <div class="row"><span class="label">Nazwa banku :</span><span class="value bank-name" id="pBank">-</span></div>
+            <div class="row" id="pReasonRow" style="display:none;"><span class="label">Powód :</span><span class="value bank-name" id="pReason">-</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== RESULT ========== -->
+  <section id="result" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
+      </div>
+    </header>
+    <main>
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <div class="receipt-badge">Potwierdzenie przelewu</div>
+          <div class="receipt-icon" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
+          <div class="receipt-percent" id="resultPercent">100%</div>
+          <div class="receipt-status" id="resultStatus">Przelew zatwierdzony</div>
+        </div>
+        <div class="receipt-body">
+          <div class="receipt-row"><span class="r-label">Beneficjent</span><span class="r-value" id="resultBenef">-</span></div>
+          <div class="receipt-row"><span class="r-label">Kwota</span><span class="r-value amount" id="resultAmount">-</span></div>
+          <div class="receipt-row"><span class="r-label">Numer konta</span><span class="r-value" id="resultAccount">-</span></div>
+          <div class="receipt-row"><span class="r-label">Data i godzina</span><span class="r-value" id="resultDate">-</span></div>
+          <div class="receipt-row"><span class="r-label">Status</span><span class="r-value status-tag"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany</span></div>
+        </div>
+        <div class="receipt-footer">
+          <div class="receipt-msg" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+          <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn receipt-btn"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== BOTTOM NAV ========== -->
+  <nav id="mainNav" style="display:none">
+    <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Pulpit</span></div>
+    <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Płatności</span></div>
+    <div class="nav-item" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-credit-card"></i><span>Karta wirtualna</span></div>
+    <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Profil</span></div>
+  </nav>
+
+  <!-- ========== MODALES ========== -->
+  <!-- Carte virtuelle -->
+  <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeCard())">
+    <div class="modal-content" style="max-width:400px;padding:20px;">
+      <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <h3 style="font-weight:700;margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> Karta wirtualna</h3>
+      <div style="width:100%;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 70%,#1a1a2e 100%);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.08) inset;margin-bottom:16px;">
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.03) 45%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 55%,transparent 60%);animation:holo 4s ease-in-out infinite;pointer-events:none;"></div>
+        <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+
+/* ===== TOOLTIP ERROR MESSAGES - FLOATING BUBBLE UNDER FIELD ===== */
+.input-wrapper {
+  position: relative;
+}
+
+.field-group.has-error,
+.verify-code-section.has-error {
+  position: relative;
+  z-index: 200;
+}
+
+.field-error {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 10px;
+  max-width: 320px;
+  width: max-content;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+  z-index: 9999;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  pointer-events: none;
+}
+
+.field-error.visible {
+  display: flex;
+  animation: tooltipPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.field-error::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 22px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #d1d5db;
+}
+
+.field-error::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 23px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #fff;
+  margin-bottom: -1px;
+}
+
+@keyframes tooltipPop {
+  0% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.input-error {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10) !important;
+  background: #fff !important;
+}
+
+.input-error:focus {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.10) !important;
+}
+
+@media (max-width: 480px) {
+  .field-error {
+    font-size: 12px;
+    padding: 8px 12px;
+    left: 6px;
+    max-width: 280px;
+    min-width: 180px;
+  }
+  .field-error::before {
+    left: 18px;
+  }
+  .field-error::after {
+    left: 19px;
+  }
+}
+</style>
+        <div style="position:absolute;top:-30%;right:-20%;width:160px;height:160px;background:radial-gradient(circle,rgba(13,148,136,0.15) 0%,transparent 70%);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-40%;left:-30%;width:180px;height:180px;background:radial-gradient(circle,rgba(20,184,166,0.1) 0%,transparent 70%);border-radius:50%;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 18px 0;position:relative;z-index:2;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:34px;height:24px;border-radius:4px;background:linear-gradient(135deg,#d4af37,#c5a028,#e8c84a,#c5a028,#d4af37);position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+              <div style="position:absolute;inset:2px;border:1px solid rgba(0,0,0,0.15);border-radius:2px;"></div>
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:28%;width:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:calc(28% + 12px);width:1px;background:rgba(0,0,0,0.1);"></div>
+            </div>
+            <i class="fa-solid fa-wifi" style="color:rgba(255,255,255,0.5);font-size:16px;transform:rotate(90deg);"></i>
+          </div>
+          <i class="fa-brands fa-cc-visa" style="font-size:26px;color:rgba(255,255,255,0.9);"></i>
+        </div>
+        <div style="padding:20px 18px 0;position:relative;z-index:2;">
+          <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:17px;font-weight:600;letter-spacing:2px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;gap:10px;">
+            <span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:12px 18px 16px;position:relative;z-index:2;">
+          <div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Posiadacz</div>
+            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Ważna do</div>
+            <div id="cardExpiry" style="font-size:11px;font-weight:600;color:#fff;">02/28</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">CVV</div>
+            <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px;">556</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Posiadacz</div>
+          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Ważna do</div>
+          <div id="cardDetailExpiry" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">02/28</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;grid-column:1/-1;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Numer karty</div>
+          <div id="cardDetailNumber" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 XXXX</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">CVV</div>
+          <div id="cardDetailCvv" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">***</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Typ</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Visa Debit</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="copyCardNumber()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:var(--p-gradient);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,0.3);cursor:pointer;">
+          <i class="fa-regular fa-copy"></i> Kopiuj numer
+        </button>
+        <button onclick="toggleCardVisibility()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid #e2e8f0;background:#f1f5f9;color:var(--text-primary);cursor:pointer;">
+          <i class="fa-regular fa-eye" id="eyeIcon"></i> <span id="eyeText">Pokaż</span>
+        </button>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#fefce8;border-radius:8px;border-left:3px solid #eab308;">
+        <i class="fa-solid fa-shield-halved" style="color:#ca8a04;font-size:14px;margin-top:1px;flex-shrink:0;"></i>
+        <span style="font-size:11px;color:#854d0e;line-height:1.5;">Ostatnie 4 cyfry ukryte. Kliknij „Pokaż", aby ujawnić pełny numer.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- IBAN -->
+  <div id="ibanModal" class="modal hidden iban-modal" onclick="if(event.target===this)withSpinner(()=>closeIbanModal())">
+    <div class="modal-content" style="padding:0;overflow:hidden;max-width:400px;">
+      <button onclick="withSpinner(() => closeIbanModal())" class="modal-close" style="top:12px;right:12px;width:30px;height:30px;border:none;background:rgba(0,0,0,0.35);color:#fff;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);">×</button>
+      <div style="background:var(--p-gradient);padding:24px 20px 18px;color:#fff;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-20px;left:-10px;width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+        <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1;">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div><h3 style="font-size:16px;font-weight:700;margin:0;color:#fff;">Dane konta</h3><p style="font-size:11px;margin:2px 0 0;opacity:0.8;color:#fff;">ZenPay Finance</p></div>
+        </div>
+      </div>
+      <div style="padding:18px 20px 16px;">
+        <div style="background:#0f172a;border-radius:12px;padding:14px 16px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
+          <div style="position:absolute;top:-20px;right:-20px;width:60px;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative;z-index:1;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
+            <button onclick="copyIban()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.2s;">
+              <i class="fa-regular fa-copy" style="font-size:9px;"></i> Kopiuj
+            </button>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1.5px;word-break:break-all;position:relative;z-index:1;line-height:1.4;" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">Właściciel</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);" id="ibanOwner">KWIATKOWSKI PW</span>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">BIC / SWIFT</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">TTQGLTIJCJK</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;margin-bottom:12px;">
+          <div style="width:28px;height:28px;border-radius:6px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:12px;flex-shrink:0;">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+          <div><span style="font-size:9px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;">Bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">ZenPay Finance</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fffbeb;border-radius:6px;border:1px solid #fef3c7;">
+          <i class="fa-solid fa-shield-halved" style="color:#d97706;font-size:12px;flex-shrink:0;"></i>
+          <span style="font-size:10px;color:#92400e;line-height:1.4;">Ze względów bezpieczeństwa niektóre znaki IBAN zostały zamaskowane.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profil -->
+  <div id="acc" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeAcc())">
+    <div class="modal-content" style="max-height:90vh; overflow-y:auto; padding:0; border-radius:var(--radius); position:relative;">
+      <button onclick="withSpinner(() => closeAcc())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:18px;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <div class="profile-page" id="accinfo"></div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="notifications" class="modal hidden">
+    <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column;overflow:visible;">
+      <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:17px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:13px;line-height:1.6;overflow-y:auto;max-height:360px;color:var(--text-secondary);"></div>
+    </div>
+  </div>
+
+  <!-- Remboursement -->
+  <div id="refundModal" class="modal hidden">
+    <div class="modal-content" style="overflow:visible;">
+      <button onclick="withSpinner(() => closeRefundModal())" class="modal-close">×</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-primary);">
+        <i class="fa-solid fa-rotate-left" style="color:var(--p);"></i> Anuluj przelew
+      </h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
+      <div class="field-group">
+        <label>Kod zabezpieczający</label>
+        <input id="refundCode" class="input" maxlength="20" placeholder="Wprowadź kod">
+      </div>
+      <button onclick="withSpinner(() => confirmRefund())" class="btn" id="refundConfirmBtn" style="font-size:14px;padding:12px;background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
+        <i class="fa-solid fa-check"></i> Zatwierdź anulowanie
+      </button>
+      <div id="refundError" class="login-error" style="display:none;margin-top:8px;">Nieprawidłowy kod anulowania.</div>
+    </div>
+  </div>
+
+  <!-- Détail transaction -->
+  <div id="txDetail" class="modal hidden" style="z-index:60">
+    <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:20px">
+      <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:20px;box-shadow:0 4px 16px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 24px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(220,38,38,0.4)';">×</button>
+      <div style="padding:28px 20px 20px">
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">ID transakcji:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-id">-</div></div>
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-amount">-</div></div>
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-benef">-</div></div>
+        <div style="margin-bottom:14px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
+        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-date">-</div></div>
+        <div style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:14px;">
+          <button id="refundTxBtn" class="btn" style="background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);font-size:13px;padding:10px;">
+            <i class="fa-solid fa-rotate-left"></i> Anuluj ten przelew
+          </button>
+          <div id="refundTxMsg" style="font-size:12px;color:var(--text-secondary);margin-top:6px;text-align:center;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="t"></div>
+
+  <!-- ========== SCRIPT PRINCIPAL ========== -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
