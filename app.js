@@ -843,45 +843,45 @@ function getSenderName(tx) {
   return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
 }
 
-// ===== LOGOS DES BANQUES =====
+// ===== VRAIS LOGOS DES BANQUES POLONAISES =====
 const BANK_LOGOS = {
-  'mbank':       { icon: 'fa-building-columns', color: '#C41230', bg: '#FEE2E2' },
-  'pko':         { icon: 'fa-landmark',         color: '#003087', bg: '#DBEAFE' },
-  'ing':         { icon: 'fa-building-columns', color: '#FF6600', bg: '#FFEDD5' },
-  'santander':   { icon: 'fa-landmark',         color: '#EC0000', bg: '#FEE2E2' },
-  'pekao':       { icon: 'fa-university',       color: '#1D4F91', bg: '#DBEAFE' },
-  'millennium':  { icon: 'fa-building-columns', color: '#8B1D41', bg: '#FCE7F3' },
-  'alior':       { icon: 'fa-landmark',         color: '#00A651', bg: '#D1FAE5' },
-  'bnpparibas':  { icon: 'fa-university',       color: '#008737', bg: '#D1FAE5' },
-  'creditagricole': { icon: 'fa-landmark',      color: '#007E4A', bg: '#D1FAE5' },
-  'citi':        { icon: 'fa-building-columns', color: '#003B70', bg: '#DBEAFE' },
-  'bos':         { icon: 'fa-leaf',             color: '#006341', bg: '#D1FAE5' },
-  'getin':       { icon: 'fa-landmark',         color: '#0055A4', bg: '#DBEAFE' },
-  'idea':        { icon: 'fa-lightbulb',        color: '#FDB913', bg: '#FEF3C7' },
-  'nest':        { icon: 'fa-egg',              color: '#E3001B', bg: '#FEE2E2' },
-  'pocztowy':    { icon: 'fa-envelope',         color: '#D52B1E', bg: '#FEE2E2' },
-  'sgb':         { icon: 'fa-handshake',        color: '#005A9C', bg: '#DBEAFE' },
-  'velo':        { icon: 'fa-bolt',             color: '#6A0DAD', bg: '#F3E8FF' },
-  'noble':       { icon: 'fa-crown',            color: '#1A1A1A', bg: '#E5E7EB' },
-  'eurobank':    { icon: 'fa-euro-sign',        color: '#0055A4', bg: '#DBEAFE' },
-  'raiffeisen':  { icon: 'fa-cross',            color: '#FFDC00', bg: '#FEF9C3' },
-  'toyota':      { icon: 'fa-car',              color: '#EB0A1E', bg: '#FEE2E2' },
-  'volkswagen':  { icon: 'fa-car-side',         color: '#001E50', bg: '#DBEAFE' },
-  'sberbank':    { icon: 'fa-landmark',         color: '#1D8F3C', bg: '#D1FAE5' },
-  'inteligo':    { icon: 'fa-microchip',        color: '#FF6600', bg: '#FFEDD5' },
-  'orange':      { icon: 'fa-signal',           color: '#FF6600', bg: '#FFEDD5' },
-  'alior_sync':  { icon: 'fa-sync',             color: '#00A651', bg: '#D1FAE5' },
-  'bph':         { icon: 'fa-landmark',         color: '#0055A4', bg: '#DBEAFE' },
-  'bgz':         { icon: 'fa-landmark',         color: '#00843D', bg: '#D1FAE5' },
-  'paribas':     { icon: 'fa-building-columns', color: '#008737', bg: '#D1FAE5' },
-  'aig':         { icon: 'fa-shield-halved',    color: '#003B70', bg: '#DBEAFE' }
+  'mbank':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/MBank_logo.svg/120px-MBank_logo.svg.png', name: 'mBank' },
+  'pko':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/PKO_BP_logo.svg/120px-PKO_BP_logo.svg.png', name: 'PKO BP' },
+  'ing':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/ING_Bank_%C5%9Al%C4%85ski_logo.svg/120px-ING_Bank_%C5%9Al%C4%85ski_logo.svg.png', name: 'ING' },
+  'santander':   { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Santander_Group_logo.svg/120px-Santander_Group_logo.svg.png', name: 'Santander' },
+  'pekao':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Bank_Pekao_logo.svg/120px-Bank_Pekao_logo.svg.png', name: 'Pekao' },
+  'millennium':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Millennium_logo.svg/120px-Millennium_logo.svg.png', name: 'Millennium' },
+  'alior':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Alior_Bank_logo.svg/120px-Alior_Bank_logo.svg.png', name: 'Alior' },
+  'bnpparibas':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/BNP_Paribas_logo.svg/120px-BNP_Paribas_logo.svg.png', name: 'BNP Paribas' },
+  'creditagricole': { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Cr%C3%A9dit_Agricole_logo.svg/120px-Cr%C3%A9dit_Agricole_logo.svg.png', name: 'Crédit Agricole' },
+  'citi':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Citibank_logo.svg/120px-Citibank_logo.svg.png', name: 'Citi Handlowy' },
+  'bos':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bank_Ochrony_%C5%9Arodowiska_logo.svg/120px-Bank_Ochrony_%C5%9Arodowiska_logo.svg.png', name: 'BOŚ' },
+  'getin':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Getin_Noble_Bank_logo.svg/120px-Getin_Noble_Bank_logo.svg.png', name: 'Getin' },
+  'idea':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Idea_Bank_logo.svg/120px-Idea_Bank_logo.svg.png', name: 'Idea Bank' },
+  'nest':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Nest_Bank_logo.svg/120px-Nest_Bank_logo.svg.png', name: 'Nest Bank' },
+  'pocztowy':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bank_Pocztowy_logo.svg/120px-Bank_Pocztowy_logo.svg.png', name: 'Pocztowy' },
+  'sgb':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/SGB_logo.svg/120px-SGB_logo.svg.png', name: 'SGB' },
+  'velo':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/VeloBank_logo.svg/120px-VeloBank_logo.svg.png', name: 'VeloBank' },
+  'noble':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Noble_Bank_logo.svg/120px-Noble_Bank_logo.svg.png', name: 'Noble' },
+  'eurobank':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Eurobank_logo.svg/120px-Eurobank_logo.svg.png', name: 'Eurobank' },
+  'raiffeisen':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Raiffeisen_Bank_Polska_logo.svg/120px-Raiffeisen_Bank_Polska_logo.svg.png', name: 'Raiffeisen' },
+  'toyota':      { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Toyota_Financial_Services_logo.svg/120px-Toyota_Financial_Services_logo.svg.png', name: 'Toyota Bank' },
+  'volkswagen':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Volkswagen_Financial_Services_logo.svg/120px-Volkswagen_Financial_Services_logo.svg.png', name: 'VW Bank' },
+  'sberbank':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Sberbank_logo.svg/120px-Sberbank_logo.svg.png', name: 'Sberbank' },
+  'inteligo':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Inteligo_logo.svg/120px-Inteligo_logo.svg.png', name: 'Inteligo' },
+  'orange':      { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Orange_logo.svg/120px-Orange_logo.svg.png', name: 'Orange' },
+  'alior_sync':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Alior_Bank_logo.svg/120px-Alior_Bank_logo.svg.png', name: 'Alior Sync' },
+  'bph':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bank_BPH_logo.svg/120px-Bank_BPH_logo.svg.png', name: 'BPH' },
+  'bgz':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bank_BG%C5%BB_logo.svg/120px-Bank_BG%C5%BB_logo.svg.png', name: 'BGŻ' },
+  'paribas':     { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/BNP_Paribas_logo.svg/120px-BNP_Paribas_logo.svg.png', name: 'Paribas' },
+  'aig':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/AIG_logo.svg/120px-AIG_logo.svg.png', name: 'AIG' }
 };
 
 function getBankLogo(tx) {
   if (tx.senderBank && tx.senderBank !== 'custom' && BANK_LOGOS[tx.senderBank]) {
     return { ...BANK_LOGOS[tx.senderBank], isBank: true };
   }
-  return { icon: 'fa-user', color: '#4B5563', bg: '#E5E7EB', isBank: false };
+  return { img: null, name: tx.subtitle || tx.senderName || tx.sender || 'Nadawca', isBank: false };
 }
 
 function renderHistory(historyArray) {
@@ -936,12 +936,12 @@ function renderHistory(historyArray) {
         iconHtml = '<i class="fa-solid fa-rotate-left"></i>';
       } else if (pos) {
         const logo = getBankLogo(d);
-        if (logo.isBank) {
+        if (logo.isBank && logo.img) {
           iconClass = 'credit bank-logo';
-          iconHtml = `<i class="fas ${logo.icon}" style="color:${logo.color};"></i>`;
+          iconHtml = `<img src="${logo.img}" alt="${logo.name}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;" onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-building-columns\'></i>'">`;
         } else {
           iconClass = 'credit human-logo';
-          iconHtml = `<i class="fas ${logo.icon}" style="color:${logo.color};"></i>`;
+          iconHtml = '<i class="fa-solid fa-user"></i>';
         }
         amountClass = 'credit';
       } else {
