@@ -845,36 +845,38 @@ function getSenderName(tx) {
 
 // ===== VRAIS LOGOS DES BANQUES POLONAISES =====
 const BANK_LOGOS = {
-  'mbank':       { img: 'https://logo.clearbit.com/mbank.pl',           name: 'mBank',           color: '#C41230', bg: '#FEE2E2' },
-  'pko':         { img: 'https://logo.clearbit.com/pkobp.pl',           name: 'PKO BP',          color: '#003087', bg: '#DBEAFE' },
-  'ing':         { img: 'https://logo.clearbit.com/ing.pl',               name: 'ING',             color: '#FF6600', bg: '#FFEDD5' },
-  'santander':   { img: 'https://logo.clearbit.com/santander.pl',         name: 'Santander',       color: '#EC0000', bg: '#FEE2E2' },
-  'pekao':       { img: 'https://logo.clearbit.com/pekao.com.pl',       name: 'Pekao',           color: '#1D4F91', bg: '#DBEAFE' },
-  'millennium':  { img: 'https://logo.clearbit.com/millennium.pl',        name: 'Millennium',      color: '#8B1D41', bg: '#FCE7F3' },
-  'alior':       { img: 'https://logo.clearbit.com/aliorbank.pl',       name: 'Alior',           color: '#00A651', bg: '#D1FAE5' },
-  'bnpparibas':  { img: 'https://logo.clearbit.com/bnpparibas.pl',        name: 'BNP',             color: '#008737', bg: '#D1FAE5' },
-  'creditagricole': { img: 'https://logo.clearbit.com/credit-agricole.pl', name: 'CA',           color: '#007E4A', bg: '#D1FAE5' },
-  'citi':        { img: 'https://logo.clearbit.com/citibank.pl',        name: 'Citi',            color: '#003B70', bg: '#DBEAFE' },
-  'bos':         { img: 'https://logo.clearbit.com/bosbank.pl',         name: 'BOŚ',             color: '#006341', bg: '#D1FAE5' },
-  'getin':       { img: 'https://logo.clearbit.com/getinbank.pl',       name: 'Getin',           color: '#0055A4', bg: '#DBEAFE' },
-  'idea':        { img: 'https://logo.clearbit.com/ideabank.pl',        name: 'Idea',            color: '#FDB913', bg: '#FEF3C7' },
-  'nest':        { img: 'https://logo.clearbit.com/nestbank.pl',        name: 'Nest',            color: '#E3001B', bg: '#FEE2E2' },
-  'pocztowy':    { img: 'https://logo.clearbit.com/bankpocztowy.pl',    name: 'Pocztowy',        color: '#D52B1E', bg: '#FEE2E2' },
-  'sgb':         { img: 'https://logo.clearbit.com/sgb.pl',               name: 'SGB',             color: '#005A9C', bg: '#DBEAFE' },
-  'velo':        { img: 'https://logo.clearbit.com/velobank.pl',        name: 'Velo',            color: '#6A0DAD', bg: '#F3E8FF' },
-  'noble':       { img: 'https://logo.clearbit.com/noblebank.pl',       name: 'Noble',           color: '#1A1A1A', bg: '#E5E7EB' },
-  'eurobank':    { img: 'https://logo.clearbit.com/eurobank.pl',        name: 'Eurobank',        color: '#0055A4', bg: '#DBEAFE' },
-  'raiffeisen':  { img: 'https://logo.clearbit.com/raiffeisen.pl',      name: 'Raiffeisen',      color: '#FFDC00', bg: '#FEF9C3' },
-  'toyota':      { img: 'https://logo.clearbit.com/toyotabank.pl',      name: 'Toyota',          color: '#EB0A1E', bg: '#FEE2E2' },
-  'volkswagen':  { img: 'https://logo.clearbit.com/vwbank.pl',          name: 'VW Bank',         color: '#001E50', bg: '#DBEAFE' },
-  'sberbank':    { img: 'https://logo.clearbit.com/sberbank.ru',        name: 'Sberbank',        color: '#1D8F3C', bg: '#D1FAE5' },
-  'inteligo':    { img: 'https://logo.clearbit.com/inteligo.pl',        name: 'Inteligo',        color: '#FF6600', bg: '#FFEDD5' },
-  'orange':      { img: 'https://logo.clearbit.com/orange.pl',          name: 'Orange',          color: '#FF6600', bg: '#FFEDD5' },
-  'alior_sync':  { img: 'https://logo.clearbit.com/aliorbank.pl',       name: 'Alior Sync',      color: '#00A651', bg: '#D1FAE5' },
-  'bph':         { img: 'https://logo.clearbit.com/bph.pl',               name: 'BPH',             color: '#0055A4', bg: '#DBEAFE' },
-  'bgz':         { img: 'https://logo.clearbit.com/bgz.pl',             name: 'BGŻ',             color: '#00843D', bg: '#D1FAE5' },
-  'paribas':     { img: 'https://logo.clearbit.com/bnpparibas.pl',      name: 'Paribas',         color: '#008737', bg: '#D1FAE5' },
-  'aig':         { img: 'https://logo.clearbit.com/aig.com',            name: 'AIG',             color: '#003B70', bg: '#DBEAFE' }
+  // ===== LOGOS OFFICIELS WIKIPEDIA (HAUTE QUALITÉ) =====
+  'mbank':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/MBank_logo.svg/256px-MBank_logo.svg.png',           name: 'mBank',           color: '#C41230', bg: '#FEE2E2' },
+  'pko':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/PKO_BP_logo.svg/256px-PKO_BP_logo.svg.png',           name: 'PKO BP',          color: '#003087', bg: '#DBEAFE' },
+  'ing':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/ING_Group_N.V._Logo.svg/256px-ING_Group_N.V._Logo.svg.png',               name: 'ING',             color: '#FF6600', bg: '#FFEDD5' },
+  'santander':   { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Santander_Logotipo.svg/256px-Santander_Logotipo.svg.png',         name: 'Santander',       color: '#EC0000', bg: '#FEE2E2' },
+  'pekao':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Bank_Pekao_logo.svg/256px-Bank_Pekao_logo.svg.png',       name: 'Pekao',           color: '#1D4F91', bg: '#DBEAFE' },
+  'millennium':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Millennium_bcp_logo.svg/256px-Millennium_bcp_logo.svg.png',        name: 'Millennium',      color: '#8B1D41', bg: '#FCE7F3' },
+  'alior':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Alior_Bank_logo.svg/256px-Alior_Bank_logo.svg.png',       name: 'Alior',           color: '#00A651', bg: '#D1FAE5' },
+  'bnpparibas':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/BNP_Paribas_logo.svg/256px-BNP_Paribas_logo.svg.png',        name: 'BNP',             color: '#008737', bg: '#D1FAE5' },
+  'creditagricole': { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Cr%C3%A9dit_Agricole_logo.svg/256px-Cr%C3%A9dit_Agricole_logo.svg.png', name: 'CA',           color: '#007E4A', bg: '#D1FAE5' },
+  'citi':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Citibank_logo.svg/256px-Citibank_logo.svg.png',        name: 'Citi',            color: '#003B70', bg: '#DBEAFE' },
+  'bos':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Bank_Ochrony_%C5%9Arodowiska_logo.svg/256px-Bank_Ochrony_%C5%9Arodowiska_logo.svg.png',         name: 'BOŚ',             color: '#006341', bg: '#D1FAE5' },
+  'getin':       { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Getin_Noble_Bank_logo.svg/256px-Getin_Noble_Bank_logo.svg.png',       name: 'Getin',           color: '#0055A4', bg: '#DBEAFE' },
+  'idea':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Idea_Bank_logo.svg/256px-Idea_Bank_logo.svg.png',        name: 'Idea',            color: '#FDB913', bg: '#FEF3C7' },
+  'nest':        { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Nest_Bank_logo.svg/256px-Nest_Bank_logo.svg.png',        name: 'Nest',            color: '#E3001B', bg: '#FEE2E2' },
+  'pocztowy':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Bank_Pocztowy_logo.svg/256px-Bank_Pocztowy_logo.svg.png',    name: 'Pocztowy',        color: '#D52B1E', bg: '#FEE2E2' },
+  'raiffeisen':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Raiffeisen_Bank_International_logo.svg/256px-Raiffeisen_Bank_International_logo.svg.png',      name: 'Raiffeisen',      color: '#FFDC00', bg: '#FEF9C3' },
+  'sberbank':    { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Sberbank_logo.svg/256px-Sberbank_logo.svg.png',        name: 'Sberbank',        color: '#1D8F3C', bg: '#D1FAE5' },
+  'orange':      { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Orange_logo.svg/256px-Orange_logo.svg.png',          name: 'Orange',          color: '#FF6600', bg: '#FFEDD5' },
+  'aig':         { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/AIG_logo.svg/256px-AIG_logo.svg.png',            name: 'AIG',             color: '#003B70', bg: '#DBEAFE' },
+  // ===== FAVICONS OFFICIELS HAUTE RÉSOLUTION (Google) =====
+  'sgb':         { img: 'https://www.google.com/s2/favicons?domain=sgb.pl&sz=128',               name: 'SGB',             color: '#005A9C', bg: '#DBEAFE' },
+  'velo':        { img: 'https://www.google.com/s2/favicons?domain=velobank.pl&sz=128',        name: 'Velo',            color: '#6A0DAD', bg: '#F3E8FF' },
+  'noble':       { img: 'https://www.google.com/s2/favicons?domain=getinbank.pl&sz=128',       name: 'Noble',           color: '#1A1A1A', bg: '#E5E7EB' },
+  'eurobank':    { img: 'https://www.google.com/s2/favicons?domain=eurobank.pl&sz=128',        name: 'Eurobank',        color: '#0055A4', bg: '#DBEAFE' },
+  'toyota':      { img: 'https://www.google.com/s2/favicons?domain=toyotabank.pl&sz=128',      name: 'Toyota',          color: '#EB0A1E', bg: '#FEE2E2' },
+  'volkswagen':  { img: 'https://www.google.com/s2/favicons?domain=vwbank.pl&sz=128',          name: 'VW Bank',         color: '#001E50', bg: '#DBEAFE' },
+  'inteligo':    { img: 'https://www.google.com/s2/favicons?domain=inteligo.pl&sz=128',        name: 'Inteligo',        color: '#FF6600', bg: '#FFEDD5' },
+  'alior_sync':  { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Alior_Bank_logo.svg/256px-Alior_Bank_logo.svg.png',       name: 'Alior Sync',      color: '#00A651', bg: '#D1FAE5' },
+  'bph':         { img: 'https://www.google.com/s2/favicons?domain=bph.pl&sz=128',               name: 'BPH',             color: '#0055A4', bg: '#DBEAFE' },
+  'bgz':         { img: 'https://www.google.com/s2/favicons?domain=bgz.pl&sz=128',             name: 'BGŻ',             color: '#00843D', bg: '#D1FAE5' },
+  'paribas':     { img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/BNP_Paribas_logo.svg/256px-BNP_Paribas_logo.svg.png',      name: 'Paribas',         color: '#008737', bg: '#D1FAE5' }
 };
 
 function stringToColor(str) {
@@ -961,13 +963,13 @@ function renderHistory(historyArray) {
         const logo = getBankLogo(d);
         if (logo.isBank && logo.img) {
           iconClass = 'credit bank-logo';
-          iconHtml = `<img src="${logo.img}" alt="${logo.name}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` +
-                     `<div style="display:none;width:32px;height:32px;border-radius:50%;background:${logo.bg};color:${logo.color};align-items:center;justify-content:center;font-size:11px;font-weight:700;">${logo.name.substring(0,2).toUpperCase()}</div>`;
+          iconHtml = `<img src="${logo.img}" alt="${logo.name}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` +
+                     `<div style="display:none;width:40px;height:40px;border-radius:50%;background:${logo.bg};color:${logo.color};align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08);">${logo.name.substring(0,2).toUpperCase()}</div>`;
         } else if (logo.isCustom) {
           iconClass = 'credit custom-bank';
           const initials = logo.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
           const bgGradient = stringToColor(logo.name);
-          iconHtml = `<div style="width:36px;height:36px;border-radius:50%;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);text-shadow:0 1px 2px rgba(0,0,0,0.3);letter-spacing:0.5px;">${initials}</div>`;
+          iconHtml = `<div style="width:40px;height:40px;border-radius:12px;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${initials}</div>`;
         } else {
           iconClass = 'credit human-logo';
           iconHtml = '<i class="fa-solid fa-user"></i>';
