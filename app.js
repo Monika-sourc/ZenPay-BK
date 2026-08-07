@@ -843,6 +843,47 @@ function getSenderName(tx) {
   return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
 }
 
+// ===== LOGOS DES BANQUES =====
+const BANK_LOGOS = {
+  'mbank':       { icon: 'fa-building-columns', color: '#C41230', bg: '#FEE2E2' },
+  'pko':         { icon: 'fa-landmark',         color: '#003087', bg: '#DBEAFE' },
+  'ing':         { icon: 'fa-building-columns', color: '#FF6600', bg: '#FFEDD5' },
+  'santander':   { icon: 'fa-landmark',         color: '#EC0000', bg: '#FEE2E2' },
+  'pekao':       { icon: 'fa-university',       color: '#1D4F91', bg: '#DBEAFE' },
+  'millennium':  { icon: 'fa-building-columns', color: '#8B1D41', bg: '#FCE7F3' },
+  'alior':       { icon: 'fa-landmark',         color: '#00A651', bg: '#D1FAE5' },
+  'bnpparibas':  { icon: 'fa-university',       color: '#008737', bg: '#D1FAE5' },
+  'creditagricole': { icon: 'fa-landmark',      color: '#007E4A', bg: '#D1FAE5' },
+  'citi':        { icon: 'fa-building-columns', color: '#003B70', bg: '#DBEAFE' },
+  'bos':         { icon: 'fa-leaf',             color: '#006341', bg: '#D1FAE5' },
+  'getin':       { icon: 'fa-landmark',         color: '#0055A4', bg: '#DBEAFE' },
+  'idea':        { icon: 'fa-lightbulb',        color: '#FDB913', bg: '#FEF3C7' },
+  'nest':        { icon: 'fa-egg',              color: '#E3001B', bg: '#FEE2E2' },
+  'pocztowy':    { icon: 'fa-envelope',         color: '#D52B1E', bg: '#FEE2E2' },
+  'sgb':         { icon: 'fa-handshake',        color: '#005A9C', bg: '#DBEAFE' },
+  'velo':        { icon: 'fa-bolt',             color: '#6A0DAD', bg: '#F3E8FF' },
+  'noble':       { icon: 'fa-crown',            color: '#1A1A1A', bg: '#E5E7EB' },
+  'eurobank':    { icon: 'fa-euro-sign',        color: '#0055A4', bg: '#DBEAFE' },
+  'raiffeisen':  { icon: 'fa-cross',            color: '#FFDC00', bg: '#FEF9C3' },
+  'toyota':      { icon: 'fa-car',              color: '#EB0A1E', bg: '#FEE2E2' },
+  'volkswagen':  { icon: 'fa-car-side',         color: '#001E50', bg: '#DBEAFE' },
+  'sberbank':    { icon: 'fa-landmark',         color: '#1D8F3C', bg: '#D1FAE5' },
+  'inteligo':    { icon: 'fa-microchip',        color: '#FF6600', bg: '#FFEDD5' },
+  'orange':      { icon: 'fa-signal',           color: '#FF6600', bg: '#FFEDD5' },
+  'alior_sync':  { icon: 'fa-sync',             color: '#00A651', bg: '#D1FAE5' },
+  'bph':         { icon: 'fa-landmark',         color: '#0055A4', bg: '#DBEAFE' },
+  'bgz':         { icon: 'fa-landmark',         color: '#00843D', bg: '#D1FAE5' },
+  'paribas':     { icon: 'fa-building-columns', color: '#008737', bg: '#D1FAE5' },
+  'aig':         { icon: 'fa-shield-halved',    color: '#003B70', bg: '#DBEAFE' }
+};
+
+function getBankLogo(tx) {
+  if (tx.senderBank && tx.senderBank !== 'custom' && BANK_LOGOS[tx.senderBank]) {
+    return { ...BANK_LOGOS[tx.senderBank], isBank: true };
+  }
+  return { icon: 'fa-user', color: '#4B5563', bg: '#E5E7EB', isBank: false };
+}
+
 function renderHistory(historyArray) {
   const list = document.getElementById('history-list');
   list.innerHTML = '';
@@ -894,14 +935,15 @@ function renderHistory(historyArray) {
         amountClass = 'refund';
         iconHtml = '<i class="fa-solid fa-rotate-left"></i>';
       } else if (pos) {
-        iconClass = 'credit';
-        amountClass = 'credit';
-        // Logo banque officiel si sélectionnée, sinon icône personne (saisie manuelle)
-        if (d.senderBank && d.senderBank !== 'custom' && d.senderBankLogo && d.senderBankLogo !== 'person' && d.senderBankLogo !== '') {
-          iconHtml = `<img src="${d.senderBankLogo}" alt="" style="width:28px;height:28px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fa-solid fa-building-columns\'></i>';">`;
+        const logo = getBankLogo(d);
+        if (logo.isBank) {
+          iconClass = 'credit bank-logo';
+          iconHtml = `<i class="fas ${logo.icon}" style="color:${logo.color};"></i>`;
         } else {
-          iconHtml = '<i class="fa-solid fa-user"></i>';
+          iconClass = 'credit human-logo';
+          iconHtml = `<i class="fas ${logo.icon}" style="color:${logo.color};"></i>`;
         }
+        amountClass = 'credit';
       } else {
         iconClass = 'debit';
         amountClass = 'debit';
