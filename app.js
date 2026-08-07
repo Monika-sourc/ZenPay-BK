@@ -877,11 +877,34 @@ const BANK_LOGOS = {
   'aig':         { img: 'https://logo.clearbit.com/aig.com',            name: 'AIG',             color: '#003B70', bg: '#DBEAFE' }
 };
 
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colors = [
+    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    'linear-gradient(135deg, #ff8a80 0%, #ea6100 100%)'
+  ];
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
+
 function getBankLogo(tx) {
   if (tx.senderBank && tx.senderBank !== 'custom' && BANK_LOGOS[tx.senderBank]) {
     return { ...BANK_LOGOS[tx.senderBank], isBank: true };
   }
-  return { img: null, name: tx.subtitle || tx.senderName || tx.sender || 'Nadawca', isBank: false };
+  // Banque personnalisée ou inconnue : avatar professionnel avec initiales
+  const name = tx.senderName || tx.subtitle || tx.sender || 'Bank';
+  return { img: null, name: name, isBank: false, isCustom: true };
 }
 
 function renderHistory(historyArray) {
@@ -938,8 +961,13 @@ function renderHistory(historyArray) {
         const logo = getBankLogo(d);
         if (logo.isBank && logo.img) {
           iconClass = 'credit bank-logo';
-          iconHtml = `<img src="${logo.img}" alt="" style="width:32px;height:32px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` +
+          iconHtml = `<img src="${logo.img}" alt="${logo.name}" style="width:32px;height:32px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` +
                      `<div style="display:none;width:32px;height:32px;border-radius:50%;background:${logo.bg};color:${logo.color};align-items:center;justify-content:center;font-size:11px;font-weight:700;">${logo.name.substring(0,2).toUpperCase()}</div>`;
+        } else if (logo.isCustom) {
+          iconClass = 'credit custom-bank';
+          const initials = logo.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+          const bgGradient = stringToColor(logo.name);
+          iconHtml = `<div style="width:36px;height:36px;border-radius:50%;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.15);text-shadow:0 1px 2px rgba(0,0,0,0.3);letter-spacing:0.5px;">${initials}</div>`;
         } else {
           iconClass = 'credit human-logo';
           iconHtml = '<i class="fa-solid fa-user"></i>';
