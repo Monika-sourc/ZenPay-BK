@@ -839,6 +839,10 @@ async function refreshSession() {
 }
 
 // ===== HISTORIQUE =====
+function getSenderName(tx) {
+  return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
+}
+
 function renderHistory(historyArray) {
   const list = document.getElementById('history-list');
   list.innerHTML = '';
@@ -971,7 +975,7 @@ async function handleNewCreditTransaction(tx, userId) {
   if (notifiedIds.includes(tx.id)) return;
 
   const montantFormatted = fmt(tx.amount);
-  const beneficiaire = tx.beneficiary || tx.subtitle || 'nieznanego nadawcy';
+  const beneficiaire = getSenderName(tx);
   const nomClient = user.nom || 'Klient';
   const bannerMsg = `Witam ${nomClient}, Otrzymałeś przelew od ${beneficiaire} na kwotę ${montantFormatted}.`;
 
@@ -1316,7 +1320,7 @@ window.showTxDetail = function(d) {
     document.getElementById('tx-label-benef').textContent = 'Zwrot od :';
     document.getElementById('tx-label-date').textContent = 'Data zwrotu :';
   } else if (isCredit) {
-    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
+    document.getElementById('tx-benef').textContent = getSenderName(d);
     document.getElementById('tx-label-amount').textContent = 'Otrzymana kwota :';
     document.getElementById('tx-label-benef').textContent = 'Nadawca :';
     document.getElementById('tx-label-date').textContent = 'Data otrzymania :';
