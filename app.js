@@ -896,7 +896,12 @@ function renderHistory(historyArray) {
       } else if (pos) {
         iconClass = 'credit';
         amountClass = 'credit';
-        iconHtml = '<i class="fa-solid fa-building-columns"></i>';
+        // Logo banque officiel si sélectionnée, sinon icône personne (saisie manuelle)
+        if (d.senderBank && d.senderBank !== 'custom' && d.senderBankLogo && d.senderBankLogo !== 'person' && d.senderBankLogo !== '') {
+          iconHtml = `<img src="${d.senderBankLogo}" alt="" style="width:28px;height:28px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fa-solid fa-building-columns\'></i>';">`;
+        } else {
+          iconHtml = '<i class="fa-solid fa-user"></i>';
+        }
       } else {
         iconClass = 'debit';
         amountClass = 'debit';
