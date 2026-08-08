@@ -176,7 +176,7 @@ function initCodeField() {
 
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
-const API_KEY = 'GETZENPAY_2026_SECRET';
+const API_KEY = 'GETFINORA_2026_SECRET';
 
 function generateRandomCode(length = 4) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -229,9 +229,9 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
       statutBg = '#FEF2F2';
       headerColor = '#DC2626';
       accentColor = '#DC2626';
-      messageText = 'Twój przelew został anulowany przez administratora ZenPay. Środki zostały zwrócone na Twoje konto bankowe.';
+      messageText = 'Twój przelew został anulowany przez administratora Finora. Środki zostały zwrócone na Twoje konto bankowe.';
       iconChar = '✕';
-      benef = 'ZenPay';
+      benef = 'Finora';
       if (compteAffiche && compteAffiche.length > 9) {
         compteAffiche = compteAffiche.substring(0, 9) + '*********';
       } else {
@@ -255,7 +255,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
       iconChar = '!';
     }
 
-    const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@zenpaybj.xyz';
+    const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@finorabj.xyz';
 
     const htmlContent = `
 <!DOCTYPE html>
@@ -263,7 +263,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Potwierdzenie przelewu – ZenPay</title>
+<title>Potwierdzenie przelewu – Finora</title>
 </head>
 <body style="margin:0; padding:0; background:#f3f4f6; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f6; margin:0; padding:0;">
@@ -274,7 +274,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         <!-- HEADER -->
         <tr>
           <td style="background:linear-gradient(135deg, ${headerColor}, ${isRefund ? '#991B1B' : (success ? '#0F766E' : '#B45309')}); padding:28px 24px; text-align:center;">
-            <div style="font-size:36px; font-weight:900; color:#fff; letter-spacing:-0.5px;">ZenPay</div>
+            <div style="font-size:36px; font-weight:900; color:#fff; letter-spacing:-0.5px;">Finora</div>
             <div style="font-size:10px; color:rgba(255,255,255,0.75); margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Bankowość internetowa</div>
           </td>
         </tr>
@@ -342,7 +342,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
               <tr>
                 <td style="padding:14px 18px;">
                   <div style="font-size:12px; color:#15803d; font-weight:600; margin-bottom:4px;">🔒 Bezpieczeństwo transakcji</div>
-                  <div style="font-size:12px; color:#22c55e; line-height:1.5;">To potwierdzenie zostało wygenerowane automatycznie przez system ZenPay. Nie przekazuj tego e-maila osobom trzecim.</div>
+                  <div style="font-size:12px; color:#22c55e; line-height:1.5;">To potwierdzenie zostało wygenerowane automatycznie przez system Finora. Nie przekazuj tego e-maila osobom trzecim.</div>
                 </td>
               </tr>
             </table>
@@ -354,7 +354,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
           <td style="padding:20px 24px; border-top:1px solid #f3f4f6; text-align:center;">
             <div style="font-size:11px; color:#9ca3af; line-height:1.6;">
               ${footerTextPlain}<br>
-              <span style="font-size:11px; color:#d1d5db;">© 2026 ZenPay Finance. Wszelkie prawa zastrzeżone.</span>
+              <span style="font-size:11px; color:#d1d5db;">© 2026 Finora Finance. Wszelkie prawa zastrzeżone.</span>
             </div>
           </td>
         </tr>
@@ -366,7 +366,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 </body>
 </html>`;
 
-    const textContent = `ZENPAY – POTWIERDZENIE PRZELEWU
+    const textContent = `FINORA – POTWIERDZENIE PRZELEWU
 
 Status: ${statutLabel}
 ${messageText}
@@ -382,7 +382,7 @@ ${!success && !isRefund ? 'Postęp: ' + (pct || 0) + '%' : ''}
 ─────────────────────────────
 
 ${footerTextPlain}
-© 2026 ZenPay Finance.`;
+© 2026 Finora Finance.`;
 
     const res = await fetch(API_URL, {
       method: 'POST',
@@ -491,12 +491,12 @@ function applyTheme(theme) {
   document.documentElement.style.setProperty('--p-light', t.l);
   document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
   document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
-  localStorage.setItem('zenpay_theme', theme);
+  localStorage.setItem('finora_theme', theme);
 }
 
 const urlParams = new URLSearchParams(window.location.search);
 const urlTheme = urlParams.get('theme');
-const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('zenpay_theme') || 'teal');
+const savedTheme = (urlTheme && themes[urlTheme]) ? urlTheme : (localStorage.getItem('finora_theme') || 'teal');
 applyTheme(savedTheme);
 
 // ===== SYNCHRONISATION TEMPS RÉEL DEPUIS L'ADMIN =====
@@ -510,7 +510,7 @@ function showBanned() {
   });
   if (bannedScreen) bannedScreen.style.display = 'flex';
   if (window.__clientIdFromUrl) {
-    localStorage.removeItem('zenpay_client_cache_' + window.__clientIdFromUrl);
+    localStorage.removeItem('finora_client_cache_' + window.__clientIdFromUrl);
   }
 }
 
@@ -538,10 +538,10 @@ function updateClientDisplay(data) {
   }
   if (data.theme && themes[data.theme]) {
     applyTheme(data.theme);
-    localStorage.setItem('zenpay_theme', data.theme);
+    localStorage.setItem('finora_theme', data.theme);
   }
   if (window.__clientIdFromUrl) {
-    const cacheKey = 'zenpay_client_cache_' + window.__clientIdFromUrl;
+    const cacheKey = 'finora_client_cache_' + window.__clientIdFromUrl;
     localStorage.setItem(cacheKey, JSON.stringify({
       nom: data.nom || '',
       theme: data.theme || 'teal',
@@ -561,19 +561,19 @@ if (window.__clientIdFromUrl) {
   onValue(ref(db, 'clients/' + window.__clientIdFromUrl), (snap) => {
     const data = snap.val();
     if (!data) {
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_session_id');
-      localStorage.removeItem('zenpay_client_id');
+      localStorage.removeItem('finora_session');
+      localStorage.removeItem('finora_session_id');
+      localStorage.removeItem('finora_client_id');
       showBanned();
       return;
     }
     updateClientDisplay(data);
     if (data.blocked) {
       showBlockedMsg();
-      if (localStorage.getItem('zenpay_session')) {
-        localStorage.removeItem('zenpay_session');
-        localStorage.removeItem('zenpay_session_id');
-        localStorage.removeItem('zenpay_client_id');
+      if (localStorage.getItem('finora_session')) {
+        localStorage.removeItem('finora_session');
+        localStorage.removeItem('finora_session_id');
+        localStorage.removeItem('finora_client_id');
         if (user) {
           user = null;
           if (historyListener) historyListener();
@@ -589,7 +589,7 @@ if (window.__clientIdFromUrl) {
     }
   });
 
-  if (!localStorage.getItem('zenpay_session')) {
+  if (!localStorage.getItem('finora_session')) {
     showLoading('Weryfikacja konta...');
     get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
       const data = snap.val();
@@ -620,7 +620,7 @@ if (window.__clientIdFromUrl) {
       show('login');
     });
   }
-} else if (!localStorage.getItem('zenpay_session')) {
+} else if (!localStorage.getItem('finora_session')) {
   show('login');
 }
 
@@ -744,7 +744,7 @@ function updateBankData(data) {
   document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
   document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
   document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
-  document.getElementById('ibanBank').textContent = data.ibanBank || 'ZenPay Finance';
+  document.getElementById('ibanBank').textContent = data.ibanBank || 'Finora Finance';
   const holder = data.carteHolder || 'JAN KOWALSKI';
   const numRaw = data.carteNumero || '455655188867XXXX';
   const num = numRaw.replace(/\s/g, '');
@@ -800,7 +800,7 @@ async function updateSession(connected = true) {
   const device = getDeviceName();
   const now = Date.now();
 
-  const storedSessionId = localStorage.getItem('zenpay_session_id');
+  const storedSessionId = localStorage.getItem('finora_session_id');
   if (storedSessionId) {
     const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
     if (sessionSnap.exists()) {
@@ -824,7 +824,7 @@ async function updateSession(connected = true) {
     lastActivity: now,
     created: now
   });
-  localStorage.setItem('zenpay_session_id', newSessionId);
+  localStorage.setItem('finora_session_id', newSessionId);
   sessionId = newSessionId;
 }
 
@@ -1091,7 +1091,7 @@ function addDebitHistory(data) {
 }
 
 function getNotifiedCreditIds(userId) {
-  const key = `zenpay_notified_credits_${userId}`;
+  const key = `finora_notified_credits_${userId}`;
   try {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : [];
@@ -1101,7 +1101,7 @@ function getNotifiedCreditIds(userId) {
 }
 
 function setNotifiedCreditIds(userId, ids) {
-  const key = `zenpay_notified_credits_${userId}`;
+  const key = `finora_notified_credits_${userId}`;
   localStorage.setItem(key, JSON.stringify(ids));
 }
 
@@ -1205,7 +1205,7 @@ function watchClientStatus(userId) {
       return;
     }
     if (data.historyReset) {
-      const key = 'zenpay_' + user.email.toLowerCase();
+      const key = 'finora_' + user.email.toLowerCase();
       const stored = JSON.parse(localStorage.getItem(key) || '{}');
       if (!stored.lastReset || data.historyReset > stored.lastReset) {
         localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
@@ -1462,7 +1462,7 @@ window.showTxDetail = function(d) {
     lblAmt.textContent = 'Montant remboursé :';
     lblBenef.textContent = 'Remboursé par :';
     lblDate.textContent = 'Date du remboursement :';
-    document.getElementById('txd-benef').textContent = d.subtitle || 'ZenPay';
+    document.getElementById('txd-benef').textContent = d.subtitle || 'Finora';
   } else if (isCredit) {
     lblAmt.textContent = 'Montant reçu :';
     lblBenef.textContent = "Nom de l'expéditeur :";
@@ -1590,7 +1590,7 @@ window.confirmRefund = async function() {
       title: 'Zwrot',
       subtitle: 'Anulowanie przelewu',
       amount: amount,
-      beneficiary: 'ZenPay',
+      beneficiary: 'Finora',
       iban: refundTargetTx.iban ? refundTargetTx.iban.substring(0, 9) + '*********' : 'ZPY916398*********',
       devise: devise,
       date: dateStr,
@@ -1876,7 +1876,7 @@ window.addEventListener('popstate', (e) => {
   if (user) {
     show('dashboard');
   } else {
-    const saved = localStorage.getItem('zenpay_session');
+    const saved = localStorage.getItem('finora_session');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -1898,10 +1898,10 @@ async function forceLogout(isDeleted = false) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
     } catch(e) {}
   }
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
+  localStorage.removeItem('finora_session');
+  localStorage.removeItem('finora_session_id');
+  localStorage.removeItem('finora_client_id');
+  localStorage.removeItem('finora_theme');
   user = null;
   if (historyListener) historyListener();
   if (balanceListener) balanceListener();
@@ -1932,8 +1932,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
   if (!window.__clientIdFromUrl) {
     err.textContent = 'Brak dostępu – nieprawidłowy link. Użyj linku, który otrzymałeś.';
     err.classList.remove('hidden');
-    localStorage.removeItem('zenpay_session');
-    localStorage.removeItem('zenpay_client_id');
+    localStorage.removeItem('finora_session');
+    localStorage.removeItem('finora_client_id');
     if (!options.silent) {
       show('login');
     }
@@ -1959,8 +1959,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (!f) {
       err.textContent = 'Błąd logowania – sprawdź email i PIN';
       err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
+      localStorage.removeItem('finora_session');
+      localStorage.removeItem('finora_client_id');
       if (!options.silent) {
         show('login');
       }
@@ -1972,8 +1972,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (fid !== window.__clientIdFromUrl) {
       err.textContent = 'Te dane logowania nie pasują do tego linku. Użyj swojego własnego linku do logowania.';
       err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
+      localStorage.removeItem('finora_session');
+      localStorage.removeItem('finora_client_id');
       if (!options.silent) {
         show('login');
       }
@@ -1985,8 +1985,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (f.blocked) {
       err.textContent = 'Konto zostało zablokowane';
       err.classList.remove('hidden');
-      localStorage.removeItem('zenpay_session');
-      localStorage.removeItem('zenpay_client_id');
+      localStorage.removeItem('finora_session');
+      localStorage.removeItem('finora_client_id');
       if (!options.silent) {
         show('login');
       }
@@ -2003,9 +2003,9 @@ window.login = async function(options = { silent: false, redirect: false }) {
     user.bannerMessage = user.bannerMessage || '';
     user.bannerRead = user.bannerRead || false;
 
-    localStorage.setItem('zenpay_session', JSON.stringify({ e, p }));
-    localStorage.setItem('zenpay_theme', user.theme);
-    localStorage.setItem('zenpay_client_id', fid);
+    localStorage.setItem('finora_session', JSON.stringify({ e, p }));
+    localStorage.setItem('finora_theme', user.theme);
+    localStorage.setItem('finora_client_id', fid);
 
     document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
@@ -2064,10 +2064,10 @@ window.logout = async function() {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
     } catch(e) {}
   }
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
+  localStorage.removeItem('finora_session');
+  localStorage.removeItem('finora_session_id');
+  localStorage.removeItem('finora_client_id');
+  localStorage.removeItem('finora_theme');
   user = null;
   if (historyListener) historyListener();
   if (balanceListener) balanceListener();
@@ -2115,10 +2115,10 @@ window.logout = async function() {
     } catch(e) { console.error(e); }
   }
 
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
+  localStorage.removeItem('finora_session');
+  localStorage.removeItem('finora_session_id');
+  localStorage.removeItem('finora_client_id');
+  localStorage.removeItem('finora_theme');
 
   if (historyListener) historyListener();
   if (balanceListener) balanceListener();
@@ -2130,14 +2130,14 @@ window.logout = async function() {
 };
 
 // ===== RESTAURATION DE SESSION =====
-const saved = localStorage.getItem('zenpay_session');
-const savedClientId = localStorage.getItem('zenpay_client_id');
+const saved = localStorage.getItem('finora_session');
+const savedClientId = localStorage.getItem('finora_client_id');
 
 if (window.__clientIdFromUrl && savedClientId && savedClientId !== window.__clientIdFromUrl) {
-  localStorage.removeItem('zenpay_session');
-  localStorage.removeItem('zenpay_session_id');
-  localStorage.removeItem('zenpay_client_id');
-  localStorage.removeItem('zenpay_theme');
+  localStorage.removeItem('finora_session');
+  localStorage.removeItem('finora_session_id');
+  localStorage.removeItem('finora_client_id');
+  localStorage.removeItem('finora_theme');
   show('login');
 } else if (saved) {
   try {
