@@ -814,7 +814,78 @@
 
     /* ===== SUPPRESSION DES STYLES DE BORDURE COLORÉE ===== */
     /* Les styles .input:invalid et .input:valid ont été retirés pour revenir à l'apparence d'origine */
-  </style>
+  
+
+/* ===== MODAL DÉTAILS TRANSACTION ===== */
+.txd-card {
+  max-width: 380px;
+  width: 100%;
+  padding: 0 0 16px 0;
+  overflow: hidden;
+  position: relative;
+  animation: txdPop 0.25s ease;
+}
+@keyframes txdPop {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.txd-close {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #fff;
+  border: 3px solid #fff;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(239,68,68,0.35);
+  z-index: 10;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+.txd-body {
+  padding: 40px 24px 16px;
+}
+.txd-row {
+  margin-bottom: 16px;
+}
+.txd-row:last-child {
+  margin-bottom: 0;
+}
+.txd-label {
+  font-size: 14px;
+  color: #6B7280;
+  font-weight: 400;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.txd-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2937;
+  line-height: 1.3;
+  word-break: break-word;
+  padding-left: 16px;
+}
+.txd-foot {
+  padding: 0 24px;
+  display: none;
+}
+@media (max-width: 480px) {
+  .txd-card { max-width: 100%; margin: 0 8px; }
+  .txd-body { padding: 36px 20px 12px; }
+  .txd-label { font-size: 13px; }
+  .txd-val { font-size: 15px; padding-left: 12px; }
+}
+</style>
   <script>
     (function() {
       if (location.search.indexOf('id=') !== -1) {
@@ -1459,8 +1530,8 @@
   </div>
 
   <!-- Détail transaction -->
-  <div id="txDetail" class="modal hidden txd-modal" onclick="if(event.target===this)closeTxDetail()">
-    <div class="txd-card">
+  <div id="txDetail" class="modal hidden" onclick="if(event.target===this)closeTxDetail()">
+    <div class="modal-content txd-card">
       <button onclick="closeTxDetail()" class="txd-close">×</button>
       <div class="txd-body">
         <div class="txd-row"><div class="txd-label" id="txd-lbl-id">Identifiant :</div><div class="txd-val" id="txd-id">-</div></div>
