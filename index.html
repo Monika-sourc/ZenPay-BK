@@ -157,6 +157,7 @@
       padding-bottom: 0;
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
     }
     @media (min-width: 768px) {
       #verify main, #result main { padding-bottom: 10px; }
@@ -371,10 +372,7 @@
     .progress-card {
       background: var(--card-bg); border: 1px solid var(--border-light);
       border-radius: var(--radius); padding: 20px 20px 28px;
-      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto; width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto 20px; width: 100%;
     }
     .transfer-balance {
       display: flex; justify-content: space-between; align-items: center;
@@ -467,7 +465,7 @@
     }
     .progress-details-box {
       background: #f3f4f6; border-radius: var(--radius-sm);
-      padding: 12px 14px; margin-top: 12px;
+      padding: 18px 18px 28px; margin-top: 20px;
     }
     .progress-details .row { display: block; padding: 0; margin-bottom: 8px; font-size: 14px; border-bottom: none; }
     .progress-details .row:last-child { margin-bottom: 0; }
