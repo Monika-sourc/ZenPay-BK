@@ -2376,3 +2376,53 @@ nav {
     left: 19px;
   }
 }
+
+/* ===== AVATAR TRANSFERT DÉBIT – PROFIL GÉNÉRIQUE ===== */
+.tx-avatar-debit {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #FEF2F2;
+  border: 1.5px solid #FECACA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.08);
+}
+.tx-avatar-debit i {
+  color: #DC2626;
+  font-size: 18px;
+}
+
+/* ===== LOGO BANQUE – CONTENEUR CORRIGÉ ===== */
+.bank-logo-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+.bank-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.bank-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
