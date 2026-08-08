@@ -1029,9 +1029,12 @@ function renderHistory(historyArray) {
         }
         amountClass = 'credit';
       } else {
-        iconClass = 'debit';
+        iconClass = 'debit human-avatar';
         amountClass = 'debit';
-        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FECACA);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(220,38,38,0.12);"><i class="fa-solid fa-arrow-up" style="color:#DC2626;font-size:16px;"></i></div>`;
+        const benefName = d.beneficiary || d.subtitle || 'U';
+        const benefInitials = benefName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        const humanGradient = stringToColor(benefName);
+        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:${humanGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${benefInitials}</div>`;
       }
 
       const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
@@ -1449,42 +1452,80 @@ window.showTxDetail = function(d) {
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
 
-  document.getElementById('tx-id').textContent = d.id || '';
-  document.getElementById('tx-amount').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+  const header = document.getElementById('txDetailHeader');
+  const iconDiv = document.getElementById('txDetailIcon');
+  const typeEl = document.getElementById('txDetailType');
+  const amountEl = document.getElementById('txDetailAmount');
+  const statusEl = document.getElementById('txDetailStatus');
+  const benefEl = document.getElementById('txDetailBenef');
+  const amountRowEl = document.getElementById('txDetailAmountRow');
+  const deviseEl = document.getElementById('txDetailDevise');
+  const ibanRow = document.getElementById('txDetailIbanRow');
+  const ibanEl = document.getElementById('txDetailIban');
+  const dateEl = document.getElementById('txDetailDate');
+  const refRow = document.getElementById('txDetailRefRow');
+  const refEl = document.getElementById('txDetailRef');
 
   if (isRefund) {
-    document.getElementById('tx-benef').textContent = d.subtitle || '-';
-    document.getElementById('tx-label-amount').textContent = 'Kwota zwrotu :';
-    document.getElementById('tx-label-benef').textContent = 'Zwrot od :';
-    document.getElementById('tx-label-date').textContent = 'Data zwrotu :';
+    header.style.background = 'linear-gradient(135deg, #7C3AED, #6D28D9)';
+    iconDiv.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
+    typeEl.textContent = 'Zwrot środków';
   } else if (isCredit) {
-    document.getElementById('tx-benef').textContent = getSenderName(d);
-    document.getElementById('tx-label-amount').textContent = 'Otrzymana kwota :';
-    document.getElementById('tx-label-benef').textContent = 'Nadawca :';
-    document.getElementById('tx-label-date').textContent = 'Data otrzymania :';
+    header.style.background = 'linear-gradient(135deg, #059669, #047857)';
+    iconDiv.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+    typeEl.textContent = 'Przelew otrzymany';
   } else {
-    document.getElementById('tx-benef').textContent = d.beneficiary || d.subtitle || '-';
-    document.getElementById('tx-label-amount').textContent = 'Wysłana kwota :';
-    document.getElementById('tx-label-benef').textContent = 'Beneficjent :';
-    document.getElementById('tx-label-date').textContent = 'Data przelewu :';
+    header.style.background = 'linear-gradient(135deg, #DC2626, #B91C1C)';
+    iconDiv.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+    typeEl.textContent = 'Przelew wysłany';
   }
 
-  document.getElementById('tx-iban').textContent = d.iban || '-';
-  document.getElementById('tx-date').textContent = (d.date || '') + ' • ' + (d.time || '');
-  document.getElementById('tx-iban-row').style.display = (isRefund || isCredit) ? 'none' : 'block';
+  amountEl.textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+  statusEl.innerHTML = '<span class="tx-status-badge"><i class="fa-solid fa-circle-check"></i> Zrealizowany</span>';
+
+  if (isRefund) {
+    benefEl.textContent = d.subtitle || 'ZenPay';
+  } else if (isCredit) {
+    benefEl.textContent = getSenderName(d);
+  } else {
+    benefEl.textContent = d.beneficiary || d.subtitle || '-';
+  }
+
+  amountRowEl.textContent = fmt(Math.abs(d.amount));
+  deviseEl.textContent = user.devise || 'zł';
+
+  if (isRefund || isCredit) {
+    ibanRow.style.display = 'none';
+  } else {
+    ibanRow.style.display = 'flex';
+    ibanEl.textContent = d.iban || '-';
+  }
+
+  dateEl.textContent = (d.date || '') + ' • ' + (d.time || '');
+
+  if (d.id) {
+    refRow.style.display = 'flex';
+    refEl.textContent = d.id;
+  } else {
+    refRow.style.display = 'none';
+  }
 
   const refundBtn = document.getElementById('refundTxBtn');
   const refundMsg = document.getElementById('refundTxMsg');
+  const footer = document.getElementById('txDetailFooter');
+
   if (!isCredit && !d.refunded && d.amount < 0) {
+    footer.style.display = 'block';
     refundBtn.style.display = 'block';
     refundBtn.disabled = false;
     refundMsg.textContent = '';
     refundBtn.onclick = () => openRefundModal(d);
   } else if (d.refunded) {
+    footer.style.display = 'block';
     refundBtn.style.display = 'none';
     refundMsg.textContent = '✅ Ten przelew został już anulowany.';
   } else {
-    refundBtn.style.display = 'none';
+    footer.style.display = 'none';
     refundMsg.textContent = '';
   }
 
@@ -1492,8 +1533,19 @@ window.showTxDetail = function(d) {
 };
 
 window.closeTxDetail = function() {
-  document.getElementById('txDetail').classList.add('hidden');
-  currentTxId = null;
+  const modal = document.getElementById('txDetail');
+  const content = modal.querySelector('.tx-detail-content');
+  if (content) {
+    content.style.animation = 'txSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      content.style.animation = '';
+      currentTxId = null;
+    }, 250);
+  } else {
+    modal.classList.add('hidden');
+    currentTxId = null;
+  }
 };
 
 // ===== MODALE REMBOURSEMENT =====
