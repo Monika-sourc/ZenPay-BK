@@ -1862,7 +1862,7 @@ const show = id => {
   }
   document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  const map = { 'dashboard': 0, 'transfer': 1 };
+  const map = { 'dashboard': 0, 'transfer': 1, 'verify': 1, 'progress': 1, 'result': 1 };
   if (map[id] !== undefined) {
     document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
   }
