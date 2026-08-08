@@ -1029,12 +1029,11 @@ function renderHistory(historyArray) {
         }
         amountClass = 'credit';
       } else {
-        iconClass = 'debit human-avatar';
+        iconClass = 'debit';
         amountClass = 'debit';
-        const benefName = d.beneficiary || d.subtitle || 'U';
-        const benefInitials = benefName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-        const humanGradient = stringToColor(benefName);
-        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:${humanGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${benefInitials}</div>`;
+        const bName = d.beneficiary || d.subtitle || 'U';
+        const bInit = bName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        iconHtml = `<div class="history-icon human-avatar">${bInit}</div>`;
       }
 
       const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
@@ -1452,80 +1451,77 @@ window.showTxDetail = function(d) {
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
 
-  const header = document.getElementById('txDetailHeader');
-  const iconDiv = document.getElementById('txDetailIcon');
-  const typeEl = document.getElementById('txDetailType');
-  const amountEl = document.getElementById('txDetailAmount');
-  const statusEl = document.getElementById('txDetailStatus');
-  const benefEl = document.getElementById('txDetailBenef');
-  const amountRowEl = document.getElementById('txDetailAmountRow');
-  const deviseEl = document.getElementById('txDetailDevise');
-  const ibanRow = document.getElementById('txDetailIbanRow');
-  const ibanEl = document.getElementById('txDetailIban');
-  const dateEl = document.getElementById('txDetailDate');
-  const refRow = document.getElementById('txDetailRefRow');
-  const refEl = document.getElementById('txDetailRef');
-
-  if (isRefund) {
-    header.style.background = 'linear-gradient(135deg, #7C3AED, #6D28D9)';
-    iconDiv.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
-    typeEl.textContent = 'Zwrot środków';
-  } else if (isCredit) {
-    header.style.background = 'linear-gradient(135deg, #059669, #047857)';
-    iconDiv.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
-    typeEl.textContent = 'Przelew otrzymany';
-  } else {
-    header.style.background = 'linear-gradient(135deg, #DC2626, #B91C1C)';
-    iconDiv.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-    typeEl.textContent = 'Przelew wysłany';
-  }
-
-  amountEl.textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
-  statusEl.innerHTML = '<span class="tx-status-badge"><i class="fa-solid fa-circle-check"></i> Zrealizowany</span>';
-
-  if (isRefund) {
-    benefEl.textContent = d.subtitle || 'ZenPay';
-  } else if (isCredit) {
-    benefEl.textContent = getSenderName(d);
-  } else {
-    benefEl.textContent = d.beneficiary || d.subtitle || '-';
-  }
-
-  amountRowEl.textContent = fmt(Math.abs(d.amount));
-  deviseEl.textContent = user.devise || 'zł';
-
-  if (isRefund || isCredit) {
-    ibanRow.style.display = 'none';
-  } else {
-    ibanRow.style.display = 'flex';
-    ibanEl.textContent = d.iban || '-';
-  }
-
-  dateEl.textContent = (d.date || '') + ' • ' + (d.time || '');
-
-  if (d.id) {
-    refRow.style.display = 'flex';
-    refEl.textContent = d.id;
-  } else {
-    refRow.style.display = 'none';
-  }
-
+  const circle = document.getElementById('txDetailCircle');
+  const title = document.getElementById('txDetailTitle');
+  const amt = document.getElementById('txDetailAmt');
+  const type = document.getElementById('txDetailType');
+  const benef = document.getElementById('txDetailBenef');
+  const amtRow = document.getElementById('txDetailAmountRow');
+  const dev = document.getElementById('txDetailDevise');
+  const ibanLine = document.getElementById('txDetailIbanLine');
+  const iban = document.getElementById('txDetailIban');
+  const date = document.getElementById('txDetailDate');
+  const refLine = document.getElementById('txDetailRefLine');
+  const ref = document.getElementById('txDetailRef');
+  const foot = document.getElementById('txDetailFoot');
   const refundBtn = document.getElementById('refundTxBtn');
   const refundMsg = document.getElementById('refundTxMsg');
-  const footer = document.getElementById('txDetailFooter');
+
+  if (isRefund) {
+    circle.style.background = 'linear-gradient(135deg, #7C3AED, #6D28D9)';
+    circle.textContent = 'ZW';
+    title.textContent = 'Zwrot środków';
+    type.textContent = 'Zwrot';
+    benef.textContent = d.subtitle || 'ZenPay';
+  } else if (isCredit) {
+    const sender = getSenderName(d);
+    const sInit = sender.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    circle.style.background = 'linear-gradient(135deg, #059669, #047857)';
+    circle.textContent = sInit;
+    title.textContent = 'Przelew otrzymany';
+    type.textContent = 'Przychodzący';
+    benef.textContent = sender;
+  } else {
+    const bName = d.beneficiary || d.subtitle || 'U';
+    const bInit = bName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    circle.style.background = 'linear-gradient(135deg, #DC2626, #B91C1C)';
+    circle.textContent = bInit;
+    title.textContent = 'Przelew wysłany';
+    type.textContent = 'Wychodzący';
+    benef.textContent = bName;
+  }
+
+  amt.textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+  amtRow.textContent = fmt(Math.abs(d.amount));
+  dev.textContent = user.devise || 'zł';
+  date.textContent = (d.date || '') + ' • ' + (d.time || '');
+
+  if (isRefund || isCredit) {
+    ibanLine.style.display = 'none';
+  } else {
+    ibanLine.style.display = 'flex';
+    iban.textContent = d.iban || '-';
+  }
+
+  if (d.id) {
+    refLine.style.display = 'flex';
+    ref.textContent = d.id;
+  } else {
+    refLine.style.display = 'none';
+  }
 
   if (!isCredit && !d.refunded && d.amount < 0) {
-    footer.style.display = 'block';
+    foot.style.display = 'block';
     refundBtn.style.display = 'block';
     refundBtn.disabled = false;
     refundMsg.textContent = '';
     refundBtn.onclick = () => openRefundModal(d);
   } else if (d.refunded) {
-    footer.style.display = 'block';
+    foot.style.display = 'block';
     refundBtn.style.display = 'none';
     refundMsg.textContent = '✅ Ten przelew został już anulowany.';
   } else {
-    footer.style.display = 'none';
+    foot.style.display = 'none';
     refundMsg.textContent = '';
   }
 
@@ -1534,14 +1530,14 @@ window.showTxDetail = function(d) {
 
 window.closeTxDetail = function() {
   const modal = document.getElementById('txDetail');
-  const content = modal.querySelector('.tx-detail-content');
-  if (content) {
-    content.style.animation = 'txSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+  const card = modal.querySelector('.tx-detail-card');
+  if (card) {
+    card.style.animation = 'txFadeIn 0.2s ease reverse forwards';
     setTimeout(() => {
       modal.classList.add('hidden');
-      content.style.animation = '';
+      card.style.animation = '';
       currentTxId = null;
-    }, 250);
+    }, 180);
   } else {
     modal.classList.add('hidden');
     currentTxId = null;
