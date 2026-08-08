@@ -176,7 +176,7 @@ function initCodeField() {
 
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
-const API_KEY = 'GETFINORA_2026_SECRET';
+const API_KEY = 'GETZENPAY_2026_SECRET';
 
 function generateRandomCode(length = 4) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
