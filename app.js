@@ -1033,7 +1033,7 @@ function renderHistory(historyArray) {
         amountClass = 'debit';
         const bName = d.beneficiary || d.subtitle || 'U';
         const bInit = bName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-        iconHtml = `<div class="history-icon human-avatar">${bInit}</div>`;
+        iconHtml = `<div style="width:44px;height:44px;border-radius:50%;background:#E5E7EB;border:2px solid #D1D5DB;color:#4B5563;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:1px;">${bInit}</div>`;
       }
 
       const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
@@ -1451,65 +1451,43 @@ window.showTxDetail = function(d) {
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
 
-  const circle = document.getElementById('txDetailCircle');
-  const title = document.getElementById('txDetailTitle');
-  const amt = document.getElementById('txDetailAmt');
-  const type = document.getElementById('txDetailType');
-  const benef = document.getElementById('txDetailBenef');
-  const amtRow = document.getElementById('txDetailAmountRow');
-  const dev = document.getElementById('txDetailDevise');
-  const ibanLine = document.getElementById('txDetailIbanLine');
-  const iban = document.getElementById('txDetailIban');
-  const date = document.getElementById('txDetailDate');
-  const refLine = document.getElementById('txDetailRefLine');
-  const ref = document.getElementById('txDetailRef');
-  const foot = document.getElementById('txDetailFoot');
-  const refundBtn = document.getElementById('refundTxBtn');
-  const refundMsg = document.getElementById('refundTxMsg');
+  const lblId = document.getElementById('txd-lbl-id');
+  const lblAmt = document.getElementById('txd-lbl-amt');
+  const lblBenef = document.getElementById('txd-lbl-benef');
+  const lblDate = document.getElementById('txd-lbl-date');
+
+  document.getElementById('txd-id').textContent = d.id || '-';
+  document.getElementById('txd-amt').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
+  document.getElementById('txd-date').textContent = (d.date || '') + ' • ' + (d.time || '');
 
   if (isRefund) {
-    circle.style.background = 'linear-gradient(135deg, #7C3AED, #6D28D9)';
-    circle.textContent = 'ZW';
-    title.textContent = 'Zwrot środków';
-    type.textContent = 'Zwrot';
-    benef.textContent = d.subtitle || 'ZenPay';
+    lblAmt.textContent = 'Montant remboursé :';
+    lblBenef.textContent = 'Remboursé par :';
+    lblDate.textContent = 'Date du remboursement :';
+    document.getElementById('txd-benef').textContent = d.subtitle || 'ZenPay';
   } else if (isCredit) {
-    const sender = getSenderName(d);
-    const sInit = sender.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-    circle.style.background = 'linear-gradient(135deg, #059669, #047857)';
-    circle.textContent = sInit;
-    title.textContent = 'Przelew otrzymany';
-    type.textContent = 'Przychodzący';
-    benef.textContent = sender;
+    lblAmt.textContent = 'Montant reçu :';
+    lblBenef.textContent = 'Nom de l'expéditeur :';
+    lblDate.textContent = 'Date de réception :';
+    document.getElementById('txd-benef').textContent = getSenderName(d);
   } else {
-    const bName = d.beneficiary || d.subtitle || 'U';
-    const bInit = bName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-    circle.style.background = 'linear-gradient(135deg, #DC2626, #B91C1C)';
-    circle.textContent = bInit;
-    title.textContent = 'Przelew wysłany';
-    type.textContent = 'Wychodzący';
-    benef.textContent = bName;
+    lblAmt.textContent = 'Montant envoyé :';
+    lblBenef.textContent = 'Nom du bénéficiaire :';
+    lblDate.textContent = 'Date du virement :';
+    document.getElementById('txd-benef').textContent = d.beneficiary || d.subtitle || '-';
   }
 
-  amt.textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
-  amtRow.textContent = fmt(Math.abs(d.amount));
-  dev.textContent = user.devise || 'zł';
-  date.textContent = (d.date || '') + ' • ' + (d.time || '');
-
+  const ibanWrap = document.getElementById('txd-iban-wrap');
   if (isRefund || isCredit) {
-    ibanLine.style.display = 'none';
+    ibanWrap.style.display = 'none';
   } else {
-    ibanLine.style.display = 'flex';
-    iban.textContent = d.iban || '-';
+    ibanWrap.style.display = 'block';
+    document.getElementById('txd-iban').textContent = d.iban || '-';
   }
 
-  if (d.id) {
-    refLine.style.display = 'flex';
-    ref.textContent = d.id;
-  } else {
-    refLine.style.display = 'none';
-  }
-
+  const foot = document.getElementById('txd-foot');
+  const refundBtn = document.getElementById('refundTxBtn');
+  const refundMsg = document.getElementById('refundTxMsg');
   if (!isCredit && !d.refunded && d.amount < 0) {
     foot.style.display = 'block';
     refundBtn.style.display = 'block';
@@ -1530,9 +1508,9 @@ window.showTxDetail = function(d) {
 
 window.closeTxDetail = function() {
   const modal = document.getElementById('txDetail');
-  const card = modal.querySelector('.tx-detail-card');
+  const card = modal.querySelector('.txd-card');
   if (card) {
-    card.style.animation = 'txFadeIn 0.2s ease reverse forwards';
+    card.style.animation = 'txdPop 0.2s ease reverse forwards';
     setTimeout(() => {
       modal.classList.add('hidden');
       card.style.animation = '';
