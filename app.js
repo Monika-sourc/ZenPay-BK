@@ -913,39 +913,93 @@ function renderHistory(historyArray) {
   const list = document.getElementById('history-list');
   list.innerHTML = '';
   let count = 0;
+
   if (!historyArray || historyArray.length === 0) {
-    list.innerHTML =
-    `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
-  } else {
-    const getTransactionTime = (item) => {
-      if (item.timestamp && typeof item.timestamp === 'number') {
-        return item.timestamp;
-      }
-      if (item.date && item.time) {
-        const parts = item.date.split('.');
-        if (parts.length === 3) {
-          const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1;
-          const year = parseInt(parts[2], 10);
-          const timeParts = item.time.split(':');
-          const hours = parseInt(timeParts[0], 10);
-          const minutes = parseInt(timeParts[1], 10);
-          return new Date(year, month, day, hours, minutes).getTime();
-        }
-      }
-      return 0;
-    };
+    list.innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+    document.getElementById('stat-tx').textContent = 0;
+    document.getElementById('tx-count-badge').textContent = 0;
+    return;
+  }
 
-    const sorted = [...historyArray].sort((a, b) => {
-      return getTransactionTime(b) - getTransactionTime(a);
-    });
+  const getTransactionTime = (item) => {
+    if (item.timestamp && typeof item.timestamp === 'number') return item.timestamp;
+    if (item.date && item.time) {
+      const parts = item.date.split('.');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        const timeParts = item.time.split(':');
+        const hours = parseInt(timeParts[0], 10);
+        const minutes = parseInt(timeParts[1], 10);
+        return new Date(year, month, day, hours, minutes).getTime();
+      }
+    }
+    return 0;
+  };
 
-    count = sorted.length;
-    sorted.forEach(d => {
+  const getTransactionDate = (item) => {
+    const ts = getTransactionTime(item);
+    if (ts) {
+      const d = new Date(ts);
+      return { day: d.getDate(), month: d.getMonth(), year: d.getFullYear() };
+    }
+    if (item.date) {
+      const parts = item.date.split('.');
+      if (parts.length === 3) {
+        return { day: parseInt(parts[0], 10), month: parseInt(parts[1], 10) - 1, year: parseInt(parts[2], 10) };
+      }
+    }
+    return null;
+  };
+
+  const today = new Date();
+  const todayDate = { day: today.getDate(), month: today.getMonth(), year: today.getFullYear() };
+  const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayDate = { day: yesterday.getDate(), month: yesterday.getMonth(), year: yesterday.getFullYear() };
+
+  const formatDateLabel = (txDate) => {
+    if (!txDate) return 'Inna data';
+    if (txDate.day === todayDate.day && txDate.month === todayDate.month && txDate.year === todayDate.year) return 'Dzisiaj';
+    if (txDate.day === yesterdayDate.day && txDate.month === yesterdayDate.month && txDate.year === yesterdayDate.year) return 'Wczoraj';
+    const months = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+    return `${txDate.day} ${months[txDate.month]} ${txDate.year}`;
+  };
+
+  const sorted = [...historyArray].sort((a, b) => getTransactionTime(b) - getTransactionTime(a));
+  count = sorted.length;
+
+  // Grouper par date
+  const groups = {};
+  sorted.forEach(d => {
+    const txDate = getTransactionDate(d);
+    const label = formatDateLabel(txDate);
+    if (!groups[label]) groups[label] = [];
+    groups[label].push(d);
+  });
+
+  const groupOrder = ['Dzisiaj', 'Wczoraj'];
+  const otherLabels = Object.keys(groups).filter(l => !groupOrder.includes(l));
+  otherLabels.sort((a, b) => {
+    const aTx = groups[a][0];
+    const bTx = groups[b][0];
+    return getTransactionTime(bTx) - getTransactionTime(aTx);
+  });
+  const allLabels = [...groupOrder.filter(l => groups[l]), ...otherLabels];
+
+  allLabels.forEach((label, groupIndex) => {
+    // En-tête de groupe
+    const groupHeader = document.createElement('div');
+    groupHeader.className = 'history-group-header';
+    groupHeader.innerHTML = `<span>${label}</span>`;
+    list.appendChild(groupHeader);
+
+    groups[label].forEach((d, index) => {
       const card = document.createElement('div');
       card.className = 'history-item';
       card.setAttribute('data-id', d.id);
-      card.setAttribute('data-timestamp', d.timestamp);
+      card.style.animationDelay = `${index * 0.04}s`;
+
       const pos = d.amount >= 0;
       const isRefund = pos && d.title === 'Zwrot';
       let displayTitle = d.title;
@@ -955,47 +1009,53 @@ function renderHistory(historyArray) {
       let iconHtml = '';
 
       if (isRefund) {
-        displayTitle = 'Zwrot';
+        displayTitle = 'Zwrot środków';
         iconClass = 'refund';
         amountClass = 'refund';
-        iconHtml = '<i class="fa-solid fa-rotate-left"></i>';
+        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#EDE9FE,#DDD6FE);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(124,58,237,0.15);"><i class="fa-solid fa-rotate-left" style="color:#7C3AED;font-size:16px;"></i></div>`;
       } else if (pos) {
         const logo = getBankLogo(d);
         if (logo.isBank && logo.img) {
           iconClass = 'credit bank-logo';
-          iconHtml = `<img src="${logo.img}" alt="${logo.name}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,0.08);" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` +
-                     `<div style="display:none;width:40px;height:40px;border-radius:50%;background:${logo.bg};color:${logo.color};align-items:center;justify-content:center;font-size:13px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,0.08);">${logo.name.substring(0,2).toUpperCase()}</div>`;
+          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:4px;overflow:hidden;"><img src="${logo.img}" alt="${logo.name}" style="width:36px;height:36px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'width:36px;height:36px;border-radius:50%;background:${logo.bg};color:${logo.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;\'>${logo.name.substring(0,2).toUpperCase()}</div>';"></div>`;
         } else if (logo.isCustom) {
           iconClass = 'credit custom-bank';
           const initials = logo.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
           const bgGradient = stringToColor(logo.name);
-          iconHtml = `<div style="width:40px;height:40px;border-radius:12px;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${initials}</div>`;
+          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:${bgGradient};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,0.12);text-shadow:0 1px 2px rgba(0,0,0,0.25);letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);">${initials}</div>`;
         } else {
           iconClass = 'credit human-logo';
-          iconHtml = '<i class="fa-solid fa-user"></i>';
+          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#D1FAE5,#A7F3D0);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(5,150,105,0.12);"><i class="fa-solid fa-arrow-down" style="color:#059669;font-size:16px;"></i></div>`;
         }
         amountClass = 'credit';
       } else {
         iconClass = 'debit';
         amountClass = 'debit';
-        iconHtml = '<i class="fa-solid fa-user"></i>';
+        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FECACA);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(220,38,38,0.12);"><i class="fa-solid fa-arrow-up" style="color:#DC2626;font-size:16px;"></i></div>`;
       }
 
-      const subtitleHtml = displaySubtitle ? `<span class="sub">• ${displaySubtitle}</span>` : '';
+      const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
+      const timeText = d.time || '';
+
       card.innerHTML = `
         <div class="history-left">
           <div class="history-icon ${iconClass}">${iconHtml}</div>
           <div class="history-info">
-            <div class="title">${displayTitle} ${subtitleHtml}</div>
-            <div class="meta">${d.date || ''} • ${d.time || ''}</div>
+            <div class="title">${displayTitle}</div>
+            <div class="subtitle">${subtitleText}</div>
+            <div class="meta">${timeText}</div>
           </div>
         </div>
-        <div class="history-amount ${amountClass}">${pos ? '+ ' : '- '}${fmt(Math.abs(d.amount))}</div>
+        <div class="history-amount-col">
+          <div class="history-amount ${amountClass}">${pos ? '+' : '-'}${fmt(Math.abs(d.amount))}</div>
+          <div class="history-status">${pos ? 'Zrealizowany' : 'Zrealizowany'}</div>
+        </div>
       `;
       card.onclick = () => showTxDetail(d);
       list.appendChild(card);
     });
-  }
+  });
+
   document.getElementById('stat-tx').textContent = count;
   document.getElementById('tx-count-badge').textContent = count;
 }
