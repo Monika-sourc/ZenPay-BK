@@ -1459,47 +1459,49 @@
   </div>
 
   <!-- Détail transaction -->
-  <div id="txDetail" class="modal hidden tx-detail-modal" onclick="if(event.target===this)withSpinner(()=>closeTxDetail())">
-    <div class="modal-content tx-detail-content">
-      <button onclick="withSpinner(() => closeTxDetail())" class="tx-detail-close">×</button>
+  <div id="txDetail" class="modal hidden" onclick="if(event.target===this)closeTxDetail()">
+    <div class="modal-content tx-detail-card">
+      <button onclick="closeTxDetail()" class="tx-detail-x">×</button>
 
-      <div class="tx-detail-header" id="txDetailHeader">
-        <div class="tx-detail-icon" id="txDetailIcon"><i class="fa-solid fa-receipt"></i></div>
-        <div class="tx-detail-type" id="txDetailType">-</div>
-        <div class="tx-detail-amount" id="txDetailAmount">-</div>
-        <div class="tx-detail-status" id="txDetailStatus">
-          <span class="tx-status-badge"><i class="fa-solid fa-circle-check"></i> Zrealizowany</span>
+      <div class="tx-detail-top">
+        <div class="tx-detail-circle" id="txDetailCircle">ZP</div>
+        <div class="tx-detail-title" id="txDetailTitle">-</div>
+        <div class="tx-detail-amt" id="txDetailAmt">-</div>
+        <div class="tx-detail-stat"><i class="fa-solid fa-circle-check"></i> Zrealizowany</div>
+      </div>
+
+      <div class="tx-detail-rows">
+        <div class="tx-detail-line">
+          <span class="tx-detail-lbl">Typ</span>
+          <span class="tx-detail-val" id="txDetailType">-</span>
+        </div>
+        <div class="tx-detail-line">
+          <span class="tx-detail-lbl">Nadawca / Odbiorca</span>
+          <span class="tx-detail-val" id="txDetailBenef">-</span>
+        </div>
+        <div class="tx-detail-line">
+          <span class="tx-detail-lbl">Kwota</span>
+          <span class="tx-detail-val" id="txDetailAmountRow">-</span>
+        </div>
+        <div class="tx-detail-line">
+          <span class="tx-detail-lbl">Waluta</span>
+          <span class="tx-detail-val" id="txDetailDevise">-</span>
+        </div>
+        <div class="tx-detail-line" id="txDetailIbanLine">
+          <span class="tx-detail-lbl">IBAN / Konto</span>
+          <span class="tx-detail-val" id="txDetailIban">-</span>
+        </div>
+        <div class="tx-detail-line">
+          <span class="tx-detail-lbl">Data i godzina</span>
+          <span class="tx-detail-val" id="txDetailDate">-</span>
+        </div>
+        <div class="tx-detail-line" id="txDetailRefLine">
+          <span class="tx-detail-lbl">Numer referencyjny</span>
+          <span class="tx-detail-val" id="txDetailRef">-</span>
         </div>
       </div>
 
-      <div class="tx-detail-body">
-        <div class="tx-detail-row">
-          <div class="tx-detail-label">Nadawca / Odbiorca</div>
-          <div class="tx-detail-value" id="txDetailBenef">-</div>
-        </div>
-        <div class="tx-detail-row">
-          <div class="tx-detail-label">Kwota</div>
-          <div class="tx-detail-value" id="txDetailAmountRow">-</div>
-        </div>
-        <div class="tx-detail-row">
-          <div class="tx-detail-label">Waluta</div>
-          <div class="tx-detail-value" id="txDetailDevise">-</div>
-        </div>
-        <div class="tx-detail-row" id="txDetailIbanRow">
-          <div class="tx-detail-label">IBAN / Numer konta</div>
-          <div class="tx-detail-value" id="txDetailIban">-</div>
-        </div>
-        <div class="tx-detail-row">
-          <div class="tx-detail-label">Data i godzina</div>
-          <div class="tx-detail-value" id="txDetailDate">-</div>
-        </div>
-        <div class="tx-detail-row" id="txDetailRefRow">
-          <div class="tx-detail-label">Numer referencyjny</div>
-          <div class="tx-detail-value" id="txDetailRef">-</div>
-        </div>
-      </div>
-
-      <div class="tx-detail-footer" id="txDetailFooter">
+      <div class="tx-detail-foot" id="txDetailFoot">
         <button id="refundTxBtn" class="btn" style="background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);font-size:13px;padding:10px;">
           <i class="fa-solid fa-rotate-left"></i> Anuluj ten przelew
         </button>
