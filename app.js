@@ -1017,7 +1017,7 @@ function renderHistory(historyArray) {
         const logo = getBankLogo(d);
         if (logo.isBank && logo.img) {
           iconClass = 'credit bank-logo';
-          iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:4px;overflow:hidden;"><img src="${logo.img}" alt="${logo.name}" style="width:36px;height:36px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\'width:36px;height:36px;border-radius:50%;background:${logo.bg};color:${logo.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;\'>${logo.name.substring(0,2).toUpperCase()}</div>';"></div>`;
+          iconHtml = `<div class="bank-logo-wrap"><img src="${logo.img}" alt="${logo.name}" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\'bank-fallback\' style=\'background:${logo.bg};color:${logo.color};\'>${logo.name.substring(0,2).toUpperCase()}</div>';"></div>`;
         } else if (logo.isCustom) {
           iconClass = 'credit custom-bank';
           const initials = logo.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
@@ -1031,9 +1031,7 @@ function renderHistory(historyArray) {
       } else {
         iconClass = 'debit';
         amountClass = 'debit';
-        const bName = d.beneficiary || d.subtitle || 'U';
-        const bInit = bName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-        iconHtml = `<div style="width:44px;height:44px;border-radius:50%;background:#E5E7EB;border:2px solid #D1D5DB;color:#4B5563;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:1px;">${bInit}</div>`;
+        iconHtml = `<div class="tx-avatar-debit"><i class="fa-solid fa-user"></i></div>`;
       }
 
       const subtitleText = displaySubtitle ? displaySubtitle : (pos ? 'Przelew otrzymany' : 'Przelew wysłany');
