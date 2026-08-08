@@ -1467,7 +1467,7 @@ window.showTxDetail = function(d) {
     document.getElementById('txd-benef').textContent = d.subtitle || 'ZenPay';
   } else if (isCredit) {
     lblAmt.textContent = 'Montant reçu :';
-    lblBenef.textContent = 'Nom de l'expéditeur :';
+    lblBenef.textContent = "Nom de l'expéditeur :";
     lblDate.textContent = 'Date de réception :';
     document.getElementById('txd-benef').textContent = getSenderName(d);
   } else {
