@@ -264,25 +264,32 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Potwierdzenie przelewu – Younited</title>
+<style>
+  @media print {
+    body { background: #fff !important; }
+    .receipt-wrap { box-shadow: none !important; border: 2px solid #000 !important; }
+  }
+</style>
 </head>
-<body style="margin:0; padding:0; background:#f3f4f6; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f6; margin:0; padding:0;">
+<body style="margin:0; padding:24px 12px; background:#e5e7eb; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#e5e7eb; margin:0; padding:0;">
   <tr>
-    <td align="center" style="padding:0; margin:0;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:none; background:#ffffff; border-radius:0; overflow:hidden;">
+    <td align="center" style="padding:0;">
+      <table class="receipt-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:640px; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #d1d5db; box-shadow:0 8px 32px rgba(0,0,0,0.12);">
 
         <!-- HEADER -->
         <tr>
-          <td style="background:linear-gradient(135deg, ${headerColor}, ${isRefund ? '#991B1B' : (success ? '#0F766E' : '#B45309')}); padding:28px 24px; text-align:center;">
-            <div style="font-size:36px; font-weight:900; color:#fff; letter-spacing:-0.5px;">Younited</div>
-            <div style="font-size:10px; color:rgba(255,255,255,0.75); margin-top:4px; text-transform:uppercase; letter-spacing:2px;">Bankowość internetowa</div>
+          <td style="background:linear-gradient(135deg, ${headerColor}, ${isRefund ? '#991B1B' : (success ? '#0F766E' : '#B45309')}); padding:32px 28px; text-align:center; position:relative;">
+            <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%); pointer-events:none;"></div>
+            <div style="font-size:32px; font-weight:900; color:#fff; letter-spacing:-0.5px; position:relative; z-index:1;">Younited</div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.75); margin-top:6px; text-transform:uppercase; letter-spacing:2px; font-weight:600; position:relative; z-index:1;">Bankowość internetowa</div>
           </td>
         </tr>
 
         <!-- BADGE STATUT -->
         <tr>
-          <td align="center" style="padding:28px 24px 8px;">
-            <div style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:50px; padding:8px 24px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;">
+          <td align="center" style="padding:28px 24px 10px;">
+            <div style="display:inline-block; background:${statutBg}; color:${statutColor}; border:2px solid ${statutColor}; border-radius:50px; padding:10px 28px; font-size:13px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
               ${iconChar} ${statutLabel}
             </div>
           </td>
@@ -290,46 +297,46 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
         <!-- MESSAGE -->
         <tr>
-          <td style="padding:16px 24px 8px; text-align:left;">
-            <p style="margin:0; font-size:14px; color:#4b5563; line-height:1.5;">${messageText}</p>
+          <td style="padding:10px 28px 6px; text-align:center;">
+            <p style="margin:0; font-size:15px; color:#4b5563; line-height:1.6; font-weight:500;">${messageText}</p>
           </td>
         </tr>
 
         <!-- RÉCÉPISSE BANCAIRE -->
         <tr>
-          <td style="padding:8px 24px 24px;">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#fafbfc; border:1px solid #e5e7eb; border-radius:12px; overflow:hidden;">
+          <td style="padding:10px 28px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${isRefund ? '#FEF2F2' : (success ? '#ECFDF5' : '#FFFBEB')}; border:2px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
               <tr>
-                <td colspan="2" style="background:#f8fafc; padding:14px 20px; border-bottom:1px solid #e5e7eb;">
-                  <div style="font-size:10px; color:#9ca3af; text-transform:uppercase; letter-spacing:1.5px; font-weight:600;">Potwierdzenie przelewu</div>
-                  <div style="font-size:16px; font-weight:700; color:#1a1a2e; margin-top:2px;">#${ref}</div>
+                <td colspan="2" style="background:${isRefund ? '#FEF2F2' : (success ? '#ECFDF5' : '#FFFBEB')}; padding:18px 24px; border-bottom:2px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')};">
+                  <div style="font-size:10px; color:${isRefund ? '#991B1B' : (success ? '#065F46' : '#92400E')}; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; opacity:0.7;">Potwierdzenie przelewu</div>
+                  <div style="font-size:18px; font-weight:800; color:#1a1a2e; margin-top:4px; letter-spacing:-0.3px;">#${ref}</div>
                 </td>
               </tr>
               <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280; width:40%;">Data i godzina</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${dateStr} • ${timeStr}</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:12px; color:#6b7280; width:38%; font-weight:600;">Data i godzina</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:14px; color:#1a1a2e; font-weight:700;">${dateStr} • ${timeStr}</td>
               </tr>
               <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Kwota</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:18px; color:${accentColor}; font-weight:800;">${montantFormatted}</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:12px; color:#6b7280; font-weight:600;">Kwota</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:22px; color:${accentColor}; font-weight:800; letter-spacing:-0.5px;">${montantFormatted}</td>
               </tr>
               <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">${isRefund ? 'Nadawca' : 'Odbiorca'}</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600;">${benef}</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:12px; color:#6b7280; font-weight:600;">${isRefund ? 'Nadawca' : 'Odbiorca'}</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:14px; color:#1a1a2e; font-weight:700;">${benef}</td>
               </tr>
               <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Konto (IBAN)</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:13px; color:#1a1a2e; font-weight:600; font-family:'Courier New',monospace; word-break:break-all;">${compteAffiche}</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:12px; color:#6b7280; font-weight:600;">Konto (IBAN)</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:14px; color:#1a1a2e; font-weight:700; font-family:'Courier New',monospace; word-break:break-all;">${compteAffiche}</td>
               </tr>
               <tr>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6; font-size:11px; color:#6b7280;">Status</td>
-                <td style="padding:12px 20px; border-bottom:1px solid #f3f4f6;">
-                  <span style="display:inline-block; background:${statutBg}; color:${statutColor}; border-radius:20px; padding:4px 14px; font-size:12px; font-weight:700;">${statutLabel}</span>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')}; font-size:12px; color:#6b7280; font-weight:600;">Status</td>
+                <td style="padding:14px 24px; border-bottom:1px solid ${isRefund ? '#FECACA' : (success ? '#A7F3D0' : '#FDE68A')};">
+                  <span style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:20px; padding:5px 16px; font-size:12px; font-weight:800; letter-spacing:0.5px;">${statutLabel}</span>
                 </td>
               </tr>
               ${!success && !isRefund ? `<tr>
-                <td style="padding:12px 20px; font-size:11px; color:#6b7280;">Postęp</td>
-                <td style="padding:12px 20px; font-size:13px; color:#1a1a2e; font-weight:700;">${pct || 0}%</td>
+                <td style="padding:14px 24px; font-size:12px; color:#6b7280; font-weight:600;">Postęp</td>
+                <td style="padding:14px 24px; font-size:14px; color:#1a1a2e; font-weight:800;">${pct || 0}%</td>
               </tr>` : ''}
             </table>
           </td>
@@ -337,12 +344,14 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
         <!-- SÉCURITÉ -->
         <tr>
-          <td style="padding:0 24px 24px;">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px;">
+          <td style="padding:0 28px 24px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:12px;">
               <tr>
-                <td style="padding:14px 18px;">
-                  <div style="font-size:12px; color:#15803d; font-weight:600; margin-bottom:4px;">🔒 Bezpieczeństwo transakcji</div>
-                  <div style="font-size:12px; color:#22c55e; line-height:1.5;">To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.</div>
+                <td style="padding:16px 20px;">
+                  <div style="font-size:13px; color:#15803d; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:16px;">🔒</span> Bezpieczeństwo transakcji
+                  </div>
+                  <div style="font-size:12px; color:#22c55e; line-height:1.6; font-weight:500;">To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.</div>
                 </td>
               </tr>
             </table>
@@ -351,10 +360,10 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
         <!-- FOOTER -->
         <tr>
-          <td style="padding:20px 24px; border-top:1px solid #f3f4f6; text-align:center;">
-            <div style="font-size:11px; color:#9ca3af; line-height:1.6;">
+          <td style="padding:20px 28px; border-top:2px solid #f3f4f6; text-align:center; background:#fafbfc;">
+            <div style="font-size:12px; color:#9ca3af; line-height:1.7; font-weight:500;">
               ${footerTextPlain}<br>
-              <span style="font-size:11px; color:#d1d5db;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</span>
+              <span style="font-size:11px; color:#d1d5db; font-weight:400;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</span>
             </div>
           </td>
         </tr>
@@ -364,8 +373,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
   </tr>
 </table>
 </body>
-</html>`;
-
+</html>`
     const textContent = `Younited – POTWIERDZENIE PRZELEWU
 
 Status: ${statutLabel}
