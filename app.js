@@ -482,7 +482,9 @@ const themes = {
   yellow: { p: '#EAB308', l: '#FEF3C7' },
   rose: { p: '#E83B7A', l: '#FCE4EC' },
   orange: { p: '#F97316', l: '#FED7AA' },
-  green: { p: '#22C55E', l: '#DCFCE7' }
+  green: { p: '#22C55E', l: '#DCFCE7' },
+  black: { p: '#111827', l: '#F3F4F6' },
+  white: { p: '#374151', l: '#FFFFFF' }
 };
 
 function adjustBrightness(hex, percent) {
