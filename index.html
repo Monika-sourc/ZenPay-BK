@@ -371,7 +371,7 @@
     }
     .progress-card {
       background: var(--card-bg); border: 1px solid var(--border-light);
-      border-radius: var(--radius); padding: 24px 24px 32px;
+      border-radius: var(--radius); padding: 28px 28px 36px;
       box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto 20px; width: 100%;
     }
     .transfer-balance {
@@ -419,8 +419,8 @@
       letter-spacing: 0.5px; margin-bottom: 3px; display: block;
     }
     .verify-details .value {
-      font-weight: 700; font-size: 16px; word-break: break-all; color: var(--text-primary);
-      padding-left: 14px; display: block;
+      font-weight: 800; font-size: 16px; word-break: break-all; color: #0f172a;
+      padding-left: 14px; display: block; text-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
     .verify-cancel {
       padding: 6px 14px; border: 1.5px solid #FCA5A5; color: #EF4444;
@@ -455,7 +455,7 @@
 
     .progress-pill {
       width: 100%; height: 56px; background: #fff; border: 3px solid var(--p);
-      border-radius: 50px; overflow: hidden; position: relative; margin: 24px 0 28px;
+      border-radius: 50px; overflow: hidden; position: relative; margin: 28px 0 32px;
     }
     .progress-pill-fill {
       height: 100%; background: var(--p); border-radius: 50px;
@@ -465,16 +465,16 @@
     }
     .progress-details-box {
       background: #f3f4f6; border-radius: var(--radius-sm);
-      padding: 20px 22px 28px; margin-top: 20px;
+      padding: 24px 26px 32px; margin-top: 24px;
     }
-    .progress-details .row { display: block; padding: 0; margin-bottom: 12px; font-size: 13px; border-bottom: none; }
+    .progress-details .row { display: block; padding: 0; margin-bottom: 16px; font-size: 13px; border-bottom: none; }
     .progress-details .row:last-child { margin-bottom: 0; }
     .progress-details .row .label {
       color: var(--text-secondary); font-weight: 400; display: block; margin-bottom: 2px; font-size: 12px;
     }
     .progress-details .row .value {
-      font-weight: 700; color: #1a1a2e; display: block; text-align: left;
-      word-break: break-all; max-width: 100%; font-size: 14px; padding-left: 10px;
+      font-weight: 800; color: #0f172a; display: block; text-align: left;
+      word-break: break-all; max-width: 100%; font-size: 14px; padding-left: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
     .receipt-card {
       background: #fff; border-radius: var(--radius);
@@ -491,7 +491,7 @@
     }
     .receipt-icon { font-size: 40px; margin-bottom: 8px; }
     .receipt-percent { font-size: 32px; font-weight: 800; color: #10B981; margin-bottom: 2px; }
-    .receipt-status { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+    .receipt-status { font-size: 16px; font-weight: 800; color: #0f172a; text-shadow: 0 1px 2px rgba(0,0,0,0.04); }
     .receipt-body { padding: 16px 24px; }
     .receipt-row {
       display: flex; justify-content: space-between; align-items: flex-start;
@@ -499,8 +499,8 @@
     }
     .receipt-row:last-child { border-bottom: none; }
     .receipt-row .r-label { color: #6b7280; font-weight: 500; flex-shrink: 0; padding-right: 12px; }
-    .receipt-row .r-value { color: #1a1a2e; font-weight: 600; text-align: right; word-break: break-all; max-width: 60%; }
-    .receipt-row .r-value.amount { font-size: 15px; font-weight: 700; }
+    .receipt-row .r-value { color: #0f172a; font-weight: 700; text-align: right; word-break: break-all; max-width: 60%; text-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .receipt-row .r-value.amount { font-size: 15px; font-weight: 800; color: #0f172a; text-shadow: 0 1px 2px rgba(0,0,0,0.04); }
     .receipt-row .r-value.status-tag {
       display: inline-flex; align-items: center; gap: 4px; color: #059669;
       font-weight: 600; font-size: 11px; background: #ecfdf5; padding: 3px 10px; border-radius: 20px;
@@ -1274,14 +1274,14 @@
       </div>
     </header>
     <main>
-      <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">Twoje aktualne polecenie przelewu...</h2>
+      <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:20px;">Twoje aktualne polecenie przelewu...</h2>
       <div class="progress-card">
         <div class="progress-status" style="margin-bottom:14px;">
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
             <i class="fa-solid fa-user" style="font-size:20px; color:var(--p);"></i>
             <strong style="font-size:14px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
           </div>
-          <div style="font-size:12px; color:var(--text-secondary); padding-left:28px;">
+          <div style="font-size:12px; color:var(--text-secondary); padding-left:28px; padding-bottom:4px;">
             Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
           </div>
         </div>
