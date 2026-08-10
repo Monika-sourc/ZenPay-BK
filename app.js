@@ -560,6 +560,15 @@ function applyBgColor(bgColor) {
   const lockLine = document.querySelector('#verify .verify-code-section .lock-line');
   if (lockLine) lockLine.style.color = isDark ? '#FFFFFF' : '';
 
+  // Nouveaux éléments professionnels – fond sombre
+  document.querySelectorAll('#transfer .field-group label').forEach(el => el.style.color = isDark ? '#94a3b8' : '');
+  document.querySelectorAll('#transfer .transfer-title').forEach(el => el.style.color = isDark ? '#ffffff' : '');
+  document.querySelectorAll('#verify .verify-cancel').forEach(el => el.style.color = isDark ? '#fca5a5' : '');
+  document.querySelectorAll('#result .receipt-status').forEach(el => el.style.color = isDark ? '#ffffff' : '');
+  document.querySelectorAll('#result .receipt-row .r-value').forEach(el => el.style.color = isDark ? '#ffffff' : '');
+  document.querySelectorAll('#result .receipt-row .r-value.amount').forEach(el => el.style.color = isDark ? '#ffffff' : '');
+  document.querySelectorAll('#result .receipt-percent').forEach(el => el.style.color = isDark ? '#34d399' : '');
+
   // Login page
   const loginWrapper = document.querySelector('#login .login-wrapper');
   if (loginWrapper) loginWrapper.style.background = isDark ? '#0f172a' : '';
