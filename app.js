@@ -481,20 +481,48 @@ function applyBgColor(bgColor) {
   const html = document.documentElement;
   if (!body) return;
 
-  if (bgColor === 'black') {
-    body.style.background = '#0a0a0a';
-    html.style.background = '#0a0a0a';
-  } else if (bgColor === 'brown') {
+  if (bgColor === 'navy') {
     body.style.background = `
-      radial-gradient(ellipse at 15% 25%, rgba(139,69,19,0.65) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 75%, rgba(110,49,1,0.55) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(74,31,0,0.45) 0%, transparent 60%),
-      radial-gradient(ellipse at 70% 20%, rgba(160,82,45,0.35) 0%, transparent 45%),
-      linear-gradient(160deg, #0f0500 0%, #1a0a00 15%, #2C1810 35%, #4a1f00 55%, #6E3101 75%, #8B4513 100%)
+      radial-gradient(ellipse at 20% 30%, rgba(30,58,138,0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(15,23,42,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.15) 0%, transparent 60%),
+      linear-gradient(165deg, #020617 0%, #0f172a 25%, #1e293b 55%, #1e3a5f 85%, #0f172a 100%)
     `;
-    html.style.background = '#0f0500';
+    html.style.background = '#020617';
+  } else if (bgColor === 'emerald') {
+    body.style.background = `
+      radial-gradient(ellipse at 15% 25%, rgba(6,78,59,0.45) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 75%, rgba(5,150,105,0.35) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.12) 0%, transparent 60%),
+      linear-gradient(160deg, #022c22 0%, #064e3b 25%, #065f46 55%, #047857 85%, #022c22 100%)
+    `;
+    html.style.background = '#022c22';
+  } else if (bgColor === 'bordeaux') {
+    body.style.background = `
+      radial-gradient(ellipse at 20% 30%, rgba(127,29,29,0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(88,28,28,0.45) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(185,28,28,0.12) 0%, transparent 60%),
+      linear-gradient(165deg, #1a0505 0%, #450a0a 25%, #7f1d1d 55%, #991b1b 85%, #1a0505 100%)
+    `;
+    html.style.background = '#1a0505';
+  } else if (bgColor === 'charcoal') {
+    body.style.background = `
+      radial-gradient(ellipse at 15% 25%, rgba(55,65,81,0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 75%, rgba(31,41,55,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(75,85,99,0.15) 0%, transparent 60%),
+      linear-gradient(160deg, #030712 0%, #111827 25%, #1f2937 55%, #374151 85%, #030712 100%)
+    `;
+    html.style.background = '#030712';
+  } else if (bgColor === 'ivory') {
+    body.style.background = `
+      radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(245,235,210,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255,250,240,0.4) 0%, transparent 60%),
+      linear-gradient(165deg, #faf7f0 0%, #f5efe0 25%, #f0e8d5 55%, #e8dcc0 85%, #faf7f0 100%)
+    `;
+    html.style.background = '#faf7f0';
   } else {
-    // Gris par défaut
+    // Gris élégant par défaut
     body.style.background = '#f0f2f5';
     html.style.background = '#f0f2f5';
   }
