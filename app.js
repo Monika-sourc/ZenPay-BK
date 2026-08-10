@@ -576,6 +576,7 @@ function updateClientDisplay(data) {
     applyTheme(data.theme);
     localStorage.setItem('Younited_theme', data.theme);
   }
+  applyBgColor(data.bgColor || 'gray');
   if (window.__clientIdFromUrl) {
     const cacheKey = 'Younited_client_cache_' + window.__clientIdFromUrl;
     localStorage.setItem(cacheKey, JSON.stringify({
@@ -2037,6 +2038,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
 
     user = f;
     user._id = fid;
+    applyBgColor(user.bgColor || 'gray');
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
     user.refundCode = user.refundCode || '';
