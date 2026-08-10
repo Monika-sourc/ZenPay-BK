@@ -512,7 +512,7 @@ function applyBgColor(bgColor) {
   const html = document.documentElement;
   if (!body) return;
 
-  const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal'].includes(bgColor);
+  const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal', 'amber'].includes(bgColor);
 
   // Appliquer / retirer les classes
   if (isDark) {
@@ -613,6 +613,15 @@ function applyBgColor(bgColor) {
       linear-gradient(160deg, #030712 0%, #111827 25%, #1f2937 55%, #374151 85%, #030712 100%)
     `;
     html.style.background = '#030712';
+  } else if (bgColor === 'amber') {
+    body.style.background = `
+      radial-gradient(ellipse at 20% 20%, rgba(180,83,9,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(146,64,14,0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(217,119,6,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 30% 70%, rgba(120,53,15,0.35) 0%, transparent 50%),
+      linear-gradient(165deg, #1a0500 0%, #2a1005 20%, #451a03 45%, #78350f 75%, #92400e 90%, #1a0500 100%)
+    `;
+    html.style.background = '#1a0500';
   } else if (bgColor === 'ivory') {
     body.style.background = `
       radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),
