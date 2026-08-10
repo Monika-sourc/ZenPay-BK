@@ -474,6 +474,32 @@ window.withSpinner = function(action, duration = 350) {
   }
 };
 
+
+// ===== COULEUR D'ARRIÈRE-PLAN =====
+function applyBgColor(bgColor) {
+  const body = document.body;
+  const html = document.documentElement;
+  if (!body) return;
+
+  if (bgColor === 'black') {
+    body.style.background = '#0a0a0a';
+    html.style.background = '#0a0a0a';
+  } else if (bgColor === 'brown') {
+    body.style.background = `
+      radial-gradient(ellipse at 15% 25%, rgba(139,69,19,0.65) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 75%, rgba(110,49,1,0.55) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(74,31,0,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 20%, rgba(160,82,45,0.35) 0%, transparent 45%),
+      linear-gradient(160deg, #0f0500 0%, #1a0a00 15%, #2C1810 35%, #4a1f00 55%, #6E3101 75%, #8B4513 100%)
+    `;
+    html.style.background = '#0f0500';
+  } else {
+    // Gris par défaut
+    body.style.background = '#f0f2f5';
+    html.style.background = '#f0f2f5';
+  }
+}
+
 // ===== THEMES =====
 const themes = {
   teal: { p: '#0D9488', l: '#CCFBF1' },
@@ -1247,6 +1273,8 @@ function watchClientStatus(userId) {
     user.bannerMessage = data.bannerMessage || '';
     user.bannerRead = data.bannerRead || false;
     updateBanner();
+    const bgColor = data.bgColor || 'gray';
+    applyBgColor(bgColor);
     
     if (oldNom !== user.nom) {
       const greetEl = document.getElementById('greet');
@@ -1363,6 +1391,8 @@ window.refreshData = async function(silent = true) {
     user.bannerMessage = data.bannerMessage || '';
     user.bannerRead = data.bannerRead || false;
     updateBanner();
+    const bgColor = data.bgColor || 'gray';
+    applyBgColor(bgColor);
     const greetEl = document.getElementById('greet');
     if (greetEl) {
       greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
