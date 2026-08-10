@@ -24,6 +24,37 @@ let statusListener = null;
 let sessionId = null;
 let refreshInProgress = false;
 let banqueRef = null;
+// ===== STYLES DYNAMIQUES POUR FONDS SOMBRES =====
+const darkStyleEl = document.createElement('style');
+darkStyleEl.id = 'younited-dark-bg';
+darkStyleEl.textContent = `
+  body.dark-bg #greet, body.dark-bg #greet span { color: #FFFFFF !important; text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
+  body.dark-bg #transfer > main > h1, body.dark-bg #verify > main > h1, body.dark-bg #progress > main > h2 { color: #FFFFFF !important; text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
+  body.dark-bg .progress-status div { color: #E5E7EB !important; }
+  body.dark-bg .progress-status strong { color: #FFFFFF !important; }
+  body.dark-bg .progress-details-title span { color: #FFFFFF !important; }
+  body.dark-bg .progress-details .row .label { color: #9CA3AF !important; }
+  body.dark-bg .progress-details .row .value { color: #FFFFFF !important; }
+  body.dark-bg .progress-details .row .value.bank-name { color: #FFFFFF !important; }
+  body.dark-bg .verify-details .label { color: #9CA3AF !important; }
+  body.dark-bg .verify-details .value { color: #FFFFFF !important; }
+  body.dark-bg .transfer-balance { color: #E5E7EB !important; }
+  body.dark-bg .transfer-balance b { color: #FFFFFF !important; }
+  body.dark-bg .verify-code-section .lock-line { color: #FFFFFF !important; }
+  body.dark-bg .field-group label { color: #6B7280 !important; }
+  body.dark-bg .login-wrapper { background: #0f172a !important; }
+  body.dark-bg .login-card { background: #1e293b !important; border-color: #334155 !important; }
+  body.dark-bg .login-title { color: #FFFFFF !important; }
+  body.dark-bg .login-sub { color: #94a3b8 !important; }
+  body.dark-bg .login-info { background: #0f172a !important; border-color: #334155 !important; color: #cbd5e1 !important; }
+  body.dark-bg .login-card .input { background: #0f172a !important; border-color: #334155 !important; color: #FFFFFF !important; }
+  body.dark-bg .login-card .input::placeholder { color: #64748b !important; }
+  body.dark-bg .login-card .input-group label { color: #94a3b8 !important; }
+  body.dark-bg #client-name { color: #FFFFFF !important; }
+`;
+if (document.head) document.head.appendChild(darkStyleEl);
+
+
 let bannerTimer = null;
 
 // ===== FIELD ERROR UTILITIES =====
@@ -481,15 +512,74 @@ function applyBgColor(bgColor) {
   const html = document.documentElement;
   if (!body) return;
 
-  // Détection fond sombre pour adapter les couleurs de texte
-  const darkBgs = ['navy', 'emerald', 'bordeaux', 'charcoal'];
-  if (darkBgs.includes(bgColor)) {
+  const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal'].includes(bgColor);
+
+  // Appliquer / retirer les classes
+  if (isDark) {
     body.classList.add('dark-bg');
     body.classList.remove('light-bg');
   } else {
     body.classList.remove('dark-bg');
     body.classList.add('light-bg');
   }
+
+  // === ADAPTATION DIRECTE DES COULEURS DE TEXTE (fond sombre) ===
+  const greet = document.getElementById('greet');
+  const greetSpan = document.querySelector('#greet span');
+  if (greet) greet.style.color = isDark ? '#FFFFFF' : '';
+  if (greetSpan) {
+    greetSpan.style.color = isDark ? '#FFFFFF' : '';
+    greetSpan.style.textShadow = isDark ? '0 1px 3px rgba(0,0,0,0.3)' : '';
+  }
+
+  // Titres des écrans transfer / verify / progress
+  const transferH1 = document.querySelector('#transfer > main > h1');
+  const verifyH1 = document.querySelector('#verify > main > h1');
+  const progressH2 = document.querySelector('#progress > main > h2');
+  if (transferH1) transferH1.style.color = isDark ? '#FFFFFF' : '';
+  if (verifyH1) verifyH1.style.color = isDark ? '#FFFFFF' : '';
+  if (progressH2) progressH2.style.color = isDark ? '#FFFFFF' : '';
+
+  // Progress page textes
+  const progressStatusDivs = document.querySelectorAll('#progress .progress-status div');
+  progressStatusDivs.forEach(el => el.style.color = isDark ? '#E5E7EB' : '');
+  const progressStatusStrong = document.querySelectorAll('#progress .progress-status strong');
+  progressStatusStrong.forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
+  const progressDetailsTitle = document.querySelector('#progress .progress-details-title span');
+  if (progressDetailsTitle) progressDetailsTitle.style.color = isDark ? '#FFFFFF' : '';
+  document.querySelectorAll('#progress .progress-details .row .label').forEach(el => el.style.color = isDark ? '#9CA3AF' : '');
+  document.querySelectorAll('#progress .progress-details .row .value').forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
+
+  // Verify page
+  document.querySelectorAll('#verify .verify-details .label').forEach(el => el.style.color = isDark ? '#9CA3AF' : '');
+  document.querySelectorAll('#verify .verify-details .value').forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
+  const transferBalance = document.querySelector('#transfer .transfer-balance');
+  if (transferBalance) transferBalance.style.color = isDark ? '#E5E7EB' : '';
+  const transferBalanceB = document.querySelector('#transfer .transfer-balance b');
+  if (transferBalanceB) transferBalanceB.style.color = isDark ? '#FFFFFF' : '';
+  const lockLine = document.querySelector('#verify .verify-code-section .lock-line');
+  if (lockLine) lockLine.style.color = isDark ? '#FFFFFF' : '';
+
+  // Login page
+  const loginWrapper = document.querySelector('#login .login-wrapper');
+  if (loginWrapper) loginWrapper.style.background = isDark ? '#0f172a' : '';
+  const loginCard = document.querySelector('#login .login-card');
+  if (loginCard) {
+    loginCard.style.background = isDark ? '#1e293b' : '';
+    loginCard.style.borderColor = isDark ? '#334155' : '';
+  }
+  const loginTitle = document.querySelector('#login .login-title');
+  if (loginTitle) loginTitle.style.color = isDark ? '#FFFFFF' : '';
+  const loginSub = document.querySelector('#login .login-sub');
+  if (loginSub) loginSub.style.color = isDark ? '#94a3b8' : '';
+  const loginInfo = document.querySelector('#login .login-info');
+  if (loginInfo) {
+    loginInfo.style.background = isDark ? '#0f172a' : '';
+    loginInfo.style.borderColor = isDark ? '#334155' : '';
+    loginInfo.style.color = isDark ? '#cbd5e1' : '';
+  }
+  const clientName = document.getElementById('client-name');
+  if (clientName) clientName.style.color = isDark ? '#FFFFFF' : '';
 
   if (bgColor === 'navy') {
     body.style.background = `
@@ -532,7 +622,6 @@ function applyBgColor(bgColor) {
     `;
     html.style.background = '#faf7f0';
   } else {
-    // Gris élégant par défaut
     body.style.background = '#f0f2f5';
     html.style.background = '#f0f2f5';
   }
