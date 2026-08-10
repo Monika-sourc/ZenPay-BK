@@ -481,6 +481,16 @@ function applyBgColor(bgColor) {
   const html = document.documentElement;
   if (!body) return;
 
+  // Détection fond sombre pour adapter les couleurs de texte
+  const darkBgs = ['navy', 'emerald', 'bordeaux', 'charcoal'];
+  if (darkBgs.includes(bgColor)) {
+    body.classList.add('dark-bg');
+    body.classList.remove('light-bg');
+  } else {
+    body.classList.remove('dark-bg');
+    body.classList.add('light-bg');
+  }
+
   if (bgColor === 'navy') {
     body.style.background = `
       radial-gradient(ellipse at 20% 30%, rgba(30,58,138,0.4) 0%, transparent 55%),
