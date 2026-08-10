@@ -2426,3 +2426,88 @@ nav {
   font-size: 11px;
   font-weight: 700;
 }
+
+/* ===== ADAPTATION AUTOMATIQUE POUR FONDS SOMBRES ===== */
+body.dark-bg #greet,
+body.dark-bg #greet span {
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.dark-bg #transfer > main > h1,
+body.dark-bg #verify > main > h1,
+body.dark-bg #progress > main > h2 {
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.dark-bg .progress-status div {
+  color: #E5E7EB;
+}
+
+body.dark-bg .progress-status strong {
+  color: #FFFFFF;
+}
+
+body.dark-bg .progress-details-title span {
+  color: #FFFFFF;
+}
+
+body.dark-bg .progress-details .row .label {
+  color: #9CA3AF;
+}
+
+body.dark-bg .progress-details .row .value {
+  color: #FFFFFF;
+}
+
+body.dark-bg .verify-details .label {
+  color: #9CA3AF;
+}
+
+body.dark-bg .verify-details .value {
+  color: #FFFFFF;
+}
+
+body.dark-bg .transfer-balance {
+  color: #E5E7EB;
+}
+
+body.dark-bg .transfer-balance b {
+  color: #FFFFFF;
+}
+
+body.dark-bg .verify-code-section .lock-line {
+  color: #FFFFFF;
+}
+
+body.dark-bg .verify-code-section .lock-line i {
+  color: var(--p);
+}
+
+body.dark-bg .field-group label {
+  color: #6B7280;
+}
+
+body.dark-bg .login-wrapper {
+  background: #0f172a;
+}
+
+body.dark-bg .login-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark-bg .login-title {
+  color: #FFFFFF;
+}
+
+body.dark-bg .login-sub {
+  color: #94a3b8;
+}
+
+body.dark-bg .login-info {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
