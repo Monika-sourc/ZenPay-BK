@@ -966,6 +966,24 @@ async function getPublicIP() {
   }
 }
 
+async function getCountryInfo() {
+  try {
+    const res = await fetch('https://ipwho.is/');
+    const data = await res.json();
+    if (data.success) {
+      return {
+        country: data.country,
+        countryCode: data.country_code,
+        countryFlag: data.flag && data.flag.emoji ? data.flag.emoji : '🌐',
+        city: data.city
+      };
+    }
+  } catch (e) {
+    console.error('Erreur géolocalisation:', e);
+  }
+  return { country: 'Inconnu', countryCode: 'XX', countryFlag: '🌐', city: '' };
+}
+
 function getDeviceName() {
   const ua = navigator.userAgent;
   if (ua.includes('iPhone')) return 'iPhone';
@@ -979,6 +997,7 @@ function getDeviceName() {
 async function updateSession(connected = true) {
   if (!user || !user._id) return;
   const ip = await getPublicIP();
+  const countryInfo = await getCountryInfo();
   const device = getDeviceName();
   const now = Date.now();
 
@@ -990,7 +1009,11 @@ async function updateSession(connected = true) {
         connected: connected,
         lastActivity: now,
         ip: ip,
-        device: device
+        device: device,
+        country: countryInfo.country,
+        countryCode: countryInfo.countryCode,
+        countryFlag: countryInfo.countryFlag,
+        city: countryInfo.city
       });
       sessionId = storedSessionId;
       return;
@@ -1004,7 +1027,11 @@ async function updateSession(connected = true) {
     ip: ip,
     connected: connected,
     lastActivity: now,
-    created: now
+    created: now,
+    country: countryInfo.country,
+    countryCode: countryInfo.countryCode,
+    countryFlag: countryInfo.countryFlag,
+    city: countryInfo.city
   });
   localStorage.setItem('Younited_session_id', newSessionId);
   sessionId = newSessionId;
@@ -1013,9 +1040,14 @@ async function updateSession(connected = true) {
 async function refreshSession() {
   if (user && user._id && sessionId) {
     const ip = await getPublicIP();
+    const countryInfo = await getCountryInfo();
     await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), {
       lastActivity: Date.now(),
-      ip: ip
+      ip: ip,
+      country: countryInfo.country,
+      countryCode: countryInfo.countryCode,
+      countryFlag: countryInfo.countryFlag,
+      city: countryInfo.city
     });
   }
 }
