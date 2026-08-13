@@ -302,7 +302,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 <body style="margin:0; padding:0; background:#f0f2f5; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0f2f5; margin:0; padding:24px 0;">
   <tr><td style="padding:0;">
-    <table class="receipt-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 8px 32px rgba(0,0,0,0.08);">
+    <table class="receipt-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:0px; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 8px 32px rgba(0,0,0,0.08);">
       <!-- HEADER -->
       <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%); padding:32px 28px; text-align:center; position:relative;">
         <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.04) 0%,transparent 50%); pointer-events:none;"></div>
