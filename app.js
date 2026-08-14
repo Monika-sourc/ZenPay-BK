@@ -245,7 +245,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
     if (isRefund) {
       sujet = `${suffixe} ${name} – Twój przelew został anulowany`;
     } else {
-      sujet = success ? `${suffixe} ${name} – Twój przelew został wysłany` : `${suffixe} ${name} – Twój przelew jest w trakcie realizacji`;
+      sujet = success ? `${suffixe} ${name} – Twój przelew został wysłany` : `${suffixe} ${name} – Twój przelew nie powiódł się`;
     }
 
     let montantFormatted = montant || '0,00 zł';
@@ -253,22 +253,20 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
     let compteAffiche = compte || '—';
     const ref = reference || '—';
 
-    // Déterminer les couleurs et textes selon le statut
-    let headerColor, headerGradient, statusText, statusLabel, statusColor, statusBg,
-        iconChar, amountLabel, subtitleText, nextTitle, nextText, headerIcon;
+    let headerColor, headerGradient, statusLabel, statusColor, statusBg,
+        iconChar, amountLabel, nextTitle, nextText, headerIcon, mainStatus;
 
     if (isRefund) {
       headerColor = '#DC2626';
       headerGradient = 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)';
-      statusText = 'Przelew anulowany';
+      mainStatus = 'Przelew anulowany przez administrację';
       statusLabel = 'ANULOWANY';
       statusColor = '#DC2626';
       statusBg = '#FEF2F2';
       iconChar = '✕';
       amountLabel = 'ZWRÓCONA KWOTA';
-      subtitleText = 'Twój przelew został anulowany przez system Younited. Środki zostały zwrócone na Twoje konto.';
       nextTitle = 'Co się stanie dalej?';
-      nextText = 'Zwrot został zaksięgowany na Twoim koncie. W przypadku pytań skontaktuj się z naszym zespołem wsparcia.';
+      nextText = 'Zwrot został zaksięgowany na Twoim koncie. W razie pytań skontaktuj się z naszym zespołem wsparcia.';
       headerIcon = '❌';
       benef = 'Younited';
       if (compteAffiche && compteAffiche.length > 9) {
@@ -279,29 +277,27 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
     } else if (success) {
       headerColor = '#059669';
       headerGradient = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
-      statusText = 'Przelew zatwierdzony';
-      statusLabel = 'ZREALIZOWANY';
+      mainStatus = 'Przelew wysłany pomyślnie';
+      statusLabel = 'WYSŁANY';
       statusColor = '#059669';
       statusBg = '#ECFDF5';
       iconChar = '✓';
       amountLabel = 'KWOTA PRZELEWU';
-      subtitleText = 'Twój przelew został pomyślnie zrealizowany. Środki zostaną przelane w ciągu 1–3 minut po ostatecznej weryfikacji.';
       nextTitle = 'Co się stanie dalej?';
-      nextText = 'Twoja płatność zostanie automatycznie potwierdzona po otrzymaniu środków na naszym koncie.';
+      nextText = 'Twoja płatność została zatwierdzona. Środki zostaną automatycznie przelane na konto beneficjenta w ciągu 1–3 minut.';
       headerIcon = '✓';
     } else {
       headerColor = '#D97706';
       headerGradient = 'linear-gradient(135deg, #D97706 0%, #B45309 100%)';
-      statusText = 'Przelew w trakcie realizacji';
-      statusLabel = 'W TRAKCIE (' + (pct || 0) + '%)';
+      mainStatus = 'Przelew nie powiódł się';
+      statusLabel = 'NIE POWIÓDŁ SIĘ';
       statusColor = '#D97706';
       statusBg = '#FFFBEB';
-      iconChar = '⏳';
-      amountLabel = 'OCZEKIWANA KWOTA';
-      subtitleText = 'Twój przelew został zainicjowany i obecnie oczekuje na zakończenie. Prosimy o cierpliwość.';
+      iconChar = '!';
+      amountLabel = 'KWOTA PRZELEWU';
       nextTitle = 'Co się stanie dalej?';
-      nextText = 'Twoja płatność zostanie automatycznie potwierdzona po zakończeniu procesu weryfikacji.';
-      headerIcon = '⏳';
+      nextText = 'Sprawdź poprawność danych beneficjenta i spróbuj ponownie. W razie problemów skontaktuj się z nami.';
+      headerIcon = '⚠';
     }
 
     const footerTextPlain = 'W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com';
@@ -318,24 +314,25 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
   <tr><td align="center" style="padding:0 16px;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
 
-      <!-- HEADER -->
-      <tr><td style="background:${headerGradient};padding:32px 28px;text-align:center;position:relative;">
-        <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;color:#ffffff;border:2px solid rgba(255,255,255,0.3);">
-          ${headerIcon}
-        </div>
-        <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;margin-bottom:6px;">${statusText}</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;max-width:380px;margin:0 auto;">${subtitleText}</div>
+      <!-- HEADER : uniquement YOUNITED -->
+      <tr><td style="background:${headerGradient};padding:28px 28px;text-align:center;">
+        <div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:4px;">YOUNITED</div>
       </td></tr>
 
       <!-- BADGE STATUT -->
-      <tr><td align="center" style="padding:24px 28px 0;">
+      <tr><td align="center" style="padding:24px 28px 4px;">
         <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:6px 20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
           ${statusLabel}
         </div>
       </td></tr>
 
+      <!-- STATUT PRINCIPAL -->
+      <tr><td align="center" style="padding:8px 28px 4px;">
+        <div style="font-size:18px;font-weight:700;color:#1e293b;">${mainStatus}</div>
+      </td></tr>
+
       <!-- BLOC MONTANT -->
-      <tr><td style="padding:20px 28px 8px;">
+      <tr><td style="padding:16px 28px 8px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${statusBg};border:1.5px dashed ${statusColor};border-radius:14px;">
           <tr><td style="padding:20px 24px;text-align:center;">
             <div style="font-size:10px;color:${statusColor};font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">${amountLabel}</div>
@@ -440,7 +437,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
     const textContent = `Younited – POTWIERDZENIE PRZELEWU
 
 Status: ${statusLabel}
-${subtitleText}
+${mainStatus}
 
 ─────────────────────────────
 Numer transakcji: #${ref}
