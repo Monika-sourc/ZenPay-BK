@@ -1700,37 +1700,57 @@ window.showTxDetail = function(d) {
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
 
-  const lblId = document.getElementById('txd-lbl-id');
-  const lblAmt = document.getElementById('txd-lbl-amt');
+  const header = document.getElementById('txd-header');
+  const headerIcon = document.getElementById('txd-header-icon');
+  const headerAmount = document.getElementById('txd-header-amount');
+  const headerBadge = document.getElementById('txd-header-badge');
+  const amtEl = document.getElementById('txd-amt');
   const lblBenef = document.getElementById('txd-lbl-benef');
-  const lblDate = document.getElementById('txd-lbl-date');
+  const statusEl = document.getElementById('txd-status');
+
+  header.classList.remove('credit', 'debit', 'refund');
+  amtEl.classList.remove('amount-credit', 'amount-debit', 'amount-refund');
 
   document.getElementById('txd-id').textContent = d.id || '-';
-  document.getElementById('txd-amt').textContent = (d.amount >= 0 ? '+ ' : '- ') + fmt(Math.abs(d.amount));
   document.getElementById('txd-date').textContent = (d.date || '') + ' • ' + (d.time || '');
 
   if (isRefund) {
-    lblAmt.textContent = 'Montant remboursé :';
-    lblBenef.textContent = 'Remboursé par :';
-    lblDate.textContent = 'Date du remboursement :';
+    header.classList.add('refund');
+    headerIcon.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
+    headerAmount.textContent = '+ ' + fmt(Math.abs(d.amount));
+    headerBadge.textContent = 'Zwrot środków';
+    amtEl.textContent = '+ ' + fmt(Math.abs(d.amount));
+    amtEl.classList.add('amount-refund');
+    lblBenef.textContent = 'Zwrócono przez';
     document.getElementById('txd-benef').textContent = d.subtitle || 'Younited';
+    statusEl.innerHTML = '<span style="display:inline-block;background:#EDE9FE;color:#7C3AED;border:1.5px solid #7C3AED;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;">ZWROT</span>';
   } else if (isCredit) {
-    lblAmt.textContent = 'Montant reçu :';
-    lblBenef.textContent = "Nom de l'expéditeur :";
-    lblDate.textContent = 'Date de réception :';
+    header.classList.add('credit');
+    headerIcon.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+    headerAmount.textContent = '+ ' + fmt(Math.abs(d.amount));
+    headerBadge.textContent = 'Przelew otrzymany';
+    amtEl.textContent = '+ ' + fmt(Math.abs(d.amount));
+    amtEl.classList.add('amount-credit');
+    lblBenef.textContent = 'Nadawca';
     document.getElementById('txd-benef').textContent = getSenderName(d);
+    statusEl.innerHTML = '<span style="display:inline-block;background:#D1FAE5;color:#059669;border:1.5px solid #059669;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;">ZREALIZOWANY</span>';
   } else {
-    lblAmt.textContent = 'Montant envoyé :';
-    lblBenef.textContent = 'Nom du bénéficiaire :';
-    lblDate.textContent = 'Date du virement :';
+    header.classList.add('debit');
+    headerIcon.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+    headerAmount.textContent = '- ' + fmt(Math.abs(d.amount));
+    headerBadge.textContent = 'Przelew wysłany';
+    amtEl.textContent = '- ' + fmt(Math.abs(d.amount));
+    amtEl.classList.add('amount-debit');
+    lblBenef.textContent = 'Beneficjent';
     document.getElementById('txd-benef').textContent = d.beneficiary || d.subtitle || '-';
+    statusEl.innerHTML = '<span style="display:inline-block;background:#FEE2E2;color:#DC2626;border:1.5px solid #DC2626;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;">ZREALIZOWANY</span>';
   }
 
   const ibanWrap = document.getElementById('txd-iban-wrap');
   if (isRefund || isCredit) {
     ibanWrap.style.display = 'none';
   } else {
-    ibanWrap.style.display = 'block';
+    ibanWrap.style.display = 'flex';
     document.getElementById('txd-iban').textContent = d.iban || '-';
   }
 
