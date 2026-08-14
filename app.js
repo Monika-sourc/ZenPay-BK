@@ -2172,7 +2172,7 @@ async function forceLogout(isDeleted = false) {
 // ===== LOGIN =====
 window.login = async function(options = { silent: false, redirect: false }) {
   const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
+  if (btn) btn.disabled = true;
   showLoading('Logowanie...');
 
   const e = document.getElementById('email').value.trim().toLowerCase();
@@ -2189,7 +2189,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
       show('login');
     }
     hideLoading();
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
     return;
   }
 
@@ -2216,7 +2216,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
         show('login');
       }
       hideLoading();
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
       return;
     }
 
@@ -2229,7 +2229,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
         show('login');
       }
       hideLoading();
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
       return;
     }
 
@@ -2242,7 +2242,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
         show('login');
       }
       hideLoading();
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
       return;
     }
 
@@ -2297,13 +2297,13 @@ window.login = async function(options = { silent: false, redirect: false }) {
     }
 
     hideLoading();
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
   } catch (error) {
     console.error('Erreur login:', error);
     err.textContent = 'Erreur de connexion, réessayez';
     err.classList.remove('hidden');
     hideLoading();
-    btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
 };
 
