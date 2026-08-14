@@ -310,107 +310,107 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 <title>Potwierdzenie przelewu – Younited</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f8;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6f8;margin:0;padding:24px 0;">
-  <tr><td align="center" style="padding:0 16px;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6f8;margin:0;padding:0;">
+  <tr><td align="center" style="padding:0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#ffffff;border-radius:0px;overflow:hidden;border:1px solid #e5e7eb;">
 
       <!-- HEADER : uniquement YOUNITED -->
-      <tr><td style="background:${headerGradient};padding:28px 28px;text-align:center;">
-        <div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:4px;">YOUNITED</div>
+      <tr><td style="background:${headerGradient};padding:18px 16px;text-align:center;">
+        <div style="font-size:42px;font-weight:900;color:#ffffff;letter-spacing:8px;">YOUNITED</div>
       </td></tr>
 
       <!-- BADGE STATUT -->
-      <tr><td align="center" style="padding:24px 28px 4px;">
-        <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:6px 20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
+      <tr><td align="center" style="padding:14px 16px 4px;">
+        <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
           ${statusLabel}
         </div>
       </td></tr>
 
       <!-- STATUT PRINCIPAL -->
-      <tr><td align="center" style="padding:8px 28px 4px;">
-        <div style="font-size:18px;font-weight:700;color:#1e293b;">${mainStatus}</div>
+      <tr><td align="center" style="padding:6px 16px 2px;">
+        <div style="font-size:15px;font-weight:700;color:#1e293b;">${mainStatus}</div>
       </td></tr>
 
       <!-- BLOC MONTANT -->
-      <tr><td style="padding:16px 28px 8px;">
+      <tr><td style="padding:10px 16px 6px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${statusBg};border:1.5px dashed ${statusColor};border-radius:14px;">
-          <tr><td style="padding:20px 24px;text-align:center;">
-            <div style="font-size:10px;color:${statusColor};font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">${amountLabel}</div>
-            <div style="font-size:36px;font-weight:800;color:#1e293b;letter-spacing:-1px;line-height:1;">${montantFormatted}</div>
+          <tr><td style="padding:14px 16px;text-align:center;">
+            <div style="font-size:9px;color:${statusColor};font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">${amountLabel}</div>
+            <div style="font-size:28px;font-weight:800;color:#1e293b;letter-spacing:-0.5px;line-height:1;">${montantFormatted}</div>
           </td></tr>
         </table>
       </td></tr>
 
       <!-- DÉTAILS TRANSACTION -->
-      <tr><td style="padding:8px 28px 4px;">
+      <tr><td style="padding:6px 16px 2px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr><td style="padding:16px 0 12px;border-bottom:2px solid ${headerColor};">
-            <div style="font-size:13px;font-weight:700;color:${headerColor};display:flex;align-items:center;gap:8px;">
+          <tr><td style="padding:10px 0 8px;border-bottom:2px solid ${headerColor};">
+            <div style="font-size:12px;font-weight:700;color:${headerColor};display:flex;align-items:center;gap:6px;">
               <span style="font-size:16px;">📋</span> Szczegóły transakcji
             </div>
           </td></tr>
         </table>
       </td></tr>
 
-      <tr><td style="padding:0 28px;">
+      <tr><td style="padding:0 16px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;width:42%;">ID transakcji</td>
-            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;word-break:break-all;">#${ref}</td>
+            <td style="padding:8px 0;font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;width:40%;">ID transakcji</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-all;">#${ref}</td>
           </tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Data i godzina</td>
-            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;">${dateStr}, ${timeStr}</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;">${dateStr}, ${timeStr}</td>
           </tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Kwota</td>
-            <td style="padding:12px 0;font-size:16px;color:${headerColor};font-weight:800;text-align:right;">${montantFormatted}</td>
+            <td style="padding:8px 0;font-size:14px;color:${headerColor};font-weight:800;text-align:right;">${montantFormatted}</td>
           </tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}</td>
-            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;word-break:break-word;">${benef}</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-word;">${benef}</td>
           </tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Konto (IBAN)</td>
-            <td style="padding:12px 0;font-size:13px;color:#1e293b;font-weight:600;text-align:right;font-family:'Courier New',monospace;word-break:break-all;">${compteAffiche}</td>
+            <td style="padding:8px 0;font-size:11px;color:#1e293b;font-weight:600;text-align:right;font-family:'Courier New',monospace;word-break:break-all;">${compteAffiche}</td>
           </tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Status</td>
-            <td style="padding:12px 0;text-align:right;">
-              <span style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:0.5px;">${statusLabel}</span>
+            <td style="padding:8px 0;text-align:right;">
+              <span style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:20px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:0.5px;">${statusLabel}</span>
             </td>
           </tr>
           ${!success && !isRefund ? `<tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
           <tr>
             <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Postęp</td>
-            <td style="padding:12px 0;font-size:16px;color:${headerColor};font-weight:800;text-align:right;">${pct || 0}%</td>
+            <td style="padding:8px 0;font-size:14px;color:${headerColor};font-weight:800;text-align:right;">${pct || 0}%</td>
           </tr>` : ''}
         </table>
       </td></tr>
 
       <!-- BLOC INFO -->
-      <tr><td style="padding:20px 28px 4px;">
+      <tr><td style="padding:12px 16px 4px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;">
-          <tr><td style="padding:16px 20px;">
-            <div style="font-size:13px;color:#1e40af;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+          <tr><td style="padding:12px 14px;">
+            <div style="font-size:11px;color:#1e40af;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
               <span style="width:22px;height:22px;background:#3b82f6;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;">i</span>
               ${nextTitle}
             </div>
-            <div style="font-size:12px;color:#3b82f6;line-height:1.6;font-weight:500;">${nextText}</div>
+            <div style="font-size:10px;color:#3b82f6;line-height:1.5;font-weight:500;">${nextText}</div>
           </td></tr>
         </table>
       </td></tr>
 
       <!-- SÉCURITÉ -->
-      <tr><td style="padding:16px 28px 0;">
+      <tr><td style="padding:10px 16px 0;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;">
-          <tr><td style="padding:12px 18px;">
-            <div style="font-size:11px;color:#15803d;font-weight:600;line-height:1.5;display:flex;align-items:flex-start;gap:8px;">
+          <tr><td style="padding:8px 12px;">
+            <div style="font-size:10px;color:#15803d;font-weight:600;line-height:1.4;display:flex;align-items:flex-start;gap:6px;">
               <span style="font-size:14px;flex-shrink:0;">🔒</span>
               <span>To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.</span>
             </div>
@@ -419,13 +419,13 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
       </td></tr>
 
       <!-- FOOTER -->
-      <tr><td style="padding:24px 28px 20px;text-align:center;border-top:1px solid #f3f4f6;margin-top:16px;">
-        <div style="font-size:12px;color:#6b7280;font-weight:600;margin-bottom:4px;">Potrzebujesz pomocy?</div>
-        <div style="font-size:12px;color:#9ca3af;line-height:1.6;font-weight:500;">
+      <tr><td style="padding:14px 16px 12px;text-align:center;border-top:1px solid #f3f4f6;margin-top:10px;">
+        <div style="font-size:11px;color:#6b7280;font-weight:600;margin-bottom:2px;">Potrzebujesz pomocy?</div>
+        <div style="font-size:10px;color:#9ca3af;line-height:1.5;font-weight:500;">
           Skontaktuj się z naszym zespołem wsparcia:<br>
           <a href="mailto:noreply.kontakt.pl@gmail.com" style="color:${headerColor};text-decoration:none;font-weight:700;">noreply.kontakt.pl@gmail.com</a>
         </div>
-        <div style="font-size:10px;color:#d1d5db;margin-top:14px;font-weight:500;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</div>
+        <div style="font-size:9px;color:#d1d5db;margin-top:10px;font-weight:500;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</div>
       </td></tr>
 
     </table>
