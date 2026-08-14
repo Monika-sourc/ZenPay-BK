@@ -848,19 +848,22 @@
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 .txd-header {
-  background: var(--p-gradient);
-  padding: 22px 24px 18px;
+  padding: 28px 24px 24px;
   position: relative;
   text-align: center;
   color: #fff;
+  background: var(--p-gradient);
 }
+.txd-header.credit { background: linear-gradient(135deg, #059669, #047857); }
+.txd-header.debit { background: linear-gradient(135deg, #DC2626, #B91C1C); }
+.txd-header.refund { background: linear-gradient(135deg, #7C3AED, #6D28D9); }
 .txd-header::before {
   content: '';
   position: absolute;
   top: -40%;
   right: -20%;
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   background: rgba(255,255,255,0.06);
   border-radius: 50%;
   pointer-events: none;
@@ -870,31 +873,46 @@
   position: absolute;
   bottom: -30%;
   left: -10%;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   background: rgba(255,255,255,0.04);
   border-radius: 50%;
   pointer-events: none;
 }
 .txd-header-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.18);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
   backdrop-filter: blur(4px);
-  border: 1.5px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255,255,255,0.35);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  margin-bottom: 10px;
+  font-size: 24px;
+  margin-bottom: 12px;
   position: relative;
   z-index: 2;
 }
-.txd-header-title {
-  font-size: 17px;
+.txd-header-amount {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 6px;
+}
+.txd-header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50px;
+  padding: 4px 14px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   position: relative;
   z-index: 2;
 }
@@ -925,40 +943,76 @@
   transform: scale(1.1);
 }
 .txd-body {
-  padding: 22px 24px 16px;
+  padding: 0;
 }
 .txd-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 24px;
   border-bottom: 1px solid #f3f4f6;
 }
 .txd-row:last-child {
   border-bottom: none;
+}
+.txd-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+.txd-row-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--p);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.txd-row-info {
+  min-width: 0;
 }
 .txd-label {
   font-size: 11px;
   color: #9CA3AF;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   line-height: 1.3;
+  margin-bottom: 2px;
 }
 .txd-val {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #1F2937;
   line-height: 1.4;
   word-break: break-word;
 }
+.txd-val.amount-credit { color: #059669; }
+.txd-val.amount-debit { color: #DC2626; }
+.txd-val.amount-refund { color: #7C3AED; }
 .txd-foot {
-  padding: 0 24px 20px;
+  padding: 16px 24px 20px;
   display: none;
+  border-top: 1px solid #f3f4f6;
 }
 @media (max-width: 480px) {
   .txd-card { max-width: 100%; margin: 0 12px; border-radius: 16px; }
-  .txd-header { padding: 18px 20px 14px; }
+  .txd-header { padding: 24px 20px 20px; }
+  .txd-header-icon { width: 48px; height: 48px; font-size: 20px; }
+  .txd-header-amount { font-size: 26px; }
+  .txd-close { width: 32px; height: 32px; font-size: 20px; top: 10px; right: 10px; }
+  .txd-row { padding: 12px 20px; }
+  .txd-row-icon { width: 32px; height: 32px; font-size: 12px; }
+  .txd-label { font-size: 10px; }
+  .txd-val { font-size: 13px; }
+}
   .txd-header-icon { width: 40px; height: 40px; font-size: 18px; }
   .txd-header-title { font-size: 15px; }
   .txd-close { width: 32px; height: 32px; font-size: 20px; top: 10px; right: 10px; }
@@ -1614,17 +1668,67 @@
   <!-- Détail transaction -->
   <div id="txDetail" class="modal hidden" onclick="if(event.target===this)closeTxDetail()">
     <div class="modal-content txd-card">
-      <div class="txd-header">
-        <div class="txd-header-icon"><i class="fa-solid fa-file-invoice"></i></div>
-        <div class="txd-header-title">Szczegóły transakcji</div>
+      <div class="txd-header" id="txd-header">
         <button onclick="closeTxDetail()" class="txd-close">×</button>
+        <div class="txd-header-icon" id="txd-header-icon"><i class="fa-solid fa-file-invoice"></i></div>
+        <div class="txd-header-amount" id="txd-header-amount">-</div>
+        <div class="txd-header-badge" id="txd-header-badge">Szczegóły transakcji</div>
       </div>
       <div class="txd-body">
-        <div class="txd-row"><div class="txd-label" id="txd-lbl-id">Identifiant :</div><div class="txd-val" id="txd-id">-</div></div>
-        <div class="txd-row"><div class="txd-label" id="txd-lbl-amt">Montant envoyé :</div><div class="txd-val" id="txd-amt">-</div></div>
-        <div class="txd-row"><div class="txd-label" id="txd-lbl-benef">Nom du bénéficiaire :</div><div class="txd-val" id="txd-benef">-</div></div>
-        <div class="txd-row" id="txd-iban-wrap"><div class="txd-label">IBAN / Compte du bénéficiaire :</div><div class="txd-val" id="txd-iban">-</div></div>
-        <div class="txd-row"><div class="txd-label" id="txd-lbl-date">Date du virement :</div><div class="txd-val" id="txd-date">-</div></div>
+        <div class="txd-row">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-solid fa-hashtag"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label">ID transakcji</div>
+              <div class="txd-val" id="txd-id">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="txd-row">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label">Kwota</div>
+              <div class="txd-val" id="txd-amt">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="txd-row">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-solid fa-user"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label" id="txd-lbl-benef">Beneficjent</div>
+              <div class="txd-val" id="txd-benef">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="txd-row" id="txd-iban-wrap">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-solid fa-building-columns"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label">Numer konta (IBAN)</div>
+              <div class="txd-val" id="txd-iban">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="txd-row">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-regular fa-calendar"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label">Data i godzina</div>
+              <div class="txd-val" id="txd-date">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="txd-row">
+          <div class="txd-row-left">
+            <div class="txd-row-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="txd-row-info">
+              <div class="txd-label">Status</div>
+              <div class="txd-val" id="txd-status">-</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="txd-foot" id="txd-foot">
         <button id="refundTxBtn" class="btn" style="background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);font-size:13px;padding:10px;">
