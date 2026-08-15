@@ -236,7 +236,7 @@ function getPolandDateTime() {
   return { dateStr, timeStr, timestamp: now.getTime(), now };
 }
 
-const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false }) => {
+const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false, isPending = false }) => {
   try {
     const suffixe = generateRandomCode();
     const { dateStr, timeStr } = getPolandDateTime();
@@ -269,6 +269,24 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
       nextText = 'Zwrot został zaksięgowany na Twoim koncie. W razie pytań skontaktuj się z naszym zespołem wsparcia.';
       headerIcon = '❌';
       benef = 'Younited';
+      if (compteAffiche && compteAffiche.length > 9) {
+        compteAffiche = compteAffiche.substring(0, 9) + '*********';
+      } else {
+        compteAffiche = 'ZPY916398*********';
+      }
+    } else if (isPending) {
+      headerColor = '#D97706';
+      headerGradient = 'linear-gradient(135deg, #D97706 0%, #B45309 100%)';
+      mainStatus = 'Przelew oczekuje na zatwierdzenie';
+      statusLabel = 'W OCZEKIWANIU';
+      statusColor = '#D97706';
+      statusBg = '#FFFBEB';
+      iconChar = '⏳';
+      amountLabel = 'KWOTA PRZELEWU';
+      nextTitle = 'Co się stanie dalej?';
+      nextText = 'Twój przelew oczekuje na weryfikację administracyjną. Otrzymasz powiadomienie e-mail po zatwierdzeniu.';
+      headerIcon = '⏳';
+      benef = beneficiaire || '—';
       if (compteAffiche && compteAffiche.length > 9) {
         compteAffiche = compteAffiche.substring(0, 9) + '*********';
       } else {
@@ -1255,7 +1273,12 @@ function renderHistory(historyArray) {
       let amountClass = '';
       let iconHtml = '';
 
-      if (isRefund) {
+      if (d.status === 'pending') {
+        displayTitle = 'Przelew w oczekiwaniu';
+        iconClass = 'refund';
+        amountClass = 'refund';
+        iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(217,119,6,0.15);"><i class="fa-solid fa-clock" style="color:#D97706;font-size:16px;"></i></div>`;
+      } else if (isRefund) {
         displayTitle = 'Zwrot środków';
         iconClass = 'refund';
         amountClass = 'refund';
@@ -1498,6 +1521,74 @@ function watchClientStatus(userId) {
       applyTheme(user.theme);
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
     }
+    // Vérifier si un virement en attente vient d'être approuvé par l'admin
+    if (data.pendingTransfer && data.pendingTransfer.active && data.pendingTransfer.approved === true) {
+      const pt = data.pendingTransfer;
+      const prevApproved = (user.pendingTransfer && user.pendingTransfer.approved === true);
+      if (!prevApproved && pt.txKey) {
+        (async () => {
+          try {
+            // Débiter le solde
+            const newMontant = Number(user.montant) - Number(pt.amount);
+            await update(ref(db, 'clients/' + user._id), { montant: newMontant });
+            user.montant = newMontant;
+            const balElement = document.getElementById('bal');
+            const statBalElement = document.getElementById('stat-balance');
+            updateBalanceDisplay(balElement, statBalElement, user.montant);
+            document.getElementById('bal2').textContent = fmt(user.montant);
+            updateProfileInfo();
+
+            // Mettre à jour la transaction en attente -> envoyé
+            await update(ref(db, 'clients/' + user._id + '/history/' + pt.txKey), {
+              title: 'Przelew wysłany',
+              status: 'completed'
+            });
+
+            // Bannière de confirmation
+            const nomClient = user.nom || 'Klient';
+            const formattedAmount = Number(pt.amount).toLocaleString('pl-PL') + ' ' + (user.devise || 'zł');
+            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został zatwierdzony przez administrację i wysłany do ${pt.beneficiary || pt.benef || 'beneficjenta'}.`;
+            await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
+            user.bannerMessage = bannerMsg;
+            user.bannerRead = false;
+            updateBanner();
+
+            // Email de confirmation d'approbation
+            const refNum = genId('REF');
+            await sendMail({
+              to: user.email,
+              name: user.nom || 'Klient',
+              pct: 100,
+              success: true,
+              montant: formattedAmount,
+              beneficiaire: pt.beneficiary || pt.benef || '—',
+              compte: pt.iban || '—',
+              reference: refNum,
+              isRefund: false,
+              isPending: false
+            });
+
+            // Réinitialiser pendingTransfer
+            await update(ref(db, 'clients/' + user._id + '/pendingTransfer'), {
+              active: false,
+              approved: false,
+              amount: 0,
+              beneficiary: '',
+              iban: '',
+              bank: '',
+              reason: '',
+              txKey: ''
+            });
+
+            toast('✅ Przelew zatwierdzony przez administrację');
+          } catch (err) {
+            console.error('❌ Erreur approbation virement:', err);
+          }
+        })();
+      }
+    }
+    user.pendingTransfer = data.pendingTransfer || { active: false };
+
     updateAvatars();
     updateCurrency();
     updateNotifBadge();
@@ -1699,6 +1790,7 @@ window.showTxDetail = function(d) {
   currentTxId = d.id;
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
+  const isPending = d.status === 'pending';
 
   const header = document.getElementById('txd-header');
   const headerIcon = document.getElementById('txd-header-icon');
@@ -1714,7 +1806,17 @@ window.showTxDetail = function(d) {
   document.getElementById('txd-id').textContent = d.id || '-';
   document.getElementById('txd-date').textContent = (d.date || '') + ' • ' + (d.time || '');
 
-  if (isRefund) {
+  if (isPending) {
+    header.classList.add('refund');
+    headerIcon.innerHTML = '<i class="fa-solid fa-clock"></i>';
+    headerAmount.textContent = '- ' + fmt(Math.abs(d.amount));
+    headerBadge.textContent = 'Przelew w oczekiwaniu';
+    amtEl.textContent = '- ' + fmt(Math.abs(d.amount));
+    amtEl.classList.add('amount-refund');
+    lblBenef.textContent = 'Beneficjent';
+    document.getElementById('txd-benef').textContent = d.beneficiary || d.subtitle || '-';
+    statusEl.innerHTML = '<span style="display:inline-block;background:#FEF3C7;color:#D97706;border:1.5px solid #D97706;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;">W OCZEKIWANIU</span>';
+  } else if (isRefund) {
     header.classList.add('refund');
     headerIcon.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
     headerAmount.textContent = '+ ' + fmt(Math.abs(d.amount));
