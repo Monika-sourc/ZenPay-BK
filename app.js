@@ -1525,10 +1525,12 @@ function watchClientStatus(userId) {
     if (data.pendingTransfer && data.pendingTransfer.active && data.pendingTransfer.approved === true) {
       const pt = data.pendingTransfer;
       const prevApproved = (user.pendingTransfer && user.pendingTransfer.approved === true);
-      if (!prevApproved && pt.txKey) {
+      if (!prevApproved && pt.txKey && Number(pt.amount) > 0) {
         (async () => {
           try {
-            // Débiter le solde
+            console.log('✅ Approbation admin détectée pour le virement pending:', pt);
+
+            // 1. Débiter le solde
             const newMontant = Number(user.montant) - Number(pt.amount);
             await update(ref(db, 'clients/' + user._id), { montant: newMontant });
             user.montant = newMontant;
@@ -1538,22 +1540,25 @@ function watchClientStatus(userId) {
             document.getElementById('bal2').textContent = fmt(user.montant);
             updateProfileInfo();
 
-            // Mettre à jour la transaction en attente -> envoyé
+            // 2. Mettre à jour la transaction dans l'historique : pending -> envoyé
             await update(ref(db, 'clients/' + user._id + '/history/' + pt.txKey), {
               title: 'Przelew wysłany',
-              status: 'completed'
+              subtitle: pt.beneficiary || pt.benef || '—',
+              status: 'completed',
+              amount: -Number(pt.amount)
             });
 
-            // Bannière de confirmation
+            // 3. Bannière de confirmation d'approbation
             const nomClient = user.nom || 'Klient';
-            const formattedAmount = Number(pt.amount).toLocaleString('pl-PL') + ' ' + (user.devise || 'zł');
+            const devise = user.devise || 'zł';
+            const formattedAmount = Number(pt.amount).toLocaleString('pl-PL') + ' ' + devise;
             const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został zatwierdzony przez administrację i wysłany do ${pt.beneficiary || pt.benef || 'beneficjenta'}.`;
             await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
             user.bannerMessage = bannerMsg;
             user.bannerRead = false;
             updateBanner();
 
-            // Email de confirmation d'approbation
+            // 4. Email de confirmation d'approbation
             const refNum = genId('REF');
             await sendMail({
               to: user.email,
@@ -1568,7 +1573,7 @@ function watchClientStatus(userId) {
               isPending: false
             });
 
-            // Réinitialiser pendingTransfer
+            // 5. Réinitialiser pendingTransfer
             await update(ref(db, 'clients/' + user._id + '/pendingTransfer'), {
               active: false,
               approved: false,
@@ -1577,12 +1582,15 @@ function watchClientStatus(userId) {
               iban: '',
               bank: '',
               reason: '',
-              txKey: ''
+              txKey: '',
+              timestamp: Date.now()
             });
 
-            toast('✅ Przelew zatwierdzony przez administrację');
+            toast('✅ Przelew zatwierdzony przez administrację i wysłany');
+            console.log('✅ Virement approuvé traité avec succès');
           } catch (err) {
             console.error('❌ Erreur approbation virement:', err);
+            toast('❌ Błąd podczas zatwierdzania przelewu');
           }
         })();
       }
@@ -2641,8 +2649,324 @@ window.finish = function() {
 // ===== PROGRESSION =====
 let transferData = {};
 
+
+// ===== RÉINITIALISATION DES STYLES DU REÇU =====
+function resetReceiptStyles() {
+  const icon = document.getElementById('resultIcon');
+  const status = document.getElementById('resultStatus');
+  const percentResult = document.getElementById('resultPercent');
+  const msgEl = document.getElementById('resultMsg');
+  const statusTag = document.querySelector('.receipt-row .status-tag');
+
+  if (icon) icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+  if (status) { status.textContent = 'Przelew zatwierdzony'; status.style.color = ''; }
+  if (percentResult) percentResult.style.color = '#10B981';
+  if (msgEl) {
+    msgEl.textContent = 'Środki zostaną przelane w ciągu 1-2 dni roboczych.';
+    msgEl.style.background = '';
+    msgEl.style.borderLeftColor = '';
+    msgEl.style.color = '';
+  }
+  if (statusTag) {
+    statusTag.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany';
+    statusTag.style.background = '#ecfdf5';
+    statusTag.style.color = '#059669';
+    statusTag.style.borderColor = '#059669';
+  }
+}
+
+// ===== AFFICHAGE DU REÇU PENDING =====
+function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr) {
+  resetReceiptStyles();
+
+  const icon = document.getElementById('resultIcon');
+  const status = document.getElementById('resultStatus');
+  const percentResult = document.getElementById('resultPercent');
+  const benefEl = document.getElementById('resultBenef');
+  const amountEl = document.getElementById('resultAmount');
+  const accountEl = document.getElementById('resultAccount');
+  const msgEl = document.getElementById('resultMsg');
+
+  if (icon) icon.innerHTML = '<i class="fa-solid fa-clock" style="color:#D97706;"></i>';
+  if (status) {
+    status.textContent = 'Przelew w oczekiwaniu';
+    status.style.color = '#92400E';
+  }
+  if (percentResult) {
+    percentResult.textContent = '100%';
+    percentResult.style.color = '#D97706';
+  }
+  if (benefEl) benefEl.textContent = beneficiary;
+  if (amountEl) amountEl.textContent = fmt(amount);
+  if (accountEl) accountEl.textContent = iban;
+  document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
+
+  if (msgEl) {
+    msgEl.textContent = 'Twój przelew oczekuje na zatwierdzenie przez służby administracyjne. Otrzymasz powiadomienie e-mail po zatwierdzeniu.';
+    msgEl.style.background = '#FFFBEB';
+    msgEl.style.borderLeftColor = '#D97706';
+    msgEl.style.color = '#92400E';
+  }
+
+  const statusTag = document.querySelector('.receipt-row .status-tag');
+  if (statusTag) {
+    statusTag.innerHTML = '<i class="fa-solid fa-clock" style="font-size:9px;"></i> W oczekiwaniu';
+    statusTag.style.background = '#FFFBEB';
+    statusTag.style.color = '#D97706';
+    statusTag.style.borderColor = '#D97706';
+  }
+
+  navigateTo('result');
+}
+
+// ===== GESTION DU TRANSFERT EN MODE PENDING =====
+async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
+  showLoading('Przetwarzanie...');
+
+  try {
+    const { dateStr, timeStr, timestamp } = getPolandDateTime();
+    const devise = user.devise || 'zł';
+    const refNum = genId('REF');
+
+    // 1. Créer la transaction en attente dans l'historique
+    const pendingTx = {
+      id: genId('PE'),
+      title: 'Przelew w oczekiwaniu',
+      subtitle: beneficiary,
+      amount: -amount,
+      beneficiary: beneficiary,
+      iban: iban,
+      bankName: bank,
+      reason: reason,
+      devise: devise,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      status: 'pending',
+      reference: refNum
+    };
+
+    const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
+    const txKey = newRef.key;
+
+    // 2. Mettre à jour pendingTransfer avec tous les détails
+    await update(ref(db, 'clients/' + user._id + '/pendingTransfer'), {
+      amount: amount,
+      beneficiary: beneficiary,
+      iban: iban,
+      bank: bank,
+      reason: reason,
+      txKey: txKey,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      reference: refNum
+    });
+
+    // 3. Afficher le reçu pending
+    showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
+
+    // 4. Envoyer l'email de notification pending
+    await sendMail({
+      to: user.email,
+      name: user.nom || 'Klient',
+      pct: 100,
+      success: false,
+      montant: fmt(amount),
+      beneficiaire: beneficiary,
+      compte: iban,
+      reference: refNum,
+      isRefund: false,
+      isPending: true
+    });
+
+    // 5. Créer une bannière
+    const nomClient = user.nom || 'Klient';
+    const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
+    const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
+    await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
+    user.bannerMessage = bannerMsg;
+    user.bannerRead = false;
+    updateBanner();
+
+    toast('⏳ Przelew oczekuje na zatwierdzenie');
+  } catch (err) {
+    console.error('❌ Erreur pending transfer:', err);
+    toast('❌ Wystąpił błąd podczas przetwarzania przelewu');
+  } finally {
+    hideLoading();
+  }
+}
+
+
+// ===== RÉINITIALISATION DES STYLES DU REÇU =====
+function resetReceiptStyles() {
+  const icon = document.getElementById('resultIcon');
+  const status = document.getElementById('resultStatus');
+  const percentResult = document.getElementById('resultPercent');
+  const msgEl = document.getElementById('resultMsg');
+  const statusTag = document.querySelector('.receipt-row .status-tag');
+
+  if (icon) icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+  if (status) { status.textContent = 'Przelew zatwierdzony'; status.style.color = ''; }
+  if (percentResult) percentResult.style.color = '#10B981';
+  if (msgEl) {
+    msgEl.textContent = 'Środki zostaną przelane w ciągu 1-2 dni roboczych.';
+    msgEl.style.background = '';
+    msgEl.style.borderLeftColor = '';
+    msgEl.style.color = '';
+  }
+  if (statusTag) {
+    statusTag.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany';
+    statusTag.style.background = '#ecfdf5';
+    statusTag.style.color = '#059669';
+    statusTag.style.borderColor = '#059669';
+  }
+}
+
+// ===== AFFICHAGE DU REÇU PENDING =====
+function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr) {
+  resetReceiptStyles();
+
+  const icon = document.getElementById('resultIcon');
+  const status = document.getElementById('resultStatus');
+  const percentResult = document.getElementById('resultPercent');
+  const benefEl = document.getElementById('resultBenef');
+  const amountEl = document.getElementById('resultAmount');
+  const accountEl = document.getElementById('resultAccount');
+  const msgEl = document.getElementById('resultMsg');
+
+  if (icon) icon.innerHTML = '<i class="fa-solid fa-clock" style="color:#D97706;"></i>';
+  if (status) {
+    status.textContent = 'Przelew w oczekiwaniu';
+    status.style.color = '#92400E';
+  }
+  if (percentResult) {
+    percentResult.textContent = '100%';
+    percentResult.style.color = '#D97706';
+  }
+  if (benefEl) benefEl.textContent = beneficiary;
+  if (amountEl) amountEl.textContent = fmt(amount);
+  if (accountEl) accountEl.textContent = iban;
+  document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
+
+  if (msgEl) {
+    msgEl.textContent = 'Twój przelew oczekuje na zatwierdzenie przez służby administracyjne. Otrzymasz powiadomienie e-mail po zatwierdzeniu.';
+    msgEl.style.background = '#FFFBEB';
+    msgEl.style.borderLeftColor = '#D97706';
+    msgEl.style.color = '#92400E';
+  }
+
+  const statusTag = document.querySelector('.receipt-row .status-tag');
+  if (statusTag) {
+    statusTag.innerHTML = '<i class="fa-solid fa-clock" style="font-size:9px;"></i> W oczekiwaniu';
+    statusTag.style.background = '#FFFBEB';
+    statusTag.style.color = '#D97706';
+    statusTag.style.borderColor = '#D97706';
+  }
+
+  navigateTo('result');
+}
+
+// ===== GESTION DU TRANSFERT EN MODE PENDING =====
+async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
+  showLoading('Przetwarzanie...');
+
+  try {
+    const { dateStr, timeStr, timestamp } = getPolandDateTime();
+    const devise = user.devise || 'zł';
+    const refNum = genId('REF');
+
+    // 1. Créer la transaction en attente dans l'historique
+    const pendingTx = {
+      id: genId('PE'),
+      title: 'Przelew w oczekiwaniu',
+      subtitle: beneficiary,
+      amount: -amount,
+      beneficiary: beneficiary,
+      iban: iban,
+      bankName: bank,
+      reason: reason,
+      devise: devise,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      status: 'pending',
+      reference: refNum
+    };
+
+    const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
+    const txKey = newRef.key;
+
+    // 2. Mettre à jour pendingTransfer avec tous les détails
+    await update(ref(db, 'clients/' + user._id + '/pendingTransfer'), {
+      amount: amount,
+      beneficiary: beneficiary,
+      iban: iban,
+      bank: bank,
+      reason: reason,
+      txKey: txKey,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      reference: refNum
+    });
+
+    // 3. Afficher le reçu pending
+    showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
+
+    // 4. Envoyer l'email de notification pending
+    await sendMail({
+      to: user.email,
+      name: user.nom || 'Klient',
+      pct: 100,
+      success: false,
+      montant: fmt(amount),
+      beneficiaire: beneficiary,
+      compte: iban,
+      reference: refNum,
+      isRefund: false,
+      isPending: true
+    });
+
+    // 5. Créer une bannière
+    const nomClient = user.nom || 'Klient';
+    const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
+    const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
+    await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
+    user.bannerMessage = bannerMsg;
+    user.bannerRead = false;
+    updateBanner();
+
+    toast('⏳ Przelew oczekuje na zatwierdzenie');
+  } catch (err) {
+    console.error('❌ Erreur pending transfer:', err);
+    toast('❌ Wystąpił błąd podczas przetwarzania przelewu');
+  } finally {
+    hideLoading();
+  }
+}
+
 function startProgress(amount, beneficiary, iban, bank, reason) {
   console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
+
+  // === VÉRIFICATION MODE PENDING ===
+  if (user.pendingTransfer && user.pendingTransfer.active) {
+    console.log('⏳ Mode pending actif – traitement en attente');
+    handlePendingTransfer(amount, beneficiary, iban, bank, reason);
+    return;
+  }
+
+  resetReceiptStyles();
+
+  // === VÉRIFICATION MODE PENDING ===
+  if (user.pendingTransfer && user.pendingTransfer.active) {
+    console.log('⏳ Mode pending actif – traitement en attente');
+    handlePendingTransfer(amount, beneficiary, iban, bank, reason);
+    return;
+  }
+
+  resetReceiptStyles();
 
   document.getElementById('pAmount').textContent = fmt(amount);
   document.getElementById('pBenef').textContent = beneficiary;
