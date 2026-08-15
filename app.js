@@ -1526,7 +1526,7 @@ function watchClientStatus(userId) {
       applyTheme(user.theme);
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
     }
-    // Gérer les virements en attente (approbation/annulation admin)
+    // Gérer les virements en attente (approbation/annulation admin) – notifications locales uniquement
     user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
     const pts = data.pendingTransfers || {};
     const prevPts = user._pendingTransfers || {};
@@ -1535,104 +1535,14 @@ function watchClientStatus(userId) {
       const prevPt = prevPts[ptId];
       if (!prevPt) continue;
 
-      // APPROBATION détectée
+      // APPROBATION détectée – notification locale uniquement (solde/historique/bannière gérés par l'admin)
       if (pt.status === 'approved' && prevPt.status === 'pending') {
-        (async () => {
-          try {
-            // 1. Mettre à jour la transaction dans l'historique : pending -> envoyé
-            if (pt.txKey) {
-              await update(ref(db, 'clients/' + user._id + '/history/' + pt.txKey), {
-                title: 'Przelew wysłany',
-                subtitle: pt.beneficiary || '—',
-                status: 'completed',
-                amount: -Number(pt.amount)
-              });
-            }
-
-            // 2. Bannière de confirmation
-            const nomClient = user.nom || 'Klient';
-            const devise = user.devise || 'zł';
-            const formattedAmount = Number(pt.amount).toLocaleString('pl-PL') + ' ' + devise;
-            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został zatwierdzony przez administrację i wysłany do ${pt.beneficiary || 'beneficjenta'}.`;
-            await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
-            user.bannerMessage = bannerMsg;
-            user.bannerRead = false;
-            updateBanner();
-
-            // 3. Email de confirmation d'approbation
-            const refNum = genId('REF');
-            await sendMail({
-              to: user.email,
-              name: user.nom || 'Klient',
-              pct: 100,
-              success: true,
-              montant: formattedAmount,
-              beneficiaire: pt.beneficiary || '—',
-              compte: pt.iban || '—',
-              reference: refNum,
-              isRefund: false,
-              isPending: false
-            });
-
-            toast('✅ Przelew zatwierdzony przez administrację i wysłany');
-          } catch (err) {
-            console.error('❌ Erreur approbation virement:', err);
-          }
-        })();
+        toast('✅ Przelew zatwierdzony przez administrację i wysłany');
       }
 
-      // ANNULATION détectée
+      // ANNULATION détectée – notification locale uniquement (solde/historique/bannière gérés par l'admin)
       if (pt.status === 'cancelled' && prevPt.status === 'pending') {
-        (async () => {
-          try {
-            // 1. Recréditer le solde
-            const newMontant = Number(user.montant) + Number(pt.amount);
-            await update(ref(db, 'clients/' + user._id), { montant: newMontant });
-            user.montant = newMontant;
-            const balElement = document.getElementById('bal');
-            const statBalElement = document.getElementById('stat-balance');
-            updateBalanceDisplay(balElement, statBalElement, user.montant);
-            document.getElementById('bal2').textContent = fmt(user.montant);
-            updateProfileInfo();
-
-            // 2. Mettre à jour la transaction dans l'historique
-            if (pt.txKey) {
-              await update(ref(db, 'clients/' + user._id + '/history/' + pt.txKey), {
-                title: 'Przelew anulowany',
-                subtitle: 'Anulowano przez administrację',
-                status: 'cancelled'
-              });
-            }
-
-            // 3. Bannière d'annulation
-            const nomClient = user.nom || 'Klient';
-            const devise = user.devise || 'zł';
-            const formattedAmount = Number(pt.amount).toLocaleString('pl-PL') + ' ' + devise;
-            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${pt.beneficiary || 'beneficjenta'} został anulowany przez administrację. Kwota została zwrócona na Twoje konto.`;
-            await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
-            user.bannerMessage = bannerMsg;
-            user.bannerRead = false;
-            updateBanner();
-
-            // 4. Email d'annulation
-            const refNum = genId('REF');
-            await sendMail({
-              to: user.email,
-              name: user.nom || 'Klient',
-              pct: 100,
-              success: false,
-              montant: formattedAmount,
-              beneficiaire: pt.beneficiary || '—',
-              compte: pt.iban || '—',
-              reference: refNum,
-              isRefund: true
-            });
-
-            toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
-          } catch (err) {
-            console.error('❌ Erreur annulation virement:', err);
-          }
-        })();
+        toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
       }
     }
 
@@ -2835,10 +2745,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       status: 'pending'
     });
 
-    // 4. Afficher le résultat pending
-    showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
-
-    // 5. Email de notification pending
+    // 4. Email de notification pending
     await sendMail({
       to: user.email,
       name: user.nom || 'Klient',
@@ -2852,7 +2759,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       isPending: true
     });
 
-    // 6. Bannière
+    // 5. Bannière
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
     const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
@@ -2861,11 +2768,42 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     user.bannerRead = false;
     updateBanner();
 
+    hideLoading();
+
+    // 6. AFFICHER LA PROGRESSION DE 1 À 100% PUIS LE RÉSULTAT PENDING
+    navigateTo('progress');
+
+    document.getElementById('pAmount').textContent = fmt(amount);
+    document.getElementById('pBenef').textContent = beneficiary;
+    document.getElementById('pIban').textContent = iban;
+    document.getElementById('pBank').textContent = bank;
+    const reasonRow = document.getElementById('pReasonRow');
+    if (reason && reason.trim() !== '') {
+      document.getElementById('pReason').textContent = reason;
+      reasonRow.style.display = 'block';
+    } else {
+      reasonRow.style.display = 'none';
+    }
+
+    const fill = document.getElementById('progressFill');
+    const percentEl = document.getElementById('progressPercent');
+    let w = 0;
+    const interval = setInterval(() => {
+      w += 1;
+      fill.style.width = w + '%';
+      percentEl.textContent = w + '%';
+      if (w >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
+        }, 500);
+      }
+    }, 80);
+
     toast('⏳ Przelew oczekuje na zatwierdzenie');
   } catch (err) {
     console.error('❌ Erreur pending transfer:', err);
     toast('❌ Wystąpił błąd podczas przetwarzania przelewu');
-  } finally {
     hideLoading();
   }
 }
