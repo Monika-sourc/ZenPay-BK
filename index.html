@@ -1023,6 +1023,36 @@
   .txd-label { font-size: 10px; }
   .txd-val { font-size: 14px; }
 }
+
+/* ===== STYLES REÇU PENDING ===== */
+.receipt-header.pending-header {
+  border-bottom: 1px dashed #fde68a;
+}
+.receipt-header.pending-header::before,
+.receipt-header.pending-header::after {
+  background: #FFFBEB;
+}
+.receipt-icon.pending-icon {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A) !important;
+  color: #D97706 !important;
+}
+.receipt-percent.pending-percent {
+  color: #D97706 !important;
+}
+.receipt-status.pending-status {
+  color: #92400E !important;
+}
+.receipt-msg.pending-msg {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7) !important;
+  border-left-color: #D97706 !important;
+  color: #92400E !important;
+}
+.status-tag.pending-tag {
+  background: #FFFBEB !important;
+  color: #D97706 !important;
+  border: 1.5px solid #D97706 !important;
+}
+
 </style>
   <script>
     (function() {
