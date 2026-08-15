@@ -1638,6 +1638,7 @@ function watchClientStatus(userId) {
 
     user._pendingTransfers = JSON.parse(JSON.stringify(pts));
     user.pendingTransfer = data.pendingTransfer || { active: false };
+    user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
 
     updateAvatars();
     updateCurrency();
@@ -1742,6 +1743,7 @@ window.refreshData = async function(silent = true) {
     user.email = data.email || user.email;
     user.bannerMessage = data.bannerMessage || '';
     user.bannerRead = data.bannerRead || false;
+    user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
     updateBanner();
     const bgColor = data.bgColor || 'gray';
     applyBgColor(bgColor);
@@ -2437,6 +2439,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     user.refundCode = user.refundCode || '';
     user.bannerMessage = user.bannerMessage || '';
     user.bannerRead = user.bannerRead || false;
+    user.pendingTransferConfig = f.pendingTransferConfig || { enabled: false };
+    user._pendingTransfers = {};
 
     localStorage.setItem('Younited_session', JSON.stringify({ e, p }));
     localStorage.setItem('Younited_theme', user.theme);
@@ -2775,13 +2779,28 @@ function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, date
 // ===== GESTION DU TRANSFERT EN MODE PENDING =====
 async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
   showLoading('Przetwarzanie...');
-
   try {
     const { dateStr, timeStr, timestamp } = getPolandDateTime();
     const devise = user.devise || 'zł';
     const refNum = genId('REF');
 
-    // 1. Créer la transaction en attente dans l'historique
+    // 1. DÉBITER LE SOLDE IMMÉDIATEMENT
+    const currentBalance = Number(user.montant) || 0;
+    if (amount > currentBalance) {
+      hideLoading();
+      toast('⚠️ Saldo niewystarczające');
+      return;
+    }
+    const newBalance = currentBalance - amount;
+    await update(ref(db, 'clients/' + user._id), { montant: newBalance, updated: Date.now() });
+    user.montant = newBalance;
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+    updateProfileInfo();
+
+    // 2. Créer la transaction dans l'historique avec status 'pending'
     const pendingTx = {
       id: genId('PE'),
       title: 'Przelew w oczekiwaniu',
@@ -2798,12 +2817,11 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       status: 'pending',
       reference: refNum
     };
-
     const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
     const txKey = newRef.key;
 
-    // 2. Mettre à jour pendingTransfer avec tous les détails
-    await update(ref(db, 'clients/' + user._id + '/pendingTransfer'), {
+    // 3. Créer l'entrée dans pendingTransfers
+    await push(ref(db, 'clients/' + user._id + '/pendingTransfers'), {
       amount: amount,
       beneficiary: beneficiary,
       iban: iban,
@@ -2813,13 +2831,14 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       date: dateStr,
       time: timeStr,
       timestamp: timestamp,
-      reference: refNum
+      reference: refNum,
+      status: 'pending'
     });
 
-    // 3. Afficher le reçu pending
+    // 4. Afficher le résultat pending
     showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
 
-    // 4. Envoyer l'email de notification pending
+    // 5. Email de notification pending
     await sendMail({
       to: user.email,
       name: user.nom || 'Klient',
@@ -2833,7 +2852,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       isPending: true
     });
 
-    // 5. Créer une bannière
+    // 6. Bannière
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
     const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
@@ -2856,7 +2875,10 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
   console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
 
   // === VÉRIFICATION MODE PENDING ===
-  if (user.pendingTransfer && user.pendingTransfer.active) {
+  const isPendingMode = user.pendingTransferConfig && user.pendingTransferConfig.enabled === true;
+  console.log('⏳ Mode pending check:', isPendingMode, user.pendingTransferConfig);
+
+  if (isPendingMode) {
     console.log('⏳ Mode pending actif – traitement en attente');
     handlePendingTransfer(amount, beneficiary, iban, bank, reason);
     return;
