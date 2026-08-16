@@ -1830,21 +1830,13 @@ window.showTxDetail = function(d) {
   }
 
   const foot = document.getElementById('txd-foot');
-  const refundBtn = document.getElementById('refundTxBtn');
   const refundMsg = document.getElementById('refundTxMsg');
-  if (!isCredit && !d.refunded && d.amount < 0) {
+  if (d.refunded) {
     foot.style.display = 'block';
-    refundBtn.style.display = 'block';
-    refundBtn.disabled = false;
-    refundMsg.textContent = '';
-    refundBtn.onclick = () => openRefundModal(d);
-  } else if (d.refunded) {
-    foot.style.display = 'block';
-    refundBtn.style.display = 'none';
-    refundMsg.textContent = '✅ Ten przelew został już anulowany.';
+    refundMsg.style.display = 'block';
   } else {
     foot.style.display = 'none';
-    refundMsg.textContent = '';
+    refundMsg.style.display = 'none';
   }
 
   document.getElementById('txDetail').classList.remove('hidden');
