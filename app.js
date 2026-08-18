@@ -2678,7 +2678,7 @@ function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, date
   navigateTo('result');
 }
 
-// ===== GESTION DU TRANSFERT EN MODE PENDING (CORRIGÉE) =====
+// ===== GESTION DU TRANSFERT EN MODE PENDING =====
 async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
   showLoading('Przetwarzanie...');
   try {
@@ -2686,15 +2686,13 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     const devise = user.devise || 'zł';
     const refNum = genId('REF');
 
-    // 1. Vérifier le solde
+    // 1. DÉBITER LE SOLDE IMMÉDIATEMENT
     const currentBalance = Number(user.montant) || 0;
     if (amount > currentBalance) {
       hideLoading();
       toast('⚠️ Saldo niewystarczające');
       return;
     }
-
-    // 2. Débiter le solde
     const newBalance = currentBalance - amount;
     await update(ref(db, 'clients/' + user._id), { montant: newBalance, updated: Date.now() });
     user.montant = newBalance;
@@ -2704,7 +2702,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
 
-    // 3. Créer la transaction 'pending' dans l'historique
+    // 2. Créer la transaction dans l'historique avec status 'pending'
     const pendingTx = {
       id: genId('PE'),
       title: 'Przelew w oczekiwaniu',
@@ -2724,7 +2722,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
     const txKey = newRef.key;
 
-    // 4. Créer l'entrée dans pendingTransfers
+    // 3. Créer l'entrée dans pendingTransfers
     await push(ref(db, 'clients/' + user._id + '/pendingTransfers'), {
       amount: amount,
       beneficiary: beneficiary,
@@ -2739,6 +2737,20 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       status: 'pending'
     });
 
+    // 4. Email de notification pending
+    await sendMail({
+      to: user.email,
+      name: user.nom || 'Klient',
+      pct: 100,
+      success: false,
+      montant: fmt(amount),
+      beneficiaire: beneficiary,
+      compte: iban,
+      reference: refNum,
+      isRefund: false,
+      isPending: true
+    });
+
     // 5. Bannière
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
@@ -2750,13 +2762,9 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 
     hideLoading();
 
-    // 6. Naviguer vers la page de progression et attendre le rendu
+    // 6. AFFICHER LA PROGRESSION DE 1 À 100% PUIS LE RÉSULTAT PENDING
     navigateTo('progress');
 
-    // Attendre que le DOM soit prêt (2 frames)
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    // 7. Remplir les détails
     document.getElementById('pAmount').textContent = fmt(amount);
     document.getElementById('pBenef').textContent = beneficiary;
     document.getElementById('pIban').textContent = iban;
@@ -2769,7 +2777,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       reasonRow.style.display = 'none';
     }
 
-    // 8. Lancer la progression de 1 à 100%
     const fill = document.getElementById('progressFill');
     const percentEl = document.getElementById('progressPercent');
     let w = 0;
@@ -2779,39 +2786,17 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       percentEl.textContent = w + '%';
       if (w >= 100) {
         clearInterval(interval);
-        // Une fois à 100 %, afficher le reçu et envoyer l'email
         setTimeout(() => {
           showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
-
-          // === ENVOYER L'EMAIL MAINTENANT (à 100%) ===
-          sendMail({
-            to: user.email,
-            name: user.nom || 'Klient',
-            pct: 100,
-            success: false,
-            montant: fmt(amount),
-            beneficiaire: beneficiary,
-            compte: iban,
-            reference: refNum,
-            isRefund: false,
-            isPending: true
-          })
-          .then(() => console.log('✅ Email pending envoyé avec succès'))
-          .catch((error) => {
-            console.error('❌ Erreur envoi email pending:', error);
-            // Ne pas bloquer l'interface
-          });
         }, 500);
       }
     }, 80);
 
     toast('⏳ Przelew oczekuje na zatwierdzenie');
   } catch (err) {
-    console.error('❌ Erreur dans handlePendingTransfer:', err);
+    console.error('❌ Erreur pending transfer:', err);
     toast('❌ Wystąpił błąd podczas przetwarzania przelewu');
     hideLoading();
-    // En cas d'erreur, revenir au tableau de bord
-    navigateTo('dashboard');
   }
 }
 
