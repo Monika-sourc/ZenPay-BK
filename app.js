@@ -2737,21 +2737,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       status: 'pending'
     });
 
-    // 4. Email de notification pending
-    await sendMail({
-      to: user.email,
-      name: user.nom || 'Klient',
-      pct: 100,
-      success: false,
-      montant: fmt(amount),
-      beneficiaire: beneficiary,
-      compte: iban,
-      reference: refNum,
-      isRefund: false,
-      isPending: true
-    });
-
-    // 5. Bannière
+    // 4. Bannière
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
     const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
@@ -2762,7 +2748,7 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 
     hideLoading();
 
-    // 6. AFFICHER LA PROGRESSION DE 1 À 100% PUIS LE RÉSULTAT PENDING
+    // 5. AFFICHER LA PROGRESSION DE 1 À 100% PUIS LE RÉSULTAT PENDING
     navigateTo('progress');
 
     document.getElementById('pAmount').textContent = fmt(amount);
@@ -2787,7 +2773,27 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       if (w >= 100) {
         clearInterval(interval);
         setTimeout(() => {
+          // Afficher le reçu "en attente"
           showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
+
+          // === ENVOYER L'EMAIL APRÈS L'AFFICHAGE DU REÇU ===
+          sendMail({
+            to: user.email,
+            name: user.nom || 'Klient',
+            pct: 100,
+            success: false,
+            montant: fmt(amount),
+            beneficiaire: beneficiary,
+            compte: iban,
+            reference: refNum,
+            isRefund: false,
+            isPending: true
+          })
+          .then(() => console.log('✅ Email pending envoyé avec succès'))
+          .catch((error) => {
+            console.error('❌ Erreur envoi email pending:', error);
+            // Ne pas bloquer l'interface
+          });
         }, 500);
       }
     }, 80);
