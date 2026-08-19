@@ -3068,7 +3068,7 @@ body.dark-bg #progress .progress-details-title span {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 25%, #f0f9ff 50%, #ecfdf5 75%, #f0fdfa 100%);
+  background: linear-gradient(135deg, #0c4a6e 0%, #075985 30%, #0369a1 55%, #0c4a6e 80%, #082f49 100%);
 }
 
 /* Formes organiques animées */
@@ -3085,7 +3085,7 @@ body.dark-bg #progress .progress-details-title span {
 #login::before {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(13, 148, 136, 0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, transparent 70%);
   top: -200px;
   right: -200px;
 }
@@ -3093,7 +3093,7 @@ body.dark-bg #progress .progress-details-title span {
 #login::after {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%);
   bottom: -150px;
   left: -150px;
   animation-delay: -10s;
