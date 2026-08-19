@@ -392,22 +392,261 @@
       margin-bottom: 2px; letter-spacing: 0.3px;
     }
 
-    /* ===== CHAMPS EN GRAS SUR LA PAGE DE TRANSFERT ===== */
-    #transfer .field-group input {
+        /* ===== PAGE TRANSFER PROFESSIONNELLE ===== */
+    #transfer main {
+      padding-top: 88px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    #transfer .transfer-card {
+      background: #ffffff;
+      border: none;
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      max-width: 560px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    #transfer .transfer-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--p-gradient);
+    }
+    #transfer .transfer-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #transfer .transfer-header-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--p-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      flex-shrink: 0;
+    }
+    #transfer .transfer-header-text h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    #transfer .transfer-header-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 2px 0 0;
+      font-weight: 500;
+    }
+    #transfer .transfer-balance-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin: 20px 28px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    #transfer .transfer-balance-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #transfer .transfer-balance-left i {
+      color: var(--p);
+      font-size: 18px;
+    }
+    #transfer .transfer-balance-left b {
+      color: var(--text-primary);
       font-weight: 700;
+    }
+    #transfer .transfer-balance-icon {
+      color: var(--p);
+      font-size: 24px;
+      opacity: 0.3;
+    }
+    #transfer form {
+      padding: 0 28px;
+    }
+    #transfer .field-group {
+      margin-bottom: 18px;
+    }
+    #transfer .field-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+    #transfer .input-icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    #transfer .input-icon-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 16px;
+      pointer-events: none;
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+    #transfer .input-icon-wrap input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      background: #fafbfc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #transfer .input-icon-wrap input:focus {
+      outline: none;
+      border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+    #transfer .input-icon-wrap input:focus + i,
+    #transfer .input-icon-wrap input:focus ~ i {
+      color: var(--p);
+    }
+    #transfer .amount-input-wrap {
+      display: flex;
+      align-items: center;
+      margin: 0;
     }
     #transfer .amount-input-wrap .input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      text-align: left;
       font-weight: 700;
+      font-size: 16px;
+      padding: 14px 16px;
+      flex: 1;
+      background: #fafbfc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px 0 0 14px;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    /* ===== MESSAGE D'INFORMATION SUR LE TRANSFERT ===== */
-    .transfer-info {
-      display: flex; align-items: center; gap: 8px;
-      background: #e5e7eb; padding: 8px 12px; border-radius: var(--radius-sm);
-      margin: 6px 0 12px 0;
-      color: #1F2937; font-size: 13px; font-weight: 500; line-height: 1.4;
+    #transfer .amount-input-wrap .input:focus {
+      outline: none;
+      border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
     }
-    .transfer-info i { color: #4B5563; font-size: 16px; flex-shrink: 0; }
+    #transfer .amount-input-wrap .currency-symbol {
+      padding: 14px 18px;
+      background: #f1f5f9;
+      border: 1.5px solid #e2e8f0;
+      border-left: none;
+      border-radius: 0 14px 14px 0;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--p);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+    }
+    #transfer .transfer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #fefce8, #fef9c3);
+      border: 1px solid #fde68a;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin: 8px 28px 20px;
+      color: #854d0e;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    #transfer .transfer-info i {
+      color: #eab308;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    #transfer .btn {
+      margin: 0 28px 28px;
+      width: calc(100% - 56px);
+      background: var(--p-gradient);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    #transfer .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(13,148,136,0.35);
+    }
+    #transfer .btn:disabled {
+      background: #d1d5db;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #transfer .btn i {
+      transition: transform 0.2s ease;
+    }
+    #transfer .btn:hover:not(:disabled) i {
+      transform: translateX(4px);
+    }
+    @media (max-width: 480px) {
+      #transfer .transfer-card {
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      #transfer .transfer-header {
+        padding: 20px 20px 16px;
+      }
+      #transfer .transfer-balance-bar {
+        margin: 16px 20px;
+      }
+      #transfer form {
+        padding: 0 20px;
+      }
+      #transfer .transfer-info {
+        margin: 8px 20px 16px;
+      }
+      #transfer .btn {
+        margin: 0 20px 20px;
+        width: calc(100% - 40px);
+      }
+    }
 
     /* ===== STYLES SPÉCIFIQUES À LA PAGE DE VÉRIFICATION ===== */
     .verify-details {
@@ -1365,6 +1604,7 @@
   </section>
 
   <!-- ========== TRANSFER ========== -->
+    <!-- ========== TRANSFER ========== -->
   <section id="transfer" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1377,21 +1617,29 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:20px;margin-bottom:14px;">Wykonaj przelew</h1>
       <div class="transfer-card">
-        <div class="transfer-balance">
-          <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.25;font-size:32px"></i>
+        <div class="transfer-header">
+          <div class="transfer-header-icon"><i class="fa-solid fa-paper-plane"></i></div>
+          <div class="transfer-header-text">
+            <h1>Wykonaj przelew</h1>
+            <p>Przelew międzynarodowy SEPA/SWIFT</p>
+          </div>
         </div>
-        <div class="transfer-title"><i class="fa-solid fa-wallet"></i> Wyślij przelew międzynarodowy</div>
+
+        <div class="transfer-balance-bar">
+          <div class="transfer-balance-left">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
+          </div>
+          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
+        </div>
 
         <form id="transferForm" novalidate>
           <div class="field-group">
             <label>Kwota przelewu</label>
             <div class="input-wrapper">
               <div class="amount-input-wrap">
-                <!-- Suppression de l'attribut pattern pour laisser la validation JavaScript gérer -->
-                <input id="a" type="text" required class="input" style="border-top-right-radius:0;border-bottom-right-radius:0;text-align:left;font-weight:700;font-size:14px" placeholder="0.00">
+                <input id="a" type="text" required class="input" placeholder="0.00">
                 <div class="currency-symbol" id="currency-symbol">zł</div>
               </div>
               <div class="field-error" id="error-a"></div>
@@ -1400,35 +1648,50 @@
           <div class="field-group">
             <label>Imię i nazwisko beneficjenta</label>
             <div class="input-wrapper">
-              <input id="b" required class="input" >
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-user"></i>
+                <input id="b" required class="input" placeholder="np. Jan Kowalski">
+              </div>
               <div class="field-error" id="error-b"></div>
             </div>
           </div>
           <div class="field-group">
             <label>IBAN / Numer konta</label>
             <div class="input-wrapper">
-              <input id="c" required class="input" >
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-building-columns"></i>
+                <input id="c" required class="input" placeholder="np. PL00 0000 0000 0000 0000 0000 0000">
+              </div>
               <div class="field-error" id="error-c"></div>
             </div>
           </div>
           <div class="field-group">
             <label>Kod banku (BIC / SWIFT)</label>
             <div class="input-wrapper">
-              <input id="d" required class="input" >
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-hashtag"></i>
+                <input id="d" required class="input" placeholder="np. BPKOPLPW">
+              </div>
               <div class="field-error" id="error-d"></div>
             </div>
           </div>
           <div class="field-group">
             <label>Nazwa banku</label>
             <div class="input-wrapper">
-              <input id="e" required class="input" >
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-landmark"></i>
+                <input id="e" required class="input" placeholder="np. PKO BP">
+              </div>
               <div class="field-error" id="error-e"></div>
             </div>
           </div>
           <div class="field-group">
             <label>Powód transferu</label>
             <div class="input-wrapper">
-              <input id="f" required class="input" >
+              <div class="input-icon-wrap">
+                <i class="fa-solid fa-pen"></i>
+                <input id="f" required class="input" placeholder="np. Zakup usługi">
+              </div>
               <div class="field-error" id="error-f"></div>
             </div>
           </div>
@@ -1439,10 +1702,12 @@
           <span>Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
         </div>
 
-        <button onclick="toVerify()" class="btn" id="continueBtn" style="margin-top:4px;font-size:14px;padding:12px;" disabled>Kontynuuj →</button>
+        <button onclick="toVerify()" class="btn" id="continueBtn" disabled>Kontynuuj <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </main>
   </section>
+
+
 
   <!-- ========== VERIFY ========== -->
   <section id="verify" class="screen">
