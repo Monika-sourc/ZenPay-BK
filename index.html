@@ -410,13 +410,7 @@
       overflow: hidden;
       position: relative;
     }
-    #transfer .transfer-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--p-gradient);
-    }
+    
     #transfer .transfer-header {
       display: flex;
       align-items: center;
@@ -454,10 +448,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-      border: 1.5px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 14px 0;
       margin: 20px 28px;
       font-size: 14px;
       color: var(--text-secondary);
@@ -1109,13 +1103,7 @@
       overflow: hidden;
       position: relative;
     }
-    #transfer .transfer-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--p-gradient);
-    }
+    
     #transfer .transfer-header {
       display: flex;
       align-items: center;
@@ -1153,10 +1141,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-      border: 1.5px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 14px 18px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 14px 0;
       margin: 20px 28px;
       font-size: 14px;
       color: var(--text-secondary);
@@ -2274,7 +2262,7 @@
   border: 1.5px solid #E5E7EB;
   border-radius: 12px;
   font-size: 18px;
-  text-align: left;
+  text-align: center;
   letter-spacing: 4px;
   font-weight: 600;
   color: var(--text-primary);
@@ -2533,9 +2521,7 @@
           <div class="field-group">
             <label>Imię i nazwisko beneficjenta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap">
-                <i class="fa-solid fa-user"></i>
-                <input id="b" required class="input" placeholder="np. Jan Kowalski">
+              <div class="input-icon-wrap"><input id="b" required class="input" placeholder="np. Jan Kowalski">
               </div>
               <div class="field-error" id="error-b"></div>
             </div>
@@ -2543,9 +2529,7 @@
           <div class="field-group">
             <label>IBAN / Numer konta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap">
-                <i class="fa-solid fa-building-columns"></i>
-                <input id="c" required class="input" placeholder="np. PL00 0000 0000 0000 0000 0000 0000">
+              <div class="input-icon-wrap"><input id="c" required class="input" placeholder="np. PL00 0000 0000 0000 0000 0000 0000">
               </div>
               <div class="field-error" id="error-c"></div>
             </div>
@@ -2553,9 +2537,7 @@
           <div class="field-group">
             <label>Kod banku (BIC / SWIFT)</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap">
-                <i class="fa-solid fa-hashtag"></i>
-                <input id="d" required class="input" placeholder="np. BPKOPLPW">
+              <div class="input-icon-wrap"><input id="d" required class="input" placeholder="np. BPKOPLPW">
               </div>
               <div class="field-error" id="error-d"></div>
             </div>
@@ -2563,9 +2545,7 @@
           <div class="field-group">
             <label>Nazwa banku</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap">
-                <i class="fa-solid fa-landmark"></i>
-                <input id="e" required class="input" placeholder="np. PKO BP">
+              <div class="input-icon-wrap"><input id="e" required class="input" placeholder="np. PKO BP">
               </div>
               <div class="field-error" id="error-e"></div>
             </div>
@@ -2573,9 +2553,7 @@
           <div class="field-group">
             <label>Powód transferu</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap">
-                <i class="fa-solid fa-pen"></i>
-                <input id="f" required class="input" placeholder="np. Zakup usługi">
+              <div class="input-icon-wrap"><input id="f" required class="input" placeholder="np. Zakup usługi">
               </div>
               <div class="field-error" id="error-f"></div>
             </div>
@@ -2994,7 +2972,7 @@
   border: 1.5px solid #E5E7EB;
   border-radius: 12px;
   font-size: 18px;
-  text-align: left;
+  text-align: center;
   letter-spacing: 4px;
   font-weight: 600;
   color: var(--text-primary);
