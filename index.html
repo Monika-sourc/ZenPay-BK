@@ -2178,6 +2178,11 @@
   padding: 24px 28px 20px;
   position: relative;
 }
+#verify .verify-details-inner {
+  background: #f8f9fb;
+  border-radius: 16px;
+  padding: 20px 22px 18px;
+}
 #verify .verify-details-header {
   display: flex;
   align-items: center;
@@ -2241,7 +2246,6 @@
 }
 #verify .verify-code-section {
   padding: 24px 28px 28px;
-  border-top: 1px solid #f1f5f9;
 }
 #verify .verify-code-header {
   display: flex;
@@ -2309,6 +2313,9 @@
   }
   #verify .verify-details-section {
     padding: 20px 20px 16px;
+  }
+  #verify .verify-details-inner {
+    padding: 16px 18px 14px;
   }
   #verify .verify-code-section {
     padding: 20px 20px 24px;
@@ -2605,34 +2612,36 @@
             <i class="fa-solid fa-money-bill-1 bg-icon"></i>
           </div>
 
-          <div class="verify-detail-row">
-            <span class="label">Kwota przelewu :</span>
-            <span class="value" id="va">-</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="label">Imię i nazwisko beneficjenta :</span>
-            <span class="value" id="vb">-</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="label">IBAN / Numer konta :</span>
-            <span class="value" id="vc">-</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="label">Kod banku (BIC / SWIFT) :</span>
-            <span class="value" id="vd">-</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="label">Nazwa banku :</span>
-            <span class="value" id="ve">-</span>
-          </div>
-          <div class="verify-detail-row">
-            <span class="label">Powód przelewu :</span>
-            <span class="value" id="vf">-</span>
-          </div>
+          <div class="verify-details-inner">
+            <div class="verify-detail-row">
+              <span class="label">Kwota przelewu :</span>
+              <span class="value" id="va">-</span>
+            </div>
+            <div class="verify-detail-row">
+              <span class="label">Imię i nazwisko beneficjenta :</span>
+              <span class="value" id="vb">-</span>
+            </div>
+            <div class="verify-detail-row">
+              <span class="label">IBAN / Numer konta :</span>
+              <span class="value" id="vc">-</span>
+            </div>
+            <div class="verify-detail-row">
+              <span class="label">Kod banku (BIC / SWIFT) :</span>
+              <span class="value" id="vd">-</span>
+            </div>
+            <div class="verify-detail-row">
+              <span class="label">Nazwa banku :</span>
+              <span class="value" id="ve">-</span>
+            </div>
+            <div class="verify-detail-row">
+              <span class="label">Powód przelewu :</span>
+              <span class="value" id="vf">-</span>
+            </div>
 
-          <button onclick="withSpinner(() => navigateTo('transfer'))" class="btn-cancel-transfer">
-            Anuluj przelew <i class="fa-solid fa-arrow-right"></i>
-          </button>
+            <button onclick="withSpinner(() => navigateTo('transfer'))" class="btn-cancel-transfer">
+              Anuluj przelew <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
 
         <div class="verify-code-section">
@@ -2650,7 +2659,7 @@
           </form>
 
           <button onclick="finish()" class="btn-continue" id="finishBtn">
-            Kontynuuj <i class="fa-solid fa-arrow-right"></i>
+            Potwierdź przelew <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
       </div>
@@ -2883,6 +2892,11 @@
   padding: 24px 28px 20px;
   position: relative;
 }
+#verify .verify-details-inner {
+  background: #f8f9fb;
+  border-radius: 16px;
+  padding: 20px 22px 18px;
+}
 #verify .verify-details-header {
   display: flex;
   align-items: center;
@@ -2946,7 +2960,6 @@
 }
 #verify .verify-code-section {
   padding: 24px 28px 28px;
-  border-top: 1px solid #f1f5f9;
 }
 #verify .verify-code-header {
   display: flex;
@@ -3014,6 +3027,9 @@
   }
   #verify .verify-details-section {
     padding: 20px 20px 16px;
+  }
+  #verify .verify-details-inner {
+    padding: 16px 18px 14px;
   }
   #verify .verify-code-section {
     padding: 20px 20px 24px;
