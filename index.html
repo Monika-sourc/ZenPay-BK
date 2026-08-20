@@ -648,6 +648,705 @@
       }
     }
 
+    /* ===== PAGE VÉRIFICATION PROFESSIONNELLE ===== */
+    #verify main {
+      padding-top: 88px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    #verify .verify-card {
+      background: #ffffff;
+      border: none;
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      max-width: 520px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    #verify .verify-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--p-gradient);
+    }
+    #verify .verify-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #verify .verify-header-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      flex-shrink: 0;
+    }
+    #verify .verify-header-text h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    #verify .verify-header-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 2px 0 0;
+      font-weight: 500;
+    }
+    #verify .verify-details {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 20px 28px;
+    }
+    #verify .verify-details-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--p);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--p);
+    }
+    #verify .verify-details-title i {
+      font-size: 16px;
+    }
+    #verify .verify-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    #verify .verify-row:last-child {
+      border-bottom: none;
+    }
+    #verify .verify-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      padding-right: 12px;
+    }
+    #verify .verify-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: right;
+      word-break: break-all;
+    }
+    #verify .verify-code-box {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1.5px solid #a7f3d0;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 0 28px 20px;
+    }
+    #verify .verify-code-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #065f46;
+    }
+    #verify .verify-code-header i {
+      color: #10b981;
+      font-size: 18px;
+    }
+    #verify .code-input {
+      width: 100%;
+      padding: 16px;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 20px;
+      text-align: center;
+      letter-spacing: 8px;
+      font-weight: 700;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #verify .code-input:focus {
+      outline: none;
+      border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.1);
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+    #verify .code-input::placeholder {
+      color: #cbd5e1;
+      letter-spacing: 4px;
+      font-weight: 400;
+      font-size: 16px;
+    }
+    #verify .verify-actions {
+      display: flex;
+      gap: 12px;
+      padding: 0 28px 28px;
+    }
+    #verify .verify-cancel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      background: transparent;
+      border: 1.5px solid #e2e8f0;
+      color: #6b7280;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #verify .verify-cancel:hover {
+      background: #f8fafc;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+    #verify .verify-actions .btn {
+      flex: 2;
+      background: var(--p-gradient);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #verify .verify-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(13,148,136,0.35);
+    }
+    @media (max-width: 480px) {
+      #verify .verify-card {
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      #verify .verify-header {
+        padding: 20px 20px 16px;
+      }
+      #verify .verify-details {
+        margin: 16px 20px;
+      }
+      #verify .verify-code-box {
+        margin: 0 20px 16px;
+      }
+      #verify .verify-actions {
+        padding: 0 20px 20px;
+        flex-direction: column;
+      }
+      #verify .verify-actions .btn,
+      #verify .verify-cancel {
+        width: 100%;
+      }
+    }
+
+        /* ===== MODALES ===== */
+    .modal {
+      position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+    }
+    .modal.hidden { display: none !important; }
+    .modal-content {
+      background: #FFFFFF; border-radius: var(--radius);
+      max-width: 520px; width: 100%;
+      padding: 20px 20px 16px;
+      position: relative; box-shadow: 0 24px 64px rgba(0,0,0,0.12);
+      max-height: 90vh; overflow-y: auto;
+      overflow: visible;
+    }
+    .modal-close {
+      position: absolute; top: -16px; right: -16px;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #DC2626; color: #fff; border: 3px solid #fff;
+      font-size: 18px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+      transition: transform 0.2s, box-shadow 0.2s; z-index: 20;
+    }
+    .modal-close:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(220,38,38,0.5); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 12px 18px; background: #2D2D3A; color: #FFFFFF;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: opacity 0.2s;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .input {
+      width: 100%; padding: 14px 16px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-size: 15px; color: var(--text-primary);
+    }
+    .input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
+    .amount-input-wrap {
+      display: flex; align-items: center; margin: 4px 0 12px;
+    }
+    .amount-input-wrap .input {
+      border-top-right-radius: 0; border-bottom-right-radius: 0;
+      text-align: left; font-weight: 700; font-size: 16px; padding: 14px 16px; flex: 1;
+    }
+    .amount-input-wrap .currency-symbol {
+      padding: 14px 16px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      border-left: none; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-weight: 600; display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--text-secondary); height: 100%; min-height: 44px; line-height: 1;
+    }
+    #greet {
+      font-size: 26px; font-weight: 600; margin-bottom: 32px;
+      letter-spacing: -0.01em; color: var(--text-secondary);
+      display: flex; align-items: center; flex-wrap: nowrap;
+      gap: 8px; overflow: hidden; white-space: nowrap;
+      padding-left: 4px;
+    }
+    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    .balance-panel {
+      background: var(--p-gradient);
+      padding: 24px 22px 20px;
+      margin-bottom: 32px; color: #fff; position: relative; overflow: hidden;
+      box-shadow: 0 12px 32px rgba(13,148,136,0.20), 0 4px 12px rgba(13,148,136,0.12);
+      display: flex; flex-direction: column;
+      min-height: 180px; border: none;
+    }
+    .balance-panel::before {
+      content: ''; position: absolute; top: -60%; right: -30%; width: 220px; height: 220px;
+      background: rgba(255,255,255,0.06); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel::after {
+      content: ''; position: absolute; bottom: -40%; left: -20%; width: 160px; height: 160px;
+      background: rgba(255,255,255,0.04); border-radius: 50%; pointer-events: none;
+    }
+    .balance-panel .label {
+      font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
+    }
+    .balance-panel .amount {
+      font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
+      overflow: visible; white-space: nowrap; margin-bottom: 6px; margin-left: 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .balance-panel .sub {
+      font-size: 12px; opacity: 0.65; margin-bottom: 20px; font-weight: 400;
+    }
+    .balance-actions-wrapper {
+      display: flex; gap: 10px; justify-content: space-between; width: 100%; position: relative; z-index: 2; margin-bottom: 0;
+    }
+    .balance-actions-wrapper .btn-action {
+      flex: 1; min-width: 0; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      line-height: 1.2; min-height: 44px; text-align: center;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .balance-actions-wrapper .btn-action:hover { background: #D1D5DB; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .balance-actions-wrapper .btn-action i { color: #374151; font-size: 15px; }
+    .btn-iban {
+      width: 100%; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
+      border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 10px; min-height: 44px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn-iban:hover { background: #D1D5DB; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .btn-iban i { color: #374151; font-size: 15px; }
+    .quick-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px;
+    }
+    .stat-item {
+      background: var(--card-bg); border: 1.5px solid #d1d5db; border-radius: 12px;
+      padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-soft); overflow: visible;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .stat-item .stat-value {
+      font-size: 20px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
+      letter-spacing: -0.02em;
+    }
+    .stat-item .stat-label {
+      font-size: 11px; color: var(--text-secondary); letter-spacing: 0.3px; margin-top: 4px; font-weight: 500;
+    }
+    .stat-item .stat-icon {
+      font-size: 18px; color: var(--p); margin-bottom: 5px; opacity: 0.85;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .history-container {
+      border: 1.5px solid #d1d5db; border-radius: 14px;
+      background: #ffffff; padding: 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    }
+    .history-header {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px; color: var(--text-primary);
+      padding: 18px 20px 14px 20px; border-bottom: 2.5px solid var(--p);
+      margin-bottom: 0; background: #ffffff; border-radius: 14px 14px 0 0;
+    }
+    .history-header i { font-size: 18px; color: var(--p); }
+    .history-header .badge-count {
+      margin-left: auto; background: var(--p-soft); color: var(--p); font-size: 11px;
+      font-weight: 700; padding: 4px 10px; border-radius: 20px;
+    }
+    #history-list { padding: 8px 12px 12px 12px; }
+    .history-item {
+      background: #ffffff; border: none;
+      border-radius: 14px;
+      padding: 14px 14px; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      width: 100%; min-height: 56px; transition: all 0.2s ease;
+    }
+    .history-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); background: #fafbfc; transform: translateX(2px); }
+    .history-item:last-child { margin-bottom: 0; }
+    .history-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 auto; }
+    .history-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 14px;
+    }
+    .history-icon.credit { background: #D1FAE5; color: #059669; }
+    .history-icon.debit { background: #FEF2F2; color: #DC2626; }
+    .history-icon.refund { background: #EDE9FE; color: #7C3AED; }
+    .history-icon.pending { background: #FEF3C7; color: #D97706; }
+    .history-icon.bank-logo { background: #fff; border: 1.5px solid #e5e7eb; box-shadow: 0 2px 6px rgba(0,0,0,0.06); padding: 4px; }
+    .history-icon.bank-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+    .history-icon.human-logo { background: linear-gradient(135deg, #E5E7EB, #D1D5DB); border: 2px solid #9CA3AF; color: #4B5563; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.history-icon.custom-bank { background: transparent; border: none; box-shadow: none; padding: 0; }
+    .history-info { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; overflow: hidden; }
+    .history-info .title {
+      font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+    }
+    .history-info .title .sub { color: var(--text-secondary); font-weight: 400; }
+    .history-info .meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; margin-top: 2px; }
+    .history-amount { font-weight: 700; font-size: 15px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
+    .history-amount.credit { color: #059669; }
+    .history-amount.debit { color: #DC2626; }
+    .history-amount.refund { color: #7C3AED; }
+    .history-amount.pending { color: #D97706; }
+    .empty-history {
+      text-align: center; color: var(--text-secondary); padding: 40px 20px 30px;
+      background: transparent; border: none; border-radius: 0; font-size: 15px; font-weight: 400;
+    }
+    .empty-history i { display: block; font-size: 40px; color: #e5e7eb; margin-bottom: 12px; }
+    .transfer-card {
+      background: var(--card-bg); border: 1px solid var(--border-light);
+      border-radius: var(--radius); padding: 14px 14px;
+      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto; width: 100%;
+    }
+    .progress-card {
+      background: var(--card-bg); border: 1px solid var(--border-light);
+      border-radius: var(--radius); padding: 32px 20px 40px;
+      box-shadow: var(--shadow-soft); max-width: 600px; margin: 0 auto 20px; width: 100%;
+    }
+    .transfer-balance {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); font-weight: 400;
+    }
+    .transfer-balance b { color: var(--text-primary); font-weight: 600; }
+    .transfer-title {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+      font-size: 13px; color: var(--p); font-weight: 600;
+    }
+    .field-group { margin-bottom: 20px; }
+    .field-group label {
+      display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary);
+      margin-bottom: 2px; letter-spacing: 0.3px;
+    }
+
+        /* ===== PAGE TRANSFER PROFESSIONNELLE ===== */
+    #transfer main {
+      padding-top: 88px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    #transfer .transfer-card {
+      background: #ffffff;
+      border: none;
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+      max-width: 560px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    #transfer .transfer-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--p-gradient);
+    }
+    #transfer .transfer-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 28px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #transfer .transfer-header-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--p-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      flex-shrink: 0;
+    }
+    #transfer .transfer-header-text h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    #transfer .transfer-header-text p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 2px 0 0;
+      font-weight: 500;
+    }
+    #transfer .transfer-balance-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin: 20px 28px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    #transfer .transfer-balance-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #transfer .transfer-balance-left i {
+      color: var(--p);
+      font-size: 18px;
+    }
+    #transfer .transfer-balance-left b {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    #transfer .transfer-balance-icon {
+      color: var(--p);
+      font-size: 24px;
+      opacity: 0.3;
+    }
+    #transfer form {
+      padding: 0 28px;
+    }
+    #transfer .field-group {
+      margin-bottom: 18px;
+    }
+    #transfer .field-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+    #transfer .input-icon-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    #transfer .input-icon-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 16px;
+      pointer-events: none;
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+    #transfer .input-icon-wrap input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      background: #fafbfc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #transfer .input-icon-wrap input:focus {
+      outline: none;
+      border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+    #transfer .input-icon-wrap input:focus + i,
+    #transfer .input-icon-wrap input:focus ~ i {
+      color: var(--p);
+    }
+    #transfer .amount-input-wrap {
+      display: flex;
+      align-items: center;
+      margin: 0;
+    }
+    #transfer .amount-input-wrap .input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      text-align: left;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 14px 16px;
+      flex: 1;
+      background: #fafbfc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px 0 0 14px;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #transfer .amount-input-wrap .input:focus {
+      outline: none;
+      border-color: var(--p);
+      box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+      background: #ffffff;
+    }
+    #transfer .amount-input-wrap .currency-symbol {
+      padding: 14px 18px;
+      background: #f1f5f9;
+      border: 1.5px solid #e2e8f0;
+      border-left: none;
+      border-radius: 0 14px 14px 0;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--p);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+    }
+    #transfer .transfer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #fefce8, #fef9c3);
+      border: 1px solid #fde68a;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin: 8px 28px 20px;
+      color: #854d0e;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    #transfer .transfer-info i {
+      color: #eab308;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    #transfer .btn {
+      margin: 0 28px 28px;
+      width: calc(100% - 56px);
+      background: var(--p-gradient);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    #transfer .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(13,148,136,0.35);
+    }
+    #transfer .btn:disabled {
+      background: #d1d5db;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #transfer .btn i {
+      transition: transform 0.2s ease;
+    }
+    #transfer .btn:hover:not(:disabled) i {
+      transform: translateX(4px);
+    }
+    @media (max-width: 480px) {
+      #transfer .transfer-card {
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+      }
+      #transfer .transfer-header {
+        padding: 20px 20px 16px;
+      }
+      #transfer .transfer-balance-bar {
+        margin: 16px 20px;
+      }
+      #transfer form {
+        padding: 0 20px;
+      }
+      #transfer .transfer-info {
+        margin: 8px 20px 16px;
+      }
+      #transfer .btn {
+        margin: 0 20px 20px;
+        width: calc(100% - 40px);
+      }
+    }
+
     /* ===== STYLES SPÉCIFIQUES À LA PAGE DE VÉRIFICATION ===== */
     .verify-details {
       background: #e5e7eb; padding: 12px 14px;
@@ -1710,6 +2409,7 @@
 
 
   <!-- ========== VERIFY ========== -->
+    <!-- ========== VERIFY ========== -->
   <section id="verify" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1722,54 +2422,69 @@
       </div>
     </header>
     <main>
-      <h1 style="font-weight:600;font-size:20px;margin-bottom:12px;">Weryfikacja przelewu</h1>
-      <div class="transfer-card" style="padding:14px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:6px;color:var(--p);font-weight:600;font-size:14px;"><i class="fa-regular fa-file-lines"></i> Oczekujące szczegóły przelewu</div>
-          <i class="fa-solid fa-money-bill-transfer" style="opacity:0.12;font-size:28px"></i>
+      <div class="verify-card">
+        <div class="verify-header">
+          <div class="verify-header-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="verify-header-text">
+            <h1>Weryfikacja przelewu</h1>
+            <p>Sprawdź dane i wprowadź kod aktywacyjny</p>
+          </div>
         </div>
+
         <div class="verify-details">
-          <div class="row">
-            <div class="label">Kwota przelewu :</div>
-            <div class="value" id="va">-</div>
+          <div class="verify-details-title"><i class="fa-solid fa-file-lines"></i> Szczegóły przelewu</div>
+          <div class="verify-row">
+            <span class="verify-label">Kwota</span>
+            <span class="verify-value" id="va">-</span>
           </div>
-          <div class="row">
-            <div class="label">Nazwa beneficjenta :</div>
-            <div class="value" id="vb">-</div>
+          <div class="verify-row">
+            <span class="verify-label">Beneficjent</span>
+            <span class="verify-value" id="vb">-</span>
           </div>
-          <div class="row">
-            <div class="label">IBAN/numer konta :</div>
-            <div class="value" id="vc">-</div>
+          <div class="verify-row">
+            <span class="verify-label">IBAN / Konto</span>
+            <span class="verify-value" id="vc">-</span>
           </div>
-          <div class="row">
-            <div class="label">Kod banku (BIC/SWIFT) :</div>
-            <div class="value" id="vd">-</div>
+          <div class="verify-row">
+            <span class="verify-label">BIC / SWIFT</span>
+            <span class="verify-value" id="vd">-</span>
           </div>
-          <div class="row">
-            <div class="label">Nazwa banku :</div>
-            <div class="value" id="ve">-</div>
+          <div class="verify-row">
+            <span class="verify-label">Bank</span>
+            <span class="verify-value" id="ve">-</span>
           </div>
-          <div class="row">
-            <div class="label">Powód przeniesienia :</div>
-            <div class="value" id="vf">-</div>
+          <div class="verify-row">
+            <span class="verify-label">Powód</span>
+            <span class="verify-value" id="vf">-</span>
           </div>
         </div>
-        <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">Anuluj przelew →</button>
-        <div class="verify-code-section">
-          <div class="lock-line"><i class="fa-solid fa-lock"></i><span>Proszę wprowadzić kod aktywacyjny transferu.</span></div>
+
+        <div class="verify-code-box">
+          <div class="verify-code-header">
+            <i class="fa-solid fa-lock"></i>
+            <span>Kod aktywacyjny</span>
+          </div>
           <form id="codeForm" novalidate>
             <div class="input-wrapper">
-              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="******">
+              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="Wprowadź kod">
               <div class="field-error" id="error-code"></div>
             </div>
           </form>
-          <div class="verify-submit">
-            <button onclick="finish()" class="btn" id="finishBtn" style="font-size:14px;padding:12px;margin-top:4px;">Potwierdź przelew</button>
-          </div>
+        </div>
+
+        <div class="verify-actions">
+          <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">
+            <i class="fa-solid fa-arrow-left"></i> Anuluj
+          </button>
+          <button onclick="finish()" class="btn" id="finishBtn">
+            <i class="fa-solid fa-check"></i> Potwierdź przelew
+          </button>
         </div>
       </div>
     </main>
   </section>
+
+
 
   <!-- ========== PROGRESS ========== -->
   <section id="progress" class="screen">
