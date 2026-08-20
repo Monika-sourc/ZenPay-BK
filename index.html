@@ -2146,6 +2146,179 @@
   border: 1.5px solid #D97706 !important;
 }
 
+
+/* ===== NOUVEAU DESIGN PAGE VÉRIFICATION (image ref) ===== */
+#verify main {
+  padding-top: 88px;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#verify .verify-page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding-left: 4px;
+}
+#verify .verify-card {
+  background: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  max-width: 520px;
+  width: 100%;
+  overflow: hidden;
+}
+#verify .verify-details-section {
+  padding: 24px 28px 20px;
+  position: relative;
+}
+#verify .verify-details-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+#verify .verify-details-header i {
+  color: var(--p);
+  font-size: 18px;
+}
+#verify .verify-details-header .bg-icon {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 48px;
+  color: var(--p);
+  opacity: 0.08;
+}
+#verify .verify-detail-row {
+  margin-bottom: 14px;
+}
+#verify .verify-detail-row:last-child {
+  margin-bottom: 0;
+}
+#verify .verify-detail-row .label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+#verify .verify-detail-row .value {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+#verify .btn-cancel-transfer {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #EF4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  transition: all 0.2s ease;
+}
+#verify .btn-cancel-transfer:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+#verify .verify-code-section {
+  padding: 24px 28px 28px;
+  border-top: 1px solid #f1f5f9;
+}
+#verify .verify-code-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+#verify .verify-code-header i {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+#verify .code-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+#verify .code-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #FAFBFC;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 18px;
+  text-align: left;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+#verify .code-input:focus {
+  outline: none;
+  border-color: var(--p);
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+  background: #fff;
+}
+#verify .btn-continue {
+  width: 100%;
+  padding: 14px;
+  background: #4B5563;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+#verify .btn-continue:hover {
+  background: #374151;
+}
+@media (max-width: 480px) {
+  #verify .verify-card {
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+  }
+  #verify .verify-details-section {
+    padding: 20px 20px 16px;
+  }
+  #verify .verify-code-section {
+    padding: 20px 20px 24px;
+  }
+  #verify .verify-page-title {
+    padding-left: 16px;
+    font-size: 20px;
+  }
+}
+
 </style>
   <script>
     (function() {
@@ -2422,62 +2595,62 @@
       </div>
     </header>
     <main>
+      <h1 class="verify-page-title">Weryfikacja tożsamości</h1>
+
       <div class="verify-card">
-        <div class="verify-header">
-          <div class="verify-header-icon"><i class="fa-solid fa-shield-halved"></i></div>
-          <div class="verify-header-text">
-            <h1>Weryfikacja przelewu</h1>
-            <p>Sprawdź dane i wprowadź kod aktywacyjny</p>
+        <div class="verify-details-section">
+          <div class="verify-details-header">
+            <i class="fa-solid fa-money-bill-wave"></i>
+            <span>Szczegóły przelewu w oczekiwaniu</span>
+            <i class="fa-solid fa-money-bill-1 bg-icon"></i>
           </div>
+
+          <div class="verify-detail-row">
+            <span class="label">Kwota przelewu :</span>
+            <span class="value" id="va">-</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="label">Imię i nazwisko beneficjenta :</span>
+            <span class="value" id="vb">-</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="label">IBAN / Numer konta :</span>
+            <span class="value" id="vc">-</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="label">Kod banku (BIC / SWIFT) :</span>
+            <span class="value" id="vd">-</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="label">Nazwa banku :</span>
+            <span class="value" id="ve">-</span>
+          </div>
+          <div class="verify-detail-row">
+            <span class="label">Powód przelewu :</span>
+            <span class="value" id="vf">-</span>
+          </div>
+
+          <button onclick="withSpinner(() => navigateTo('transfer'))" class="btn-cancel-transfer">
+            Anuluj przelew <i class="fa-solid fa-arrow-right"></i>
+          </button>
         </div>
 
-        <div class="verify-details">
-          <div class="verify-details-title"><i class="fa-solid fa-file-lines"></i> Szczegóły przelewu</div>
-          <div class="verify-row">
-            <span class="verify-label">Kwota</span>
-            <span class="verify-value" id="va">-</span>
-          </div>
-          <div class="verify-row">
-            <span class="verify-label">Beneficjent</span>
-            <span class="verify-value" id="vb">-</span>
-          </div>
-          <div class="verify-row">
-            <span class="verify-label">IBAN / Konto</span>
-            <span class="verify-value" id="vc">-</span>
-          </div>
-          <div class="verify-row">
-            <span class="verify-label">BIC / SWIFT</span>
-            <span class="verify-value" id="vd">-</span>
-          </div>
-          <div class="verify-row">
-            <span class="verify-label">Bank</span>
-            <span class="verify-value" id="ve">-</span>
-          </div>
-          <div class="verify-row">
-            <span class="verify-label">Powód</span>
-            <span class="verify-value" id="vf">-</span>
-          </div>
-        </div>
-
-        <div class="verify-code-box">
+        <div class="verify-code-section">
           <div class="verify-code-header">
             <i class="fa-solid fa-lock"></i>
-            <span>Kod aktywacyjny</span>
+            <span>Wprowadź kod aktywacyjny przelewu</span>
           </div>
+
           <form id="codeForm" novalidate>
+            <label class="code-label" for="code">Kod aktywacyjny</label>
             <div class="input-wrapper">
-              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="Wprowadź kod">
+              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="********">
               <div class="field-error" id="error-code"></div>
             </div>
           </form>
-        </div>
 
-        <div class="verify-actions">
-          <button onclick="withSpinner(() => navigateTo('transfer'))" class="verify-cancel">
-            <i class="fa-solid fa-arrow-left"></i> Anuluj
-          </button>
-          <button onclick="finish()" class="btn" id="finishBtn">
-            <i class="fa-solid fa-check"></i> Potwierdź przelew
+          <button onclick="finish()" class="btn-continue" id="finishBtn">
+            Kontynuuj <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
       </div>
@@ -2678,6 +2851,179 @@
     left: 19px;
   }
 }
+
+/* ===== NOUVEAU DESIGN PAGE VÉRIFICATION (image ref) ===== */
+#verify main {
+  padding-top: 88px;
+  padding-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#verify .verify-page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 520px;
+  padding-left: 4px;
+}
+#verify .verify-card {
+  background: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  max-width: 520px;
+  width: 100%;
+  overflow: hidden;
+}
+#verify .verify-details-section {
+  padding: 24px 28px 20px;
+  position: relative;
+}
+#verify .verify-details-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+#verify .verify-details-header i {
+  color: var(--p);
+  font-size: 18px;
+}
+#verify .verify-details-header .bg-icon {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 48px;
+  color: var(--p);
+  opacity: 0.08;
+}
+#verify .verify-detail-row {
+  margin-bottom: 14px;
+}
+#verify .verify-detail-row:last-child {
+  margin-bottom: 0;
+}
+#verify .verify-detail-row .label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+#verify .verify-detail-row .value {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+#verify .btn-cancel-transfer {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #EF4444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+  transition: all 0.2s ease;
+}
+#verify .btn-cancel-transfer:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+#verify .verify-code-section {
+  padding: 24px 28px 28px;
+  border-top: 1px solid #f1f5f9;
+}
+#verify .verify-code-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+#verify .verify-code-header i {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+#verify .code-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+#verify .code-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #FAFBFC;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 18px;
+  text-align: left;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+#verify .code-input:focus {
+  outline: none;
+  border-color: var(--p);
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.08);
+  background: #fff;
+}
+#verify .btn-continue {
+  width: 100%;
+  padding: 14px;
+  background: #4B5563;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+#verify .btn-continue:hover {
+  background: #374151;
+}
+@media (max-width: 480px) {
+  #verify .verify-card {
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+  }
+  #verify .verify-details-section {
+    padding: 20px 20px 16px;
+  }
+  #verify .verify-code-section {
+    padding: 20px 20px 24px;
+  }
+  #verify .verify-page-title {
+    padding-left: 16px;
+    font-size: 20px;
+  }
+}
+
 </style>
         <div style="position:absolute;top:-30%;right:-20%;width:160px;height:160px;background:radial-gradient(circle,rgba(13,148,136,0.15) 0%,transparent 70%);border-radius:50%;"></div>
         <div style="position:absolute;bottom:-40%;left:-30%;width:180px;height:180px;background:radial-gradient(circle,rgba(20,184,166,0.1) 0%,transparent 70%);border-radius:50%;"></div>
