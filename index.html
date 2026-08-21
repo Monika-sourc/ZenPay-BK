@@ -2552,8 +2552,10 @@ window.toggleBalance = function() {
   <circle cx="49" cy="9" r="3.2" fill="currentColor"/>
   <circle cx="19" cy="27" r="3.2" fill="currentColor"/>
   <circle cx="49" cy="27" r="3.2" fill="currentColor"/>
-  <!-- Arrow: longer vertical stem -->
-  <path d="M0 9 L0 48 Q0 56 10 56 L32 56" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow vertical part (thicker) -->
+  <path d="M0 9 L0 48" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <!-- Arrow curve + horizontal part -->
+  <path d="M0 48 Q0 56 10 56 L32 56" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Dot before arrow head -->
   <circle cx="39" cy="56" r="3" fill="currentColor"/>
   <!-- Arrow head -->
