@@ -21,7 +21,7 @@
       padding: 0;
       overflow-x: hidden;
       overflow-y: auto;
-      background: #e8eaed;
+      background: #d1d5db;
       color: var(--text-primary);
       transition: background 0.4s ease;
     }
@@ -64,7 +64,7 @@
       justify-content: center;
       padding: 40px 24px;
       flex: 1;
-      background: #e8eaed;
+      background: #d1d5db;
     }
 
     /* ===== EN-TÊTE FIXE EN HAUT ===== */
@@ -2545,28 +2545,28 @@ window.toggleBalance = function() {
     <main>
       <div class="transfer-card">
         <div class="transfer-header">
-          <div class="transfer-header-icon"><svg viewBox="0 0 64 56" width="60" height="52" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Bill body - reduced height -->
-  <rect x="12" y="2" width="52" height="32" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
+          <div class="transfer-header-icon"><svg viewBox="0 0 64 64" width="60" height="60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bill body - wider, shifted right -->
+  <rect x="12" y="2" width="52" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
   <!-- Center circle -->
-  <circle cx="38" cy="18" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
+  <circle cx="38" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
   <!-- Corner dots -->
   <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
   <circle cx="55" cy="9" r="3.2" fill="currentColor"/>
-  <circle cx="19" cy="29" r="3.2" fill="currentColor"/>
-  <circle cx="55" cy="29" r="3.2" fill="currentColor"/>
-  <!-- Arrow vertical part - reduced height -->
-  <path d="M0 9 L0 42" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <!-- Arrow curve + horizontal part -->
-  <path d="M0 42 Q0 48 6 48 L52 48" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
+  <circle cx="55" cy="35" r="3.2" fill="currentColor"/>
+  <!-- Arrow vertical part -->
+  <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <!-- Arrow curve + horizontal part (thinner, reaches bill edge) -->
+  <path d="M0 50 Q0 56 6 56 L52 56" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- 3 dots on horizontal arrow -->
-  <circle cx="18" cy="48" r="3.5" fill="#FFFFFF"/>
-  <circle cx="30" cy="48" r="3.5" fill="#FFFFFF"/>
-  <circle cx="42" cy="48" r="3.5" fill="#FFFFFF"/>
+  <circle cx="18" cy="56" r="3.5" fill="#FFFFFF"/>
+  <circle cx="30" cy="56" r="3.5" fill="#FFFFFF"/>
+  <circle cx="42" cy="56" r="3.5" fill="#FFFFFF"/>
   <!-- Dot before arrow head -->
-  <circle cx="54" cy="48" r="3" fill="currentColor"/>
-  <!-- Arrow head -->
-  <path d="M56 42 L64 48 L56 54" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="54" cy="56" r="3" fill="currentColor"/>
+  <!-- Arrow head (reaches bill edge) -->
+  <path d="M56 50 L64 56 L56 62" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
             <h1>Wykonaj przelew</h1>
