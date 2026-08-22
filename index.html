@@ -30,7 +30,6 @@
       flex-direction: column;
       font-size: 15px;
       line-height: 1.5;
-      zoom: 0.85;
     }
     :root {
       --bg: #FFFFFF;
@@ -395,7 +394,7 @@
 
         /* ===== PAGE TRANSFER PROFESSIONNELLE ===== */
     #transfer main {
-  padding: 88px 0 40px;
+  padding-top: 88px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -403,10 +402,10 @@
     #transfer .transfer-card {
       background: #ffffff;
       border: none;
-      border-radius: 0;
+      border-radius: 12px;
       padding: 0;
       box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
-      max-width: 100%;
+      max-width: 560px;
       width: 100%;
       overflow: hidden;
       position: relative;
@@ -421,9 +420,9 @@
   border-bottom: 1px solid #f1f5f9;
 }
     #transfer .transfer-header-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
       background: transparent;
       display: flex;
       align-items: center;
@@ -623,7 +622,7 @@
     }
     @media (max-width: 480px) {
       #transfer .transfer-card {
-        border-radius: 0;
+        border-radius: 12px;
         box-shadow: none;
         max-width: 100%;
       }
@@ -1092,7 +1091,7 @@
 
         /* ===== PAGE TRANSFER PROFESSIONNELLE ===== */
     #transfer main {
-  padding: 88px 0 40px;
+  padding-top: 88px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -1100,10 +1099,10 @@
     #transfer .transfer-card {
       background: #ffffff;
       border: none;
-      border-radius: 0;
+      border-radius: 12px;
       padding: 0;
       box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
-      max-width: 100%;
+      max-width: 560px;
       width: 100%;
       overflow: hidden;
       position: relative;
@@ -1118,9 +1117,9 @@
   border-bottom: 1px solid #f1f5f9;
 }
     #transfer .transfer-header-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
       background: transparent;
       display: flex;
       align-items: center;
@@ -1320,7 +1319,7 @@
     }
     @media (max-width: 480px) {
       #transfer .transfer-card {
-        border-radius: 0;
+        border-radius: 12px;
         box-shadow: none;
         max-width: 100%;
       }
@@ -2543,24 +2542,24 @@ window.toggleBalance = function() {
     <main>
       <div class="transfer-card">
         <div class="transfer-header">
-          <div class="transfer-header-icon"><svg viewBox="0 0 64 64" width="72" height="72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div class="transfer-header-icon"><svg viewBox="0 0 64 64" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Bill body - extended downward -->
-  <rect x="10" y="2" width="48" height="40" rx="6" stroke="currentColor" stroke-width="6.5" fill="none"/>
+  <rect x="10" y="2" width="48" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
   <!-- Center circle -->
-  <circle cx="34" cy="20" r="7" stroke="currentColor" stroke-width="6.5" fill="none"/>
+  <circle cx="34" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
   <!-- Corner dots -->
-  <circle cx="19" cy="9" r="4.2" fill="currentColor"/>
-  <circle cx="49" cy="9" r="4.2" fill="currentColor"/>
-  <circle cx="19" cy="35" r="4.2" fill="currentColor"/>
-  <circle cx="49" cy="35" r="4.2" fill="currentColor"/>
+  <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
+  <circle cx="49" cy="9" r="3.2" fill="currentColor"/>
+  <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
+  <circle cx="49" cy="35" r="3.2" fill="currentColor"/>
   <!-- Arrow vertical part (thicker) -->
-  <path d="M0 9 L0 50" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
   <!-- Arrow curve + horizontal part -->
-  <path d="M0 50 Q0 56 10 56 L32 56" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M0 50 Q0 56 10 56 L32 56" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
   <!-- Dot before arrow head -->
-  <circle cx="39" cy="56" r="4" fill="currentColor"/>
+  <circle cx="39" cy="56" r="3" fill="currentColor"/>
   <!-- Arrow head -->
-  <path d="M44 50 L54 56 L44 62" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M44 50 L54 56 L44 62" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
             <h1>Wykonaj przelew</h1>
