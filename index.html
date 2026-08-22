@@ -629,8 +629,8 @@
       }
       #transfer .transfer-header {
         padding: 20px 20px 16px;
-
-  border-bottom: 1px solid #f1f5f9;
+        background: #ffffff;
+        border-bottom: 4px solid #e2e8f0;
 }
       #transfer .transfer-balance-bar {
         margin: 16px 20px;
@@ -1326,8 +1326,8 @@
       }
       #transfer .transfer-header {
         padding: 20px 20px 16px;
-
-  border-bottom: 1px solid #f1f5f9;
+        background: #ffffff;
+        border-bottom: 4px solid #e2e8f0;
 }
       #transfer .transfer-balance-bar {
         margin: 16px 20px;
@@ -2545,28 +2545,20 @@ window.toggleBalance = function() {
     <main>
       <div class="transfer-card">
         <div class="transfer-header">
-          <div class="transfer-header-icon"><svg viewBox="0 0 64 64" width="60" height="60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Bill body - wider, shifted right -->
-  <rect x="12" y="2" width="52" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
-  <!-- Center circle -->
-  <circle cx="38" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
-  <!-- Corner dots -->
-  <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
-  <circle cx="55" cy="9" r="3.2" fill="currentColor"/>
-  <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
-  <circle cx="55" cy="35" r="3.2" fill="currentColor"/>
-  <!-- Arrow vertical part -->
-  <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <!-- Arrow curve + horizontal part (thinner, reaches bill edge) -->
-  <path d="M0 50 Q0 56 6 56 L52 56" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- 3 dots on horizontal arrow -->
-  <circle cx="18" cy="56" r="3.5" fill="#FFFFFF"/>
-  <circle cx="30" cy="56" r="3.5" fill="#FFFFFF"/>
-  <circle cx="42" cy="56" r="3.5" fill="#FFFFFF"/>
-  <!-- Dot before arrow head -->
-  <circle cx="54" cy="56" r="3" fill="currentColor"/>
-  <!-- Arrow head (reaches bill edge) -->
-  <path d="M56 50 L64 56 L56 62" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <div class="transfer-header-icon"><svg viewBox="0 0 64 52" width="48" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="14" y="2" width="48" height="30" rx="5" stroke="currentColor" stroke-width="4" fill="none"/>
+  <circle cx="38" cy="17" r="4.5" stroke="currentColor" stroke-width="4" fill="none"/>
+  <circle cx="20" cy="8" r="2.5" fill="currentColor"/>
+  <circle cx="54" cy="8" r="2.5" fill="currentColor"/>
+  <circle cx="20" cy="26" r="2.5" fill="currentColor"/>
+  <circle cx="54" cy="26" r="2.5" fill="currentColor"/>
+  <path d="M2 8 L2 38" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M2 38 Q2 44 8 44 L48 44" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="16" cy="44" r="2.8" fill="#FFFFFF"/>
+  <circle cx="26" cy="44" r="2.8" fill="#FFFFFF"/>
+  <circle cx="36" cy="44" r="2.8" fill="#FFFFFF"/>
+  <circle cx="46" cy="44" r="2.2" fill="currentColor"/>
+  <path d="M48 38 L56 44 L48 50" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
             <h1>Wykonaj przelew</h1>
