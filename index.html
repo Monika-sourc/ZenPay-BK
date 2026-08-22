@@ -1895,8 +1895,8 @@
       main { padding: 12px 14px 100px; }
       .balance-panel { padding: 20px 18px 16px; min-height: 160px; }
       .balance-panel .amount { font-size: 28px; }
-      .balance-actions-wrapper .btn-action { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 6px; }
-      .btn-iban { font-size: 12px; padding: 10px 12px; min-height: 40px; border-radius: 6px; }
+      .balance-actions-wrapper .btn-action { font-size: 13px; padding: 12px 14px; min-height: 44px; border-radius: 6px; }
+      .btn-iban { font-size: 13px; padding: 12px 14px; min-height: 44px; border-radius: 6px; }
       .quick-stats { gap: 8px; }
       .stat-item .stat-value { font-size: 18px; }
       .history-item { padding: 12px 12px; min-height: 52px; }
@@ -2333,24 +2333,26 @@
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  border: 1.5px solid rgba(255,255,255,0.4);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 2px solid rgba(255,255,255,0.5);
   color: #fff;
   font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   transition: all 0.2s ease;
   z-index: 5;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 .balance-toggle:hover {
-  background: rgba(255,255,255,0.35);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 </style>
   <script>
