@@ -397,8 +397,8 @@
     #transfer main {
   padding-top: 88px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
 }
     #transfer .transfer-card {
       background: #ffffff;
@@ -1088,8 +1088,8 @@
     #transfer main {
   padding-top: 88px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
 }
     #transfer .transfer-card {
       background: #ffffff;
@@ -2537,9 +2537,8 @@ window.toggleBalance = function() {
       </div>
     </header>
     <main>
+      <h1 style="width:100%;max-width:560px;margin:0 0 16px 0;font-size:22px;font-weight:700;color:var(--text-primary);text-align:left;">Wykonaj przelew</h1>
       <div class="transfer-card">
-        <div style="padding: 20px 28px 8px; font-size: 22px; font-weight: 700; color: var(--text-primary);">Wykonaj przelew</div>
-
         <div class="transfer-balance-bar">
           <div class="transfer-balance-left">
             <i class="fa-solid fa-wallet"></i>
