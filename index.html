@@ -397,9 +397,39 @@
     #transfer main {
   padding-top: 88px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
+    .transfer-page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 560px;
+      padding: 0 4px;
+    }
+    .transfer-sepa-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 28px 16px;
+    }
+    .transfer-sepa-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #374151;
+    }
+    .transfer-sepa-text {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+    }
     #transfer .transfer-card {
       background: #ffffff;
       border: none;
@@ -454,8 +484,8 @@
       background: transparent;
       border: none;
       border-radius: 0;
-      padding: 14px 0;
-      margin: 20px 28px;
+      padding: 18px 28px 14px;
+      margin: 0;
       font-size: 14px;
       color: var(--text-secondary);
     }
@@ -633,7 +663,15 @@
   border-bottom: 1px solid #f1f5f9;
 }
       #transfer .transfer-balance-bar {
-        margin: 16px 20px;
+        padding: 16px 20px 12px;
+        margin: 0;
+      }
+      .transfer-page-title {
+        padding: 0 16px;
+        font-size: 20px;
+      }
+      .transfer-sepa-row {
+        padding: 8px 20px 16px;
       }
       #transfer form {
         padding: 0 20px;
@@ -1094,9 +1132,39 @@
     #transfer main {
   padding-top: 88px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
+    .transfer-page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+      width: 100%;
+      max-width: 560px;
+      padding: 0 4px;
+    }
+    .transfer-sepa-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 28px 16px;
+    }
+    .transfer-sepa-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #374151;
+    }
+    .transfer-sepa-text {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+    }
     #transfer .transfer-card {
       background: #ffffff;
       border: none;
@@ -1151,8 +1219,8 @@
       background: transparent;
       border: none;
       border-radius: 0;
-      padding: 14px 0;
-      margin: 20px 28px;
+      padding: 18px 28px 14px;
+      margin: 0;
       font-size: 14px;
       color: var(--text-secondary);
     }
@@ -1330,7 +1398,15 @@
   border-bottom: 1px solid #f1f5f9;
 }
       #transfer .transfer-balance-bar {
-        margin: 16px 20px;
+        padding: 16px 20px 12px;
+        margin: 0;
+      }
+      .transfer-page-title {
+        padding: 0 16px;
+        font-size: 20px;
+      }
+      .transfer-sepa-row {
+        padding: 8px 20px 16px;
       }
       #transfer form {
         padding: 0 20px;
@@ -2543,43 +2619,36 @@ window.toggleBalance = function() {
       </div>
     </header>
     <main>
-      <div class="transfer-card">
-        <div class="transfer-header">
-          <div class="transfer-header-icon"><svg viewBox="0 0 64 64" width="60" height="60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Bill body - wider, shifted right -->
-  <rect x="12" y="2" width="52" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
-  <!-- Center circle -->
-  <circle cx="38" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
-  <!-- Corner dots -->
-  <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
-  <circle cx="55" cy="9" r="3.2" fill="currentColor"/>
-  <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
-  <circle cx="55" cy="35" r="3.2" fill="currentColor"/>
-  <!-- Arrow vertical part -->
-  <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <!-- Arrow curve + horizontal part (thinner, reaches bill edge) -->
-  <path d="M0 50 Q0 56 6 56 L52 56" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- 3 dots on horizontal arrow -->
-  <circle cx="18" cy="56" r="3.5" fill="#FFFFFF"/>
-  <circle cx="30" cy="56" r="3.5" fill="#FFFFFF"/>
-  <circle cx="42" cy="56" r="3.5" fill="#FFFFFF"/>
-  <!-- Dot before arrow head -->
-  <circle cx="54" cy="56" r="3" fill="currentColor"/>
-  <!-- Arrow head (reaches bill edge) -->
-  <path d="M56 50 L64 56 L56 62" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-</svg></div>
-          <div class="transfer-header-text">
-            <h1>Wykonaj przelew</h1>
-            <p>Przelew międzynarodowy SEPA/SWIFT</p>
-          </div>
-        </div>
+      <h1 class="transfer-page-title">Wykonaj przelew</h1>
 
+      <div class="transfer-card">
         <div class="transfer-balance-bar">
           <div class="transfer-balance-left">
-            <i class="fa-solid fa-wallet"></i>
+            <i class="fa-solid fa-wallet" style="color:#3b82f6;"></i>
             <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
           </div>
-          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
+          <i class="fa-solid fa-money-bill-transfer" style="color:#3b82f6;font-size:22px;opacity:1;"></i>
+        </div>
+
+        <div class="transfer-sepa-row">
+          <div class="transfer-sepa-icon">
+            <svg viewBox="0 0 64 64" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="12" y="2" width="52" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
+              <circle cx="38" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
+              <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
+              <circle cx="55" cy="9" r="3.2" fill="currentColor"/>
+              <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
+              <circle cx="55" cy="35" r="3.2" fill="currentColor"/>
+              <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
+              <path d="M0 50 Q0 56 6 56 L52 56" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="18" cy="56" r="3.5" fill="#FFFFFF"/>
+              <circle cx="30" cy="56" r="3.5" fill="#FFFFFF"/>
+              <circle cx="42" cy="56" r="3.5" fill="#FFFFFF"/>
+              <circle cx="54" cy="56" r="3" fill="currentColor"/>
+              <path d="M56 50 L64 56 L56 62" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="transfer-sepa-text">Przelew międzynarodowy SEPA/SWIFT</span>
         </div>
 
         <form id="transferForm" novalidate>
