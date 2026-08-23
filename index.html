@@ -28,8 +28,8 @@
     body {
       display: flex;
       flex-direction: column;
-      font-size: 15px;
-      line-height: 1.5;
+      font-size: 16px;
+      line-height: 1.55;
       zoom: 0.75;
     }
     :root {
@@ -212,9 +212,9 @@
       pointer-events: none;
     }
     .input {
-      width: 100%; padding: 14px 16px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      width: 100%; padding: 16px 18px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
       border-radius: var(--radius-sm);
-      font-size: 15px; color: var(--text-primary);
+      font-size: 16px; color: var(--text-primary);
     }
     .input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
     .amount-input-wrap {
@@ -231,13 +231,13 @@
       font-size: 15px; color: var(--text-secondary); height: 100%; min-height: 44px; line-height: 1;
     }
     #greet {
-      font-size: 26px; font-weight: 600; margin-bottom: 32px;
+      font-size: 28px; font-weight: 600; margin-bottom: 32px;
       letter-spacing: -0.01em; color: var(--text-secondary);
       display: flex; align-items: center; flex-wrap: nowrap;
       gap: 8px; overflow: hidden; white-space: nowrap;
       padding-left: 4px;
     }
-    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
     .balance-panel {
       background: var(--p-gradient);
       padding: 24px 22px 20px;
@@ -259,7 +259,7 @@
       display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
     }
     .balance-panel .amount {
-      font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
+      font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
       overflow: visible; white-space: nowrap; margin-bottom: 6px; margin-left: 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
@@ -271,7 +271,7 @@
     }
     .balance-actions-wrapper .btn-action {
       flex: 1; min-width: 0; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
-      border-radius: 6px; padding: 16px 18px; font-size: 14px; font-weight: 700;
+      border-radius: 6px; padding: 18px 20px; font-size: 15px; font-weight: 700;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -282,7 +282,7 @@
     .balance-actions-wrapper .btn-action i { color: #374151; font-size: 15px; }
     .btn-iban {
       width: 100%; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
-      border-radius: 6px; padding: 16px 18px; font-size: 14px; font-weight: 700;
+      border-radius: 6px; padding: 18px 20px; font-size: 15px; font-weight: 700;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       margin-top: 10px; min-height: 56px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -300,7 +300,7 @@
     }
     .stat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
     .stat-item .stat-value {
-      font-size: 20px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
+      font-size: 22px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
       letter-spacing: -0.02em;
     }
     .stat-item .stat-label {
@@ -354,11 +354,11 @@
 .history-icon.custom-bank { background: transparent; border: none; box-shadow: none; padding: 0; }
     .history-info { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; overflow: hidden; }
     .history-info .title {
-      font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+      font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
     }
     .history-info .title .sub { color: var(--text-secondary); font-weight: 400; }
     .history-info .meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; margin-top: 2px; }
-    .history-amount { font-weight: 700; font-size: 15px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
+    .history-amount { font-weight: 700; font-size: 16px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
     .history-amount.credit { color: #059669; }
     .history-amount.debit { color: #DC2626; }
     .history-amount.refund { color: #7C3AED; }
@@ -387,7 +387,7 @@
       display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
       font-size: 13px; color: var(--p); font-weight: 600;
     }
-    .field-group { margin-bottom: 20px; }
+    .field-group { margin-bottom: 24px; }
     .field-group label {
       display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary);
       margin-bottom: 2px; letter-spacing: 0.3px;
@@ -511,11 +511,11 @@
       padding: 0 28px;
     }
     #transfer .field-group {
-      margin-bottom: 14px;
+      margin-bottom: 22px;
     }
     #transfer .field-group label {
       display: block;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-secondary);
       text-transform: uppercase;
@@ -538,11 +538,11 @@
     }
     #transfer .input-icon-wrap input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 16px 18px;
       background: #fafbfc;
       border: 1.5px solid #e2e8f0;
       border-radius: 6px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-primary);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -568,8 +568,8 @@
       border-bottom-right-radius: 0;
       text-align: left;
       font-weight: 700;
-      font-size: 13px;
-      padding: 10px 12px;
+      font-size: 15px;
+      padding: 14px 16px;
       flex: 1;
       background: #fafbfc;
       border: 1.5px solid #e2e8f0;
@@ -584,7 +584,7 @@
       background: #ffffff;
     }
     #transfer .amount-input-wrap .currency-symbol {
-      padding: 10px 14px;
+      padding: 14px 16px;
       background: #f1f5f9;
       border: 1.5px solid #e2e8f0;
       border-left: none;
@@ -703,13 +703,7 @@
       overflow: hidden;
       position: relative;
     }
-    #verify .verify-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--p-gradient);
-    }
+
     #verify .verify-header {
       display: flex;
       align-items: center;
@@ -814,7 +808,7 @@
     }
     #verify .code-input {
       width: 100%;
-      padding: 16px;
+      padding: 18px;
       background: #ffffff;
       border: 2px solid #e2e8f0;
       border-radius: 14px;
@@ -869,7 +863,7 @@
       background: var(--p-gradient);
       border-radius: 14px;
       padding: 14px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       box-shadow: 0 8px 24px rgba(13,148,136,0.25);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -947,9 +941,9 @@
       pointer-events: none;
     }
     .input {
-      width: 100%; padding: 14px 16px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
+      width: 100%; padding: 16px 18px; background: #FAFBFC; border: 1.5px solid #E5E7EB;
       border-radius: var(--radius-sm);
-      font-size: 15px; color: var(--text-primary);
+      font-size: 16px; color: var(--text-primary);
     }
     .input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
     .amount-input-wrap {
@@ -966,13 +960,13 @@
       font-size: 15px; color: var(--text-secondary); height: 100%; min-height: 44px; line-height: 1;
     }
     #greet {
-      font-size: 26px; font-weight: 600; margin-bottom: 32px;
+      font-size: 28px; font-weight: 600; margin-bottom: 32px;
       letter-spacing: -0.01em; color: var(--text-secondary);
       display: flex; align-items: center; flex-wrap: nowrap;
       gap: 8px; overflow: hidden; white-space: nowrap;
       padding-left: 4px;
     }
-    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+    #greet span { color: var(--text-primary); white-space: nowrap; overflow: hidden; flex: 1 1 auto; min-width: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
     .balance-panel {
       background: var(--p-gradient);
       padding: 24px 22px 20px;
@@ -994,7 +988,7 @@
       display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
     }
     .balance-panel .amount {
-      font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
+      font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
       overflow: visible; white-space: nowrap; margin-bottom: 6px; margin-left: 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
@@ -1006,7 +1000,7 @@
     }
     .balance-actions-wrapper .btn-action {
       flex: 1; min-width: 0; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
-      border-radius: 6px; padding: 16px 18px; font-size: 14px; font-weight: 700;
+      border-radius: 6px; padding: 18px 20px; font-size: 15px; font-weight: 700;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -1017,7 +1011,7 @@
     .balance-actions-wrapper .btn-action i { color: #374151; font-size: 15px; }
     .btn-iban {
       width: 100%; background: #E5E7EB; color: #374151; border: 1.5px solid #9CA3AF;
-      border-radius: 6px; padding: 16px 18px; font-size: 14px; font-weight: 700;
+      border-radius: 6px; padding: 18px 20px; font-size: 15px; font-weight: 700;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       margin-top: 10px; min-height: 56px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -1035,7 +1029,7 @@
     }
     .stat-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
     .stat-item .stat-value {
-      font-size: 20px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
+      font-size: 22px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: visible;
       letter-spacing: -0.02em;
     }
     .stat-item .stat-label {
@@ -1089,11 +1083,11 @@
 .history-icon.custom-bank { background: transparent; border: none; box-shadow: none; padding: 0; }
     .history-info { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; overflow: hidden; }
     .history-info .title {
-      font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
+      font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
     }
     .history-info .title .sub { color: var(--text-secondary); font-weight: 400; }
     .history-info .meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; margin-top: 2px; }
-    .history-amount { font-weight: 700; font-size: 15px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
+    .history-amount { font-weight: 700; font-size: 16px; white-space: nowrap; flex-shrink: 0; text-align: right; margin-left: auto; line-height: 1.3; }
     .history-amount.credit { color: #059669; }
     .history-amount.debit { color: #DC2626; }
     .history-amount.refund { color: #7C3AED; }
@@ -1122,7 +1116,7 @@
       display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
       font-size: 13px; color: var(--p); font-weight: 600;
     }
-    .field-group { margin-bottom: 20px; }
+    .field-group { margin-bottom: 24px; }
     .field-group label {
       display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary);
       margin-bottom: 2px; letter-spacing: 0.3px;
@@ -1246,11 +1240,11 @@
       padding: 0 28px;
     }
     #transfer .field-group {
-      margin-bottom: 14px;
+      margin-bottom: 22px;
     }
     #transfer .field-group label {
       display: block;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--text-secondary);
       text-transform: uppercase;
@@ -1273,11 +1267,11 @@
     }
     #transfer .input-icon-wrap input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 16px 18px;
       background: #fafbfc;
       border: 1.5px solid #e2e8f0;
       border-radius: 6px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-primary);
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1303,8 +1297,8 @@
       border-bottom-right-radius: 0;
       text-align: left;
       font-weight: 700;
-      font-size: 13px;
-      padding: 10px 12px;
+      font-size: 15px;
+      padding: 14px 16px;
       flex: 1;
       background: #fafbfc;
       border: 1.5px solid #e2e8f0;
@@ -1319,7 +1313,7 @@
       background: #ffffff;
     }
     #transfer .amount-input-wrap .currency-symbol {
-      padding: 10px 14px;
+      padding: 14px 16px;
       background: #f1f5f9;
       border: 1.5px solid #e2e8f0;
       border-left: none;
@@ -1484,11 +1478,11 @@
     .progress-details .row { display: block; padding: 0; margin-bottom: 16px; font-size: 13px; border-bottom: none; }
     .progress-details .row:last-child { margin-bottom: 0; }
     .progress-details .row .label {
-      color: var(--text-secondary); font-weight: 400; display: block; margin-bottom: 2px; font-size: 13px;
+      color: var(--text-secondary); font-weight: 400; display: block; margin-bottom: 2px; font-size: 14px;
     }
     .progress-details .row .value {
       font-weight: 700; color: #1a1a2e; display: block; text-align: left;
-      word-break: break-all; max-width: 100%; font-size: 15px; padding-left: 10px;
+      word-break: break-all; max-width: 100%; font-size: 16px; padding-left: 10px;
     }
     .receipt-card {
       background: #fff; border-radius: var(--radius);
@@ -1512,8 +1506,8 @@
       padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px;
     }
     .receipt-row:last-child { border-bottom: none; }
-    .receipt-row .r-label { color: #6b7280; font-weight: 500; flex-shrink: 0; padding-right: 12px; font-size: 15px; }
-    .receipt-row .r-value { color: #1a1a2e; font-weight: 600; text-align: right; font-size: 15px; word-break: break-all; max-width: 60%; }
+    .receipt-row .r-label { color: #6b7280; font-weight: 500; flex-shrink: 0; padding-right: 12px; font-size: 16px; }
+    .receipt-row .r-value { color: #1a1a2e; font-weight: 600; text-align: right; font-size: 16px; word-break: break-all; max-width: 60%; }
     .receipt-row .r-value.amount { font-size: 16px; font-weight: 700; color: #1a1a2e; }
     .receipt-row .r-value.status-tag {
       display: inline-flex; align-items: center; gap: 4px; color: #059669;
@@ -1537,7 +1531,7 @@
       border-radius: 24px;
     }
     .nav-item {
-      color: #4B5563; font-size: 11px; font-weight: 700;
+      color: #4B5563; font-size: 12px; font-weight: 700;
       text-align: center; cursor: pointer; padding: 6px 0;
       display: flex; flex-direction: column; align-items: center; gap: 4px;
       letter-spacing: 0.2px;
@@ -1686,8 +1680,8 @@
       position: relative;
     }
     .login-card .input {
-      width: 100%; height: 52px;
-      padding: 0 16px 0 44px;
+      width: 100%; height: 56px;
+      padding: 0 18px 0 46px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 14px;
@@ -2285,13 +2279,13 @@
 }
 #verify .verify-detail-row .label {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
   margin-bottom: 4px;
 }
 #verify .verify-detail-row .value {
   display: block;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-primary);
   word-break: break-all;
@@ -2342,7 +2336,7 @@
 }
 #verify .code-input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: #FAFBFC;
   border: 1.5px solid #E5E7EB;
   border-radius: 12px;
@@ -2632,20 +2626,20 @@ window.toggleBalance = function() {
 
         <div class="transfer-sepa-row">
           <div class="transfer-sepa-icon">
-            <svg viewBox="0 0 64 64" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="12" y="2" width="52" height="40" rx="6" stroke="currentColor" stroke-width="5" fill="none"/>
-              <circle cx="38" cy="20" r="5.5" stroke="currentColor" stroke-width="5" fill="none"/>
-              <circle cx="19" cy="9" r="3.2" fill="currentColor"/>
-              <circle cx="55" cy="9" r="3.2" fill="currentColor"/>
-              <circle cx="19" cy="35" r="3.2" fill="currentColor"/>
-              <circle cx="55" cy="35" r="3.2" fill="currentColor"/>
-              <path d="M0 9 L0 50" stroke="currentColor" stroke-width="9" fill="none" stroke-linecap="round"/>
-              <path d="M0 50 Q0 56 6 56 L52 56" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="18" cy="56" r="3.5" fill="#FFFFFF"/>
-              <circle cx="30" cy="56" r="3.5" fill="#FFFFFF"/>
-              <circle cx="42" cy="56" r="3.5" fill="#FFFFFF"/>
-              <circle cx="54" cy="56" r="3" fill="currentColor"/>
-              <path d="M56 50 L64 56 L56 62" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg viewBox="0 0 72 56" width="36" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="14" y="4" width="56" height="32" rx="5" stroke="currentColor" stroke-width="4.5" fill="none"/>
+              <circle cx="42" cy="18" r="4.5" stroke="currentColor" stroke-width="4.5" fill="none"/>
+              <circle cx="22" cy="10" r="2.8" fill="currentColor"/>
+              <circle cx="60" cy="10" r="2.8" fill="currentColor"/>
+              <circle cx="22" cy="30" r="2.8" fill="currentColor"/>
+              <circle cx="60" cy="30" r="2.8" fill="currentColor"/>
+              <path d="M2 10 L2 42" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/>
+              <path d="M2 42 Q2 48 8 48 L58 48" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="18" cy="48" r="3" fill="#FFFFFF"/>
+              <circle cx="30" cy="48" r="3" fill="#FFFFFF"/>
+              <circle cx="42" cy="48" r="3" fill="#FFFFFF"/>
+              <circle cx="56" cy="48" r="2.5" fill="currentColor"/>
+              <path d="M60 42 L70 48 L60 54" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <span class="transfer-sepa-text">Przelew międzynarodowy SEPA/SWIFT</span>
@@ -2665,7 +2659,7 @@ window.toggleBalance = function() {
           <div class="field-group">
             <label>Imię i nazwisko beneficjenta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="b" required class="input" placeholder="np. Jan Kowalski">
+              <div class="input-icon-wrap"><input id="b" required class="input" >
               </div>
               <div class="field-error" id="error-b"></div>
             </div>
@@ -2673,7 +2667,7 @@ window.toggleBalance = function() {
           <div class="field-group">
             <label>IBAN / Numer konta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="c" required class="input" placeholder="np. PL00 0000 0000 0000 0000 0000 0000">
+              <div class="input-icon-wrap"><input id="c" required class="input" >
               </div>
               <div class="field-error" id="error-c"></div>
             </div>
@@ -2681,7 +2675,7 @@ window.toggleBalance = function() {
           <div class="field-group">
             <label>Kod banku (BIC / SWIFT)</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="d" required class="input" placeholder="np. BPKOPLPW">
+              <div class="input-icon-wrap"><input id="d" required class="input" >
               </div>
               <div class="field-error" id="error-d"></div>
             </div>
@@ -2689,7 +2683,7 @@ window.toggleBalance = function() {
           <div class="field-group">
             <label>Nazwa banku</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="e" required class="input" placeholder="np. PKO BP">
+              <div class="input-icon-wrap"><input id="e" required class="input" >
               </div>
               <div class="field-error" id="error-e"></div>
             </div>
@@ -2697,7 +2691,7 @@ window.toggleBalance = function() {
           <div class="field-group">
             <label>Powód transferu</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="f" required class="input" placeholder="np. Zakup usługi">
+              <div class="input-icon-wrap"><input id="f" required class="input" >
               </div>
               <div class="field-error" id="error-f"></div>
             </div>
@@ -2781,7 +2775,7 @@ window.toggleBalance = function() {
           <form id="codeForm" novalidate>
             <label class="code-label" for="code">Kod aktywacyjny</label>
             <div class="input-wrapper">
-              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="********">
+              <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="">
               <div class="field-error" id="error-code"></div>
             </div>
           </form>
@@ -3054,13 +3048,13 @@ window.toggleBalance = function() {
 }
 #verify .verify-detail-row .label {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
   margin-bottom: 4px;
 }
 #verify .verify-detail-row .value {
   display: block;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-primary);
   word-break: break-all;
@@ -3111,7 +3105,7 @@ window.toggleBalance = function() {
 }
 #verify .code-input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: #FAFBFC;
   border: 1.5px solid #E5E7EB;
   border-radius: 12px;
@@ -3321,7 +3315,7 @@ window.toggleBalance = function() {
       <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
       <div class="field-group">
         <label>Kod zabezpieczający</label>
-        <input id="refundCode" class="input" maxlength="20" placeholder="Wprowadź kod">
+        <input id="refundCode" class="input" maxlength="20" placeholder="">
       </div>
       <button onclick="withSpinner(() => confirmRefund())" class="btn" id="refundConfirmBtn" style="font-size:14px;padding:12px;background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
         <i class="fa-solid fa-check"></i> Zatwierdź anulowanie
