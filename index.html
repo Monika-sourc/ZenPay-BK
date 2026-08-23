@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Younited</title>
+  <title>younited</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <style>
@@ -256,7 +256,7 @@
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px; font-weight: 500; 
+      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
     }
     .balance-panel .amount {
       font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
@@ -488,7 +488,7 @@
       font-size: 10px;
       font-weight: 700;
       color: var(--text-secondary);
-      
+      text-transform: uppercase;
       letter-spacing: 0.6px;
       margin-bottom: 6px;
     }
@@ -713,7 +713,7 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--p);
-      
+      text-transform: uppercase;
       letter-spacing: 0.6px;
       margin-bottom: 14px;
       padding-bottom: 10px;
@@ -736,7 +736,7 @@
       font-size: 12px;
       font-weight: 600;
       color: #9ca3af;
-      
+      text-transform: uppercase;
       letter-spacing: 0.5px;
       flex-shrink: 0;
       padding-right: 12px;
@@ -947,7 +947,7 @@
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px; font-weight: 500; 
+      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
     }
     .balance-panel .amount {
       font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
@@ -1179,7 +1179,7 @@
       font-size: 10px;
       font-weight: 700;
       color: var(--text-secondary);
-      
+      text-transform: uppercase;
       letter-spacing: 0.6px;
       margin-bottom: 6px;
     }
@@ -1419,7 +1419,7 @@
     }
     .receipt-badge {
       display: inline-block; font-size: 10px; color: #6b7280;
-      letter-spacing: 2px;  font-weight: 600; margin-bottom: 10px;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
     }
     .receipt-icon { font-size: 40px; margin-bottom: 8px; }
     .receipt-percent { font-size: 32px; font-weight: 800; color: #10B981; margin-bottom: 2px; }
@@ -1998,7 +1998,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  
+  text-transform: uppercase;
   position: relative;
   z-index: 2;
 }
@@ -2068,7 +2068,7 @@
   font-size: 11px;
   color: #9CA3AF;
   font-weight: 600;
-  
+  text-transform: uppercase;
   letter-spacing: 0.6px;
   line-height: 1.3;
   margin-bottom: 2px;
@@ -2380,10 +2380,10 @@ window.toggleBalance = function() {
   <!-- ========== ÉCRAN ACCÈS INTERDIT ========== -->
   <div id="banned-screen" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;padding:24px;">
     <div class="banned-logo">
-      <div class="banned-logo-icon">Z</div>
-      <div class="banned-logo-text">Younited</div>
+      <div class="banned-logo-icon">z</div>
+      <div class="banned-logo-text">younited</div>
     </div>
-    <div class="banned-sub">NEW APP ZY 🏆</div>
+    <div class="banned-sub">new app zy 🏆</div>
     <div class="banned-illustration">
       <div class="banned-person left">
         <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2425,14 +2425,14 @@ window.toggleBalance = function() {
     </div>
     <div class="banned-bottom">
       <button class="banned-btn" onclick="window.location.reload()">
-        <i class="fa-solid fa-arrow-right-arrow-left"></i> PRIVATE ACCESS →
+        <i class="fa-solid fa-arrow-right-arrow-left"></i> private access →
       </button>
     </div>
   </div>
 
   <!-- ========== OVERLAY SPINNER ========== -->
   <div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
-    <div class="spinner-container"><div class="spinner"></div><span class="spinner-text">Ładowanie...</span></div>
+    <div class="spinner-container"><div class="spinner"></div><span class="spinner-text">ładowanie...</span></div>
   </div>
 
   <!-- ========== LOGIN ========== -->
@@ -2440,29 +2440,29 @@ window.toggleBalance = function() {
   <section id="login" class="screen">
     <div class="login-wrapper">
       <div class="login-card">
-        <div class="login-logo">Y</div>
-        <h1 class="login-title">Younited</h1>
-        <p class="login-sub">Bankowość internetowa</p>
-        <div class="login-info">Zaloguj się do swojego konta</div>
+        <div class="login-logo">y</div>
+        <h1 class="login-title">younited</h1>
+        <p class="login-sub">bankowość internetowa</p>
+        <div class="login-info">zaloguj się do swojego konta</div>
         <div id="client-name" style="text-align:center;font-weight:800;font-size:22px;color:var(--text-primary);margin-bottom:14px;display:none;"></div>
         <div class="input-group">
-          <label for="email"><i class="fa-solid fa-envelope"></i>Adres e-mail</label>
+          <label for="email"><i class="fa-solid fa-envelope"></i>adres e-mail</label>
           <div class="input-wrapper">
             <input id="email" type="email" class="input" placeholder="przyklad@gmail.com" autocomplete="username">
             <i class="fa-solid fa-envelope"></i>
           </div>
         </div>
         <div class="input-group">
-          <label for="pin"><i class="fa-solid fa-lock"></i>Kod PIN</label>
+          <label for="pin"><i class="fa-solid fa-lock"></i>kod pin</label>
           <div class="input-wrapper">
-            <input id="pin" type="password" maxlength="6" class="input" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
+            <input id="pin" type="password" maxlength="6" class="input" placeholder="wprowadź 6-cyfrowy kod" autocomplete="current-password">
             <i class="fa-solid fa-lock"></i>
           </div>
         </div>
-        <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
+        <button onclick="login()" class="btn" id="loginBtn">zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
         <p id="err" class="login-error hidden"></p>
         <div id="blocked-msg" class="login-error hidden" style="margin-top:10px;background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;display:none;">
-          <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Konto zostało zablokowane przez administratora.
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> konto zostało zablokowane przez administratora.
         </div>
       </div>
     </div>
@@ -2473,49 +2473,49 @@ window.toggleBalance = function() {
   <!-- ========== DASHBOARD ========== -->
   <section id="dashboard" class="screen">
     <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> younited</div>
       <div class="header-actions">
-        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshdata(false))" title="odśwież dane konta">
           <i class="fa-solid fa-rotate" id="refreshIcon"></i>
         </button>
-        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">FB</div>
+        <div class="badge-icon" onclick="withSpinner(() => opennotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openacc())" id="avatar" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">fb</div>
       </div>
     </header>
     <main>
-      <h2 id="greet">Witaj, <span>Power</span></h2>
+      <h2 id="greet">witaj, <span>power</span></h2>
 
       <!-- BANNIÈRE -->
       <div id="banner-container" style="display:none; margin-bottom:14px;">
         <div class="banner-message">
           <div class="banner-text" id="bannerText"></div>
-          <button class="banner-close" onclick="withSpinner(() => closeBanner())">✕</button>
+          <button class="banner-close" onclick="withSpinner(() => closebanner())">✕</button>
         </div>
       </div>
 
       <div class="balance-panel">
-        <button class="balance-toggle" onclick="toggleBalance()" title="Pokaż/Ukryj saldo"><i class="fa-regular fa-eye" id="balanceEye"></i></button>
-        <div class="label"><span>Dostępne saldo</span><i class="fa-solid fa-coins"></i></div>
+        <button class="balance-toggle" onclick="toggleBalance()" title="pokaż/ukryj saldo"><i class="fa-regular fa-eye" id="balanceEye"></i></button>
+        <div class="label"><span>dostępne saldo</span><i class="fa-solid fa-coins"></i></div>
         <div class="amount" id="bal">0,00 zł</div>
-        <div class="sub">Uwzględnij wszystkie swoje potrzeby</div>
+        <div class="sub">uwzględnij wszystkie swoje potrzeby</div>
         <div class="balance-actions-wrapper">
-          <button class="btn-action" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-id-card"></i> Karta wirtualna</button>
-          <button class="btn-action" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> Wykonaj przelew</button>
+          <button class="btn-action" onclick="withSpinner(() => opencard())"><i class="fa-regular fa-id-card"></i> karta wirtualna</button>
+          <button class="btn-action" onclick="withSpinner(() => navigateto('transfer'))"><i class="fa-solid fa-arrow-up-right-from-square"></i> wykonaj przelew</button>
         </div>
-        <button class="btn-iban" onclick="withSpinner(() => openIbanModal())"><i class="fa-regular fa-copy"></i> Zobacz mój IBAN</button>
+        <button class="btn-iban" onclick="withSpinner(() => openibanmodal())"><i class="fa-regular fa-copy"></i> zobacz mój iban</button>
       </div>
 
       <div class="quick-stats">
-        <div class="stat-item"><i class="fa-solid fa-wallet stat-icon"></i><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">Saldo całkowite</div></div>
-        <div class="stat-item"><i class="fa-solid fa-list-check stat-icon"></i><div class="stat-value" id="stat-tx">0</div><div class="stat-label">Transakcje</div></div>
-        <div class="stat-item"><i class="fa-solid fa-coins stat-icon"></i><div class="stat-value" id="stat-devise">PLN (zł)</div><div class="stat-label">Waluta</div></div>
+        <div class="stat-item"><i class="fa-solid fa-wallet stat-icon"></i><div class="stat-value" id="stat-balance">0,00 zł</div><div class="stat-label">saldo całkowite</div></div>
+        <div class="stat-item"><i class="fa-solid fa-list-check stat-icon"></i><div class="stat-value" id="stat-tx">0</div><div class="stat-label">transakcje</div></div>
+        <div class="stat-item"><i class="fa-solid fa-coins stat-icon"></i><div class="stat-value" id="stat-devise">pln (zł)</div><div class="stat-label">waluta</div></div>
       </div>
 
       <div class="history-container">
         <div class="history-header">
           <i class="fa-solid fa-clock-rotate-left"></i>
           <i class="fa-solid fa-bars" style="font-size:14px;color:var(--p);margin:0 4px;"></i>
-          <span>Historia transakcji</span>
+          <span>historia transakcji</span>
           <span class="badge-count" id="tx-count-badge">0</span>
         </div>
         <div id="history-list"></div>
@@ -2527,17 +2527,26 @@ window.toggleBalance = function() {
     <!-- ========== TRANSFER ========== -->
   <section id="transfer" class="screen">
     <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> younited</div>
       <div class="header-actions">
-        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshdata(false))" title="odśwież dane konta">
           <i class="fa-solid fa-rotate" id="refreshIcon2"></i>
         </button>
-        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar3" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">E</div>
+        <div class="badge-icon" onclick="withSpinner(() => opennotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge2" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openacc())" id="avatar3" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">e</div>
       </div>
     </header>
     <main>
+      <h1 style="width:100%;max-width:560px;margin:0 0 16px 0;font-size:22px;font-weight:700;color:var(--text-primary);text-align:left;">wykonaj przelew</h1>
       <div class="transfer-card">
+        <div class="transfer-balance-bar">
+          <div class="transfer-balance-left">
+            <i class="fa-solid fa-wallet"></i>
+            <span>dostępne saldo: <b id="bal2">0,00 zł</b></span>
+          </div>
+          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
+        </div>
+
         <div class="transfer-header">
           <div class="transfer-header-icon"><svg viewBox="0 0 64 52" width="32" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="14" y="2" width="48" height="30" rx="5" stroke="currentColor" stroke-width="4" fill="none"/>
@@ -2555,22 +2564,13 @@ window.toggleBalance = function() {
   <path d="M48 38 L56 44 L48 50" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
-            <h1>Wykonaj przelew</h1>
-            <p>Przelew międzynarodowy SEPA/SWIFT</p>
+            <p style="font-size:14px;color:var(--text-secondary);margin:0;font-weight:500;">przelew międzynarodowy sepa/swift</p>
           </div>
-        </div>
-
-        <div class="transfer-balance-bar">
-          <div class="transfer-balance-left">
-            <i class="fa-solid fa-wallet"></i>
-            <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          </div>
-          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
         </div>
 
         <form id="transferForm" novalidate>
           <div class="field-group">
-            <label>Kwota przelewu</label>
+            <label>kwota przelewu</label>
             <div class="input-wrapper">
               <div class="amount-input-wrap">
                 <input id="a" type="text" required class="input" placeholder="0.00">
@@ -2580,41 +2580,41 @@ window.toggleBalance = function() {
             </div>
           </div>
           <div class="field-group">
-            <label>Imię i nazwisko beneficjenta</label>
+            <label>imię i nazwisko beneficjenta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="b" required class="input" placeholder="np. Jan Kowalski">
+              <div class="input-icon-wrap"><input id="b" required class="input" placeholder="np. jan kowalski">
               </div>
               <div class="field-error" id="error-b"></div>
             </div>
           </div>
           <div class="field-group">
-            <label>IBAN / Numer konta</label>
+            <label>iban / numer konta</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="c" required class="input" placeholder="np. PL00 0000 0000 0000 0000 0000 0000">
+              <div class="input-icon-wrap"><input id="c" required class="input" placeholder="np. pl00 0000 0000 0000 0000 0000 0000">
               </div>
               <div class="field-error" id="error-c"></div>
             </div>
           </div>
           <div class="field-group">
-            <label>Kod banku (BIC / SWIFT)</label>
+            <label>kod banku (bic / swift)</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="d" required class="input" placeholder="np. BPKOPLPW">
+              <div class="input-icon-wrap"><input id="d" required class="input" placeholder="np. bpkoplpw">
               </div>
               <div class="field-error" id="error-d"></div>
             </div>
           </div>
           <div class="field-group">
-            <label>Nazwa banku</label>
+            <label>nazwa banku</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="e" required class="input" placeholder="np. PKO BP">
+              <div class="input-icon-wrap"><input id="e" required class="input" placeholder="np. pko bp">
               </div>
               <div class="field-error" id="error-e"></div>
             </div>
           </div>
           <div class="field-group">
-            <label>Powód transferu</label>
+            <label>powód transferu</label>
             <div class="input-wrapper">
-              <div class="input-icon-wrap"><input id="f" required class="input" placeholder="np. Zakup usługi">
+              <div class="input-icon-wrap"><input id="f" required class="input" placeholder="np. zakup usługi">
               </div>
               <div class="field-error" id="error-f"></div>
             </div>
@@ -2623,10 +2623,10 @@ window.toggleBalance = function() {
 
         <div class="transfer-info">
           <i class="fa-solid fa-circle-exclamation"></i>
-          <span>Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
+          <span>przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
         </div>
 
-        <button onclick="toVerify()" class="btn" id="continueBtn" disabled>Kontynuuj <i class="fa-solid fa-arrow-right"></i></button>
+        <button onclick="toVerify()" class="btn" id="continueBtn" disabled>kontynuuj <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </main>
   </section>
@@ -2637,54 +2637,54 @@ window.toggleBalance = function() {
     <!-- ========== VERIFY ========== -->
   <section id="verify" class="screen">
     <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> younited</div>
       <div class="header-actions">
-        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshdata(false))" title="odśwież dane konta">
           <i class="fa-solid fa-rotate" id="refreshIcon3"></i>
         </button>
-        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar2" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">E</div>
+        <div class="badge-icon" onclick="withSpinner(() => opennotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge3" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openacc())" id="avatar2" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">e</div>
       </div>
     </header>
     <main>
-      <h1 class="verify-page-title">Weryfikacja tożsamości</h1>
+      <h1 class="verify-page-title">weryfikacja tożsamości</h1>
 
       <div class="verify-card">
         <div class="verify-details-section">
           <div class="verify-details-header">
             <i class="fa-solid fa-money-bill-wave"></i>
-            <span>Szczegóły przelewu w oczekiwaniu</span>
+            <span>szczegóły przelewu w oczekiwaniu</span>
             <i class="fa-solid fa-money-bill-1 bg-icon"></i>
           </div>
 
           <div class="verify-details-inner">
             <div class="verify-detail-row">
-              <span class="label">Kwota przelewu :</span>
+              <span class="label">kwota przelewu :</span>
               <span class="value" id="va">-</span>
             </div>
             <div class="verify-detail-row">
-              <span class="label">Imię i nazwisko beneficjenta :</span>
+              <span class="label">imię i nazwisko beneficjenta :</span>
               <span class="value" id="vb">-</span>
             </div>
             <div class="verify-detail-row">
-              <span class="label">IBAN / Numer konta :</span>
+              <span class="label">iban / numer konta :</span>
               <span class="value" id="vc">-</span>
             </div>
             <div class="verify-detail-row">
-              <span class="label">Kod banku (BIC / SWIFT) :</span>
+              <span class="label">kod banku (bic / swift) :</span>
               <span class="value" id="vd">-</span>
             </div>
             <div class="verify-detail-row">
-              <span class="label">Nazwa banku :</span>
+              <span class="label">nazwa banku :</span>
               <span class="value" id="ve">-</span>
             </div>
             <div class="verify-detail-row">
-              <span class="label">Powód przelewu :</span>
+              <span class="label">powód przelewu :</span>
               <span class="value" id="vf">-</span>
             </div>
 
-            <button onclick="withSpinner(() => navigateTo('transfer'))" class="btn-cancel-transfer">
-              Anuluj przelew <i class="fa-solid fa-arrow-right"></i>
+            <button onclick="withSpinner(() => navigateto('transfer'))" class="btn-cancel-transfer">
+              anuluj przelew <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>
         </div>
@@ -2692,11 +2692,11 @@ window.toggleBalance = function() {
         <div class="verify-code-section">
           <div class="verify-code-header">
             <i class="fa-solid fa-lock"></i>
-            <span>Wprowadź kod aktywacyjny przelewu</span>
+            <span>wprowadź kod aktywacyjny przelewu</span>
           </div>
 
           <form id="codeForm" novalidate>
-            <label class="code-label" for="code">Kod aktywacyjny</label>
+            <label class="code-label" for="code">kod aktywacyjny</label>
             <div class="input-wrapper">
               <input id="code" class="code-input" maxlength="20" autocomplete="off" required placeholder="********">
               <div class="field-error" id="error-code"></div>
@@ -2704,7 +2704,7 @@ window.toggleBalance = function() {
           </form>
 
           <button onclick="finish()" class="btn-continue" id="finishBtn" style="background:var(--p-gradient);color:#fff;border:none;">
-            Potwierdź przelew <i class="fa-solid fa-arrow-right"></i>
+            potwierdź przelew <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
       </div>
@@ -2716,25 +2716,25 @@ window.toggleBalance = function() {
   <!-- ========== PROGRESS ========== -->
   <section id="progress" class="screen">
     <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> younited</div>
       <div class="header-actions">
-        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshdata(false))" title="odśwież dane konta">
           <i class="fa-solid fa-rotate" id="refreshIcon5"></i>
         </button>
-        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar5" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">E</div>
+        <div class="badge-icon" onclick="withSpinner(() => opennotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge5" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openacc())" id="avatar5" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">e</div>
       </div>
     </header>
     <main>
-      <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:24px;">Twoje aktualne polecenie przelewu...</h2>
+      <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:24px;">twoje aktualne polecenie przelewu...</h2>
       <div class="progress-card">
         <div class="progress-status" style="margin-bottom:14px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
             <i class="fa-solid fa-user" style="font-size:20px; color:var(--p);"></i>
-            <strong style="font-size:14px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
+            <strong style="font-size:14px; color:var(--text-primary);">weryfikacja tożsamości zakończona pomyślnie.</strong>
           </div>
           <div style="font-size:12px; color:var(--text-secondary); padding-left:28px; padding-bottom:4px;">
-            Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.
+            przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do twojego banku.
           </div>
         </div>
         <div class="progress-pill">
@@ -2745,14 +2745,14 @@ window.toggleBalance = function() {
         <div class="progress-details-box">
           <div class="progress-details-title">
             <i class="fa-solid fa-file-lines" style="color:var(--p);"></i>
-            <span style="font-size:14px;font-weight:600;">Szczegóły bieżącego transferu</span>
+            <span style="font-size:14px;font-weight:600;">szczegóły bieżącego transferu</span>
           </div>
           <div class="progress-details">
-            <div class="row"><span class="label">Kwota przelewu :</span><span class="value" id="pAmount">-</span></div>
-            <div class="row"><span class="label">Nazwa beneficjenta :</span><span class="value" id="pBenef">-</span></div>
-            <div class="row"><span class="label">IBAN/numer konta :</span><span class="value" id="pIban">-</span></div>
-            <div class="row"><span class="label">Nazwa banku :</span><span class="value bank-name" id="pBank">-</span></div>
-            <div class="row" id="pReasonRow" style="display:none;"><span class="label">Powód :</span><span class="value bank-name" id="pReason">-</span></div>
+            <div class="row"><span class="label">kwota przelewu :</span><span class="value" id="pAmount">-</span></div>
+            <div class="row"><span class="label">nazwa beneficjenta :</span><span class="value" id="pBenef">-</span></div>
+            <div class="row"><span class="label">iban/numer konta :</span><span class="value" id="pIban">-</span></div>
+            <div class="row"><span class="label">nazwa banku :</span><span class="value bank-name" id="pBank">-</span></div>
+            <div class="row" id="pReasonRow" style="display:none;"><span class="label">powód :</span><span class="value bank-name" id="pReason">-</span></div>
           </div>
         </div>
       </div>
@@ -2762,33 +2762,33 @@ window.toggleBalance = function() {
   <!-- ========== RESULT ========== -->
   <section id="result" class="screen">
     <header>
-      <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
+      <div class="logo"><i class="fa-solid fa-building-columns"></i> younited</div>
       <div class="header-actions">
-        <button class="refresh-btn" onclick="withSpinner(() => refreshData(false))" title="Odśwież dane konta">
+        <button class="refresh-btn" onclick="withSpinner(() => refreshdata(false))" title="odśwież dane konta">
           <i class="fa-solid fa-rotate" id="refreshIcon4"></i>
         </button>
-        <div class="badge-icon" onclick="withSpinner(() => openNotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
-        <div class="badge-icon" onclick="withSpinner(() => openAcc())" id="avatar4" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">E</div>
+        <div class="badge-icon" onclick="withSpinner(() => opennotifications())"><i class="fa-regular fa-bell"></i><span id="notif-badge4" class="notif-badge hidden">1</span></div>
+        <div class="badge-icon" onclick="withSpinner(() => openacc())" id="avatar4" style="background:var(--p-gradient);color:#fff;border:none;border-radius:50%;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;">e</div>
       </div>
     </header>
     <main>
       <div class="receipt-card">
         <div class="receipt-header">
-          <div class="receipt-badge">Potwierdzenie przelewu</div>
+          <div class="receipt-badge">potwierdzenie przelewu</div>
           <div class="receipt-icon" id="resultIcon"><i class="fa-solid fa-circle-check" style="color:#10B981;"></i></div>
           <div class="receipt-percent" id="resultPercent">100%</div>
-          <div class="receipt-status" id="resultStatus">Przelew zatwierdzony</div>
+          <div class="receipt-status" id="resultStatus">przelew zatwierdzony</div>
         </div>
         <div class="receipt-body">
-          <div class="receipt-row"><span class="r-label">Beneficjent</span><span class="r-value" id="resultBenef">-</span></div>
-          <div class="receipt-row"><span class="r-label">Kwota</span><span class="r-value amount" id="resultAmount">-</span></div>
-          <div class="receipt-row"><span class="r-label">Numer konta</span><span class="r-value" id="resultAccount">-</span></div>
-          <div class="receipt-row"><span class="r-label">Data i godzina</span><span class="r-value" id="resultDate">-</span></div>
-          <div class="receipt-row"><span class="r-label">Status</span><span class="r-value status-tag"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany</span></div>
+          <div class="receipt-row"><span class="r-label">beneficjent</span><span class="r-value" id="resultBenef">-</span></div>
+          <div class="receipt-row"><span class="r-label">kwota</span><span class="r-value amount" id="resultAmount">-</span></div>
+          <div class="receipt-row"><span class="r-label">numer konta</span><span class="r-value" id="resultAccount">-</span></div>
+          <div class="receipt-row"><span class="r-label">data i godzina</span><span class="r-value" id="resultDate">-</span></div>
+          <div class="receipt-row"><span class="r-label">status</span><span class="r-value status-tag"><i class="fa-solid fa-circle-check" style="font-size:9px;"></i> zrealizowany</span></div>
         </div>
         <div class="receipt-footer">
-          <div class="receipt-msg" id="resultMsg">Środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
-          <button onclick="withSpinner(() => navigateTo('dashboard'))" class="btn receipt-btn"><i class="fa-solid fa-arrow-left"></i> Powrót do portfela</button>
+          <div class="receipt-msg" id="resultMsg">środki zostaną przelane w ciągu 1-2 dni roboczych.</div>
+          <button onclick="withSpinner(() => navigateto('dashboard'))" class="btn receipt-btn"><i class="fa-solid fa-arrow-left"></i> powrót do portfela</button>
         </div>
       </div>
     </main>
@@ -2796,18 +2796,18 @@ window.toggleBalance = function() {
 
   <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
-    <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Pulpit</span></div>
-    <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Płatności</span></div>
-    <div class="nav-item" onclick="withSpinner(() => openCard())"><i class="fa-regular fa-credit-card"></i><span>Karta wirtualna</span></div>
-    <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Profil</span></div>
+    <div class="nav-item" onclick="withSpinner(() => navigateto('dashboard'))"><i class="fa-solid fa-house"></i><span>pulpit</span></div>
+    <div class="nav-item" onclick="withSpinner(() => navigateto('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>płatności</span></div>
+    <div class="nav-item" onclick="withSpinner(() => opencard())"><i class="fa-regular fa-credit-card"></i><span>karta wirtualna</span></div>
+    <div class="nav-item" onclick="withSpinner(() => openacc())"><i class="fa-regular fa-user"></i><span>profil</span></div>
   </nav>
 
   <!-- ========== MODALES ========== -->
   <!-- Carte virtuelle -->
-  <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeCard())">
+  <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closecard())">
     <div class="modal-content" style="max-width:400px;padding:20px;">
-      <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
-      <h3 style="font-weight:700;margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> Karta wirtualna</h3>
+      <button onclick="withSpinner(() => closecard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <h3 style="font-weight:700;margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> karta wirtualna</h3>
       <div style="width:100%;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 40%,#0f3460 70%,#1a1a2e 100%);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.08) inset;margin-bottom:16px;">
         <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.03) 45%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 55%,transparent 60%);animation:holo 4s ease-in-out infinite;pointer-events:none;"></div>
         <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
@@ -3107,65 +3107,65 @@ window.toggleBalance = function() {
         </div>
         <div style="padding:20px 18px 0;position:relative;z-index:2;">
           <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:17px;font-weight:600;letter-spacing:2px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;gap:10px;">
-            <span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>
+            <span>4556</span><span>5518</span><span>8867</span><span>xxxx</span>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:12px 18px 16px;position:relative;z-index:2;">
           <div>
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">Posiadacz</div>
-            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;letter-spacing:0.5px;">JAN KOWALSKI</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">posiadacz</div>
+            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">jan kowalski</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">Ważna do</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">ważna do</div>
             <div id="cardExpiry" style="font-size:11px;font-weight:600;color:#fff;">02/28</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">CVV</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">cvv</div>
             <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px;">556</div>
           </div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Posiadacz</div>
-          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);letter-spacing:0.5px;">JAN KOWALSKI</div>
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">posiadacz</div>
+          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.5px;">jan kowalski</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Ważna do</div>
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">ważna do</div>
           <div id="cardDetailExpiry" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">02/28</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;grid-column:1/-1;">
-          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Numer karty</div>
-          <div id="cardDetailNumber" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 XXXX</div>
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">numer karty</div>
+          <div id="cardDetailNumber" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 xxxx</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">CVV</div>
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">cvv</div>
           <div id="cardDetailCvv" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">***</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Typ</div>
-          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Visa Debit</div>
+          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">typ</div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">visa debit</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
         <button onclick="copyCardNumber()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:var(--p-gradient);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,0.3);cursor:pointer;">
-          <i class="fa-regular fa-copy"></i> Kopiuj numer
+          <i class="fa-regular fa-copy"></i> kopiuj numer
         </button>
         <button onclick="toggleCardVisibility()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid #e2e8f0;background:#f1f5f9;color:var(--text-primary);cursor:pointer;">
-          <i class="fa-regular fa-eye" id="eyeIcon"></i> <span id="eyeText">Pokaż</span>
+          <i class="fa-regular fa-eye" id="eyeIcon"></i> <span id="eyeText">pokaż</span>
         </button>
       </div>
       <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#fefce8;border-radius:8px;border-left:3px solid #eab308;">
         <i class="fa-solid fa-shield-halved" style="color:#ca8a04;font-size:14px;margin-top:1px;flex-shrink:0;"></i>
-        <span style="font-size:11px;color:#854d0e;line-height:1.5;">Ostatnie 4 cyfry ukryte. Kliknij „Pokaż", aby ujawnić pełny numer.</span>
+        <span style="font-size:11px;color:#854d0e;line-height:1.5;">ostatnie 4 cyfry ukryte. kliknij „pokaż", aby ujawnić pełny numer.</span>
       </div>
     </div>
   </div>
 
   <!-- IBAN -->
-  <div id="ibanModal" class="modal hidden iban-modal" onclick="if(event.target===this)withSpinner(()=>closeIbanModal())">
+  <div id="ibanModal" class="modal hidden iban-modal" onclick="if(event.target===this)withSpinner(()=>closeibanmodal())">
     <div class="modal-content" style="padding:0;overflow:hidden;max-width:400px;">
-      <button onclick="withSpinner(() => closeIbanModal())" class="modal-close" style="top:12px;right:12px;width:30px;height:30px;border:none;background:rgba(0,0,0,0.35);color:#fff;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);">×</button>
+      <button onclick="withSpinner(() => closeibanmodal())" class="modal-close" style="top:12px;right:12px;width:30px;height:30px;border:none;background:rgba(0,0,0,0.35);color:#fff;font-size:16px;box-shadow:0 2px 10px rgba(0,0,0,0.2);">×</button>
       <div style="background:var(--p-gradient);padding:24px 20px 18px;color:#fff;position:relative;overflow:hidden;">
         <div style="position:absolute;top:-30px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
         <div style="position:absolute;bottom:-20px;left:-10px;width:60px;height:60px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
@@ -3173,48 +3173,48 @@ window.toggleBalance = function() {
           <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);">
             <i class="fa-solid fa-building-columns"></i>
           </div>
-          <div><h3 style="font-size:16px;font-weight:700;margin:0;color:#fff;">Dane konta</h3><p style="font-size:11px;margin:2px 0 0;opacity:0.8;color:#fff;">Younited Finance</p></div>
+          <div><h3 style="font-size:16px;font-weight:700;margin:0;color:#fff;">dane konta</h3><p style="font-size:11px;margin:2px 0 0;opacity:0.8;color:#fff;">younited finance</p></div>
         </div>
       </div>
       <div style="padding:18px 20px 16px;">
         <div style="background:#0f172a;border-radius:12px;padding:14px 16px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
           <div style="position:absolute;top:-20px;right:-20px;width:60px;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative;z-index:1;">
-            <span style="font-size:9px;color:#94a3b8;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;">numer iban</span>
             <button onclick="copyIban()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.2s;">
-              <i class="fa-regular fa-copy" style="font-size:9px;"></i> Kopiuj
+              <i class="fa-regular fa-copy" style="font-size:9px;"></i> kopiuj
             </button>
           </div>
-          <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1.5px;word-break:break-all;position:relative;z-index:1;line-height:1.4;" id="ibanNumber">LT15 2339 1465 189X XXXX</div>
+          <div style="font-size:14px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:1.5px;word-break:break-all;position:relative;z-index:1;line-height:1.4;" id="ibanNumber">lt15 2339 1465 189x xxxx</div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
           <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
-            <span style="font-size:9px;color:#94a3b8;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">Właściciel</span>
-            <span style="font-size:12px;font-weight:700;color:var(--text-primary);" id="ibanOwner">KWIATKOWSKI PW</span>
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">właściciel</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);" id="ibanOwner">kwiatkowski pw</span>
           </div>
           <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
-            <span style="font-size:9px;color:#94a3b8;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">BIC / SWIFT</span>
-            <span style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">TTQGLTIJCJK</span>
+            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">bic / swift</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">ttqgltijcjk</span>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;margin-bottom:12px;">
           <div style="width:28px;height:28px;border-radius:6px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:12px;flex-shrink:0;">
             <i class="fa-solid fa-landmark"></i>
           </div>
-          <div><span style="font-size:9px;color:#16a34a;letter-spacing:1px;font-weight:500;display:block;">Bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">Younited Finance</span></div>
+          <div><span style="font-size:9px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;">bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">younited finance</span></div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fffbeb;border-radius:6px;border:1px solid #fef3c7;">
           <i class="fa-solid fa-shield-halved" style="color:#d97706;font-size:12px;flex-shrink:0;"></i>
-          <span style="font-size:10px;color:#92400e;line-height:1.4;">Ze względów bezpieczeństwa niektóre znaki IBAN zostały zamaskowane.</span>
+          <span style="font-size:10px;color:#92400e;line-height:1.4;">ze względów bezpieczeństwa niektóre znaki iban zostały zamaskowane.</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Profil -->
-  <div id="acc" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeAcc())">
+  <div id="acc" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeacc())">
     <div class="modal-content" style="max-height:90vh; overflow-y:auto; padding:0; border-radius:var(--radius); position:relative;">
-      <button onclick="withSpinner(() => closeAcc())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:18px;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
+      <button onclick="withSpinner(() => closeacc())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;border:none;background:rgba(0,0,0,0.5);color:#fff;font-size:18px;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
       <div class="profile-page" id="accinfo"></div>
     </div>
   </div>
@@ -3222,8 +3222,8 @@ window.toggleBalance = function() {
   <!-- Notifications -->
   <div id="notifications" class="modal hidden">
     <div class="modal-content" style="max-height:80vh;display:flex;flex-direction:column;overflow:visible;">
-      <button onclick="withSpinner(() => closeNotifications())" class="modal-close">×</button>
-      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:17px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> Powiadomienia</h3>
+      <button onclick="withSpinner(() => closenotifications())" class="modal-close">×</button>
+      <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-shrink:0;font-size:17px;"><i class="fa-regular fa-bell" style="color:var(--p)"></i> powiadomienia</h3>
       <div id="notif-content" style="font-size:13px;line-height:1.6;overflow-y:auto;max-height:360px;color:var(--text-secondary);"></div>
     </div>
   </div>
@@ -3231,19 +3231,19 @@ window.toggleBalance = function() {
   <!-- Remboursement -->
   <div id="refundModal" class="modal hidden">
     <div class="modal-content" style="overflow:visible;">
-      <button onclick="withSpinner(() => closeRefundModal())" class="modal-close">×</button>
+      <button onclick="withSpinner(() => closerefundmodal())" class="modal-close">×</button>
       <h3 style="margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-primary);">
-        <i class="fa-solid fa-rotate-left" style="color:var(--p);"></i> Anuluj przelew
+        <i class="fa-solid fa-rotate-left" style="color:var(--p);"></i> anuluj przelew
       </h3>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">Aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">aby anulować ten przelew, wprowadź kod zabezpieczający.</p>
       <div class="field-group">
-        <label>Kod zabezpieczający</label>
-        <input id="refundCode" class="input" maxlength="20" placeholder="Wprowadź kod">
+        <label>kod zabezpieczający</label>
+        <input id="refundCode" class="input" maxlength="20" placeholder="wprowadź kod">
       </div>
-      <button onclick="withSpinner(() => confirmRefund())" class="btn" id="refundConfirmBtn" style="font-size:14px;padding:12px;background:#DC2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
-        <i class="fa-solid fa-check"></i> Zatwierdź anulowanie
+      <button onclick="withSpinner(() => confirmrefund())" class="btn" id="refundconfirmbtn" style="font-size:14px;padding:12px;background:#dc2626;box-shadow:0 2px 8px rgba(220,38,38,0.2);">
+        <i class="fa-solid fa-check"></i> zatwierdź anulowanie
       </button>
-      <div id="refundError" class="login-error" style="display:none;margin-top:8px;">Nieprawidłowy kod anulowania.</div>
+      <div id="refundError" class="login-error" style="display:none;margin-top:8px;">nieprawidłowy kod anulowania.</div>
     </div>
   </div>
 
@@ -3254,14 +3254,14 @@ window.toggleBalance = function() {
         <button onclick="closeTxDetail()" class="txd-close">×</button>
         <div class="txd-header-icon" id="txd-header-icon"><i class="fa-solid fa-file-invoice"></i></div>
         <div class="txd-header-amount" id="txd-header-amount">-</div>
-        <div class="txd-header-badge" id="txd-header-badge">Szczegóły transakcji</div>
+        <div class="txd-header-badge" id="txd-header-badge">szczegóły transakcji</div>
       </div>
       <div class="txd-body">
         <div class="txd-row">
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-solid fa-hashtag"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label">ID transakcji</div>
+              <div class="txd-label">id transakcji</div>
               <div class="txd-val" id="txd-id">-</div>
             </div>
           </div>
@@ -3270,7 +3270,7 @@ window.toggleBalance = function() {
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label">Kwota</div>
+              <div class="txd-label">kwota</div>
               <div class="txd-val" id="txd-amt">-</div>
             </div>
           </div>
@@ -3279,7 +3279,7 @@ window.toggleBalance = function() {
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-solid fa-user"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label" id="txd-lbl-benef">Beneficjent</div>
+              <div class="txd-label" id="txd-lbl-benef">beneficjent</div>
               <div class="txd-val" id="txd-benef">-</div>
             </div>
           </div>
@@ -3288,7 +3288,7 @@ window.toggleBalance = function() {
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-solid fa-building-columns"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label">Numer konta (IBAN)</div>
+              <div class="txd-label">numer konta (iban)</div>
               <div class="txd-val" id="txd-iban">-</div>
             </div>
           </div>
@@ -3297,7 +3297,7 @@ window.toggleBalance = function() {
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-regular fa-calendar"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label">Data i godzina</div>
+              <div class="txd-label">data i godzina</div>
               <div class="txd-val" id="txd-date">-</div>
             </div>
           </div>
@@ -3306,7 +3306,7 @@ window.toggleBalance = function() {
           <div class="txd-row-left">
             <div class="txd-row-icon"><i class="fa-solid fa-circle-check"></i></div>
             <div class="txd-row-info">
-              <div class="txd-label">Status</div>
+              <div class="txd-label">status</div>
               <div class="txd-val" id="txd-status">-</div>
             </div>
           </div>
@@ -3314,7 +3314,7 @@ window.toggleBalance = function() {
       </div>
       <div class="txd-foot" id="txd-foot" style="display:none;">
         <div id="refundTxMsg" style="font-size:13px;color:#7C3AED;font-weight:600;text-align:center;padding:10px 14px;background:#F5F3FF;border-radius:8px;border:1.5px solid #DDD6FE;">
-          <i class="fa-solid fa-rotate-left" style="margin-right:6px;color:#7C3AED;"></i>Ten przelew został anulowany przez administrację.
+          <i class="fa-solid fa-rotate-left" style="margin-right:6px;color:#7C3AED;"></i>ten przelew został anulowany przez administrację.
         </div>
       </div>
     </div>
