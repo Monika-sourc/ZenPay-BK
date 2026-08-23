@@ -421,27 +421,31 @@
   border-bottom: 1px solid #f1f5f9;
 }
     #transfer .transfer-header-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 68px;
+      height: 68px;
+      border-radius: 16px;
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-primary);
-      font-size: 16px;
+      font-size: 22px;
       box-shadow: none;
       flex-shrink: 0;
     }
     #transfer .transfer-header-text h1 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #374151;
+      font-size: 22px;
+      font-weight: 900;
+      color: #111827;
       margin: 0;
-      letter-spacing: 0;
+      letter-spacing: -0.3px;
+      
     }
     #transfer .transfer-header-text p {
-      display: none;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 2px 0 0;
+      font-weight: 500;
     }
     #transfer .transfer-balance-bar {
       display: flex;
@@ -626,11 +630,10 @@
       #transfer .transfer-header {
         padding: 12px 20px 8px;
         background: #ffffff;
-        border-bottom: none;
+        border-bottom: 4px solid #e2e8f0;
 }
       #transfer .transfer-balance-bar {
-        margin: 0 20px;
-        padding: 16px 0 8px;
+        margin: 16px 20px;
       }
       #transfer form {
         padding: 0 20px;
@@ -1109,27 +1112,31 @@
   border-bottom: 1px solid #f1f5f9;
 }
     #transfer .transfer-header-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      width: 68px;
+      height: 68px;
+      border-radius: 16px;
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-primary);
-      font-size: 16px;
+      font-size: 22px;
       box-shadow: none;
       flex-shrink: 0;
     }
     #transfer .transfer-header-text h1 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #374151;
+      font-size: 22px;
+      font-weight: 900;
+      color: #111827;
       margin: 0;
-      letter-spacing: 0;
+      letter-spacing: -0.3px;
+      
     }
     #transfer .transfer-header-text p {
-      display: none;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 2px 0 0;
+      font-weight: 500;
     }
     #transfer .transfer-balance-bar {
       display: flex;
@@ -1314,11 +1321,10 @@
       #transfer .transfer-header {
         padding: 12px 20px 8px;
         background: #ffffff;
-        border-bottom: none;
+        border-bottom: 4px solid #e2e8f0;
 }
       #transfer .transfer-balance-bar {
-        margin: 0 20px;
-        padding: 16px 0 8px;
+        margin: 16px 20px;
       }
       #transfer form {
         padding: 0 20px;
@@ -2531,6 +2537,7 @@ window.toggleBalance = function() {
       </div>
     </header>
     <main>
+      <h1 style="font-size:22px;font-weight:700;color:var(--text-primary);margin:0 0 16px 4px;">Wykonaj przelew</h1>
       <div class="transfer-card">
         <div class="transfer-balance-bar">
           <div class="transfer-balance-left">
@@ -2559,8 +2566,7 @@ window.toggleBalance = function() {
   <path d="M48 38 L56 44 L48 50" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
-            <h1>Wykonaj przelew</h1>
-            <p>Przelew międzynarodowy SEPA/SWIFT</p>
+            <p style="font-size:14px;color:var(--text-secondary);margin:0;font-weight:500;">Przelew międzynarodowy SEPA/SWIFT</p>
           </div>
         </div>
 
