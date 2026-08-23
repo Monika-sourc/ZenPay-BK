@@ -256,7 +256,7 @@
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px; font-weight: 500; 
     }
     .balance-panel .amount {
       font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
@@ -488,7 +488,7 @@
       font-size: 10px;
       font-weight: 700;
       color: var(--text-secondary);
-      text-transform: uppercase;
+      
       letter-spacing: 0.6px;
       margin-bottom: 6px;
     }
@@ -630,7 +630,7 @@
       #transfer .transfer-header {
         padding: 12px 20px 8px;
         background: #ffffff;
-        border-bottom: 4px solid #e2e8f0;
+        border-bottom: none;
 }
       #transfer .transfer-balance-bar {
         margin: 16px 20px;
@@ -713,7 +713,7 @@
       font-size: 13px;
       font-weight: 700;
       color: var(--p);
-      text-transform: uppercase;
+      
       letter-spacing: 0.6px;
       margin-bottom: 14px;
       padding-bottom: 10px;
@@ -736,7 +736,7 @@
       font-size: 12px;
       font-weight: 600;
       color: #9ca3af;
-      text-transform: uppercase;
+      
       letter-spacing: 0.5px;
       flex-shrink: 0;
       padding-right: 12px;
@@ -947,7 +947,7 @@
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px;
-      display: flex; align-items: center; gap: 8px; font-weight: 500; text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px; font-weight: 500; 
     }
     .balance-panel .amount {
       font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2;
@@ -1179,7 +1179,7 @@
       font-size: 10px;
       font-weight: 700;
       color: var(--text-secondary);
-      text-transform: uppercase;
+      
       letter-spacing: 0.6px;
       margin-bottom: 6px;
     }
@@ -1321,7 +1321,7 @@
       #transfer .transfer-header {
         padding: 12px 20px 8px;
         background: #ffffff;
-        border-bottom: 4px solid #e2e8f0;
+        border-bottom: none;
 }
       #transfer .transfer-balance-bar {
         margin: 16px 20px;
@@ -1419,7 +1419,7 @@
     }
     .receipt-badge {
       display: inline-block; font-size: 10px; color: #6b7280;
-      letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 10px;
+      letter-spacing: 2px;  font-weight: 600; margin-bottom: 10px;
     }
     .receipt-icon { font-size: 40px; margin-bottom: 8px; }
     .receipt-percent { font-size: 32px; font-weight: 800; color: #10B981; margin-bottom: 2px; }
@@ -1998,7 +1998,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
+  
   position: relative;
   z-index: 2;
 }
@@ -2068,7 +2068,7 @@
   font-size: 11px;
   color: #9CA3AF;
   font-weight: 600;
-  text-transform: uppercase;
+  
   letter-spacing: 0.6px;
   line-height: 1.3;
   margin-bottom: 2px;
@@ -2537,16 +2537,7 @@ window.toggleBalance = function() {
       </div>
     </header>
     <main>
-      <h1 style="width:100%;max-width:560px;margin:0 0 16px 0;font-size:22px;font-weight:700;color:var(--text-primary);text-align:left;">Wykonaj przelew</h1>
       <div class="transfer-card">
-        <div class="transfer-balance-bar">
-          <div class="transfer-balance-left">
-            <i class="fa-solid fa-wallet"></i>
-            <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
-          </div>
-          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
-        </div>
-
         <div class="transfer-header">
           <div class="transfer-header-icon"><svg viewBox="0 0 64 52" width="32" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="14" y="2" width="48" height="30" rx="5" stroke="currentColor" stroke-width="4" fill="none"/>
@@ -2564,8 +2555,17 @@ window.toggleBalance = function() {
   <path d="M48 38 L56 44 L48 50" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></div>
           <div class="transfer-header-text">
-            <p style="font-size:14px;color:var(--text-secondary);margin:0;font-weight:500;">Przelew międzynarodowy SEPA/SWIFT</p>
+            <h1>Wykonaj przelew</h1>
+            <p>Przelew międzynarodowy SEPA/SWIFT</p>
           </div>
+        </div>
+
+        <div class="transfer-balance-bar">
+          <div class="transfer-balance-left">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
+          </div>
+          <i class="fa-solid fa-money-bill-transfer transfer-balance-icon"></i>
         </div>
 
         <form id="transferForm" novalidate>
@@ -3112,38 +3112,38 @@ window.toggleBalance = function() {
         </div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:12px 18px 16px;position:relative;z-index:2;">
           <div>
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Posiadacz</div>
-            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">Posiadacz</div>
+            <div id="cardHolderName" style="font-size:11px;font-weight:600;color:#fff;letter-spacing:0.5px;">JAN KOWALSKI</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Ważna do</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">Ważna do</div>
             <div id="cardExpiry" style="font-size:11px;font-weight:600;color:#fff;">02/28</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:8px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">CVV</div>
+            <div style="font-size:8px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;margin-bottom:2px;">CVV</div>
             <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:#fff;letter-spacing:2px;">556</div>
           </div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Posiadacz</div>
-          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.5px;">JAN KOWALSKI</div>
+          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Posiadacz</div>
+          <div id="cardDetailHolder" style="font-size:12px;font-weight:700;color:var(--text-primary);letter-spacing:0.5px;">JAN KOWALSKI</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Ważna do</div>
+          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Ważna do</div>
           <div id="cardDetailExpiry" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">02/28</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;grid-column:1/-1;">
-          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Numer karty</div>
+          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Numer karty</div>
           <div id="cardDetailNumber" style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;letter-spacing:0.5px;">4556 5518 8867 XXXX</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">CVV</div>
+          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">CVV</div>
           <div id="cardDetailCvv" style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;">***</div>
         </div>
         <div style="background:#f8fafc;border:1px solid #f1f5f9;border-radius:8px;padding:10px 12px;">
-          <div style="font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Typ</div>
+          <div style="font-size:9px;color:#6b7280;letter-spacing:0.8px;margin-bottom:2px;font-weight:500;">Typ</div>
           <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Visa Debit</div>
         </div>
       </div>
@@ -3180,7 +3180,7 @@ window.toggleBalance = function() {
         <div style="background:#0f172a;border-radius:12px;padding:14px 16px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
           <div style="position:absolute;top:-20px;right:-20px;width:60px;height:60px;background:rgba(255,255,255,0.03);border-radius:50%;"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative;z-index:1;">
-            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
+            <span style="font-size:9px;color:#94a3b8;letter-spacing:1.5px;font-weight:500;">Numer IBAN</span>
             <button onclick="copyIban()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.2s;">
               <i class="fa-regular fa-copy" style="font-size:9px;"></i> Kopiuj
             </button>
@@ -3189,11 +3189,11 @@ window.toggleBalance = function() {
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
           <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
-            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">Właściciel</span>
+            <span style="font-size:9px;color:#94a3b8;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">Właściciel</span>
             <span style="font-size:12px;font-weight:700;color:var(--text-primary);" id="ibanOwner">KWIATKOWSKI PW</span>
           </div>
           <div style="background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #f1f5f9;">
-            <span style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">BIC / SWIFT</span>
+            <span style="font-size:9px;color:#94a3b8;letter-spacing:1px;font-weight:500;display:block;margin-bottom:3px;">BIC / SWIFT</span>
             <span style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'Courier New',monospace;" id="ibanBic">TTQGLTIJCJK</span>
           </div>
         </div>
@@ -3201,7 +3201,7 @@ window.toggleBalance = function() {
           <div style="width:28px;height:28px;border-radius:6px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:12px;flex-shrink:0;">
             <i class="fa-solid fa-landmark"></i>
           </div>
-          <div><span style="font-size:9px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:500;display:block;">Bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">Younited Finance</span></div>
+          <div><span style="font-size:9px;color:#16a34a;letter-spacing:1px;font-weight:500;display:block;">Bank</span><span style="font-size:12px;font-weight:700;color:#15803d;" id="ibanBank">Younited Finance</span></div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fffbeb;border-radius:6px;border:1px solid #fef3c7;">
           <i class="fa-solid fa-shield-halved" style="color:#d97706;font-size:12px;flex-shrink:0;"></i>
