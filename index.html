@@ -2472,8 +2472,14 @@
 .client-badge-content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 2px;
+}
+.client-badge-name {
+  text-align: center;
+}
+.client-badge-hint {
+  text-align: center;
 }
 .client-badge-name {
   font-size: 15px;
@@ -2621,7 +2627,7 @@ window.toggleBalance = function() {
             <div class="client-badge-icon"><i class="fa-solid fa-user"></i></div>
             <div class="client-badge-content">
               <div class="client-badge-name" id="client-name-value">—</div>
-              <div class="client-badge-hint">Veuillez utiliser vos identifiants pour vous connecter</div>
+              <div class="client-badge-hint">Zaloguj się, używając swoich danych logowania</div>
             </div>
           </div>
         </div>
