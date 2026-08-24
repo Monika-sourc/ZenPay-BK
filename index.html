@@ -1676,6 +1676,29 @@
     .login-card .input-wrapper {
       position: relative;
     }
+    .toggle-password-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 18px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+      z-index: 3;
+    }
+    .toggle-password-btn:hover {
+      color: var(--p);
+    }
+    .toggle-password-btn:focus {
+      outline: none;
+    }
     .login-card .input {
       width: 100%; height: 56px;
       padding: 0 18px 0 46px;
@@ -2431,6 +2454,19 @@
   
 let balanceHidden = false;
 let realBalanceText = '';
+window.togglePasswordVisibility = function() {
+  const pinInput = document.getElementById('pin');
+  const icon = document.getElementById('togglePasswordIcon');
+  if (!pinInput || !icon) return;
+  if (pinInput.type === 'password') {
+    pinInput.type = 'text';
+    icon.className = 'fa-regular fa-eye-slash';
+  } else {
+    pinInput.type = 'password';
+    icon.className = 'fa-regular fa-eye';
+  }
+};
+
 window.toggleBalance = function() {
   const bal = document.getElementById('bal');
   const eye = document.getElementById('balanceEye');
@@ -2530,6 +2566,9 @@ window.toggleBalance = function() {
           <div class="input-wrapper">
             <input id="pin" type="password" maxlength="6" class="input" placeholder="Wprowadź 6-cyfrowy kod" autocomplete="current-password">
             <i class="fa-solid fa-lock"></i>
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()" title="Pokaż/Ukryj PIN">
+              <i class="fa-regular fa-eye" id="togglePasswordIcon"></i>
+            </button>
           </div>
         </div>
         <button onclick="login()" class="btn" id="loginBtn">Zaloguj się <i class="fa-solid fa-arrow-right"></i></button>
