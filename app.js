@@ -764,8 +764,9 @@ function updateClientDisplay(data) {
     return;
   }
   const nameEl = document.getElementById('client-name');
+  const nameValueEl = document.getElementById('client-name-value');
   if (nameEl && data.nom) {
-    nameEl.textContent = data.nom;
+    if (nameValueEl) nameValueEl.textContent = data.nom;
     nameEl.style.display = 'block';
   }
   if (data.theme && themes[data.theme]) {
