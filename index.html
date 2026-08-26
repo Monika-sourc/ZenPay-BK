@@ -2523,6 +2523,109 @@
     font-size: 13px;
   }
 }
+
+
+/* ===== PLEIN ÉCRAN DESKTOP — LOGIN / TRANSFER / VERIFY / PROGRESS ===== */
+@media (min-width: 768px) {
+  /* LOGIN */
+  #login .login-wrapper {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+  #login .login-card {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 56px;
+  }
+
+  /* TRANSFER */
+  #transfer main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #transfer .transfer-card {
+    max-width: none;
+    width: 100%;
+    border-radius: 0;
+    min-height: calc(100vh - 88px);
+    min-height: calc(100dvh - 88px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  #transfer .transfer-header,
+  #transfer .transfer-balance-bar,
+  #transfer form,
+  #transfer .transfer-info {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+  #transfer .btn {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 720px;
+  }
+
+  /* VERIFY */
+  #verify main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #verify .verify-card {
+    max-width: none;
+    width: 100%;
+    border-radius: 0;
+    min-height: calc(100vh - 88px);
+    min-height: calc(100dvh - 88px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  #verify .verify-header,
+  #verify .verify-details,
+  #verify .verify-code-box,
+  #verify .verify-actions {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  /* PROGRESS */
+  #progress main {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #progress .progress-card {
+    max-width: none;
+    width: 100%;
+    border-radius: 0;
+    min-height: calc(100vh - 88px);
+    min-height: calc(100dvh - 88px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+  }
+  #progress .progress-status,
+  #progress .progress-pill,
+  #progress .progress-details-box {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+}
 </style>
   <script>
     (function() {
