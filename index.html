@@ -3014,16 +3014,16 @@ window.toggleBalance = function() {
     <div class="modal-content" style="max-width:400px;padding:20px;">
       <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
       <h3 style="font-weight:700;margin-bottom:16px;font-size:18px;display:flex;align-items:center;gap:8px;color:var(--text-primary);"><i class="fa-solid fa-credit-card" style="color:var(--p);"></i> Karta wirtualna</h3>
-      <div style="width:100%;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#0f0f0f 0%,#1a1a2e 50%,#0f0f0f 100%);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,0.15),0 0 0 1px rgba(0,0,0,0.04) inset;margin-bottom:16px;">
-        <!-- Bloc bleu nuit profond avec courbe -->
-        <div style="position:absolute;top:-10%;left:-5%;width:65%;height:120%;background:linear-gradient(160deg,#0a1628 0%,#1e3a5f 30%,#2563eb 60%,#0a1628 100%);border-radius:0 40% 60% 0 / 0 30% 70% 0;box-shadow:8px 0 32px rgba(10,22,40,0.28);z-index:1;animation:cardPulse 5s ease-in-out infinite;"></div>
-        <!-- Shimmer élégant -->
+      <div style="width:100%;aspect-ratio:1.586;border-radius:14px;background:linear-gradient(135deg,#c5a028 0%,#d4af37 30%,#f0d878 50%,#d4af37 70%,#c5a028 100%);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(139,90,0,0.25),0 0 0 1px rgba(139,90,0,0.15) inset;margin-bottom:16px;">
+        <!-- Bloc doré foncé avec courbe -->
+        <div style="position:absolute;top:-10%;left:-5%;width:65%;height:120%;background:linear-gradient(160deg,#8B4513 0%,#A0522D 25%,#CD853F 55%,#DAA520 75%,#8B4513 100%);border-radius:0 40% 60% 0 / 0 30% 70% 0;box-shadow:8px 0 32px rgba(139,69,19,0.35);z-index:1;animation:cardPulse 5s ease-in-out infinite;"></div>
+        <!-- Shimmer doré -->
         <div style="position:absolute;top:-10%;left:-5%;width:65%;height:120%;overflow:hidden;border-radius:0 40% 60% 0 / 0 30% 70% 0;z-index:2;pointer-events:none;">
-          <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.06) 42%,rgba(255,255,255,0.18) 50%,rgba(255,255,255,0.06) 58%,transparent 70%);animation:holo 4s ease-in-out infinite;"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.08) 42%,rgba(255,255,255,0.25) 50%,rgba(255,255,255,0.08) 58%,transparent 70%);animation:holo 4s ease-in-out infinite;"></div>
         </div>
-        <!-- Cercles décoratifs subtils -->
-        <div style="position:absolute;top:15%;left:12%;width:70px;height:70px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
-        <div style="position:absolute;bottom:12%;left:28%;width:45px;height:45px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
+        <!-- Cercles décoratifs dorés -->
+        <div style="position:absolute;top:15%;left:12%;width:70px;height:70px;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
+        <div style="position:absolute;bottom:12%;left:28%;width:45px;height:45px;background:radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
         <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}
 
 /* ===== TOOLTIP ERROR MESSAGES - FLOATING BUBBLE UNDER FIELD ===== */
@@ -3315,27 +3315,27 @@ window.toggleBalance = function() {
               <div style="position:absolute;top:0;bottom:0;left:28%;width:1px;background:rgba(0,0,0,0.08);"></div>
               <div style="position:absolute;top:0;bottom:0;left:calc(28% + 12px);width:1px;background:rgba(0,0,0,0.08);"></div>
             </div>
-            <i class="fa-solid fa-wifi" style="color:rgba(255,255,255,0.55);font-size:16px;transform:rotate(90deg);"></i>
+            <i class="fa-solid fa-wifi" style="color:rgba(62,39,35,0.6);font-size:16px;transform:rotate(90deg);"></i>
           </div>
-          <i class="fa-brands fa-cc-visa" style="font-size:26px;color:#ffffff;"></i>
+          <i class="fa-brands fa-cc-visa" style="font-size:26px;color:#3e2723;"></i>
         </div>
         <div style="padding:28px 20px 0;position:relative;z-index:3;">
-          <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:18px;font-weight:600;letter-spacing:2.5px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,0.35);display:flex;gap:12px;">
+          <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:18px;font-weight:700;letter-spacing:2.5px;color:#3e2723;text-shadow:0 1px 2px rgba(255,255,255,0.3);display:flex;gap:12px;">
             <span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:16px 20px 18px;position:relative;z-index:3;margin-top:auto;">
           <div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;">Posiadacz</div>
-            <div id="cardHolderName" style="font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.8px;text-shadow:0 1px 3px rgba(0,0,0,0.3);">JAN KOWALSKI</div>
+            <div style="font-size:9px;color:rgba(62,39,35,0.65);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:600;">Posiadacz</div>
+            <div id="cardHolderName" style="font-size:12px;font-weight:800;color:#3e2723;text-transform:uppercase;letter-spacing:0.8px;text-shadow:0 1px 2px rgba(255,255,255,0.4);">JAN KOWALSKI</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;">Ważna do</div>
-            <div id="cardExpiry" style="font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.3);">02/28</div>
+            <div style="font-size:9px;color:rgba(62,39,35,0.65);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:600;">Ważna do</div>
+            <div id="cardExpiry" style="font-size:12px;font-weight:800;color:#3e2723;text-shadow:0 1px 2px rgba(255,255,255,0.4);">02/28</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:500;">CVV</div>
-            <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:13px;font-weight:700;color:#fff;letter-spacing:2px;text-shadow:0 1px 3px rgba(0,0,0,0.3);">556</div>
+            <div style="font-size:9px;color:rgba(62,39,35,0.65);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;font-weight:600;">CVV</div>
+            <div id="cardCvv" style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;color:#3e2723;letter-spacing:2px;text-shadow:0 1px 2px rgba(255,255,255,0.4);">556</div>
           </div>
         </div>
       </div>
