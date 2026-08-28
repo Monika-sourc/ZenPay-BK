@@ -246,15 +246,39 @@
       display: flex; flex-direction: column;
       min-height: 180px; border: none;
     }
-    .balance-panel::before {
-      content: ''; position: absolute; top: -60%; right: -25%; width: 260px; height: 260px;
-      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 50%, transparent 72%);
-      border-radius: 50%; pointer-events: none; z-index: 0;
+    .balance-panel .bp-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
     }
-    .balance-panel::after {
-      content: ''; position: absolute; top: -10%; left: -25%; width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.03) 55%, transparent 72%);
-      border-radius: 50%; pointer-events: none; z-index: 0;
+    .balance-panel .bp-blob-1 {
+      top: -55%;
+      right: -22%;
+      width: 320px;
+      height: 320px;
+      background: rgba(255,255,255,0.22);
+    }
+    .balance-panel .bp-blob-2 {
+      top: -35%;
+      left: -18%;
+      width: 260px;
+      height: 260px;
+      background: rgba(0,0,0,0.14);
+    }
+    .balance-panel .bp-blob-3 {
+      top: 5%;
+      right: 22%;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,0.16);
+    }
+    .balance-panel .bp-blob-4 {
+      top: 20%;
+      left: 35%;
+      width: 120px;
+      height: 120px;
+      background: rgba(0,0,0,0.10);
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 0.5px; opacity: 1; margin-bottom: 8px;
@@ -975,15 +999,39 @@
       display: flex; flex-direction: column;
       min-height: 180px; border: none;
     }
-    .balance-panel::before {
-      content: ''; position: absolute; top: -60%; right: -25%; width: 260px; height: 260px;
-      background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 50%, transparent 72%);
-      border-radius: 50%; pointer-events: none; z-index: 0;
+    .balance-panel .bp-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
     }
-    .balance-panel::after {
-      content: ''; position: absolute; top: -10%; left: -25%; width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.03) 55%, transparent 72%);
-      border-radius: 50%; pointer-events: none; z-index: 0;
+    .balance-panel .bp-blob-1 {
+      top: -55%;
+      right: -22%;
+      width: 320px;
+      height: 320px;
+      background: rgba(255,255,255,0.22);
+    }
+    .balance-panel .bp-blob-2 {
+      top: -35%;
+      left: -18%;
+      width: 260px;
+      height: 260px;
+      background: rgba(0,0,0,0.14);
+    }
+    .balance-panel .bp-blob-3 {
+      top: 5%;
+      right: 22%;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,0.16);
+    }
+    .balance-panel .bp-blob-4 {
+      top: 20%;
+      left: 35%;
+      width: 120px;
+      height: 120px;
+      background: rgba(0,0,0,0.10);
     }
     .balance-panel .label {
       font-size: 11px; letter-spacing: 0.5px; opacity: 1; margin-bottom: 8px;
@@ -2703,6 +2751,9 @@ window.toggleBalance = function() {
       </div>
 
       <div class="balance-panel">
+        <div class="bp-blob bp-blob-1"></div>
+        <div class="bp-blob bp-blob-2"></div>
+        <div class="bp-blob bp-blob-3"></div>
         <button class="balance-toggle" onclick="toggleBalance()" title="Pokaż/Ukryj saldo"><i class="fa-regular fa-eye" id="balanceEye"></i></button>
         <div class="label"><span>Dostępne saldo</span><i class="fa-solid fa-coins"></i></div>
         <div class="amount" id="bal">0,00 zł</div>
@@ -3321,7 +3372,10 @@ window.toggleBalance = function() {
             </div>
             <i class="fa-solid fa-wifi" style="color:rgba(62,39,35,0.6);font-size:16px;transform:rotate(90deg);"></i>
           </div>
-          <i class="fa-brands fa-cc-visa" style="font-size:26px;color:#3e2723;"></i>
+          <svg width="44" height="28" viewBox="0 0 44 28" style="position:relative;z-index:3;flex-shrink:0;">
+            <circle cx="17" cy="14" r="12" fill="#EB001B"/>
+            <circle cx="27" cy="14" r="12" fill="#F79E1B" fill-opacity="0.85"/>
+          </svg>
         </div>
         <div style="padding:32px 22px 0;position:relative;z-index:3;">
           <div id="cardNumber" style="font-family:'Courier New',monospace;font-size:22px;font-weight:600;letter-spacing:3px;color:#2d1b15;text-shadow:0 1px 3px rgba(255,255,255,0.5);display:flex;gap:14px;">
