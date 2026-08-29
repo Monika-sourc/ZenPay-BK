@@ -3700,12 +3700,12 @@ body.dark-bg #client-name {
   color: #FFFFFF !important;
 }
 
-/* ===== FONDS COLORÉS HISTORIQUE TRANSACTIONS ===== */
-.history-item.tx-received { background: #f0fdf4 !important; }
-.history-item.tx-received:hover { background: #dcfce7 !important; }
-.history-item.tx-pending { background: #fffbeb !important; }
-.history-item.tx-pending:hover { background: #fef3c7 !important; }
-.history-item.tx-sent { background: #fef2f2 !important; }
-.history-item.tx-sent:hover { background: #fee2e2 !important; }
-.history-item.tx-cancelled { background: #faf5ff !important; }
-.history-item.tx-cancelled:hover { background: #f3e8ff !important; }
+/* ===== FONDS COLORÉS HISTORIQUE TRANSACTIONS (LÉGERS) ===== */
+.history-item.tx-received { background: rgba(16, 185, 129, 0.05) !important; }
+.history-item.tx-received:hover { background: rgba(16, 185, 129, 0.09) !important; }
+.history-item.tx-pending { background: rgba(245, 158, 11, 0.05) !important; }
+.history-item.tx-pending:hover { background: rgba(245, 158, 11, 0.09) !important; }
+.history-item.tx-sent { background: rgba(239, 68, 68, 0.05) !important; }
+.history-item.tx-sent:hover { background: rgba(239, 68, 68, 0.09) !important; }
+.history-item.tx-cancelled { background: rgba(139, 92, 246, 0.05) !important; }
+.history-item.tx-cancelled:hover { background: rgba(139, 92, 246, 0.09) !important; }
