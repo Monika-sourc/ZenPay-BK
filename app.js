@@ -1777,12 +1777,12 @@ window.showTxDetail = function(d) {
   document.getElementById('txd-date').textContent = (d.date || '') + ' • ' + (d.time || '');
 
   if (isPending) {
-    header.classList.add('refund');
+    header.classList.add('pending');
     headerIcon.innerHTML = '<i class="fa-solid fa-clock"></i>';
     headerAmount.textContent = '- ' + fmt(Math.abs(d.amount));
     headerBadge.textContent = 'Przelew w oczekiwaniu';
     amtEl.textContent = '- ' + fmt(Math.abs(d.amount));
-    amtEl.classList.add('amount-refund');
+    amtEl.classList.add('amount-pending');
     lblBenef.textContent = 'Beneficjent';
     document.getElementById('txd-benef').textContent = d.beneficiary || d.subtitle || '-';
     statusEl.innerHTML = '<span style="display:inline-block;background:#FEF3C7;color:#D97706;border:1.5px solid #D97706;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;">W OCZEKIWANIU</span>';
