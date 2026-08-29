@@ -1265,6 +1265,7 @@ function renderHistory(historyArray) {
       let txBgClass = '';
       if (d.status === 'pending') txBgClass = ' tx-pending';
       else if (d.status === 'cancelled') txBgClass = ' tx-cancelled';
+      else if (d.title === 'Zwrot') txBgClass = ' tx-cancelled';
       else if (d.amount >= 0) txBgClass = ' tx-received';
       else txBgClass = ' tx-sent';
       card.className = 'history-item' + txBgClass;
