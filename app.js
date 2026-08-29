@@ -691,8 +691,8 @@ function applyBgColor(bgColor) {
     `;
     html.style.background = '#faf7f0';
   } else {
-    body.style.background = '#f0f2f5';
-    html.style.background = '#f0f2f5';
+    body.style.background = '#d1d5db';
+    html.style.background = '#d1d5db';
   }
 }
 
