@@ -1,5 +1,12 @@
+// ================================================================
+// app.js – Application principale Younited
+// ================================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+// ===== NOUVEAU : Import du détecteur d'IBAN =====
+import { initIbanDetection } from './iban-detector.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
@@ -2374,6 +2381,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
 
     setupTransferValidation();
     setupRequiredMessages();
+    initIbanDetection(); // <-- NOUVEAU : activation de la détection d'IBAN
 
     adjustAllTexts();
 
@@ -3008,6 +3016,7 @@ setTimeout(() => {
     setupTransferValidation();
     setupRequiredMessages();
     setupCodeValidation();
+    initIbanDetection(); // <-- NOUVEAU : activation pour les sessions restaurées
   }
 }, 300);
 
