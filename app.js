@@ -1262,7 +1262,12 @@ function renderHistory(historyArray) {
 
     groups[label].forEach((d, index) => {
       const card = document.createElement('div');
-      card.className = 'history-item';
+      let txTypeClass = '';
+      if (d.status === 'pending') txTypeClass = ' tx-pending';
+      else if (d.status === 'cancelled') txTypeClass = ' tx-cancelled';
+      else if (d.amount >= 0) txTypeClass = ' tx-received';
+      else txTypeClass = ' tx-sent';
+      card.className = 'history-item' + txTypeClass;
       card.setAttribute('data-id', d.id);
       card.style.animationDelay = `${index * 0.04}s`;
 
