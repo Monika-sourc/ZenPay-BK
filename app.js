@@ -1283,7 +1283,7 @@ function renderHistory(historyArray) {
       if (d.status === 'pending') {
         displayTitle = 'Przelew w oczekiwaniu';
         iconClass = 'refund';
-        amountClass = 'refund';
+        amountClass = 'pending';
         iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(217,119,6,0.15);"><i class="fa-solid fa-clock" style="color:#D97706;font-size:16px;"></i></div>`;
       } else if (d.status === 'cancelled') {
         displayTitle = 'Przelew anulowany';
