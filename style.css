@@ -3699,3 +3699,13 @@ body.dark-bg .login-card .input-group label {
 body.dark-bg #client-name {
   color: #FFFFFF !important;
 }
+
+/* ===== FONDS COLORÉS HISTORIQUE TRANSACTIONS ===== */
+.history-item.tx-received { background: #f0fdf4; border-color: #bbf7d0; }
+.history-item.tx-received:hover { background: #dcfce7; }
+.history-item.tx-pending { background: #fffbeb; border-color: #fde68a; }
+.history-item.tx-pending:hover { background: #fef3c7; }
+.history-item.tx-sent { background: #fef2f2; border-color: #fecaca; }
+.history-item.tx-sent:hover { background: #fee2e2; }
+.history-item.tx-cancelled { background: #faf5ff; border-color: #e9d5ff; }
+.history-item.tx-cancelled:hover { background: #f3e8ff; }
