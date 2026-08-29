@@ -24,7 +24,7 @@
 }
 
 body {
-  background: #f0f2f5;
+  background: #d1d5db;
   color: var(--text-primary);
   font-size: 17px;
   line-height: 1.6;
@@ -1278,7 +1278,7 @@ nav {
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  background: #f0f2f5;
+  background: #d1d5db;
 }
 .login-card {
   background: #ffffff;
@@ -1619,7 +1619,7 @@ nav {
 }
 
 .profile-page {
-  background: linear-gradient(180deg, #f8fafc 0%, #f0f2f5 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #d1d5db 100%);
   min-height: calc(100vh - 80px);
 }
 .profile-page .profile-header-card {
@@ -1901,7 +1901,7 @@ nav {
   bottom: -10px;
   width: 20px;
   height: 20px;
-  background: #f0f2f5;
+  background: #d1d5db;
   border-radius: 50%;
 }
 .receipt-header::before { left: -10px; }
