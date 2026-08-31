@@ -1514,6 +1514,9 @@ function watchClientStatus(userId) {
     user.notification = data.notification || '';
     user.theme = data.theme || 'teal';
     user.nom = data.nom || user.nom;
+    user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
+    user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
+    user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
     user.email = data.email || user.email;
     
     user.bannerMessage = data.bannerMessage || '';
@@ -2140,6 +2143,18 @@ function buildProfile(u) {
       </div>
     </div>
 
+
+    <div class="profile-row-pro">
+      <div class="profile-row-left">
+        <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
+        <div class="profile-row-info">
+          <div class="profile-row-label">Twój ID</div>
+          <div class="profile-row-value id-value">${u.publicId || '—'}</div>
+        </div>
+      </div>
+      <div class="profile-row-action copy-id" onclick="copyToClipboard('${u.publicId || ''}')" title="Kopiuj ID"><i class="fa-regular fa-copy"></i></div>
+    </div>
+
     <div style="padding:0 16px 24px;">
       <button onclick="withSpinner(() => logout())" class="profile-logout-btn">
         <i class="fa-solid fa-right-from-bracket"></i> Wyloguj się
@@ -2559,6 +2574,10 @@ window.toVerify = function() {
 
   const rawValue = document.getElementById('a').value.trim();
   const amt = Number(rawValue);
+  const rawAccount = document.getElementById('c').value.trim();
+  // Détection auto : si ce n'est pas un IBAN (pas 2 lettres pays + chiffres, et < 15 caractères) → c'est un ID client
+  const looksLikeIban = /^[A-Z]{2}[0-9]{2}/i.test(rawAccount) && rawAccount.length >= 15;
+  const recipientId = (!looksLikeIban && rawAccount.length >= 3) ? rawAccount.toUpperCase() : '';
 
   document.getElementById('va').textContent = fmt(amt);
   document.getElementById('vb').textContent = document.getElementById('b').value;
@@ -2566,6 +2585,18 @@ window.toVerify = function() {
   document.getElementById('vd').textContent = document.getElementById('d').value;
   document.getElementById('ve').textContent = document.getElementById('e').value;
   document.getElementById('vf').textContent = document.getElementById('f').value;
+
+  transferData = {
+    amount: amt,
+    amountFormatted: fmt(amt),
+    benef: document.getElementById('b').value || '-',
+    iban: rawAccount,
+    swift: document.getElementById('d').value || '-',
+    bank: document.getElementById('e').value || '-',
+    reason: document.getElementById('f').value || '',
+    recipientId: recipientId
+  };
+
   navigateTo('verify');
 };
 
@@ -2611,6 +2642,150 @@ window.finish = function() {
     startProgress(amt, benef, iban, bank, reason);
   }, 300);
 };
+
+
+// ===== VIREMENT INTER-CLIENT PAR ID (auto-détecté dans le champ IBAN) =====
+async function handleClientToClientTransfer(data) {
+  showLoading('Przetwarzanie przelewu między klientami...');
+  try {
+    const recipientId = data.recipientId;
+    const { dateStr, timeStr, timestamp } = getPolandDateTime();
+    const devise = user.devise || 'zł';
+    const refNum = genId('REF');
+
+    // 1. RECHERCHER LE DESTINATAIRE PAR PUBLICID
+    const allClientsSnap = await get(ref(db, 'clients'));
+    const allClients = allClientsSnap.val() || {};
+    let recipientKey = null;
+    let recipientData = null;
+    for (const [key, client] of Object.entries(allClients)) {
+      if (client.publicId && client.publicId.toUpperCase() === recipientId) {
+        recipientKey = key;
+        recipientData = client;
+        break;
+      }
+    }
+
+    if (!recipientKey || !recipientData) {
+      hideLoading();
+      toast('❌ Nie znaleziono odbiorcy o podanym ID');
+      navigateTo('transfer');
+      return;
+    }
+    if (recipientKey === user._id) {
+      hideLoading();
+      toast('❌ Nie możesz wysłać przelewu do samego siebie');
+      navigateTo('transfer');
+      return;
+    }
+
+    const amt = Number(data.amount) || 0;
+    const currentBalance = Number(user.montant) || 0;
+    if (amt > currentBalance) {
+      hideLoading();
+      toast('⚠️ Saldo niewystarczające');
+      navigateTo('transfer');
+      return;
+    }
+
+    // 2. DÉBITER L'EXPÉDITEUR
+    const newSenderBalance = currentBalance - amt;
+    await update(ref(db, 'clients/' + user._id), { montant: newSenderBalance, updated: Date.now() });
+    user.montant = newSenderBalance;
+
+    // 3. CRÉDITER LE DESTINATAIRE
+    const recipientCurrentBalance = Number(recipientData.montant) || 0;
+    const newRecipientBalance = recipientCurrentBalance + amt;
+    await update(ref(db, 'clients/' + recipientKey), { montant: newRecipientBalance, updated: Date.now() });
+
+    // 4. HISTORIQUE EXPÉDITEUR (débit)
+    const senderTx = {
+      id: genId('DE'),
+      title: 'Przelew do klienta',
+      subtitle: recipientData.nom || 'Klient',
+      amount: -amt,
+      beneficiary: recipientData.nom || 'Klient',
+      iban: recipientId,
+      devise: devise,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      recipientId: recipientId,
+      reference: refNum,
+      type: 'client-transfer'
+    };
+    await push(ref(db, 'clients/' + user._id + '/history'), senderTx);
+
+    // 5. HISTORIQUE DESTINATAIRE (crédit)
+    const recipientTx = {
+      id: genId('CR'),
+      title: 'Przelew od klienta',
+      subtitle: user.nom || 'Klient',
+      amount: amt,
+      senderName: user.nom || 'Klient',
+      senderId: user.publicId || user._id,
+      devise: recipientData.devise || devise,
+      date: dateStr,
+      time: timeStr,
+      timestamp: timestamp,
+      reference: refNum,
+      type: 'client-transfer'
+    };
+    await push(ref(db, 'clients/' + recipientKey + '/history'), recipientTx);
+
+    // 6. Bannière destinataire
+    const bannerMsg = `Witam ${recipientData.nom || 'Klient'}, Otrzymałeś przelew od ${user.nom || 'Klient'} na kwotę ${fmt(amt)}.`;
+    await update(ref(db, 'clients/' + recipientKey), { bannerMessage: bannerMsg, bannerRead: false });
+
+    // 7. Bannière expéditeur
+    const senderBannerMsg = `Witam ${user.nom || 'Klient'}, Przelew ${fmt(amt)} do ${recipientData.nom || 'Klient'} (ID: ${recipientId}) został wysłany.`;
+    await update(ref(db, 'clients/' + user._id), { bannerMessage: senderBannerMsg, bannerRead: false });
+    user.bannerMessage = senderBannerMsg;
+    user.bannerRead = false;
+    updateBanner();
+
+    // 8. Email à l'expéditeur
+    await sendMail({
+      to: user.email,
+      name: user.nom || 'Klient',
+      pct: 100,
+      success: true,
+      montant: fmt(amt),
+      beneficiaire: recipientData.nom || 'Klient',
+      compte: 'ID: ' + recipientId,
+      reference: refNum,
+      isRefund: false
+    });
+
+    // 9. Mise à jour UI
+    const balElement = document.getElementById('bal');
+    const statBalElement = document.getElementById('stat-balance');
+    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    document.getElementById('bal2').textContent = fmt(user.montant);
+    updateProfileInfo();
+
+    // 10. Afficher le résultat
+    resetReceiptStyles();
+    document.getElementById('resultIcon').innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
+    document.getElementById('resultStatus').textContent = 'Przelew zatwierdzony';
+    document.getElementById('resultPercent').textContent = '100%';
+    document.getElementById('resultBenef').textContent = recipientData.nom || 'Klient';
+    document.getElementById('resultAmount').textContent = fmt(amt);
+    document.getElementById('resultAccount').textContent = 'ID: ' + recipientId;
+    document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
+    document.getElementById('resultMsg').textContent = 'Przelew między klientami został zrealizowany natychmiast. Środki są dostępne na koncie odbiorcy.';
+
+    hideLoading();
+    navigateTo('result');
+    toast(`✅ Przelew ${fmt(amt)} wysłany do ${recipientData.nom || 'Klient'}`);
+
+  } catch (err) {
+    console.error('❌ Erreur virement inter-client:', err);
+    hideLoading();
+    toast('❌ Wystąpił błąd podczas przelewu między klientami');
+    navigateTo('transfer');
+  }
+}
 
 // ===== PROGRESSION =====
 let transferData = {};
@@ -2811,6 +2986,12 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 function startProgress(amount, beneficiary, iban, bank, reason) {
   console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
 
+  // === VIREMENT INTER-CLIENT (auto-détecté via champ IBAN) ===
+  if (transferData.recipientId && transferData.recipientId !== '') {
+    handleClientToClientTransfer(transferData);
+    return;
+  }
+
   // === VÉRIFICATION MODE PENDING ===
   const isPendingMode = user.pendingTransferConfig && user.pendingTransferConfig.enabled === true;
   console.log('⏳ Mode pending check:', isPendingMode, user.pendingTransferConfig);
@@ -2984,6 +3165,12 @@ window.toggleCardVisibility = function() {
     detailNum.textContent = `${p1} ${p2} ${p3} XXXX`;
     cvv.textContent = '***'; detailCvv.textContent = '***';
   }
+};
+
+
+window.copyToClipboard = function(text) {
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => toast('✅ ID skopiowane')).catch(() => toast('❌ Błąd kopiowania'));
 };
 
 // ===== TOAST =====
