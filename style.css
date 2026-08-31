@@ -3714,3 +3714,23 @@ body.dark-bg #client-name {
 .txd-header.pending { background: linear-gradient(135deg, #D97706, #B45309); }
 .txd-val.amount-pending { color: #D97706; }
 
+/* ===== ID KLIENTA – PROFIL ===== */
+.profile-row-value.id-value {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1.5px;
+  font-size: 15px;
+  color: var(--p);
+  font-weight: 700;
+}
+.profile-row-action.copy-id {
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.profile-row-action.copy-id:hover {
+  background: var(--p-soft);
+}
+.profile-row-action.copy-id:active {
+  transform: scale(0.95);
+}
