@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { setLanguage, t, applyTranslations } from './translations.js';
+import { setLanguage, t, applyTranslations, translateContent, installDynamicTranslationObserver } from './translations.js';
 import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -322,7 +322,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
     const footerTextPlain = 'W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com';
 
-    const htmlContent = `<!DOCTYPE html>
+    const htmlContent = translateContent(`<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -452,9 +452,9 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
   </td></tr>
 </table>
 </body>
-</html>`;
+</html>`);
 
-    const textContent = `Younited – POTWIERDZENIE PRZELEWU
+    const textContent = translateContent(`Younited – POTWIERDZENIE PRZELEWU
 
 Status: ${statusLabel}
 ${mainStatus}
@@ -474,7 +474,7 @@ ${nextTitle}
 ${nextText}
 
 ${footerTextPlain}
-© 2026 Younited Finance.`;
+© 2026 Younited Finance.`);
 
     const res = await fetch(API_URL, {
       method: 'POST',
@@ -2368,6 +2368,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     user._id = fid;
     setLanguage(user.language);
     applyTranslations(document);
+    installDynamicTranslationObserver();
     applyBgColor(user.bgColor || 'gray');
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
