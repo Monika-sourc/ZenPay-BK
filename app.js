@@ -827,7 +827,7 @@ if (window.__clientIdFromUrl) {
 
   if (!localStorage.getItem('Younited_session')) {
     showLoading('Weryfikacja konta...');
-    get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
+    withLoginTimeout(get(ref(db, 'clients/' + window.__clientIdFromUrl)), 'La vérification du compte', 12000).then((snap) => {
       const data = snap.val();
       hideLoading();
 
@@ -851,9 +851,15 @@ if (window.__clientIdFromUrl) {
       newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
       window.history.replaceState({}, '', newUrl.toString());
 
-    }).catch(() => {
+    }).catch((error) => {
+      console.error('Erreur vérification compte:', error);
       hideLoading();
       show('login');
+      const initialError = document.getElementById('err');
+      if (initialError) {
+        initialError.textContent = 'Impossible de vérifier le compte : ' + (error && error.message ? error.message : 'réessayez');
+        initialError.classList.remove('hidden');
+      }
     });
   }
 } else if (!localStorage.getItem('Younited_session')) {
