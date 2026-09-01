@@ -62,6 +62,20 @@ const dictionaries = {
   pl: {}
 };
 
+
+const commonTranslations = {
+  fr: {
+    'WYSŁANY':'ENVOYÉ','NIE POWIÓDŁ SIĘ':'ÉCHOUÉ','ANULOWANY':'ANNULÉ','W OCZEKIWANIU':'EN ATTENTE','KWOTA PRZELEWU':'MONTANT DU VIREMENT','ZWRÓCONA KWOTA':'MONTANT REMBOURSÉ','Szczegóły transakcji':'Détails de la transaction','Co się stanie dalej?':'Que se passe-t-il ensuite ?','Numer transakcji':'Numéro de transaction','Godzina':'Heure','Kwota':'Montant','Beneficjent':'Bénéficiaire','Konto (IBAN)':'Compte (IBAN)','Potrzebujesz pomocy?':'Besoin d’aide ?','Skontaktuj się z naszym zespołem wsparcia:':'Contactez notre équipe d’assistance :','Wszelkie prawa zastrzeżone.':'Tous droits réservés.','Przelew anulowany przez administrację':'Virement annulé par l’administration','Przelew wysłany pomyślnie':'Virement envoyé avec succès','Przelew nie powiódł się':'Le virement a échoué','Otrzymałeś przelew od':'Vous avez reçu un virement de','Przelew otrzymany':'Virement reçu','Przelew wysłany':'Virement envoyé','Anulowanie przelewu':'Annulation du virement','Kod aktywacji':'Code d’activation','Dane logowania do konta':'Identifiants de connexion au compte','Adres e-mail':'Adresse email','Kod PIN':'Code PIN','Dostęp do konta':'Accès au compte','Pozdrawiamy':'Cordialement','Przyjmijcie nasze serdeczne pozdrowienia.':'Nous vous adressons nos salutations distinguées.','Mamy przyjemność potwierdzić Twoją rejestrację na platformie':'Nous avons le plaisir de confirmer votre inscription sur la plateforme','Zaloguj się':'Se connecter','Błąd':'Erreur','Nieprawidłowy':'Incorrect','Ładowanie...':'Chargement...'
+  },
+  es: {
+    'WYSŁANY':'ENVIADO','NIE POWIÓDŁ SIĘ':'FALLIDO','ANULOWANY':'ANULADO','W OCZEKIWANIU':'PENDIENTE','KWOTA PRZELEWU':'IMPORTE DE LA TRANSFERENCIA','ZWRÓCONA KWOTA':'IMPORTE REEMBOLSADO','Szczegóły transakcji':'Detalles de la transacción','Co się stanie dalej?':'¿Qué ocurrirá ahora?','Numer transakcji':'Número de transacción','Godzina':'Hora','Kwota':'Importe','Beneficjent':'Beneficiario','Konto (IBAN)':'Cuenta (IBAN)','Potrzebujesz pomocy?':'¿Necesita ayuda?','Skontaktuj się z naszym zespołem wsparcia:':'Contacte con nuestro equipo de soporte:','Wszelkie prawa zastrzeżone.':'Todos los derechos reservados.','Przelew anulowany przez administrację':'Transferencia cancelada por la administración','Przelew wysłany pomyślnie':'Transferencia enviada correctamente','Przelew nie powiódł się':'La transferencia ha fallado','Otrzymałeś przelew od':'Ha recibido una transferencia de','Przelew otrzymany':'Transferencia recibida','Przelew wysłany':'Transferencia enviada','Anulowanie przelewu':'Cancelación de la transferencia','Kod aktywacji':'Código de activación','Dane logowania do konta':'Credenciales de acceso a la cuenta','Adres e-mail':'Correo electrónico','Kod PIN':'Código PIN','Dostęp do konta':'Acceso a la cuenta','Pozdrawiamy':'Atentamente','Przyjmijcie nasze serdeczne pozdrowienia.':'Reciba un cordial saludo.','Mamy przyjemność potwierdzić Twoją rejestrację na platformie':'Nos complace confirmar su registro en la plataforma','Błąd':'Error','Nieprawidłowy':'Incorrecto','Ładowanie...':'Cargando...'
+  },
+  de: {
+    'WYSŁANY':'GESENDET','NIE POWIÓDŁ SIĘ':'FEHLGESCHLAGEN','ANULOWANY':'STORNIERT','W OCZEKIWANIU':'AUSSTEHEND','KWOTA PRZELEWU':'ÜBERWEISUNGSBETRAG','ZWRÓCONA KWOTA':'ERSTATTETER BETRAG','Szczegóły transakcji':'Transaktionsdetails','Co się stanie dalej?':'Wie geht es weiter?','Numer transakcji':'Transaktionsnummer','Godzina':'Uhrzeit','Kwota':'Betrag','Beneficjent':'Empfänger','Konto (IBAN)':'Konto (IBAN)','Potrzebujesz pomocy?':'Benötigen Sie Hilfe?','Skontaktuj się z naszym zespołem wsparcia:':'Kontaktieren Sie unser Support-Team:','Wszelkie prawa zastrzeżone.':'Alle Rechte vorbehalten.','Przelew anulowany przez administrację':'Überweisung von der Administration storniert','Przelew wysłany pomyślnie':'Überweisung erfolgreich gesendet','Przelew nie powiódł się':'Die Überweisung ist fehlgeschlagen','Otrzymałeś przelew od':'Sie haben eine Überweisung erhalten von','Przelew otrzymany':'Überweisung erhalten','Przelew wysłany':'Überweisung gesendet','Anulowanie przelewu':'Stornierung der Überweisung','Kod aktywacji':'Aktivierungscode','Dane logowania do konta':'Zugangsdaten zum Konto','Adres e-mail':'E-Mail-Adresse','Kod PIN':'PIN-Code','Dostęp do konta':'Kontozugang','Pozdrawiamy':'Mit freundlichen Grüßen','Przyjmijcie nasze serdeczne pozdrowienia.':'Mit freundlichen Grüßen.','Mamy przyjemność potwierdzić Twoją rejestrację na platformie':'Wir freuen uns, Ihre Registrierung auf der Plattform zu bestätigen','Błąd':'Fehler','Nieprawidłowy':'Ungültig','Ładowanie...':'Wird geladen...'
+  }
+};
+Object.entries(commonTranslations).forEach(([lang, values]) => Object.assign(dictionaries[lang], values));
+
 let currentLanguage = null;
 export function setLanguage(language) {
   currentLanguage = Object.prototype.hasOwnProperty.call(SUPPORTED_LANGUAGES, language) ? language : null;
@@ -82,5 +96,31 @@ export function applyTranslations(root = document) {
     const value = node.nodeValue.trim();
     if (value && dictionaries[currentLanguage][value]) node.nodeValue = node.nodeValue.replace(value, dictionaries[currentLanguage][value]);
   });
+}
+
+
+// Remplace aussi les phrases incluses dans des textes dynamiques et les modèles d’emails.
+export function translateContent(content) {
+  if (!currentLanguage || currentLanguage === 'pl' || !content) return content;
+  const dictionary = dictionaries[currentLanguage] || {};
+  return Object.entries(dictionary)
+    .filter(([from, to]) => from && to && from !== to && !from.includes('${'))
+    .sort((a, b) => b[0].length - a[0].length)
+    .reduce((value, [from, to]) => value.split(from).join(to), content);
+}
+
+export function installDynamicTranslationObserver() {
+  if (!currentLanguage || currentLanguage === 'pl' || window.__i18nObserverInstalled) return;
+  window.__i18nObserverInstalled = true;
+  const observer = new MutationObserver(mutations => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'characterData') mutation.target.nodeValue = translateContent(mutation.target.nodeValue);
+      else if (mutation.addedNodes.length) mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) node.nodeValue = translateContent(node.nodeValue);
+        else if (node.nodeType === Node.ELEMENT_NODE) applyTranslations(node);
+      });
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 }
 
