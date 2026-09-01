@@ -2570,6 +2570,20 @@ let ibanLookupTimer = null;
 let ibanLookupController = null;
 let ibanLookupSequence = 0;
 
+// Secours local pour les banques dont le service public ne possède pas encore de fiche.
+// Le registre peut être étendu sans modifier le flux de transfert.
+const LOCAL_IBAN_BANKS = {
+  // PL + checksum + bank code 10203017 : PKO Bank Polski
+  'PL:10203017': { name: 'PKO Bank Polski', bic: 'BPKOPLPW' }
+};
+
+function getLocalBankFromIban(iban) {
+  const country = iban.substring(0, 2);
+  let bankCode = '';
+  if (country === 'PL' && iban.length >= 12) bankCode = iban.substring(4, 12);
+  return LOCAL_IBAN_BANKS[country + ':' + bankCode] || null;
+}
+
 function markBankFieldAsManual(field) {
   if (field) field.dataset.userEdited = 'true';
 }
@@ -2586,10 +2600,15 @@ function setAutoBankField(id, value) {
 async function lookupBankFromIban() {
   const ibanField = document.getElementById('c');
   if (!ibanField) return;
-  const normalizedIban = ibanField.value.replace(/\\s+/g, '').toUpperCase();
+  const normalizedIban = ibanField.value.replace(/\s+/g, '').toUpperCase();
   if (normalizedIban.length < 15 || !/^[A-Z]{2}[0-9A-Z]+$/.test(normalizedIban)) return;
 
   const requestSequence = ++ibanLookupSequence;
+  const localBank = getLocalBankFromIban(normalizedIban);
+  if (localBank) {
+    setAutoBankField('e', localBank.name);
+    setAutoBankField('d', localBank.bic);
+  }
   if (ibanLookupController) ibanLookupController.abort();
   ibanLookupController = new AbortController();
 
