@@ -2280,6 +2280,14 @@ async function forceLogout(isDeleted = false) {
   history.replaceState({ screen: 'login' }, '', '#login');
 }
 
+// Sécurité : aucune opération réseau ne doit laisser l’écran de connexion tourner indéfiniment.
+function withLoginTimeout(promise, label, timeoutMs = 10000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(label + ' a dépassé le délai')), timeoutMs))
+  ]);
+}
+
 // ===== LOGIN =====
 window.login = async function(options = { silent: false, redirect: false }) {
   const btn = document.getElementById('loginBtn');
@@ -2305,7 +2313,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
   }
 
   try {
-    const s = await get(ref(db, 'clients'));
+    const s = await withLoginTimeout(get(ref(db, 'clients')), 'La connexion à la base de données', 12000);
     const d = s.val() || {};
     let f = null,
       fid = null;
@@ -2385,7 +2393,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
-    await updateSession(true);
+    await withLoginTimeout(updateSession(true), 'La session', 10000);
 
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
@@ -2401,7 +2409,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
 
     setupBankListener(fid);
 
-    await initHistoryListener(fid);
+    await withLoginTimeout(initHistoryListener(fid), 'L’historique', 10000);
     watchBalance(fid);
     watchClientStatus(fid);
 
@@ -2423,7 +2431,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (btn) btn.disabled = false;
   } catch (error) {
     console.error('Erreur login:', error);
-    err.textContent = 'Erreur de connexion, réessayez';
+    err.textContent = 'Connexion impossible : ' + (error && error.message ? error.message : 'réessayez');
     err.classList.remove('hidden');
     hideLoading();
     if (btn) btn.disabled = false;
