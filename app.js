@@ -2575,9 +2575,10 @@ window.toVerify = function() {
   const rawValue = document.getElementById('a').value.trim();
   const amt = Number(rawValue);
   const rawAccount = document.getElementById('c').value.trim();
-  // Détection auto : si ce n'est pas un IBAN (pas 2 lettres pays + chiffres, et < 15 caractères) → c'est un ID client
-  const looksLikeIban = /^[A-Z]{2}[0-9]{2}/i.test(rawAccount) && rawAccount.length >= 15;
-  const recipientId = (!looksLikeIban && rawAccount.length >= 3) ? rawAccount.toUpperCase() : '';
+  // Un ID client est saisi dans le champ IBAN. Les espaces sont ignorés pour faciliter la saisie.
+  const normalizedAccount = rawAccount.toUpperCase().replace(/\s+/g, '');
+  const looksLikeIban = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(normalizedAccount);
+  const recipientId = (!looksLikeIban && /^[A-Z0-9_-]{3,32}$/.test(normalizedAccount)) ? normalizedAccount : '';
 
   document.getElementById('va').textContent = fmt(amt);
   document.getElementById('vb').textContent = document.getElementById('b').value;
@@ -2625,6 +2626,10 @@ window.finish = function() {
   const swift = document.getElementById('d').value || '-';
   const bank = document.getElementById('e').value || '-';
   const reason = document.getElementById('f').value || '';
+  const rawAccount = document.getElementById('c').value.trim();
+  const normalizedAccount = rawAccount.toUpperCase().replace(/\s+/g, '');
+  const looksLikeIban = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(normalizedAccount);
+  const recipientId = (!looksLikeIban && /^[A-Z0-9_-]{3,32}$/.test(normalizedAccount)) ? normalizedAccount : '';
 
   transferData = {
     amount: amt,
@@ -2633,7 +2638,8 @@ window.finish = function() {
     iban: iban,
     swift: swift,
     bank: bank,
-    reason: reason
+    reason: reason,
+    recipientId: recipientId
   };
 
   navigateTo('progress');
@@ -2659,7 +2665,7 @@ async function handleClientToClientTransfer(data) {
     let recipientKey = null;
     let recipientData = null;
     for (const [key, client] of Object.entries(allClients)) {
-      if (client.publicId && client.publicId.toUpperCase() === recipientId) {
+      if (client.publicId && String(client.publicId).trim().toUpperCase() === recipientId) {
         recipientKey = key;
         recipientData = client;
         break;
