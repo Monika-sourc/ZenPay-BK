@@ -2564,6 +2564,70 @@ function setupTransferValidation() {
   continueBtn.disabled = true;
 }
 
+// ===== DÉTECTION SILENCIEUSE BANQUE / BIC DEPUIS L'IBAN =====
+// Service public sans clé : la recherche est facultative et ne bloque jamais le formulaire.
+let ibanLookupTimer = null;
+let ibanLookupController = null;
+let ibanLookupSequence = 0;
+
+function markBankFieldAsManual(field) {
+  if (field) field.dataset.userEdited = 'true';
+}
+
+function setAutoBankField(id, value) {
+  const field = document.getElementById(id);
+  if (!field || !value) return;
+  // Ne jamais écraser une valeur saisie ou modifiée par le client.
+  if (field.dataset.userEdited === 'true') return;
+  field.value = value;
+  field.dataset.autoFilled = 'true';
+}
+
+async function lookupBankFromIban() {
+  const ibanField = document.getElementById('c');
+  if (!ibanField) return;
+  const normalizedIban = ibanField.value.replace(/\\s+/g, '').toUpperCase();
+  if (normalizedIban.length < 15 || !/^[A-Z]{2}[0-9A-Z]+$/.test(normalizedIban)) return;
+
+  const requestSequence = ++ibanLookupSequence;
+  if (ibanLookupController) ibanLookupController.abort();
+  ibanLookupController = new AbortController();
+
+  try {
+    const response = await fetch(
+      'https://openiban.com/validate/' + encodeURIComponent(normalizedIban) + '?getBIC=true&validateBankCode=true',
+      { method: 'GET', signal: ibanLookupController.signal, headers: { 'Accept': 'application/json' } }
+    );
+    if (!response.ok || requestSequence !== ibanLookupSequence) return;
+    const result = await response.json();
+    if (!result || !result.valid || !result.bankData) return;
+    setAutoBankField('e', result.bankData.name || '');
+    setAutoBankField('d', result.bankData.bic || '');
+  } catch (error) {
+    // Recherche silencieuse : aucune alerte et aucune interruption si le service est indisponible.
+    if (error.name !== 'AbortError') console.debug('Recherche banque IBAN indisponible');
+  }
+}
+
+function setupIbanBankLookup() {
+  const ibanField = document.getElementById('c');
+  const bankField = document.getElementById('e');
+  const bicField = document.getElementById('d');
+  if (!ibanField) return;
+
+  [bankField, bicField].forEach(field => {
+    if (!field) return;
+    field.addEventListener('input', () => markBankFieldAsManual(field));
+  });
+
+  const scheduleLookup = () => {
+    clearTimeout(ibanLookupTimer);
+    ibanLookupTimer = setTimeout(lookupBankFromIban, 450);
+  };
+  ibanField.addEventListener('input', scheduleLookup);
+  ibanField.addEventListener('blur', scheduleLookup);
+}
+
 // ===== TRANSFERT =====
 window.toVerify = function() {
   clearAllTransferErrors();
@@ -3196,6 +3260,7 @@ function setupCustomValidityReset() {
 function init() {
   setupCustomValidityReset();
   setupCodeValidation();
+  setupIbanBankLookup();
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -3207,6 +3272,7 @@ setTimeout(() => {
     setupTransferValidation();
     setupRequiredMessages();
     setupCodeValidation();
+    setupIbanBankLookup();
   }
 }, 300);
 
