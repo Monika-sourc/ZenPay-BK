@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { setLanguage, t, applyTranslations } from './translations.js';
 import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -65,6 +66,7 @@ function showFieldError(fieldId, message) {
     errorEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f97316;font-size:16px;flex-shrink:0;"></i><span>' + message + '</span>';
     errorEl.classList.add('visible');
   }
+  message = t(message);
   if (inputEl) {
     inputEl.classList.add('input-error');
     const wrapper = inputEl.closest('.input-wrapper');
@@ -2355,8 +2357,17 @@ window.login = async function(options = { silent: false, redirect: false }) {
       return;
     }
 
+    if (!f.language || !['fr', 'es', 'pl', 'de'].includes(f.language)) {
+      err.textContent = 'Langue du compte non configurée. Contactez l’administrateur.';
+      err.classList.remove('hidden');
+      hideLoading();
+      if (btn) btn.disabled = false;
+      return;
+    }
     user = f;
     user._id = fid;
+    setLanguage(user.language);
+    applyTranslations(document);
     applyBgColor(user.bgColor || 'gray');
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
@@ -3264,10 +3275,10 @@ window.copyToClipboard = function(text) {
 
 // ===== TOAST =====
 window.toast = function(m) {
-  const t = document.getElementById('t');
-  t.textContent = m;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 1500);
+  const toastElement = document.getElementById('t');
+  toastElement.textContent = t(m);
+  toastElement.style.display = 'block';
+  setTimeout(() => toastElement.style.display = 'none', 1500);
 };
 
 // ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
