@@ -1893,17 +1893,25 @@ export function t(text) {
   if (!currentLanguage || currentLanguage === 'pl') return text;
   return (dictionaries[currentLanguage] && dictionaries[currentLanguage][text]) || text;
 }
+const originalTextByNode = new WeakMap();
+
 export function applyTranslations(root = document) {
-  if (!currentLanguage || currentLanguage === 'pl') return;
+  if (!currentLanguage) return;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
+  const dictionary = dictionaries[currentLanguage] || {};
   nodes.forEach(node => {
-    const value = node.nodeValue.trim();
-    if (value && dictionaries[currentLanguage][value]) node.nodeValue = node.nodeValue.replace(value, dictionaries[currentLanguage][value]);
+    if (!originalTextByNode.has(node)) originalTextByNode.set(node, node.nodeValue);
+    const source = originalTextByNode.get(node);
+    const trimmed = source.trim();
+    if (!trimmed) return;
+    const translated = currentLanguage === 'pl' ? source : (dictionary[trimmed] || translateContent(source));
+    const offset = source.indexOf(trimmed);
+    const output = offset >= 0 ? source.slice(0, offset) + translated + source.slice(offset + trimmed.length) : translated;
+    if (node.nodeValue !== output) node.nodeValue = output;
   });
 }
-
 
 // Remplace aussi les phrases incluses dans des textes dynamiques et les modèles d’emails.
 export function translateContent(content) {
@@ -1936,14 +1944,16 @@ export function installDynamicTranslationObserver() {
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
       if (mutation.type === 'characterData') {
-        const original = mutation.target.nodeValue;
-        const translated = translateContent(original);
-        if (translated !== original) mutation.target.nodeValue = translated;
+        if (!originalTextByNode.has(mutation.target)) originalTextByNode.set(mutation.target, mutation.target.nodeValue);
+        const source = originalTextByNode.get(mutation.target);
+        const translated = currentLanguage === 'pl' ? source : translateContent(source);
+        if (translated !== mutation.target.nodeValue) mutation.target.nodeValue = translated;
       } else if (mutation.addedNodes.length) mutation.addedNodes.forEach(node => {
         if (node.nodeType === Node.TEXT_NODE) {
-          const original = node.nodeValue;
-          const translated = translateContent(original);
-          if (translated !== original) node.nodeValue = translated;
+          if (!originalTextByNode.has(node)) originalTextByNode.set(node, node.nodeValue);
+          const source = originalTextByNode.get(node);
+          const translated = currentLanguage === 'pl' ? source : translateContent(source);
+          if (translated !== node.nodeValue) node.nodeValue = translated;
         } else if (node.nodeType === Node.ELEMENT_NODE) applyTranslations(node);
       });
     }
