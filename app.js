@@ -15,7 +15,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
+try {
+  const authModule = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+  await Promise.race([
+    authModule.signInAnonymously(authModule.getAuth(app)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Authentification Firebase dépassée')), 10000))
+  ]);
+} catch (authError) {
+  console.error('Initialisation Firebase Auth échouée:', authError);
+}
 
 let user = null;
 let currentHistory = [];
