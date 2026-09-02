@@ -2663,7 +2663,9 @@
   <script>
     (function() {
       if (location.search.indexOf('id=') !== -1) {
-        window.__clientIdFromUrl = new URLSearchParams(location.search).get('id');
+        const __clientParams = new URLSearchParams(location.search);
+        window.__clientIdFromUrl = __clientParams.get('id');
+        window.__clientLanguageFromUrl = (__clientParams.get('lang') || '').trim().toLowerCase() || null;
       }
     })();
   
