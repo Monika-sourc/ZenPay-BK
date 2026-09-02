@@ -114,10 +114,16 @@ export function installDynamicTranslationObserver() {
   window.__i18nObserverInstalled = true;
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
-      if (mutation.type === 'characterData') mutation.target.nodeValue = translateContent(mutation.target.nodeValue);
-      else if (mutation.addedNodes.length) mutation.addedNodes.forEach(node => {
-        if (node.nodeType === Node.TEXT_NODE) node.nodeValue = translateContent(node.nodeValue);
-        else if (node.nodeType === Node.ELEMENT_NODE) applyTranslations(node);
+      if (mutation.type === 'characterData') {
+        const original = mutation.target.nodeValue;
+        const translated = translateContent(original);
+        if (translated !== original) mutation.target.nodeValue = translated;
+      } else if (mutation.addedNodes.length) mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const original = node.nodeValue;
+          const translated = translateContent(original);
+          if (translated !== original) node.nodeValue = translated;
+        } else if (node.nodeType === Node.ELEMENT_NODE) applyTranslations(node);
       });
     }
   });
