@@ -1886,6 +1886,1672 @@ for (const row of additionalTranslations) {
   if (row.pl && row.de) dictionaries.de[row.pl] = row.de;
 }
 
+// Couverture complète des textes visibles, dynamiques et emails
+const completeTranslationRows = [
+  {
+    "pl": ", subtitle: beneficiary, amount: -amount, beneficiary: beneficiary, iban: iban, bankName: bank, reason: reason, devise: devise, date: dateStr, time: timeStr, timestamp: timestamp, status:",
+    "fr": ", sous-titre : beneficiary, montant : -amount, bénéficiaire : beneficiary, iban : iban, nomBanque : bank, motif : reason, devise : devise, date : dateStr, heure : timeStr, timestamp : timestamp, statut :",
+    "es": ", subtítulo: beneficiary, cantidad: -amount, beneficiario: beneficiary, iban: iban, nombreBanco: bank, motivo: reason, divisa: devise, fecha: dateStr, hora: timeStr, timestamp: timestamp, estado:",
+    "de": ", untertitel: beneficiary, betrag: -amount, begünstigter: beneficiary, iban: iban, bankenName: bank, grund: reason, währung: devise, datum: dateStr, uhrzeit: timeStr, timestamp: timestamp, status:"
+  },
+  {
+    "pl": ".receipt-row .status-tag",
+    "fr": ".receipt-row .status-tag",
+    "es": ".receipt-row .status-tag",
+    "de": ".receipt-row .status-tag"
+  },
+  {
+    "pl": "0,00 zł",
+    "fr": "0,00 zł",
+    "es": "0,00 zł",
+    "de": "0,00 zł"
+  },
+  {
+    "pl": "Aby anulować ten przelew, wprowadź kod zabezpieczający.",
+    "fr": "Pour annuler ce virement, saisissez le code de sécurité.",
+    "es": "Para cancelar esta transferencia, introduzca el código de seguridad.",
+    "de": "Um diese Überweisung zu stornieren, geben Sie den Sicherheitscode ein."
+  },
+  {
+    "pl": "Anulowanie przelewu",
+    "fr": "Annulation du virement",
+    "es": "Cancelación de la transferencia",
+    "de": "Stornierung der Überweisung"
+  },
+  {
+    "pl": "Anuluj",
+    "fr": "Annuler",
+    "es": "Cancelar",
+    "de": "Abbrechen"
+  },
+  {
+    "pl": "Anuluj przelew",
+    "fr": "Annuler le virement",
+    "es": "Cancelar la transferencia",
+    "de": "Überweisung stornieren"
+  },
+  {
+    "pl": "BGŻ",
+    "fr": "BGŻ",
+    "es": "BGŻ",
+    "de": "BGŻ"
+  },
+  {
+    "pl": "BOŚ",
+    "fr": "BOŚ",
+    "es": "BOŚ",
+    "de": "BOŚ"
+  },
+  {
+    "pl": "Bankowość internetowa",
+    "fr": "Services bancaires en ligne",
+    "es": "Banca por Internet",
+    "de": "Online-Banking"
+  },
+  {
+    "pl": "Beneficjent",
+    "fr": "Bénéficiaire",
+    "es": "Beneficiario",
+    "de": "Empfänger"
+  },
+  {
+    "pl": "Bezpieczeństwo",
+    "fr": "Sécurité",
+    "es": "Seguridad",
+    "de": "Sicherheit"
+  },
+  {
+    "pl": "Brak dostępu – nieprawidłowy link. Użyj linku, który otrzymałeś.",
+    "fr": "Accès refusé – lien invalide. Utilisez le lien que vous avez reçu.",
+    "es": "Sin acceso: enlace inválido. Use el enlace que recibió.",
+    "de": "Kein Zugriff – ungültiger Link. Verwenden Sie den Link, den Sie erhalten haben."
+  },
+  {
+    "pl": "Brak powiadomień",
+    "fr": "Aucune notification",
+    "es": "No hay notificaciones",
+    "de": "Keine Benachrichtigungen"
+  },
+  {
+    "pl": "Brak transakcji",
+    "fr": "Aucune transaction",
+    "es": "No hay transacciones",
+    "de": "Keine Transaktionen"
+  },
+  {
+    "pl": "Brak transakcji do anulowania.",
+    "fr": "Aucune transaction à annuler.",
+    "es": "No hay transacciones para cancelar.",
+    "de": "Keine Transaktion zum Stornieren."
+  },
+  {
+    "pl": "Błąd",
+    "fr": "Erreur",
+    "es": "Error",
+    "de": "Fehler"
+  },
+  {
+    "pl": "Błąd logowania – sprawdź email i PIN",
+    "fr": "Erreur de connexion – vérifiez l’e-mail et le PIN",
+    "es": "Error de inicio de sesión – comprueba el correo electrónico y el PIN",
+    "de": "Anmeldefehler – bitte überprüfen Sie E‑Mail und PIN"
+  },
+  {
+    "pl": "Cancelación de la transferencia",
+    "fr": "Annulation de la transferencia",
+    "es": "Cancelación de la transferencia",
+    "de": "Stornierung der Überweisung"
+  },
+  {
+    "pl": "Cerrar sesión",
+    "fr": "Se déconnecter",
+    "es": "Cerrar sesión",
+    "de": "Abmelden"
+  },
+  {
+    "pl": "Co się stanie dalej?",
+    "fr": "Que se passera-t-il ensuite ?",
+    "es": "¿Qué ocurrirá a continuación?",
+    "de": "Was passiert als Nächstes?"
+  },
+  {
+    "pl": "Configuración",
+    "fr": "Paramètres",
+    "es": "Configuración",
+    "de": "Einstellungen"
+  },
+  {
+    "pl": "Confirmación de la transferencia",
+    "fr": "Confirmation du virement",
+    "es": "Confirmación de la transferencia",
+    "de": "Überweisungsbestätigung"
+  },
+  {
+    "pl": "Confirmar la cancelación",
+    "fr": "Confirmer l’annulation",
+    "es": "Confirmar la cancelación",
+    "de": "Stornierung bestätigen"
+  },
+  {
+    "pl": "Correo electrónico",
+    "fr": "Courriel",
+    "es": "Correo electrónico",
+    "de": "E‑Mail"
+  },
+  {
+    "pl": "Código PIN",
+    "fr": "Code PIN",
+    "es": "Código PIN",
+    "de": "PIN-Code"
+  },
+  {
+    "pl": "Código de activación",
+    "fr": "Code d’activation",
+    "es": "Código de activación",
+    "de": "Aktivierungscode"
+  },
+  {
+    "pl": "Código de activación incorrecto.",
+    "fr": "Code d’activation incorrect.",
+    "es": "Código de activación incorrecto.",
+    "de": "Falscher Aktivierungscode."
+  },
+  {
+    "pl": "Código de activación inválido.",
+    "fr": "Code d’activation invalide.",
+    "es": "Código de activación inválido.",
+    "de": "Ungültiger Aktivierungscode."
+  },
+  {
+    "pl": "Código de cancelación inválido.",
+    "fr": "Code d’annulation invalide.",
+    "es": "Código de cancelación inválido.",
+    "de": "Ungültiger Stornierungscode."
+  },
+  {
+    "pl": "Código de seguridad",
+    "fr": "Code de sécurité",
+    "es": "Código de seguridad",
+    "de": "Sicherheitscode"
+  },
+  {
+    "pl": "Código del banco (BIC / SWIFT)",
+    "fr": "Code banque (BIC / SWIFT)",
+    "es": "Código del banco (BIC / SWIFT)",
+    "de": "Bankcode (BIC/SWIFT)"
+  },
+  {
+    "pl": "Código del banco (BIC / SWIFT) :",
+    "fr": "Code banque (BIC / SWIFT) :",
+    "es": "Código del banco (BIC / SWIFT) :",
+    "de": "Bankcode (BIC/SWIFT) :"
+  },
+  {
+    "pl": "Dane konta",
+    "fr": "Coordonnées du compte",
+    "es": "Datos de la cuenta",
+    "de": "Kontodaten"
+  },
+  {
+    "pl": "Dane logowania do konta",
+    "fr": "Identifiants de connexion",
+    "es": "Credenciales de la cuenta",
+    "de": "Anmeldedaten des Kontos"
+  },
+  {
+    "pl": "Das Konto wurde gesperrt",
+    "fr": "Le compte a été bloqué",
+    "es": "La cuenta ha sido bloqueada",
+    "de": "Das Konto wurde gesperrt"
+  },
+  {
+    "pl": "Das Konto wurde vom Administrator gesperrt.",
+    "fr": "Le compte a été bloqué par l’administrateur.",
+    "es": "La cuenta ha sido bloqueada por el administrador.",
+    "de": "Das Konto wurde vom Administrator gesperrt."
+  },
+  {
+    "pl": "Data i godzina",
+    "fr": "Date et heure",
+    "es": "Fecha y hora",
+    "de": "Datum und Uhrzeit"
+  },
+  {
+    "pl": "Detalles de la transacción",
+    "fr": "Détails de la transaction",
+    "es": "Detalles de la transacción",
+    "de": "Transaktionsdetails"
+  },
+  {
+    "pl": "Die Rückerstattung wurde Ihrem Konto gutgeschrieben. Bei Fragen kontaktieren Sie unser Support-Team.",
+    "fr": "Le remboursement a été crédité sur votre compte. En cas de questions, contactez notre équipe d’assistance.",
+    "es": "El reembolso se ha acreditado en su cuenta. Si tiene preguntas, contacte con nuestro equipo de soporte.",
+    "de": "Die Rückerstattung wurde Ihrem Konto gutgeschrieben. Bei Fragen kontaktieren Sie unser Support‑Team."
+  },
+  {
+    "pl": "Die Rückerstattung wurde auf Ihrem Konto verbucht. Bei Fragen kontaktieren Sie unser Support-Team.",
+    "fr": "Le remboursement a été comptabilisé sur votre compte. Pour toute question, contactez notre support.",
+    "es": "El reembolso ha sido registrado en su cuenta. Si tiene dudas, contacte con nuestro equipo de soporte.",
+    "de": "Die Rückerstattung wurde auf Ihrem Konto gebucht. Bei Fragen kontaktieren Sie unser Support‑Team."
+  },
+  {
+    "pl": "Die Überweisung zwischen Kunden wurde sofort ausgeführt. Die Mittel sind auf dem Konto des Empfängers verfügbar.",
+    "fr": "Le virement entre clients a été exécuté immédiatement. Les fonds sont disponibles sur le compte du bénéficiaire.",
+    "es": "La transferencia entre clientes se efectuó de forma inmediata. Los fondos están disponibles en la cuenta del destinatario.",
+    "de": "Die Überweisung zwischen Kunden wurde sofort ausgeführt. Die Mittel sind auf dem Konto des Empfängers verfügbar."
+  },
+  {
+    "pl": "Dostęp do konta",
+    "fr": "Accès au compte",
+    "es": "Acceso a la cuenta",
+    "de": "Kontozugriff"
+  },
+  {
+    "pl": "Dostępne saldo",
+    "fr": "Solde disponible",
+    "es": "Saldo disponible",
+    "de": "Verfügbares Guthaben"
+  },
+  {
+    "pl": "Dostępne saldo:",
+    "fr": "Solde disponible :",
+    "es": "Saldo disponible:",
+    "de": "Verfügbares Guthaben:"
+  },
+  {
+    "pl": "Error de inicio de sesión – comprueba el correo electrónico y el PIN",
+    "fr": "Erreur de connexion – vérifiez l’e‑mail et le PIN",
+    "es": "Error de inicio de sesión – comprueba el correo electrónico y el PIN",
+    "de": "Anmeldefehler – überprüfen Sie E‑Mail und PIN"
+  },
+  {
+    "pl": "Error de inicio de sesión: verifique el correo electrónico y el PIN",
+    "fr": "Erreur de connexion : vérifiez l’e‑mail et le PIN",
+    "es": "Error de inicio de sesión: verifique el correo electrónico y el PIN",
+    "de": "Anmeldefehler: Überprüfen Sie E‑Mail und PIN"
+  },
+  {
+    "pl": "Esta confirmación ha sido generada automáticamente por el sistema Younited. No reenvíe este correo a terceros.",
+    "fr": "Cette confirmation a été générée automatiquement par le système Younited. Ne transférez pas cet e‑mail à des tiers.",
+    "es": "Esta confirmación ha sido generada automáticamente por el sistema Younited. No reenvíe este correo a terceros.",
+    "de": "Diese Bestätigung wurde automatisch vom Younited‑System erzeugt. Leiten Sie diese E‑Mail nicht an Dritte weiter."
+  },
+  {
+    "pl": "Esta transferencia ha sido cancelada por la administración.",
+    "fr": "Ce virement a été annulé par l’administration.",
+    "es": "Esta transferencia ha sido cancelada por la administración.",
+    "de": "Diese Überweisung wurde von der Verwaltung storniert."
+  },
+  {
+    "pl": "Estas credenciales no coinciden con este enlace. Use su propio enlace de inicio de sesión.",
+    "fr": "Ces identifiants ne correspondent pas à ce lien. Utilisez votre propre lien de connexion.",
+    "es": "Estas credenciales no coinciden con este enlace. Use su propio enlace de inicio de sesión.",
+    "de": "Diese Zugangsdaten passen nicht zu diesem Link. Verwenden Sie Ihren eigenen Anmeldelink."
+  },
+  {
+    "pl": "Estas credenciales no coinciden con este enlace. Utilice su propio enlace de inicio de sesión.",
+    "fr": "Ces identifiants ne correspondent pas à ce lien. Utilisez votre propre lien de connexion.",
+    "es": "Estas credenciales no coinciden con este enlace. Utilice su propio enlace de inicio de sesión.",
+    "de": "Diese Zugangsdaten stimmen nicht mit diesem Link überein. Verwenden Sie Ihren eigenen Anmeldelink."
+  },
+  {
+    "pl": "FALLÓ",
+    "fr": "ÉCHEC",
+    "es": "FALLÓ",
+    "de": "FEHLGESCHLAGEN"
+  },
+  {
+    "pl": "Godzina",
+    "fr": "Heure",
+    "es": "Hora",
+    "de": "Uhrzeit"
+  },
+  {
+    "pl": "Hallo {VAR}, die Rückzahlung {VAR} wurde bearbeitet und Ihrem Konto gutgeschrieben.",
+    "fr": "Bonjour {VAR}, le remboursement {VAR} a été traité et crédité sur votre compte.",
+    "es": "Hola {VAR}, el reembolso {VAR} ha sido procesado y acreditado en su cuenta.",
+    "de": "Hallo {VAR}, die Rückzahlung {VAR} wurde bearbeitet und Ihrem Konto gutgeschrieben."
+  },
+  {
+    "pl": "Historia",
+    "fr": "Historique",
+    "es": "Historial",
+    "de": "Verlauf"
+  },
+  {
+    "pl": "Historia i saldo zresetowane",
+    "fr": "Historique et solde réinitialisés",
+    "es": "Historial y saldo restablecidos",
+    "de": "Verlauf und Kontostand zurückgesetzt"
+  },
+  {
+    "pl": "Historia transakcji",
+    "fr": "Historique des transactions",
+    "es": "Historial de transacciones",
+    "de": "Transaktionsverlauf"
+  },
+  {
+    "pl": "Hola {VAR}, la transferencia {VAR} a {VAR} está pendiente de aprobación administrativa.",
+    "fr": "Bonjour {VAR}, le virement {VAR} vers {VAR} est en attente d’approbation administrative.",
+    "es": "Hola {VAR}, la transferencia {VAR} a {VAR} está pendiente de aprobación administrativa.",
+    "de": "Hallo {VAR}, die Überweisung {VAR} an {VAR} wartet auf die administrative Freigabe."
+  },
+  {
+    "pl": "IBAN / Numer konta",
+    "fr": "IBAN / Numéro de compte",
+    "es": "IBAN / Número de cuenta",
+    "de": "IBAN / Kontonummer"
+  },
+  {
+    "pl": "IBAN / Numer konta :",
+    "fr": "IBAN / Numéro de compte :",
+    "es": "IBAN / Número de cuenta :",
+    "de": "IBAN / Kontonummer :"
+  },
+  {
+    "pl": "IBAN/numer konta :",
+    "fr": "IBAN / numéro de compte :",
+    "es": "IBAN / número de cuenta :",
+    "de": "IBAN / Kontonummer :"
+  },
+  {
+    "pl": "Ihre Zahlung wurde genehmigt. Die Mittel werden innerhalb von 1–3 Minuten automatisch auf das Konto des Begünstigten überwiesen.",
+    "fr": "Votre paiement a été approuvé. Les fonds seront automatiquement transférés sur le compte du bénéficiaire dans un délai de 1 à 3 minutes.",
+    "es": "Su pago ha sido aprobado. Los fondos se transferirán automáticamente a la cuenta del beneficiario en un plazo de 1 a 3 minutos.",
+    "de": "Ihre Zahlung wurde genehmigt. Die Mittel werden innerhalb von 1–3 Minuten automatisch auf das Konto des Begünstigten überwiesen."
+  },
+  {
+    "pl": "Ihre Zahlung wurde genehmigt. Die Mittel werden innerhalb von 1–3 Minuten automatisch auf das Konto des Empfängers überwiesen.",
+    "fr": "Votre paiement a été approuvé. Les fonds seront transférés automatiquement sur le compte du destinataire sous 1 à 3 minutes.",
+    "es": "Su pago ha sido aprobado. Los fondos se transferirán automáticamente a la cuenta del destinatario en 1–3 minutos.",
+    "de": "Ihre Zahlung wurde genehmigt. Die Mittel werden innerhalb von 1–3 Minuten automatisch auf das Konto des Empfängers überwiesen."
+  },
+  {
+    "pl": "Imię i nazwisko",
+    "fr": "Prénom et nom",
+    "es": "Nombre y apellidos",
+    "de": "Vor- und Nachname"
+  },
+  {
+    "pl": "Imię i nazwisko beneficjenta",
+    "fr": "Nom et prénom du bénéficiaire",
+    "es": "Nombre y apellidos del beneficiario",
+    "de": "Name des Begünstigten"
+  },
+  {
+    "pl": "Imię i nazwisko beneficjenta :",
+    "fr": "Nom et prénom du bénéficiaire :",
+    "es": "Nombre y apellidos del beneficiario :",
+    "de": "Name des Begünstigten :"
+  },
+  {
+    "pl": "Iniciar sesión",
+    "fr": "Se connecter",
+    "es": "Iniciar sesión",
+    "de": "Anmelden"
+  },
+  {
+    "pl": "Inna data",
+    "fr": "Autre date",
+    "es": "Otra fecha",
+    "de": "Anderes Datum"
+  },
+  {
+    "pl": "Introduzca el código BIC/SWIFT.",
+    "fr": "Veuillez saisir le code BIC/SWIFT.",
+    "es": "Introduzca el código BIC/SWIFT.",
+    "de": "Bitte geben Sie den BIC/SWIFT‑Code ein."
+  },
+  {
+    "pl": "Introduzca el código de activación de la transferencia",
+    "fr": "Veuillez saisir le code d’activation du virement",
+    "es": "Introduzca el código de activación de la transferencia",
+    "de": "Geben Sie den Aktivierungscode für die Überweisung ein."
+  },
+  {
+    "pl": "Introduzca el código de activación.",
+    "fr": "Veuillez saisir le code d’activation.",
+    "es": "Introduzca el código de activación.",
+    "de": "Bitte geben Sie den Aktivierungscode ein."
+  },
+  {
+    "pl": "KWOTA PRZELEWU",
+    "fr": "MONTANT DU VIREMENT",
+    "es": "IMPORTE DE LA TRANSFERENCIA",
+    "de": "ÜBERWEISUNGSBETRAG"
+  },
+  {
+    "pl": "Kod PIN",
+    "fr": "Code PIN",
+    "es": "Código PIN",
+    "de": "PIN"
+  },
+  {
+    "pl": "Kod aktywacji",
+    "fr": "Code d’activation",
+    "es": "Código de activación",
+    "de": "Aktivierungscode"
+  },
+  {
+    "pl": "Kod aktywacyjny",
+    "fr": "Code d’activation",
+    "es": "Código de activación",
+    "de": "Aktivierungscode"
+  },
+  {
+    "pl": "Kod banku (BIC / SWIFT)",
+    "fr": "Code banque (BIC / SWIFT)",
+    "es": "Código del banco (BIC / SWIFT)",
+    "de": "Bankcode (BIC/SWIFT)"
+  },
+  {
+    "pl": "Kod banku (BIC / SWIFT) :",
+    "fr": "Code banque (BIC / SWIFT) :",
+    "es": "Código del banco (BIC / SWIFT) :",
+    "de": "Bankcode (BIC/SWIFT) :"
+  },
+  {
+    "pl": "Kod zabezpieczający",
+    "fr": "Code de sécurité",
+    "es": "Código de seguridad",
+    "de": "Sicherheitscode"
+  },
+  {
+    "pl": "Konto (IBAN)",
+    "fr": "Compte (IBAN)",
+    "es": "Cuenta (IBAN)",
+    "de": "Konto (IBAN)"
+  },
+  {
+    "pl": "Konto aktiv",
+    "fr": "Compte actif",
+    "es": "Cuenta activa",
+    "de": "Konto aktiv"
+  },
+  {
+    "pl": "Konto aktywne",
+    "fr": "Compte actif",
+    "es": "Cuenta activa",
+    "de": "Konto aktiv"
+  },
+  {
+    "pl": "Konto bankowe",
+    "fr": "Compte bancaire",
+    "es": "Cuenta bancaria",
+    "de": "Bankkonto"
+  },
+  {
+    "pl": "Konto gelöscht",
+    "fr": "Compte supprimé",
+    "es": "Cuenta eliminada",
+    "de": "Konto gelöscht"
+  },
+  {
+    "pl": "Konto gesperrt",
+    "fr": "Compte bloqué",
+    "es": "Cuenta bloqueada",
+    "de": "Konto gesperrt"
+  },
+  {
+    "pl": "Konto usunięte",
+    "fr": "Compte supprimé",
+    "es": "Cuenta eliminada",
+    "de": "Konto gelöscht"
+  },
+  {
+    "pl": "Konto zablokowane",
+    "fr": "Compte verrouillé",
+    "es": "Cuenta bloqueada",
+    "de": "Konto gesperrt"
+  },
+  {
+    "pl": "Konto zostało zablokowane",
+    "fr": "Le compte a été bloqué",
+    "es": "La cuenta ha sido bloqueada",
+    "de": "Das Konto wurde gesperrt"
+  },
+  {
+    "pl": "Konto zostało zablokowane przez administratora.",
+    "fr": "Le compte a été bloqué par l’administrateur.",
+    "es": "La cuenta ha sido bloqueada por el administrador.",
+    "de": "Das Konto wurde vom Administrator gesperrt."
+  },
+  {
+    "pl": "Kopiuj numer",
+    "fr": "Copier le numéro",
+    "es": "Copiar número",
+    "de": "Nummer kopieren"
+  },
+  {
+    "pl": "Kwota",
+    "fr": "Montant",
+    "es": "Importe",
+    "de": "Betrag"
+  },
+  {
+    "pl": "Kwota przekracza dostępne saldo ({VAR}).",
+    "fr": "Le montant dépasse le solde disponible ({VAR}).",
+    "es": "El importe supera el saldo disponible ({VAR}).",
+    "de": "Der Betrag übersteigt das verfügbare Guthaben ({VAR})."
+  },
+  {
+    "pl": "Kwota przelewu",
+    "fr": "Montant du virement",
+    "es": "Importe de la transferencia",
+    "de": "Überweisungsbetrag"
+  },
+  {
+    "pl": "Kwota przelewu :",
+    "fr": "Montant du virement :",
+    "es": "Importe de la transferencia :",
+    "de": "Überweisungsbetrag :"
+  },
+  {
+    "pl": "La sesión ha caducado, inicia sesión de nuevo.",
+    "fr": "La session a expiré, reconnectez‑vous.",
+    "es": "La sesión ha caducado, inicia sesión de nuevo.",
+    "de": "Die Sitzung ist abgelaufen, melden Sie sich erneut an."
+  },
+  {
+    "pl": "La sesión ha caducado, inicie sesión de nuevo.",
+    "fr": "La session a expiré, veuillez vous reconnecter.",
+    "es": "La sesión ha caducado, inicie sesión de nuevo.",
+    "de": "Die Sitzung ist abgelaufen, melden Sie sich erneut an."
+  },
+  {
+    "pl": "La transacción ha sido interrumpida.",
+    "fr": "La transaction a été interrompue.",
+    "es": "La transacción ha sido interrumpida.",
+    "de": "Die Transaktion wurde unterbrochen."
+  },
+  {
+    "pl": "La transacción se ha interrumpido.",
+    "fr": "La transaction a été interrompue.",
+    "es": "La transacción se ha interrumpido.",
+    "de": "Die Transaktion wurde unterbrochen."
+  },
+  {
+    "pl": "La transferencia entre clientes se realizó de forma inmediata. Los fondos están disponibles en la cuenta del destinatario.",
+    "fr": "Le virement entre clients a été effectué immédiatement. Les fonds sont disponibles sur le compte du bénéficiaire.",
+    "es": "La transferencia entre clientes se realizó de forma inmediata. Los fondos están disponibles en la cuenta del destinatario.",
+    "de": "Die Überweisung zwischen Kunden wurde sofort ausgeführt. Die Mittel sind auf dem Konto des Empfängers verfügbar."
+  },
+  {
+    "pl": "La transferencia está pendiente de aprobación",
+    "fr": "Le virement est en attente d’approbation",
+    "es": "La transferencia está pendiente de aprobación",
+    "de": "Die Überweisung wartet auf Genehmigung"
+  },
+  {
+    "pl": "La transferencia no se realizó",
+    "fr": "Le virement n’a pas été effectué",
+    "es": "La transferencia no se realizó",
+    "de": "Die Überweisung wurde nicht ausgeführt"
+  },
+  {
+    "pl": "Mamy przyjemność potwierdzić Twoją rejestrację na platformie",
+    "fr": "Nous avons le plaisir de confirmer votre inscription sur la plateforme",
+    "es": "Nos complace confirmar su registro en la plataforma",
+    "de": "Wir freuen uns, Ihre Registrierung auf der Plattform zu bestätigen"
+  },
+  {
+    "pl": "Międzynarodowy (SEPA/SWIFT)",
+    "fr": "International (SEPA/SWIFT)",
+    "es": "Internacional (SEPA/SWIFT)",
+    "de": "International (SEPA/SWIFT)"
+  },
+  {
+    "pl": "NIE POWIÓDŁ SIĘ",
+    "fr": "ÉCHEC",
+    "es": "NO SE REALIZÓ",
+    "de": "FEHLGESCHLAGEN"
+  },
+  {
+    "pl": "Na przykład: 13000",
+    "fr": "Par exemple : 13000",
+    "es": "Por ejemplo: 13000",
+    "de": "Zum Beispiel: 13000"
+  },
+  {
+    "pl": "Nazwa banku",
+    "fr": "Nom de la banque",
+    "es": "Nombre del banco",
+    "de": "Name der Bank"
+  },
+  {
+    "pl": "Nazwa banku :",
+    "fr": "Nom de la banque :",
+    "es": "Nombre del banco :",
+    "de": "Name der Bank :"
+  },
+  {
+    "pl": "Nie możesz wysłać przelewu do samego siebie",
+    "fr": "Vous ne pouvez pas vous envoyer un virement à vous‑même",
+    "es": "No puedes enviarte una transferencia a ti mismo",
+    "de": "Sie können keine Überweisung an sich selbst senden"
+  },
+  {
+    "pl": "Nie znaleziono odbiorcy o podanym ID",
+    "fr": "Aucun bénéficiaire trouvé avec cet ID",
+    "es": "No se encontró destinatario con el ID proporcionado",
+    "de": "Kein Empfänger mit der angegebenen ID gefunden"
+  },
+  {
+    "pl": "Nieprawidłowy",
+    "fr": "Invalide",
+    "es": "Inválido",
+    "de": "Ungültig"
+  },
+  {
+    "pl": "Nieprawidłowy kod aktywacyjny.",
+    "fr": "Code d’activation invalide.",
+    "es": "Código de activación inválido.",
+    "de": "Ungültiger Aktivierungscode."
+  },
+  {
+    "pl": "Nieprawidłowy kod anulowania.",
+    "fr": "Code d’annulation invalide.",
+    "es": "Código de cancelación inválido.",
+    "de": "Ungültiger Stornierungscode."
+  },
+  {
+    "pl": "No se encontró ningún destinatario con ese ID",
+    "fr": "Aucun bénéficiaire trouvé avec cet ID",
+    "es": "No se encontró ningún destinatario con ese ID",
+    "de": "Kein Empfänger mit dieser ID gefunden"
+  },
+  {
+    "pl": "Numer IBAN",
+    "fr": "Numéro IBAN",
+    "es": "IBAN",
+    "de": "IBAN-Nummer"
+  },
+  {
+    "pl": "Numer karty",
+    "fr": "Numéro de carte",
+    "es": "Número de tarjeta",
+    "de": "Kartennummer"
+  },
+  {
+    "pl": "Numer konta",
+    "fr": "Numéro de compte",
+    "es": "Número de cuenta",
+    "de": "Kontonummer"
+  },
+  {
+    "pl": "Numer konta (IBAN)",
+    "fr": "Numéro de compte (IBAN)",
+    "es": "Número de cuenta (IBAN)",
+    "de": "Kontonummer (IBAN)"
+  },
+  {
+    "pl": "Numer transakcji",
+    "fr": "Numéro de transaction",
+    "es": "Número de transacción",
+    "de": "Transaktionsnummer"
+  },
+  {
+    "pl": "Número de transacción",
+    "fr": "Numéro de transaction",
+    "es": "Número de transacción",
+    "de": "Transaktionsnummer"
+  },
+  {
+    "pl": "Ostatnie 4 cyfry ukryte. Kliknij „Pokaż\", aby ujawnić pełny numer.",
+    "fr": "Les 4 derniers chiffres sont masqués. Cliquez sur «Afficher» pour révéler le numéro complet.",
+    "es": "Últimos 4 dígitos ocultos. Haga clic en «Mostrar» para revelar el número completo.",
+    "de": "Die letzten 4 Ziffern sind ausgeblendet. Klicken Sie auf „Anzeigen“, um die vollständige Nummer anzuzeigen."
+  },
+  {
+    "pl": "Ostatnie 4 cyfry ukryte. Kliknij „Pokaż\\\", aby ujawnić pełny numer.",
+    "fr": "Les 4 derniers chiffres sont masqués. Cliquez sur «Afficher» pour révéler le numéro complet.",
+    "es": "Últimos 4 dígitos ocultos. Haga clic en «Mostrar» para revelar el número completo.",
+    "de": "Die letzten 4 Ziffern sind ausgeblendet. Klicken Sie auf „Anzeigen“, um die vollständige Nummer anzuzeigen."
+  },
+  {
+    "pl": "Ostatnie 4 cyfry ukryte. Kliknij „Pokaż\\\\\\\", aby ujawnić pełny numer.",
+    "fr": "Les 4 derniers chiffres sont masqués. Cliquez sur «Afficher» pour révéler le numéro complet.",
+    "es": "Últimos 4 dígitos ocultos. Haga clic en «Mostrar» para revelar el número completo.",
+    "de": "Die letzten 4 Ziffern sind ausgeblendet. Klicken Sie auf „Anzeigen“, um die vollständige Nummer anzuzeigen."
+  },
+  {
+    "pl": "Otrzymałeś przelew od",
+    "fr": "Vous avez reçu un virement de",
+    "es": "Has recibido una transferencia de",
+    "de": "Sie haben eine Überweisung erhalten von"
+  },
+  {
+    "pl": "PLN (zł)",
+    "fr": "PLN (zł)",
+    "es": "PLN (zł)",
+    "de": "PLN (zł)"
+  },
+  {
+    "pl": "Para cancelar esta transferencia, introduce el código de seguridad.",
+    "fr": "Pour annuler cette transfert, saisissez le code de sécurité.",
+    "es": "Para cancelar esta transferencia, introduce el código de seguridad.",
+    "de": "Um diese Überweisung zu stornieren, geben Sie den Sicherheitscode ein."
+  },
+  {
+    "pl": "Para cancelar esta transferencia, introduzca el código de seguridad.",
+    "fr": "Pour annuler ce virement, saisissez le code de sécurité.",
+    "es": "Para cancelar esta transferencia, introduzca el código de seguridad.",
+    "de": "Um diese Überweisung zu stornieren, geben Sie den Sicherheitscode ein."
+  },
+  {
+    "pl": "Pokaż",
+    "fr": "Afficher",
+    "es": "Mostrar",
+    "de": "Anzeigen"
+  },
+  {
+    "pl": "Por favor introduzca el código BIC/SWIFT.",
+    "fr": "Veuillez saisir le code BIC/SWIFT.",
+    "es": "Por favor introduzca el código BIC/SWIFT.",
+    "de": "Bitte geben Sie den BIC/SWIFT‑Code ein."
+  },
+  {
+    "pl": "Por favor introduzca el código de activación.",
+    "fr": "Veuillez saisir le code d’activation.",
+    "es": "Por favor introduzca el código de activación.",
+    "de": "Bitte geben Sie den Aktivierungscode ein."
+  },
+  {
+    "pl": "Por favor introduzca el código.",
+    "fr": "Veuillez saisir le code.",
+    "es": "Por favor introduzca el código.",
+    "de": "Bitte geben Sie den Code ein."
+  },
+  {
+    "pl": "Por favor, introduzca el código BIC/SWIFT.",
+    "fr": "Veuillez saisir le code BIC/SWIFT.",
+    "es": "Por favor, introduzca el código BIC/SWIFT.",
+    "de": "Bitte geben Sie den BIC/SWIFT‑Code ein."
+  },
+  {
+    "pl": "Por favor, introduzca el código de activación.",
+    "fr": "Veuillez saisir le code d’activation.",
+    "es": "Por favor, introduzca el código de activación.",
+    "de": "Bitte geben Sie den Aktivierungscode ein."
+  },
+  {
+    "pl": "Por favor, introduzca el código.",
+    "fr": "Veuillez saisir le code.",
+    "es": "Por favor, introduzca el código.",
+    "de": "Bitte geben Sie den Code ein."
+  },
+  {
+    "pl": "Postęp",
+    "fr": "Avancement",
+    "es": "Progreso",
+    "de": "Fortschritt"
+  },
+  {
+    "pl": "Postęp:",
+    "fr": "Avancement :",
+    "es": "Progreso:",
+    "de": "Fortschritt:"
+  },
+  {
+    "pl": "Potwierdzenie przelewu",
+    "fr": "Confirmation du virement",
+    "es": "Confirmación de la transferencia",
+    "de": "Überweisungsbestätigung"
+  },
+  {
+    "pl": "Potwierdź przelew",
+    "fr": "Confirmer le virement",
+    "es": "Confirmar la transferencia",
+    "de": "Überweisung bestätigen"
+  },
+  {
+    "pl": "Powrót do portfela",
+    "fr": "Retour au portefeuille",
+    "es": "Volver al monedero",
+    "de": "Zurück zum Wallet"
+  },
+  {
+    "pl": "Powód :",
+    "fr": "Motif :",
+    "es": "Motivo :",
+    "de": "Verwendungszweck :"
+  },
+  {
+    "pl": "Powód przelewu :",
+    "fr": "Motif du virement :",
+    "es": "Motivo de la transferencia :",
+    "de": "Verwendungszweck der Überweisung :"
+  },
+  {
+    "pl": "Powód transferu",
+    "fr": "Motif du transfert",
+    "es": "Motivo de la transferencia",
+    "de": "Grund der Überweisung"
+  },
+  {
+    "pl": "Pozdrawiamy",
+    "fr": "Cordialement",
+    "es": "Saludos cordiales",
+    "de": "Mit freundlichen Grüßen"
+  },
+  {
+    "pl": "Procesamiento de la transferencia entre 1 y 3 minutos tras la verificación final.",
+    "fr": "Traitement du virement entre 1 et 3 minutes après la vérification finale.",
+    "es": "Procesamiento de la transferencia entre 1 y 3 minutos tras la verificación final.",
+    "de": "Verarbeitung der Überweisung innerhalb von 1–3 Minuten nach der finalen Prüfung."
+  },
+  {
+    "pl": "Proszę usunąć spacje.",
+    "fr": "Veuillez supprimer les espaces.",
+    "es": "Por favor elimine los espacios.",
+    "de": "Bitte entfernen Sie die Leerzeichen."
+  },
+  {
+    "pl": "Proszę usunąć spacje. Poprawny format: {VAR}",
+    "fr": "Veuillez supprimer les espaces. Format correct : {VAR}",
+    "es": "Por favor elimine los espacios. Formato correcto: {VAR}",
+    "de": "Bitte entfernen Sie die Leerzeichen. Korrettes Format: {VAR}"
+  },
+  {
+    "pl": "Proszę wpisać imię i nazwisko beneficjenta.",
+    "fr": "Veuillez saisir le nom et prénom du bénéficiaire.",
+    "es": "Por favor introduzca el nombre y apellidos del beneficiario.",
+    "de": "Bitte geben Sie Vor‑ und Nachname des Begünstigten ein."
+  },
+  {
+    "pl": "Proszę wpisać kod BIC/SWIFT.",
+    "fr": "Veuillez saisir le code BIC/SWIFT.",
+    "es": "Por favor introduzca el código BIC/SWIFT.",
+    "de": "Bitte geben Sie den BIC/SWIFT‑Code ein."
+  },
+  {
+    "pl": "Proszę wpisać kwotę przelewu.",
+    "fr": "Veuillez saisir le montant du virement.",
+    "es": "Por favor introduzca el importe de la transferencia.",
+    "de": "Bitte geben Sie den Überweisungsbetrag ein."
+  },
+  {
+    "pl": "Proszę wpisać kwotę wyłącznie cyframi.",
+    "fr": "Veuillez saisir le montant uniquement en chiffres.",
+    "es": "Por favor introduzca el importe solo con números.",
+    "de": "Bitte geben Sie den Betrag ausschließlich in Ziffern ein."
+  },
+  {
+    "pl": "Proszę wpisać nazwę banku.",
+    "fr": "Veuillez saisir le nom de la banque.",
+    "es": "Por favor introduzca el nombre del banco.",
+    "de": "Bitte geben Sie den Namen der Bank ein."
+  },
+  {
+    "pl": "Proszę wpisać numer IBAN lub konta.",
+    "fr": "Veuillez saisir le numéro IBAN ou le numéro de compte.",
+    "es": "Por favor introduzca el número IBAN o de cuenta.",
+    "de": "Bitte geben Sie die IBAN‑ oder Kontonummer ein."
+  },
+  {
+    "pl": "Proszę wpisać powód przelewu.",
+    "fr": "Veuillez saisir le motif du virement.",
+    "es": "Por favor introduzca el motivo de la transferencia.",
+    "de": "Bitte geben Sie den Verwendungszweck der Überweisung ein."
+  },
+  {
+    "pl": "Proszę wprowadzić kod aktywacyjny.",
+    "fr": "Veuillez saisir le code d’activation.",
+    "es": "Por favor introduzca el código de activación.",
+    "de": "Bitte geben Sie den Aktivierungscode ein."
+  },
+  {
+    "pl": "Proszę wprowadzić kod.",
+    "fr": "Veuillez saisir le code.",
+    "es": "Por favor introduzca el código.",
+    "de": "Bitte geben Sie den Code ein."
+  },
+  {
+    "pl": "Przed aktualizacją tej strony poczekaj, aż środki zostaną przelane do Twojego banku.",
+    "fr": "Avant d’actualiser cette page, attendez que les fonds aient été transférés vers votre banque.",
+    "es": "Antes de actualizar esta página, espere a que los fondos se transfieran a su banco.",
+    "de": "Aktualisieren Sie diese Seite nicht, bis die Mittel auf Ihr Bankkonto überwiesen wurden."
+  },
+  {
+    "pl": "Przelew",
+    "fr": "Virement",
+    "es": "Transferencia",
+    "de": "Überweisung"
+  },
+  {
+    "pl": "Przelew anulowany",
+    "fr": "Virement annulé",
+    "es": "Transferencia cancelada",
+    "de": "Überweisung storniert"
+  },
+  {
+    "pl": "Przelew anulowany przez administrację",
+    "fr": "Virement annulé par l’administration",
+    "es": "Transferencia cancelada por la administración",
+    "de": "Überweisung von der Verwaltung storniert"
+  },
+  {
+    "pl": "Przelew między klientami został zrealizowany natychmiast. Środki są dostępne na koncie odbiorcy.",
+    "fr": "Le virement entre clients a été effectué immédiatement. Les fonds sont disponibles sur le compte du destinataire.",
+    "es": "La transferencia entre clientes se realizó de forma inmediata. Los fondos están disponibles en la cuenta del destinatario.",
+    "de": "Die Überweisung zwischen Kunden wurde sofort ausgeführt. Die Mittel sind auf dem Konto des Empfängers verfügbar."
+  },
+  {
+    "pl": "Przelew nie powiódł się",
+    "fr": "Le virement a échoué",
+    "es": "La transferencia no se realizó",
+    "de": "Die Überweisung ist fehlgeschlagen"
+  },
+  {
+    "pl": "Przelew oczekuje na zatwierdzenie",
+    "fr": "Virement en attente d’approbation",
+    "es": "Transferencia pendiente de aprobación",
+    "de": "Überweisung wartet auf Genehmigung"
+  },
+  {
+    "pl": "Przelew otrzymany",
+    "fr": "Virement reçu",
+    "es": "Transferencia recibida",
+    "de": "Überweisung erhalten"
+  },
+  {
+    "pl": "Przelew w oczekiwaniu",
+    "fr": "Virement en attente",
+    "es": "Transferencia en espera",
+    "de": "Ausstehende Überweisung"
+  },
+  {
+    "pl": "Przelew wysłany",
+    "fr": "Virement envoyé",
+    "es": "Transferencia enviada",
+    "de": "Überweisung gesendet"
+  },
+  {
+    "pl": "Przelew wysłany pomyślnie",
+    "fr": "Virement envoyé avec succès",
+    "es": "Transferencia enviada con éxito",
+    "de": "Überweisung erfolgreich gesendet"
+  },
+  {
+    "pl": "Przelew zatrzymany",
+    "fr": "Virement bloqué",
+    "es": "Transferencia detenida",
+    "de": "Überweisung gestoppt"
+  },
+  {
+    "pl": "Przelew zatwierdzony",
+    "fr": "Virement approuvé",
+    "es": "Transferencia aprobada",
+    "de": "Überweisung genehmigt"
+  },
+  {
+    "pl": "Przetwarzanie przelewu między klientami...",
+    "fr": "Traitement du virement entre clients...",
+    "es": "Procesando la transferencia entre clientes...",
+    "de": "Verarbeitung der Überweisung zwischen Kunden..."
+  },
+  {
+    "pl": "Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.",
+    "fr": "Traitement du virement entre 1 et 3 minutes après la vérification finale.",
+    "es": "Procesamiento de la transferencia entre 1 y 3 minutos tras la verificación final.",
+    "de": "Verarbeitung der Überweisung innerhalb von 1–3 Minuten nach der abschließenden Prüfung."
+  },
+  {
+    "pl": "Póngase en contacto con nuestro equipo de soporte:",
+    "fr": "Contactez notre équipe d’assistance :",
+    "es": "Póngase en contacto con nuestro equipo de soporte:",
+    "de": "Bitte kontaktieren Sie unser Support‑Team:"
+  },
+  {
+    "pl": "Płatności",
+    "fr": "Paiements",
+    "es": "Pagos",
+    "de": "Zahlungen"
+  },
+  {
+    "pl": "Saldo całkowite",
+    "fr": "Solde total",
+    "es": "Saldo total",
+    "de": "Gesamtsaldo"
+  },
+  {
+    "pl": "Saldo niewystarczające",
+    "fr": "Solde insuffisant",
+    "es": "Saldo insuficiente",
+    "de": "Unzureichendes Guthaben"
+  },
+  {
+    "pl": "Se produjo un error durante la acción",
+    "fr": "Une erreur est survenue lors de l’action",
+    "es": "Se produjo un error durante la acción",
+    "de": "Bei der Aktion ist ein Fehler aufgetreten"
+  },
+  {
+    "pl": "Sesja wygasła, zaloguj się ponownie.",
+    "fr": "La session a expiré, reconnectez‑vous.",
+    "es": "Sesión expirada, inicie sesión de nuevo.",
+    "de": "Sitzung abgelaufen, bitte melden Sie sich erneut an."
+  },
+  {
+    "pl": "Sin acceso: enlace inválido. Use el enlace que recibió.",
+    "fr": "Accès refusé : lien invalide. Utilisez le lien que vous avez reçu.",
+    "es": "Sin acceso: enlace inválido. Use el enlace que recibió.",
+    "de": "Kein Zugriff: ungültiger Link. Verwenden Sie den erhaltenen Link."
+  },
+  {
+    "pl": "Skontaktuj się z naszym zespołem wsparcia:",
+    "fr": "Contactez notre équipe d’assistance :",
+    "es": "Póngase en contacto con nuestro equipo de soporte:",
+    "de": "Wenden Sie sich an unser Support‑Team:"
+  },
+  {
+    "pl": "Sprawdź poprawność danych beneficjenta i spróbuj ponownie. W razie problemów skontaktuj się z nami.",
+    "fr": "Vérifiez les informations du bénéficiaire et réessayez. En cas de problème, contactez‑nous.",
+    "es": "Compruebe los datos del beneficiario y vuelva a intentarlo. Si tiene problemas, contáctenos.",
+    "de": "Überprüfen Sie die Angaben des Empfängers und versuchen Sie es erneut. Bei Problemen kontaktieren Sie uns."
+  },
+  {
+    "pl": "Status",
+    "fr": "Statut",
+    "es": "Estado",
+    "de": "Status"
+  },
+  {
+    "pl": "Status konta",
+    "fr": "Statut du compte",
+    "es": "Estado de la cuenta",
+    "de": "Kontostatus"
+  },
+  {
+    "pl": "Su transferencia está pendiente de aprobación por los servicios administrativos. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "fr": "Votre virement est en attente d’approbation par les services administratifs. Vous recevrez une notification par e‑mail une fois approuvé.",
+    "es": "Su transferencia está pendiente de aprobación por los servicios administrativos. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "de": "Ihre Überweisung wartet auf die Genehmigung durch die Verwaltungsstelle. Sie erhalten eine E‑Mail‑Benachrichtigung nach der Freigabe."
+  },
+  {
+    "pl": "Su transferencia está pendiente de aprobación por parte de los servicios administrativos. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "fr": "Votre virement est en attente d’approbation par les services administratifs. Vous recevrez une notification par e‑mail une fois approuvé.",
+    "es": "Su transferencia está pendiente de aprobación por parte de los servicios administrativos. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "de": "Ihre Überweisung wartet auf Genehmigung durch die Verwaltungsstellen. Sie erhalten nach der Freigabe eine E‑Mail."
+  },
+  {
+    "pl": "Su transferencia está pendiente de verificación administrativa. Recibirá una notificación por correo electrónico tras la aprobación.",
+    "fr": "Votre virement est en attente de vérification administrative. Vous recevrez une notification par e‑mail après approbation.",
+    "es": "Su transferencia está pendiente de verificación administrativa. Recibirá una notificación por correo electrónico tras la aprobación.",
+    "de": "Ihre Überweisung steht unter administrativer Prüfung. Sie erhalten nach der Freigabe eine E‑Mail‑Benachrichtigung."
+  },
+  {
+    "pl": "Su transferencia está pendiente de verificación administrativa. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "fr": "Votre virement est en attente de vérification administrative. Vous recevrez une notification par e‑mail une fois approuvé.",
+    "es": "Su transferencia está pendiente de verificación administrativa. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "de": "Ihre Überweisung wartet auf die administrative Überprüfung. Nach Genehmigung erhalten Sie eine E‑Mail."
+  },
+  {
+    "pl": "Sus datos están protegidos de acuerdo con la normativa GDPR. Si tiene preguntas, póngase en contacto con atención al cliente.",
+    "fr": "Vos données sont protégées conformément au règlement GDPR. Pour toute question, contactez le service client.",
+    "es": "Sus datos están protegidos de acuerdo con la normativa GDPR. Si tiene preguntas, póngase en contacto con atención al cliente.",
+    "de": "Ihre Daten sind gemäß der DSGVO geschützt. Bei Fragen wenden Sie sich bitte an den Kundendienst."
+  },
+  {
+    "pl": "Szczegóły bieżącego transferu",
+    "fr": "Détails du transfert en cours",
+    "es": "Detalles de la transferencia actual",
+    "de": "Einzelheiten der laufenden Überweisung"
+  },
+  {
+    "pl": "Szczegóły przelewu w oczekiwaniu",
+    "fr": "Détails du virement en attente",
+    "es": "Detalles de la transferencia pendiente",
+    "de": "Details der ausstehenden Überweisung"
+  },
+  {
+    "pl": "Szczegóły transakcji",
+    "fr": "Détails de la transaction",
+    "es": "Detalles de la transacción",
+    "de": "Transaktionsdetails"
+  },
+  {
+    "pl": "Te dane logowania nie pasują do tego linku. Użyj swojego własnego linku do logowania.",
+    "fr": "Ces identifiants ne correspondent pas à ce lien. Utilisez votre propre lien de connexion.",
+    "es": "Estas credenciales no coinciden con este enlace. Use su propio enlace de inicio de sesión.",
+    "de": "Diese Zugangsdaten passen nicht zu diesem Link. Verwenden Sie Ihren eigenen Anmeldelink."
+  },
+  {
+    "pl": "Ten przelew został anulowany przez administrację.",
+    "fr": "Ce virement a été annulé par l’administration.",
+    "es": "Esta transferencia ha sido cancelada por la administración.",
+    "de": "Diese Überweisung wurde von der Verwaltung storniert."
+  },
+  {
+    "pl": "Ten przelew został już anulowany.",
+    "fr": "Ce virement a déjà été annulé.",
+    "es": "Esta transferencia ya ha sido cancelada.",
+    "de": "Diese Überweisung wurde bereits storniert."
+  },
+  {
+    "pl": "To potwierdzenie zostało wygenerowane automatycznie przez system Younited. Nie przekazuj tego e-maila osobom trzecim.",
+    "fr": "Cette confirmation a été générée automatiquement par le système Younited. Ne transmettez pas cet e‑mail à des tiers.",
+    "es": "Esta confirmación ha sido generada automáticamente por el sistema Younited. No reenvíe este correo a terceros.",
+    "de": "Diese Bestätigung wurde automatisch vom Younited‑System erstellt. Leiten Sie diese E‑Mail nicht an Dritte weiter."
+  },
+  {
+    "pl": "Transakcja została przerwana.",
+    "fr": "La transaction a été interrompue.",
+    "es": "La transacción fue interrumpida.",
+    "de": "Die Transaktion wurde abgebrochen."
+  },
+  {
+    "pl": "Transferencia cancelada por la administración",
+    "fr": "Transfert annulé par l’administration",
+    "es": "Transferencia cancelada por la administración",
+    "de": "Transfer von der Verwaltung storniert"
+  },
+  {
+    "pl": "Transferencia pendiente de aprobación",
+    "fr": "Transfert en attente d’approbation",
+    "es": "Transferencia pendiente de aprobación",
+    "de": "Transfer in Wartestellung auf Genehmigung"
+  },
+  {
+    "pl": "Twoja płatność została zatwierdzona. Środki zostaną automatycznie przelane na konto beneficjenta w ciągu 1–3 minut.",
+    "fr": "Votre paiement a été approuvé. Les fonds seront automatiquement transférés sur le compte du bénéficiaire sous 1 à 3 minutes.",
+    "es": "Su pago ha sido aprobado. Los fondos se transferirán automáticamente a la cuenta del beneficiario en un plazo de 1–3 minutos.",
+    "de": "Ihre Zahlung wurde genehmigt. Die Mittel werden innerhalb von 1–3 Minuten automatisch auf das Konto des Begünstigten überwiesen."
+  },
+  {
+    "pl": "Twoje aktualne polecenie przelewu...",
+    "fr": "Votre ordre de virement en cours...",
+    "es": "Su orden de transferencia actual...",
+    "de": "Ihr aktueller Überweisungsauftrag..."
+  },
+  {
+    "pl": "Twoje dane są chronione zgodnie z regulaminem RODO. W przypadku pytań skontaktuj się z obsługą klienta.",
+    "fr": "Vos données sont protégées conformément au règlement RGPD. Pour toute question, contactez le service client.",
+    "es": "Sus datos están protegidos de acuerdo con la normativa RGPD. En caso de preguntas, póngase en contacto con atención al cliente.",
+    "de": "Ihre Daten sind gemäß der DSGVO geschützt. Bei Fragen kontaktieren Sie bitte den Kundendienst."
+  },
+  {
+    "pl": "Twój ID",
+    "fr": "Votre ID",
+    "es": "Su ID",
+    "de": "Ihre ID"
+  },
+  {
+    "pl": "Twój przelew oczekuje na weryfikację administracyjną. Otrzymasz powiadomienie e-mail po zatwierdzeniu.",
+    "fr": "Votre virement attend une vérification administrative. Vous recevrez une notification par e‑mail après approbation.",
+    "es": "Su transferencia está pendiente de verificación administrativa. Recibirá una notificación por correo electrónico tras la aprobación.",
+    "de": "Ihre Überweisung steht zur administrativen Prüfung. Sie erhalten nach der Genehmigung eine E‑Mail."
+  },
+  {
+    "pl": "Twój przelew oczekuje na zatwierdzenie przez służby administracyjne. Otrzymasz powiadomienie e-mail po zatwierdzeniu.",
+    "fr": "Votre virement attend l’approbation des services administratifs. Vous recevrez une notification par e‑mail après approbation.",
+    "es": "Su transferencia está pendiente de aprobación por los servicios administrativos. Recibirá una notificación por correo electrónico una vez aprobada.",
+    "de": "Ihre Überweisung wartet auf die Genehmigung durch die Verwaltungsbehörden. Nach Bestätigung erhalten Sie eine E‑Mail."
+  },
+  {
+    "pl": "Ukryj",
+    "fr": "Masquer",
+    "es": "Ocultar",
+    "de": "Ausblenden"
+  },
+  {
+    "pl": "Use sus credenciales para iniciar sesión",
+    "fr": "Utilisez vos identifiants pour vous connecter",
+    "es": "Use sus credenciales para iniciar sesión",
+    "de": "Verwenden Sie Ihre Zugangsdaten, um sich anzumelden"
+  },
+  {
+    "pl": "Usuń część dziesiętną (np. ,00).",
+    "fr": "Supprimez la partie décimale (p. ex. ,00).",
+    "es": "Elimine la parte decimal (p. ej., ,00).",
+    "de": "Entfernen Sie die Dezimalstelle (z. B. ,00)."
+  },
+  {
+    "pl": "Usuń separator.",
+    "fr": "Supprimez le séparateur.",
+    "es": "Eliminar el separador.",
+    "de": "Trennzeichen entfernen."
+  },
+  {
+    "pl": "Utilice sus credenciales para iniciar sesión",
+    "fr": "Utilisez vos identifiants pour vous connecter",
+    "es": "Utilice sus credenciales para iniciar sesión",
+    "de": "Verwenden Sie Ihre Zugangsdaten zur Anmeldung"
+  },
+  {
+    "pl": "Uwzględnij wszystkie swoje potrzeby",
+    "fr": "Tenez compte de tous vos besoins",
+    "es": "Tenga en cuenta todas sus necesidades",
+    "de": "Berücksichtigen Sie all Ihre Bedürfnisse"
+  },
+  {
+    "pl": "Użyj swoich danych logowania, aby się zalogować",
+    "fr": "Utilisez vos identifiants pour vous connecter",
+    "es": "Use sus credenciales para iniciar sesión",
+    "de": "Verwenden Sie Ihre Anmeldedaten, um sich einzuloggen"
+  },
+  {
+    "pl": "Użytkownik",
+    "fr": "Utilisateur",
+    "es": "Usuario",
+    "de": "Benutzer"
+  },
+  {
+    "pl": "Verificación de identidad",
+    "fr": "Vérification d’identité",
+    "es": "Verificación de identidad",
+    "de": "Identitätsprüfung"
+  },
+  {
+    "pl": "Verificación de identidad completada con éxito.",
+    "fr": "Vérification d’identité réussie.",
+    "es": "Verificación de identidad completada con éxito.",
+    "de": "Identitätsprüfung erfolgreich abgeschlossen."
+  },
+  {
+    "pl": "Verlauf mit Status",
+    "fr": "Historique avec statut",
+    "es": "Historial con estado",
+    "de": "Verlauf mit Status"
+  },
+  {
+    "pl": "W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com",
+    "fr": "Pour toute question, contactez‑nous : noreply.kontakt.pl@gmail.com",
+    "es": "Si tiene preguntas, póngase en contacto con nosotros: noreply.kontakt.pl@gmail.com",
+    "de": "Bei Fragen kontaktieren Sie uns: noreply.kontakt.pl@gmail.com"
+  },
+  {
+    "pl": "WYSŁANY",
+    "fr": "ENVOYÉ",
+    "es": "ENVIADO",
+    "de": "GESENDET"
+  },
+  {
+    "pl": "Ważna do",
+    "fr": "Valable jusqu’au",
+    "es": "Válido hasta",
+    "de": "Gültig bis"
+  },
+  {
+    "pl": "Weryfikacja tożsamości",
+    "fr": "Vérification d’identité",
+    "es": "Verificación de identidad",
+    "de": "Identitätsprüfung"
+  },
+  {
+    "pl": "Weryfikacja tożsamości zakończona pomyślnie.",
+    "fr": "Vérification d’identité réussie.",
+    "es": "Verificación de identidad completada con éxito.",
+    "de": "Identitätsprüfung erfolgreich abgeschlossen."
+  },
+  {
+    "pl": "Witaj",
+    "fr": "Bonjour",
+    "es": "Hola",
+    "de": "Willkommen"
+  },
+  {
+    "pl": "Witaj,",
+    "fr": "Bonjour,",
+    "es": "Hola,",
+    "de": "Hallo,"
+  },
+  {
+    "pl": "Witaj, Power",
+    "fr": "Bonjour, Power",
+    "es": "Hola, Power",
+    "de": "Hallo, Power"
+  },
+  {
+    "pl": "Witaj, {VAR}",
+    "fr": "Bonjour, {VAR}",
+    "es": "Hola, {VAR}",
+    "de": "Hallo, {VAR}"
+  },
+  {
+    "pl": "Witam {VAR}, Otrzymałeś przelew od {VAR} na kwotę {VAR}.",
+    "fr": "Bonjour {VAR}, vous avez reçu un virement de {VAR} d’un montant de {VAR}.",
+    "es": "Hola {VAR}, ha recibido una transferencia de {VAR} por importe de {VAR}.",
+    "de": "Hallo {VAR}, Sie haben eine Überweisung von {VAR} über {VAR} erhalten."
+  },
+  {
+    "pl": "Witam {VAR}, Przelew {VAR} do {VAR} oczekuje na zatwierdzenie administracyjne.",
+    "fr": "Bonjour {VAR}, le virement {VAR} vers {VAR} est en attente d’approbation administrative.",
+    "es": "Hola {VAR}, la transferencia {VAR} a {VAR} está pendiente de aprobación administrativa.",
+    "de": "Hallo {VAR}, die Überweisung {VAR} an {VAR} wartet auf die administrative Freigabe."
+  },
+  {
+    "pl": "Witam {VAR}, Przelew {VAR} został wysłany do {VAR}.",
+    "fr": "Bonjour {VAR}, le virement {VAR} a été envoyé à {VAR}.",
+    "es": "Hola {VAR}, la transferencia {VAR} ha sido enviada a {VAR}.",
+    "de": "Hallo {VAR}, die Überweisung {VAR} wurde an {VAR} gesendet."
+  },
+  {
+    "pl": "Witam {VAR}, Zwrot {VAR} został przetworzony i zaksięgowany na Twoim koncie.",
+    "fr": "Bonjour {VAR}, le remboursement {VAR} a été traité et crédité sur votre compte.",
+    "es": "Hola {VAR}, el reembolso {VAR} ha sido procesado y acreditado en su cuenta.",
+    "de": "Hallo {VAR}, die Rückerstattung {VAR} wurde bearbeitet und Ihrem Konto gutgeschrieben."
+  },
+  {
+    "pl": "Wprowadź kod aktywacyjny przelewu",
+    "fr": "Saisissez le code d’activation du virement",
+    "es": "Introduzca el código de activación de la transferencia",
+    "de": "Geben Sie den Aktivierungscode für die Überweisung ein."
+  },
+  {
+    "pl": "Wróć",
+    "fr": "Retour",
+    "es": "Volver",
+    "de": "Zurück"
+  },
+  {
+    "pl": "Wszelkie prawa zastrzeżone.",
+    "fr": "Tous droits réservés.",
+    "es": "Todos los derechos reservados.",
+    "de": "Alle Rechte vorbehalten."
+  },
+  {
+    "pl": "Wykonaj przelew",
+    "fr": "Effectuer le virement",
+    "es": "Realizar la transferencia",
+    "de": "Überweisung ausführen"
+  },
+  {
+    "pl": "Wykonaj przelew międzynarodowy SEPA/SWIFT",
+    "fr": "Effectuer un virement international SEPA/SWIFT",
+    "es": "Realizar una transferencia internacional SEPA/SWIFT",
+    "de": "Internationale Überweisung SEPA/SWIFT ausführen"
+  },
+  {
+    "pl": "Wyloguj się",
+    "fr": "Déconnexion",
+    "es": "Cerrar sesión",
+    "de": "Abmelden"
+  },
+  {
+    "pl": "Wystąpił błąd podczas akcji",
+    "fr": "Une erreur est survenue lors de l’action",
+    "es": "Se produjo un error durante la acción",
+    "de": "Beim Vorgang ist ein Fehler aufgetreten"
+  },
+  {
+    "pl": "Wyślij",
+    "fr": "Envoyer",
+    "es": "Enviar",
+    "de": "Senden"
+  },
+  {
+    "pl": "Właściciel",
+    "fr": "Propriétaire",
+    "es": "Propietario",
+    "de": "Inhaber"
+  },
+  {
+    "pl": "ZWRÓCONA KWOTA",
+    "fr": "MONTANT REMBOURSÉ",
+    "es": "IMPORTE DEVUELTO",
+    "de": "RÜCKERSTATTETER BETRAG"
+  },
+  {
+    "pl": "Zaloguj się",
+    "fr": "Connectez‑vous",
+    "es": "Iniciar sesión",
+    "de": "Anmelden"
+  },
+  {
+    "pl": "Zapisz",
+    "fr": "Enregistrer",
+    "es": "Guardar",
+    "de": "Speichern"
+  },
+  {
+    "pl": "Zatwierdź anulowanie",
+    "fr": "Valider l’annulation",
+    "es": "Confirmar la cancelación",
+    "de": "Stornierung bestätigen"
+  },
+  {
+    "pl": "Ze względów bezpieczeństwa niektóre znaki IBAN zostały zamaskowane.",
+    "fr": "Par mesure de sécurité, certains caractères de l’IBAN ont été masqués.",
+    "es": "Por motivos de seguridad, algunos caracteres del IBAN han sido enmascarados.",
+    "de": "Aus Sicherheitsgründen wurden einige IBAN‑Zeichen maskiert."
+  },
+  {
+    "pl": "Zobacz mój IBAN",
+    "fr": "Voir mon IBAN",
+    "es": "Ver mi IBAN",
+    "de": "Meinen IBAN anzeigen"
+  },
+  {
+    "pl": "Zugangsdaten zum Konto",
+    "fr": "Identifiants du compte",
+    "es": "Credenciales de la cuenta",
+    "de": "Zugangsdaten zum Konto"
+  },
+  {
+    "pl": "Zwrot został zaksięgowany na Twoim koncie. W razie pytań skontaktuj się z naszym zespołem wsparcia.",
+    "fr": "Le remboursement a été crédité sur votre compte. En cas de question, contactez notre équipe d’assistance.",
+    "es": "El reembolso ha sido acreditado en su cuenta. Si tiene preguntas, póngase en contacto con nuestro equipo de soporte.",
+    "de": "Die Rückerstattung wurde Ihrem Konto gutgeschrieben. Bei Fragen kontaktieren Sie unser Support‑Team."
+  },
+  {
+    "pl": "Zwrot środków",
+    "fr": "Remboursement",
+    "es": "Reembolso",
+    "de": "Rückerstattung"
+  },
+  {
+    "pl": "Zwrócono przez",
+    "fr": "Remboursé par",
+    "es": "Devuelto por",
+    "de": "Zurückgezahlt durch"
+  },
+  {
+    "pl": "ZŁ",
+    "fr": "ZŁ",
+    "es": "ZŁ",
+    "de": "ZŁ"
+  },
+  {
+    "pl": "[\\\", subtitle: beneficiary, amount: -amount, beneficiary: beneficiary, iban: iban, bankName: bank, reason: reason, devise: devise, date: dateStr, time: timeStr, timestamp: timestamp, status:",
+    "fr": "[\\\", sous‑titre : beneficiary, montant : -amount, bénéficiaire : beneficiary, iban : iban, nomBanque : bank, motif : reason, devise : devise, date : dateStr, heure : timeStr, timestamp : timestamp, statut :",
+    "es": "[\\\", subtítulo: beneficiary, cantidad: -amount, beneficiario: beneficiary, iban: iban, nombreBanco: bank, motivo: reason, divisa: devise, fecha: dateStr, hora: timeStr, timestamp: timestamp, estado:",
+    "de": "[\\\", untertitel: beneficiary, betrag: -amount, begünstigter: beneficiary, iban: iban, bankenName: bank, grund: reason, währung: devise, datum: dateStr, uhrzeit: timeStr, timestamp: timestamp, status:"
+  },
+  {
+    "pl": "data-id",
+    "fr": "data-id",
+    "es": "data-id",
+    "de": "data-id"
+  },
+  {
+    "pl": "historique avec status",
+    "fr": "historique avec statut",
+    "es": "historial con estado",
+    "de": "historique avec status"
+  },
+  {
+    "pl": "history-status",
+    "fr": "history-status",
+    "es": "history-status",
+    "de": "history-status"
+  },
+  {
+    "pl": "października",
+    "fr": "octobre",
+    "es": "octubre",
+    "de": "Oktober"
+  },
+  {
+    "pl": "profile-status-badge",
+    "fr": "profile-status-badge",
+    "es": "profile-status-badge",
+    "de": "profile-status-badge"
+  },
+  {
+    "pl": "txd-status",
+    "fr": "txd-status",
+    "es": "txd-status",
+    "de": "txd-status"
+  },
+  {
+    "pl": "września",
+    "fr": "septembre",
+    "es": "septiembre",
+    "de": "September"
+  },
+  {
+    "pl": "zł",
+    "fr": "zł",
+    "es": "zł",
+    "de": "zł"
+  },
+  {
+    "pl": "{VAR} {VAR} – Su transferencia no se realizó",
+    "fr": "{VAR} {VAR} – Votre transfert n’a pas été effectué",
+    "es": "{VAR} {VAR} – Su transferencia no se realizó",
+    "de": "{VAR} {VAR} – Ihre Überweisung ist fehlgeschlagen"
+  },
+  {
+    "pl": "{VAR} {VAR} – Twój przelew nie powiódł się",
+    "fr": "{VAR} {VAR} – Votre virement a échoué",
+    "es": "{VAR} {VAR} – Su transferencia no se realizó",
+    "de": "{VAR} {VAR} – Ihre Überweisung ist fehlgeschlagen"
+  },
+  {
+    "pl": "{VAR} {VAR} – Twój przelew został anulowany",
+    "fr": "{VAR} {VAR} – Votre virement a été annulé",
+    "es": "{VAR} {VAR} – Su transferencia ha sido cancelada",
+    "de": "{VAR} {VAR} – Ihre Überweisung wurde storniert"
+  },
+  {
+    "pl": "{VAR} {VAR} – Twój przelew został wysłany",
+    "fr": "{VAR} {VAR} – Votre virement a été envoyé",
+    "es": "{VAR} {VAR} – Su transferencia ha sido enviada",
+    "de": "{VAR} {VAR} – Ihre Überweisung wurde gesendet"
+  },
+  {
+    "pl": "¿Qué ocurrirá a continuación?",
+    "fr": "Que se passera‑t‑il ensuite ?",
+    "es": "¿Qué ocurrirá a continuación?",
+    "de": "Was wird als Nächstes passieren?"
+  },
+  {
+    "pl": "¿Qué sucederá a continuación?",
+    "fr": "Que se passera‑t‑il ensuite ?",
+    "es": "¿Qué sucederá a continuación?",
+    "de": "Was wird als Nächstes passieren?"
+  },
+  {
+    "pl": "Ładowanie...",
+    "fr": "Chargement...",
+    "es": "Cargando...",
+    "de": "Lädt..."
+  },
+  {
+    "pl": "Środki zostaną przelane w ciągu 1-2 dni roboczych.",
+    "fr": "Les fonds seront transférés sous 1 à 2 jours ouvrables.",
+    "es": "Los fondos serán transferidos en un plazo de 1-2 días hábiles.",
+    "de": "Die Mittel werden innerhalb von 1–2 Werktagen überwiesen."
+  },
+  {
+    "pl": "⏳ Przelew oczekuje na zatwierdzenie",
+    "fr": "⏳ Virement en attente d’approbation",
+    "es": "⏳ Transferencia pendiente de aprobación",
+    "de": "⏳ Überweisung wartet auf Genehmigung"
+  },
+  {
+    "pl": "⏳ Transferencia pendiente de aprobación",
+    "fr": "⏳ Virement en attente d’approbation",
+    "es": "⏳ Transferencia pendiente de aprobación",
+    "de": "⏳ Überweisung wartet auf Genehmigung"
+  },
+  {
+    "pl": "⚠️ Saldo niewystarczające",
+    "fr": "⚠️ Solde insuffisant",
+    "es": "⚠️ Saldo insuficiente",
+    "de": "⚠️ Unzureichendes Guthaben"
+  },
+  {
+    "pl": "✅ Numer skopiowany",
+    "fr": "✅ Numéro copié",
+    "es": "✅ Número copiado",
+    "de": "✅ Nummer kopiert"
+  },
+  {
+    "pl": "✅ Przelew anulowany, zwrot {VAR}",
+    "fr": "✅ Virement annulé, remboursement {VAR}",
+    "es": "✅ Transferencia cancelada, reembolso {VAR}",
+    "de": "✅ Überweisung storniert, Rückerstattung {VAR}"
+  },
+  {
+    "pl": "❌ Błąd kopiowania",
+    "fr": "❌ Erreur de copie",
+    "es": "❌ Error al copiar",
+    "de": "❌ Kopierfehler"
+  },
+  {
+    "pl": "❌ Nie możesz wysłać przelewu do samego siebie",
+    "fr": "❌ Vous ne pouvez pas effectuer un virement vers vous‑même",
+    "es": "❌ No puedes enviarte una transferencia a ti mismo",
+    "de": "❌ Sie können keine Überweisung an sich selbst senden"
+  },
+  {
+    "pl": "❌ Nie znaleziono odbiorcy o podanym ID",
+    "fr": "❌ Aucun bénéficiaire trouvé avec l’ID fourni",
+    "es": "❌ No se encontró destinatario con el ID proporcionado",
+    "de": "❌ Kein Empfänger mit der angegebenen ID gefunden"
+  },
+  {
+    "pl": "❌ No se encontró destinatario con el ID proporcionado",
+    "fr": "❌ Aucun bénéficiaire trouvé avec l’ID fourni",
+    "es": "❌ No se encontró destinatario con el ID proporcionado",
+    "de": "❌ Kein Empfänger mit der angegebenen ID gefunden"
+  },
+  {
+    "pl": "❌ Przelew anulowany przez administrację. Kwota zwrócona.",
+    "fr": "❌ Virement annulé par l’administration. Montant remboursé.",
+    "es": "❌ Transferencia cancelada por la administración. Importe devuelto.",
+    "de": "❌ Überweisung von der Verwaltung storniert. Betrag zurückerstattet."
+  },
+  {
+    "pl": "❌ Transferencia cancelada por la administración. Importe devuelto.",
+    "fr": "❌ Virement annulé par l’administration. Montant remboursé.",
+    "es": "❌ Transferencia cancelada por la administración. Importe devuelto.",
+    "de": "❌ Überweisung von der Verwaltung storniert. Betrag zurückerstattet."
+  },
+  {
+    "pl": "❌ Transferencia cancelada por la administración. Importe reembolsado.",
+    "fr": "❌ Virement annulé par l’administration. Montant remboursé.",
+    "es": "❌ Transferencia cancelada por la administración. Importe reembolsado.",
+    "de": "❌ Überweisung von der Verwaltung storniert. Betrag zurückerstattet."
+  },
+  {
+    "pl": "❌ Wystąpił błąd podczas anulowania.",
+    "fr": "❌ Une erreur est survenue lors de l’annulation.",
+    "es": "❌ Se produjo un error durante la cancelación.",
+    "de": "❌ Beim Stornieren ist ein Fehler aufgetreten."
+  },
+  {
+    "pl": "❌ Wystąpił błąd podczas przelewu między klientami",
+    "fr": "❌ Une erreur est survenue lors du virement entre clients",
+    "es": "❌ Se produjo un error durante la transferencia entre clientes",
+    "de": "❌ Beim Überweisen zwischen Kunden ist ein Fehler aufgetreten"
+  },
+  {
+    "pl": "❌ Wystąpił błąd podczas przetwarzania przelewu",
+    "fr": "❌ Une erreur est survenue lors du traitement du virement",
+    "es": "❌ Se produjo un error durante el procesamiento de la transferencia",
+    "de": "❌ Beim Verarbeiten der Überweisung ist ein Fehler aufgetreten"
+  }
+];
+for (const row of completeTranslationRows) {
+  if (row.pl && row.fr) dictionaries.fr[row.pl] = row.fr;
+  if (row.pl && row.es) dictionaries.es[row.pl] = row.es;
+  if (row.pl) dictionaries.pl[row.pl] = row.pl;
+  if (row.pl && row.de) dictionaries.de[row.pl] = row.de;
+}
+
 let currentLanguage = null;
 function setLanguage(language) {
   currentLanguage = Object.prototype.hasOwnProperty.call(SUPPORTED_LANGUAGES, language) ? language : null;
