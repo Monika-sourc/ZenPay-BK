@@ -3645,6 +3645,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const urlLanguageHint = normalizeClientLanguage(window.__clientLanguageFromUrl);
+if (urlLanguageHint) setLanguage(urlLanguageHint);
 
 const authModule = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
 // L’application ne lit jamais le compte avant l’authentification Firebase.
