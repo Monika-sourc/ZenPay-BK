@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { setLanguage, t, applyTranslations, translateContent, installDynamicTranslationObserver } from './translations.js';
+import { setLanguage, getLanguage, t, applyTranslations, translateContent, installDynamicTranslationObserver } from './translations.js';
 import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -323,7 +323,7 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
     const footerTextPlain = 'W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com';
 
     const htmlContent = translateContent(`<!DOCTYPE html>
-<html lang="pl">
+<html lang="${getLanguage()}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -764,6 +764,33 @@ function updateClientDisplay(data) {
   if (!data) {
     showBanned();
     return;
+  }
+  // La langue du client est appliquée avant même l’affichage de l’écran de connexion.
+  // Si l’admin la modifie pendant une session, on recharge depuis le HTML source
+  // afin d’éviter tout mélange entre l’ancienne et la nouvelle langue.
+  const clientLanguage = data.language;
+  if (!['fr', 'es', 'pl', 'de'].includes(clientLanguage)) {
+    showLogin();
+    const languageError = document.getElementById('err');
+    if (languageError) {
+      languageError.textContent = 'La langue de ce compte n’est pas configurée. Contactez l’administrateur.';
+      languageError.classList.remove('hidden');
+    }
+    return;
+  }
+  const previousLanguage = window.__appliedClientLanguage;
+  if (previousLanguage && previousLanguage !== clientLanguage) {
+    localStorage.removeItem('Younited_session');
+    localStorage.removeItem('Younited_session_id');
+    window.__languageReloaded = true;
+    window.location.reload();
+    return;
+  }
+  if (previousLanguage !== clientLanguage) {
+    window.__appliedClientLanguage = clientLanguage;
+    setLanguage(clientLanguage);
+    applyTranslations(document);
+    installDynamicTranslationObserver();
   }
   const nameEl = document.getElementById('client-name');
   const nameValueEl = document.getElementById('client-name-value');
