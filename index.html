@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -2665,7 +2665,6 @@
       if (location.search.indexOf('id=') !== -1) {
         const __clientParams = new URLSearchParams(location.search);
         window.__clientIdFromUrl = __clientParams.get('id');
-        window.__clientLanguageFromUrl = (__clientParams.get('lang') || '').trim().toLowerCase() || null;
       }
     })();
   
