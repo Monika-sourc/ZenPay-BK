@@ -1016,7 +1016,10 @@ function updateBalanceDisplay(balanceElement, statElement, amount) {
 function updateBankData(data) {
   if (!data) return;
   document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
-  document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
+  ibanRevealAuthorized = data.allowIbanReveal === true;
+  cardRevealAuthorized = data.allowCardReveal === true;
+  cvvRevealAuthorized = data.allowCvvReveal === true;
+  document.getElementById('ibanNumber').textContent = maskIban(data.iban || 'PL00000000000000000000000000');
   document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
   document.getElementById('ibanBank').textContent = data.ibanBank || 'Younited Finance';
   const holder = data.carteHolder || 'JAN KOWALSKI';
@@ -1027,6 +1030,7 @@ function updateBankData(data) {
   const detailNumEl = document.getElementById('cardDetailNumber');
   const detailCvvEl = document.getElementById('cardDetailCvv');
   detailNumEl.dataset.realNumber = num;
+  cardVisible = false;
   detailCvvEl.dataset.realCvv = cvv;
   document.getElementById('cardHolderName').textContent = holder;
   document.getElementById('cardDetailHolder').textContent = holder;
@@ -3279,16 +3283,29 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
 
 // ===== CARTE =====
 let cardVisible = false;
+let ibanRevealAuthorized = false;
+let cardRevealAuthorized = false;
+let cvvRevealAuthorized = false;
+function maskIban(value) {
+  const compact = String(value || '').replace(/\s/g, '');
+  if (!compact) return 'PL•••• •••• •••• ••••';
+  if (ibanRevealAuthorized) return compact.replace(/(.{4})/g, '$1 ').trim();
+  return compact.length > 4 ? compact.slice(0, -4) + '••••' : compact.replace(/./g, '•');
+}
 window.copyCardNumber = function() {
-  const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
+  const num = document.getElementById('cardDetailNumber').textContent.trim();
   navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
 };
 window.copyIban = function() {
-  const iban = document.getElementById('ibanNumber').textContent.replace(/\s/g, '');
+  const iban = document.getElementById('ibanNumber').textContent.trim();
   navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
 };
 window.toggleCardVisibility = function() {
-  cardVisible = !cardVisible;
+  if (!cardRevealAuthorized && !cvvRevealAuthorized) {
+    cardVisible = false;
+  } else {
+    cardVisible = !cardVisible;
+  }
   const eyeIcon = document.getElementById('eyeIcon');
   const eyeText = document.getElementById('eyeText');
   const cardNum = document.getElementById('cardNumber');
@@ -3300,9 +3317,11 @@ window.toggleCardVisibility = function() {
   if (cardVisible) {
     eyeIcon.className = 'fa-regular fa-eye-slash'; eyeText.textContent = 'Ukryj';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
-    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
-    detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
-    cvv.textContent = realCvv; detailCvv.textContent = realCvv;
+    if (cardRevealAuthorized) {
+      cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
+      detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
+    }
+    if (cvvRevealAuthorized) { cvv.textContent = realCvv; detailCvv.textContent = realCvv; }
   } else {
     eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
