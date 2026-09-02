@@ -768,8 +768,8 @@ function updateClientDisplay(data) {
   // La langue du client est appliquée avant même l’affichage de l’écran de connexion.
   // Si l’admin la modifie pendant une session, on recharge depuis le HTML source
   // afin d’éviter tout mélange entre l’ancienne et la nouvelle langue.
-  const clientLanguage = data.language;
-  if (!['fr', 'es', 'pl', 'de'].includes(clientLanguage)) {
+  const clientLanguage = normalizeClientLanguage(data.language);
+  if (!clientLanguage) {
     showLogin();
     const languageError = document.getElementById('err');
     if (languageError) {
@@ -2321,6 +2321,19 @@ function withLoginTimeout(promise, label, timeoutMs = 10000) {
   ]);
 }
 
+// Convertit uniquement les anciennes écritures de la langue vers un code canonique.
+// Il n’y a aucun fallback : une valeur inconnue reste invalide.
+function normalizeClientLanguage(value) {
+  const key = String(value || '').trim().toLowerCase();
+  const aliases = {
+    fr: 'fr', 'fr-fr': 'fr', francais: 'fr', français: 'fr', france: 'fr',
+    es: 'es', 'es-es': 'es', espanol: 'es', español: 'es', espagne: 'es',
+    pl: 'pl', 'pl-pl': 'pl', polski: 'pl', polska: 'pl', pologne: 'pl',
+    de: 'de', 'de-de': 'de', deutsch: 'de', allemand: 'de', allemagne: 'de'
+  };
+  return aliases[key] || null;
+}
+
 // ===== LOGIN =====
 window.login = async function(options = { silent: false, redirect: false }) {
   const btn = document.getElementById('loginBtn');
@@ -2398,7 +2411,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
       return;
     }
 
-    if (!f.language || !['fr', 'es', 'pl', 'de'].includes(f.language)) {
+    const canonicalLanguage = normalizeClientLanguage(f.language);
+    if (!canonicalLanguage) {
       err.textContent = 'Langue du compte non configurée. Contactez l’administrateur.';
       err.classList.remove('hidden');
       hideLoading();
@@ -2407,7 +2421,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     }
     user = f;
     user._id = fid;
-    setLanguage(user.language);
+    user.language = canonicalLanguage;
+    setLanguage(canonicalLanguage);
     applyTranslations(document);
     installDynamicTranslationObserver();
     applyBgColor(user.bgColor || 'gray');
