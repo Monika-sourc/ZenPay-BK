@@ -3646,15 +3646,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-try {
-  const authModule = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
-  await Promise.race([
-    authModule.signInAnonymously(authModule.getAuth(app)),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Authentification Firebase dépassée')), 10000))
-  ]);
-} catch (authError) {
-  console.error('Initialisation Firebase Auth échouée:', authError);
-}
+const authModule = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
+// L’application ne lit jamais le compte avant l’authentification Firebase.
+// Sinon la base peut répondre sans profil et l’écran retombe à tort sur le polonais.
+await authModule.signInAnonymously(authModule.getAuth(app));
 
 let user = null;
 let currentHistory = [];
