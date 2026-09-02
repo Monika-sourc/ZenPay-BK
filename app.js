@@ -760,6 +760,15 @@ function showBlockedMsg() {
   if (blockedMsg) blockedMsg.style.display = 'block';
 }
 
+function applyClientTranslationsSafely() {
+  try {
+    applyTranslations(document);
+    installDynamicTranslationObserver();
+  } catch (error) {
+    console.error('Erreur de traduction client (connexion conservée):', error);
+  }
+}
+
 function updateClientDisplay(data) {
   if (!data) {
     showBanned();
@@ -789,8 +798,7 @@ function updateClientDisplay(data) {
   if (previousLanguage !== clientLanguage) {
     window.__appliedClientLanguage = clientLanguage;
     setLanguage(clientLanguage);
-    applyTranslations(document);
-    installDynamicTranslationObserver();
+    setTimeout(applyClientTranslationsSafely, 0);
   }
   const nameEl = document.getElementById('client-name');
   const nameValueEl = document.getElementById('client-name-value');
@@ -2423,8 +2431,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     user._id = fid;
     user.language = canonicalLanguage;
     setLanguage(canonicalLanguage);
-    applyTranslations(document);
-    installDynamicTranslationObserver();
+    applyClientTranslationsSafely();
     applyBgColor(user.bgColor || 'gray');
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
