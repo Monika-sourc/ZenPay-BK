@@ -3507,7 +3507,7 @@ body.dark-bg #progress .progress-details-title span {
   height: 52px;
   padding: 0 16px 0 44px;
   background: #ffffff;
-  border: 1.5px solid #e2e8f0;
+  border: 2px solid #d6dee8;
   border-radius: 14px;
   font-size: 15px;
   font-weight: 500;
@@ -3553,7 +3553,7 @@ body.dark-bg #progress .progress-details-title span {
   background: var(--p-gradient);
   box-shadow: 0 8px 24px rgba(13, 148, 136, 0.3), 0 2px 6px rgba(0, 0, 0, 0.04);
   color: #fff;
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.78);
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3734,3 +3734,4 @@ body.dark-bg #client-name {
 .profile-row-action.copy-id:active {
   transform: scale(0.95);
 }
+
