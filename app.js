@@ -525,7 +525,7 @@ function hideLoading() {
   }, 500);
 }
 
-window.withSpinner = function(action, duration = 550) {
+window.withSpinner = function(action, duration = 800) {
   let start = Date.now();
   showLoading('Ładowanie...');
   let result;
