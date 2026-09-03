@@ -1842,15 +1842,10 @@ window.showTxDetail = function(d) {
     ibanWrap.style.display = 'none';
   } else {
     ibanWrap.style.display = 'flex';
-    const ibanValue = d.iban || '-';
-    document.getElementById('txd-iban').textContent = ibanValue.length > 8
-      ? `${ibanValue.slice(0, 4)}••••${ibanValue.slice(-4)}`
-      : ibanValue;
+    document.getElementById('txd-iban').textContent = d.iban || '-';
   }
   const optionalDetails = [
     ['txd-bank', d.bank || d.bankName, 'txd-bank-wrap'],
-    ['txd-swift', d.swift || d.bic || d.bicSwift, 'txd-swift-wrap'],
-    ['txd-reason', d.reason || d.motif, 'txd-reason-wrap'],
     ['txd-reference', d.reference || d.ref || d.transactionReference || d.id, null]
   ];
   optionalDetails.forEach(([valueId, value, wrapId]) => {
