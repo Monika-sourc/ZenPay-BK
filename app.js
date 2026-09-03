@@ -2641,13 +2641,8 @@ window.toVerify = function() {
   clearAllTransferErrors();
   if (!validateRecipientAccount(true)) return;
   if (!validateAllTransferFields()) {
-    const firstError = ['a', 'b', 'c', 'd', 'e', 'f']
-      .map(id => document.getElementById('error-' + id))
-      .find(el => el && el.classList.contains('visible') && el.textContent.trim());
-    if (firstError) showRecipientInputError(firstError.textContent.trim());
     return;
   }
-
   const rawValue = document.getElementById('a').value.trim();
   const amt = Number(rawValue);
   const rawAccount = document.getElementById('c').value.trim();
@@ -2686,14 +2681,12 @@ window.finish = function() {
   if (!code) {
     const message = 'Proszę wprowadzić kod aktywacyjny.';
     showFieldError('code', message);
-    showRecipientInputError(message);
     return;
   }
 
   if (code !== user.code) {
     const message = 'Nieprawidłowy kod aktywacyjny.';
     showFieldError('code', message);
-    showRecipientInputError(message);
     return;
   }
 
