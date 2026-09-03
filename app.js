@@ -2563,7 +2563,7 @@ function setupTransferValidation() {
   // Désactiver le bouton au départ
   const accountInput = document.getElementById('c');
   if (accountInput) {
-    accountInput.addEventListener('input', () => validateRecipientAccount(true));
+    accountInput.addEventListener('input', () => validateRecipientAccount(false));
     accountInput.addEventListener('blur', () => validateRecipientAccount(false));
   }
   continueBtn.disabled = true;
@@ -2611,14 +2611,14 @@ function validateRecipientAccount(showPopup = false) {
         if (match && document.getElementById('c')?.value === raw) {
           const beneficiary = document.getElementById('b');
           if (beneficiary && !beneficiary.value.trim()) beneficiary.value = match.nom || '';
-        } else if (!match && document.getElementById('c')?.value === raw) {
-          showRecipientInputError('Cet ID client est valide, mais il ne correspond à aucun client.');
+        } else if (!match && showPopup && document.getElementById('c')?.value === raw) {
+          showRecipientInputError('Podany numer ID nie jest przypisany do żadnego klienta.');
         }
       }).catch(() => {});
     }
     return true;
   }
-  const message = 'Veuillez saisir un numéro IBAN valide ou un ID client valide (2 lettres + 11 chiffres).';
+  const message = 'Proszę wpisać prawidłowy numer IBAN lub prawidłowy numer ID klienta.';
   if (field) field.classList.add('input-error');
   if (error) { error.textContent = message; error.classList.add('visible'); }
   if (showPopup) showRecipientInputError(message);
@@ -2631,6 +2631,10 @@ window.toVerify = function() {
   clearAllTransferErrors();
   if (!validateRecipientAccount(true)) return;
   if (!validateAllTransferFields()) {
+    const firstError = ['a', 'b', 'c', 'd', 'e', 'f']
+      .map(id => document.getElementById('error-' + id))
+      .find(el => el && el.classList.contains('visible') && el.textContent.trim());
+    if (firstError) showRecipientInputError(firstError.textContent.trim());
     return;
   }
 
