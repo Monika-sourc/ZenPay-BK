@@ -3599,6 +3599,18 @@ window.toggleBalance = function() {
     </div>
   </div>
 
+  <!-- Avertissement discret du champ IBAN / ID client -->
+  <div id="recipientInputAlert" class="modal hidden" onclick="if(event.target===this)closeRecipientInputAlert()">
+    <div class="modal-content" style="max-width:360px;text-align:center;padding:24px 20px 18px;">
+      <div style="width:42px;height:42px;margin:0 auto 10px;border-radius:50%;background:#FEF3C7;color:#D97706;display:flex;align-items:center;justify-content:center;font-size:20px;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 style="font-size:17px;margin-bottom:8px;color:var(--text-primary);">Weryfikacja odbiorcy</h3>
+      <p id="recipientInputAlertText" style="font-size:13px;line-height:1.5;color:var(--text-secondary);margin-bottom:16px;"></p>
+      <button class="btn" onclick="closeRecipientInputAlert()" style="padding:10px 18px;border-radius:10px;">OK</button>
+    </div>
+  </div>
+
   <!-- Détail transaction -->
   <div id="txDetail" class="modal hidden" onclick="if(event.target===this)closeTxDetail()">
     <div class="modal-content txd-card">
