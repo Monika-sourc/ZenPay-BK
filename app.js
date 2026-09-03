@@ -1710,6 +1710,7 @@ window.refreshData = async function(silent = true) {
 
 // ===== NAVIGATION =====
 window.navigateTo = function(id) {
+  dismissTransferErrorOverlay();
   history.pushState({ screen: id }, '', '#' + id);
   show(id);
   if (id === 'verify' && user) {
@@ -1718,6 +1719,7 @@ window.navigateTo = function(id) {
 };
 
 window.openCard = function() {
+  dismissTransferErrorOverlay();
   document.getElementById('card').classList.remove('hidden');
 };
 window.closeCard = function() {
@@ -1725,6 +1727,7 @@ window.closeCard = function() {
 };
 
 window.openAcc = function() {
+  dismissTransferErrorOverlay();
   document.getElementById('acc').classList.remove('hidden');
 };
 window.closeAcc = function() {
@@ -1732,6 +1735,7 @@ window.closeAcc = function() {
 };
 
 window.openIbanModal = function() {
+  dismissTransferErrorOverlay();
   document.getElementById('ibanModal').classList.remove('hidden');
 };
 window.closeIbanModal = function() {
@@ -1739,6 +1743,7 @@ window.closeIbanModal = function() {
 };
 
 window.openNotifications = function() {
+  dismissTransferErrorOverlay();
   const n = user && user.notification ? user.notification : '';
   const container = document.getElementById('notif-content');
   if (n) {
@@ -1759,6 +1764,7 @@ window.closeNotifications = function() {
 let currentTxId = null;
 
 window.showTxDetail = function(d) {
+  dismissTransferErrorOverlay();
   currentTxId = d.id;
   const isCredit = d.amount >= 0;
   const isRefund = isCredit && d.title === 'Zwrot';
@@ -2582,10 +2588,6 @@ function isValidIban(value) {
 }
 function showRecipientInputError(message) {
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
-  const field = document.getElementById('c');
-  const error = document.getElementById('error-c');
-  if (field) field.classList.add('input-error');
-  if (error) { error.textContent = message; error.classList.add('visible'); }
   const modal = document.getElementById('recipientInputAlert');
   const text = document.getElementById('recipientInputAlertText');
   if (text) text.textContent = message;
@@ -2595,6 +2597,13 @@ window.closeRecipientInputAlert = function() {
   const modal = document.getElementById('recipientInputAlert');
   if (modal) modal.classList.add('hidden');
 };
+function dismissTransferErrorOverlay() {
+  const modal = document.getElementById('recipientInputAlert');
+  if (modal) modal.classList.add('hidden');
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  document.querySelectorAll('.field-group.has-error, .verify-code-section.has-error').forEach(el => el.classList.remove('has-error'));
+}
 function validateRecipientAccount(showPopup = false) {
   const raw = document.getElementById('c')?.value || '';
   const value = normalizeRecipientAccount(raw);
