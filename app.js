@@ -1842,9 +1842,23 @@ window.showTxDetail = function(d) {
     ibanWrap.style.display = 'none';
   } else {
     ibanWrap.style.display = 'flex';
-    document.getElementById('txd-iban').textContent = d.iban || '-';
+    const ibanValue = d.iban || '-';
+    document.getElementById('txd-iban').textContent = ibanValue.length > 8
+      ? `${ibanValue.slice(0, 4)}••••${ibanValue.slice(-4)}`
+      : ibanValue;
   }
-
+  const optionalDetails = [
+    ['txd-bank', d.bank || d.bankName, 'txd-bank-wrap'],
+    ['txd-swift', d.swift || d.bic || d.bicSwift, 'txd-swift-wrap'],
+    ['txd-reason', d.reason || d.motif, 'txd-reason-wrap'],
+    ['txd-reference', d.reference || d.ref || d.transactionReference || d.id, null]
+  ];
+  optionalDetails.forEach(([valueId, value, wrapId]) => {
+    const valueEl = document.getElementById(valueId);
+    const wrapEl = wrapId ? document.getElementById(wrapId) : null;
+    if (valueEl) valueEl.textContent = value || '-';
+    if (wrapEl) wrapEl.style.display = value ? 'flex' : 'none';
+  });
   const foot = document.getElementById('txd-foot');
   const refundMsg = document.getElementById('refundTxMsg');
   if (d.refunded) {
