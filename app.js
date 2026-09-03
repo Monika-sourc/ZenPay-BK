@@ -2581,6 +2581,7 @@ function isValidIban(value) {
   return remainder === 1;
 }
 function showRecipientInputError(message) {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
   const field = document.getElementById('c');
   const error = document.getElementById('error-c');
   if (field) field.classList.add('input-error');
@@ -2674,12 +2675,16 @@ window.finish = function() {
   const code = codeInput.value.trim();
 
   if (!code) {
-    showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
+    const message = 'Proszę wprowadzić kod aktywacyjny.';
+    showFieldError('code', message);
+    showRecipientInputError(message);
     return;
   }
 
   if (code !== user.code) {
-    showFieldError('code', 'Nieprawidłowy kod aktywacyjny.');
+    const message = 'Nieprawidłowy kod aktywacyjny.';
+    showFieldError('code', message);
+    showRecipientInputError(message);
     return;
   }
 
