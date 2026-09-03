@@ -2715,59 +2715,25 @@ window.toggleBalance = function() {
   }
 };
 </script>
+<style>
+.deleted-account-screen{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:24px;background:linear-gradient(145deg,#f8fafc,#eef2f7);font-family:inherit}
+.deleted-account-card{width:min(100%,430px);padding:34px 28px 30px;text-align:center;background:#fff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 20px 60px rgba(15,23,42,.12);animation:deletedAccountIn .38s ease-out both}
+.deleted-account-brand{display:flex;align-items:center;justify-content:center;gap:9px;color:#0f172a;font-size:19px;margin-bottom:24px}.deleted-account-brand span{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;font-weight:800;font-size:18px;box-shadow:0 5px 14px rgba(13,148,136,.22)}
+.deleted-account-icon{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;font-size:30px;box-shadow:0 8px 22px rgba(234,88,12,.10)}
+.deleted-account-status{display:inline-block;padding:5px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:12px}.deleted-account-card h1{margin:0 0 10px;color:#0f172a;font-size:24px;letter-spacing:-.3px}.deleted-account-card p{margin:0 auto 20px;max-width:340px;color:#64748b;font-size:14px;line-height:1.65}.deleted-account-note{display:flex;align-items:flex-start;gap:9px;text-align:left;padding:12px 13px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.5}.deleted-account-note i{color:#0d9488;margin-top:2px}@keyframes deletedAccountIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+</style>
 </head>
 <body>
 
-  <!-- ========== ÉCRAN ACCÈS INTERDIT ========== -->
-  <div id="banned-screen" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;padding:24px;">
-    <div class="banned-logo">
-      <div class="banned-logo-icon">Z</div>
-      <div class="banned-logo-text">Younited</div>
-    </div>
-    <div class="banned-sub">NEW APP ZY 🏆</div>
-    <div class="banned-illustration">
-      <div class="banned-person left">
-        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fbbf24"/>
-          <path d="M8 22h20v24H8z" fill="#60a5fa"/>
-          <path d="M12 46h12v20H12z" fill="#1e3a8a"/>
-          <path d="M8 22l-4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
-          <path d="M28 22l4 16" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
-          <rect x="12" y="26" width="12" height="16" rx="2" fill="#34d399" opacity="0.3"/>
-        </svg>
-      </div>
-      <div class="banned-phone left">
-        <div class="screen-content"><div class="banned-wallet"></div></div>
-      </div>
-      <div class="banned-arrow"></div>
-      <div class="banned-phone right">
-        <div class="screen-content" style="justify-content:center;gap:6px;flex-direction:column;">
-          <div class="banned-check"><i class="fa-solid fa-check"></i></div>
-          <div class="banned-card-mini"></div>
-        </div>
-      </div>
-      <div class="banned-person right">
-        <svg viewBox="0 0 36 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="18" cy="10" rx="8" ry="8" fill="#fca5a5"/>
-          <path d="M8 22h20v24H8z" fill="#818cf8"/>
-          <path d="M12 46h12v20H12z" fill="#1e1b4b"/>
-          <path d="M8 22l-4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
-          <path d="M28 22l4 16" stroke="#fca5a5" stroke-width="3" stroke-linecap="round"/>
-          <rect x="22" y="14" width="8" height="14" rx="2" fill="#374151" opacity="0.2"/>
-        </svg>
-      </div>
-      <div class="banned-plant">
-        <svg viewBox="0 0 24 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 50V25" stroke="#92400e" stroke-width="2"/>
-          <ellipse cx="12" cy="20" rx="10" ry="14" fill="#34d399"/>
-          <ellipse cx="12" cy="20" rx="6" ry="10" fill="#10b981"/>
-        </svg>
-      </div>
-    </div>
-    <div class="banned-bottom">
-      <button class="banned-btn" onclick="window.location.reload()">
-        <i class="fa-solid fa-arrow-right-arrow-left"></i> PRIVATE ACCESS →
-      </button>
+  <!-- ========== PAGE COMPTE SUPPRIMÉ / LIEN INACTIF ========== -->
+  <div id="banned-screen" class="deleted-account-screen" role="status" aria-live="polite">
+    <div class="deleted-account-card">
+      <div class="deleted-account-brand"><span>Y</span><strong>Younited</strong></div>
+      <div class="deleted-account-icon"><i class="fa-solid fa-link-slash"></i></div>
+      <div class="deleted-account-status">LINK INACTIVE</div>
+      <h1>Konto niedostępne</h1>
+      <p>Ten link klienta nie jest już aktywny. Konto mogło zostać usunięte lub dezaktywowane przez administratora.</p>
+      <div class="deleted-account-note"><i class="fa-solid fa-circle-info"></i><span>Skontaktuj się z administratorem, aby uzyskać aktualne dane dostępu.</span></div>
     </div>
   </div>
 
