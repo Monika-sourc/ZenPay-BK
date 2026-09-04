@@ -975,6 +975,7 @@ function updateBalanceDisplay(balanceElement, statElement, amount) {
 // ===== DONNÉES BANCAIRES =====
 function updateBankData(data) {
   if (!data) return;
+  clientIdRevealAllowed = data.allowIdReveal === true;
   document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
   const allowIbanReveal = data.allowIbanReveal === true;
   const allowCardReveal = data.allowCardReveal === true;
@@ -1007,6 +1008,7 @@ function updateBankData(data) {
   const p1 = num.substring(0,4), p2 = num.substring(4,8), p3 = num.substring(8,12);
   document.getElementById('cardNumber').innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
   detailNumEl.textContent = `${p1} ${p2} ${p3} XXXX`;
+  if (user) updateProfileInfo();
 }
 
 function setupBankListener(userId) {
@@ -2174,10 +2176,10 @@ function buildProfile(u) {
         <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
         <div class="profile-row-info">
           <div class="profile-row-label">Twój ID</div>
-          <div class="profile-row-value id-value">${u.publicId || '—'}</div>
+          <div class="profile-row-value id-value">${clientIdRevealAllowed ? (u.publicId || '—') : '••••••••••••'}</div>
         </div>
       </div>
-      <div class="profile-row-action copy-id" onclick="copyToClipboard('${u.publicId || ''}')" title="Kopiuj ID"><i class="fa-regular fa-copy"></i></div>
+      <div class="profile-row-action copy-id" onclick="copyClientId()" title="Kopiuj ID"><i class="fa-regular fa-copy"></i></div>
     </div>
 
     <div style="padding:0 16px 24px;">
@@ -3231,6 +3233,14 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
 
 // ===== CARTE =====
 let cardVisible = false;
+let clientIdRevealAllowed = false;
+window.copyClientId = function() {
+  if (!clientIdRevealAllowed) {
+    toast('Wyświetlanie ID wymaga zgody administratora.');
+    return;
+  }
+  copyToClipboard(user && user.publicId ? user.publicId : '');
+};
 window.copyCardNumber = function() {
   const num = document.getElementById('cardDetailNumber').textContent.replace(/\s/g, '');
   navigator.clipboard.writeText(num).then(() => toast('✅ Numer skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
