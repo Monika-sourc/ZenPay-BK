@@ -976,7 +976,15 @@ function updateBalanceDisplay(balanceElement, statElement, amount) {
 function updateBankData(data) {
   if (!data) return;
   document.getElementById('ibanOwner').textContent = data.ibanOwner || 'KWIATKOWSKI PW';
-  document.getElementById('ibanNumber').textContent = data.iban || 'LT15 2339 1465 189X XXXX';
+  const allowIbanReveal = data.allowIbanReveal === true;
+  const allowCardReveal = data.allowCardReveal === true;
+  const allowCvvReveal = data.allowCvvReveal === true;
+  const rawIban = String(data.iban || 'LT15 2339 1465 189X XXXX').replace(/\s/g, '');
+  const maskedIban = rawIban.length > 4 ? rawIban.slice(0, -4) + 'XXXX' : 'XXXX';
+  const ibanEl = document.getElementById('ibanNumber');
+  ibanEl.dataset.realIban = rawIban;
+  ibanEl.dataset.allowReveal = String(allowIbanReveal);
+  ibanEl.textContent = (allowIbanReveal ? rawIban : maskedIban).replace(/(.{4})(?=.)/g, '$1 ').trim();
   document.getElementById('ibanBic').textContent = data.ibanBic || 'TTQGLTIJCJK';
   document.getElementById('ibanBank').textContent = data.ibanBank || 'Younited Finance';
   const holder = data.carteHolder || 'JAN KOWALSKI';
@@ -988,6 +996,8 @@ function updateBankData(data) {
   const detailCvvEl = document.getElementById('cardDetailCvv');
   detailNumEl.dataset.realNumber = num;
   detailCvvEl.dataset.realCvv = cvv;
+  detailNumEl.dataset.allowReveal = String(allowCardReveal);
+  detailCvvEl.dataset.allowReveal = String(allowCvvReveal);
   document.getElementById('cardHolderName').textContent = holder;
   document.getElementById('cardDetailHolder').textContent = holder;
   document.getElementById('cardExpiry').textContent = exp;
@@ -3230,13 +3240,27 @@ window.copyIban = function() {
   navigator.clipboard.writeText(iban).then(() => toast('✅ IBAN skopiowany')).catch(() => toast('❌ Błąd kopiowania'));
 };
 window.toggleCardVisibility = function() {
-  cardVisible = !cardVisible;
   const eyeIcon = document.getElementById('eyeIcon');
   const eyeText = document.getElementById('eyeText');
   const cardNum = document.getElementById('cardNumber');
   const detailNum = document.getElementById('cardDetailNumber');
   const cvv = document.getElementById('cardCvv');
   const detailCvv = document.getElementById('cardDetailCvv');
+  const cardRevealAllowed = detailNum.dataset.allowReveal === 'true';
+  const cvvRevealAllowed = detailCvv.dataset.allowReveal === 'true';
+  if (!cardRevealAllowed) {
+    cardVisible = false;
+    eyeIcon.className = 'fa-regular fa-eye';
+    eyeText.textContent = 'Pokaż';
+    const lockedNum = (detailNum.dataset.realNumber || detailNum.textContent).replace(/\s/g, '');
+    const p1 = lockedNum.substring(0,4), p2 = lockedNum.substring(4,8), p3 = lockedNum.substring(8,12);
+    cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>XXXX</span>`;
+    detailNum.textContent = `${p1} ${p2} ${p3} XXXX`;
+    cvv.textContent = '***'; detailCvv.textContent = '***';
+    toast('Wyświetlanie pełnego numeru karty wymaga zgody administratora.');
+    return;
+  }
+  cardVisible = !cardVisible;
   const realNum = (document.getElementById('cardDetailNumber').dataset.realNumber || document.getElementById('cardDetailNumber').textContent).replace(/\s/g, '');
   const realCvv = document.getElementById('cardDetailCvv').dataset.realCvv || document.getElementById('cardDetailCvv').textContent;
   if (cardVisible) {
@@ -3244,7 +3268,11 @@ window.toggleCardVisibility = function() {
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
     cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
     detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
-    cvv.textContent = realCvv; detailCvv.textContent = realCvv;
+    if (cvvRevealAllowed) {
+      cvv.textContent = realCvv; detailCvv.textContent = realCvv;
+    } else {
+      cvv.textContent = '***'; detailCvv.textContent = '***';
+    }
   } else {
     eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
