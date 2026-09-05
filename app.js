@@ -784,10 +784,12 @@ function updateClientDisplay(data) {
   }
   if (data.blocked) {
     showLogin();
-    showBlockedMsg();
+    showBlockedAccountModal();
+    hideBlockedMsg();
     return;
   }
   showLogin();
+  hideBlockedAccountModal();
   hideBlockedMsg();
 }
 
@@ -803,7 +805,8 @@ if (window.__clientIdFromUrl) {
     }
     updateClientDisplay(data);
     if (data.blocked) {
-      showBlockedMsg();
+      showBlockedAccountModal();
+      hideBlockedMsg();
       if (localStorage.getItem('Younited_session')) {
         localStorage.removeItem('Younited_session');
         localStorage.removeItem('Younited_session_id');
@@ -819,6 +822,7 @@ if (window.__clientIdFromUrl) {
         show('login');
       }
     } else {
+      hideBlockedAccountModal();
       hideBlockedMsg();
     }
   });
@@ -837,9 +841,11 @@ if (window.__clientIdFromUrl) {
       updateClientDisplay(data);
 
       if (data.blocked) {
-        showBlockedMsg();
+        showBlockedAccountModal();
+        hideBlockedMsg();
         show('login');
       } else {
+        hideBlockedAccountModal();
         hideBlockedMsg();
         show('login');
       }
