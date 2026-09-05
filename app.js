@@ -1484,6 +1484,58 @@ function watchBalance(userId) {
 }
 
 // ===== SURVEILLANCE STATUT =====
+let blockedLoginListener = null;
+function showBlockedAccountModal() {
+  if (!document.getElementById('accountBlockedModalStyles')) {
+    const style = document.createElement('style');
+    style.id = 'accountBlockedModalStyles';
+    style.textContent = `
+      #accountBlockedModal { position:fixed; inset:0; z-index:2147483647; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,23,42,.72); backdrop-filter:blur(8px); pointer-events:auto; }
+      #accountBlockedModal.visible { display:flex; animation:accountBlockedFade .22s ease-out both; }
+      #accountBlockedModal .account-blocked-dialog { width:min(430px,100%); box-sizing:border-box; padding:30px 24px; text-align:center; border-radius:22px; background:#fff; border:1px solid #fecaca; box-shadow:0 24px 70px rgba(0,0,0,.28); }
+      #accountBlockedModal .account-blocked-icon { width:62px; height:62px; display:grid; place-items:center; margin:0 auto 16px; border-radius:50%; color:#b91c1c; background:#fee2e2; font-size:25px; }
+      #accountBlockedModal h2 { margin:0 0 12px; color:#991b1b; font-size:20px; }
+      #accountBlockedModal p { margin:0 auto 12px; color:#475569; line-height:1.6; font-size:14px; }
+      #accountBlockedModal .account-blocked-note { margin-bottom:0; padding:12px 13px; border-radius:12px; color:#7f1d1d; background:#fff7ed; font-size:12px; }
+      @keyframes accountBlockedFade { from { opacity:0; } to { opacity:1; } }
+    `;
+    document.head.appendChild(style);
+  }
+  let modal = document.getElementById('accountBlockedModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'accountBlockedModal';
+    modal.innerHTML = `
+      <div class="account-blocked-dialog" role="alertdialog" aria-modal="true" aria-labelledby="accountBlockedTitle">
+        <div class="account-blocked-icon"><i class="fa-solid fa-lock"></i></div>
+        <h2 id="accountBlockedTitle">Konto zostało zablokowane</h2>
+        <p>Administrator tymczasowo zablokował dostęp do tego konta.</p>
+        <p class="account-blocked-note">Ta wiadomość pozostanie wyświetlona do momentu odblokowania konta przez administratora.</p>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.classList.add('visible');
+  document.body.classList.add('account-blocked-lock');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideBlockedAccountModal() {
+  const modal = document.getElementById('accountBlockedModal');
+  if (modal) modal.classList.remove('visible');
+  document.body.classList.remove('account-blocked-lock');
+  document.body.style.overflow = '';
+}
+
+function watchBlockedLoginState(clientId) {
+  if (blockedLoginListener) blockedLoginListener();
+  blockedLoginListener = onValue(ref(db, 'clients/' + clientId + '/blocked'), (snap) => {
+    if (snap.val() !== true) {
+      hideBlockedAccountModal();
+      if (blockedLoginListener) { blockedLoginListener(); blockedLoginListener = null; }
+    }
+  });
+}
+
 function watchClientStatus(userId) {
   if (statusListener) statusListener();
   statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
@@ -1494,10 +1546,10 @@ function watchClientStatus(userId) {
       return;
     }
     if (data.blocked) {
-      toast('Konto zablokowane');
-      setTimeout(() => forceLogout(false), 1000);
+      showBlockedAccountModal();
       return;
     }
+    hideBlockedAccountModal();
     if (data.historyReset) {
       const key = 'Younited_' + user.email.toLowerCase();
       const stored = JSON.parse(localStorage.getItem(key) || '{}');
@@ -2372,6 +2424,8 @@ window.login = async function(options = { silent: false, redirect: false }) {
     if (f.blocked) {
       err.textContent = 'Konto zostało zablokowane';
       err.classList.remove('hidden');
+      showBlockedAccountModal();
+      watchBlockedLoginState(fid);
       localStorage.removeItem('Younited_session');
       localStorage.removeItem('Younited_client_id');
       if (!options.silent) {
