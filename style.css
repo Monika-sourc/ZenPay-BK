@@ -3735,6 +3735,53 @@ body.dark-bg #client-name {
   transform: scale(0.95);
 }
 
+/* ===== CONTRASTE ROBUSTE DES PAGES PROGRESSION ET CONFIRMATION ===== */
+body.dark-bg #progress .progress-card,
+body.dark-bg #result .receipt-card {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+}
+body.dark-bg #progress .progress-status,
+body.dark-bg #progress .progress-details-box {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+}
+body.dark-bg #progress .progress-status strong,
+body.dark-bg #progress .progress-status div,
+body.dark-bg #progress .progress-details-title span,
+body.dark-bg #progress .progress-details .row .value,
+body.dark-bg #result .receipt-status,
+body.dark-bg #result .receipt-row .r-value {
+  color: #ffffff !important;
+}
+body.dark-bg #progress .progress-details .row .label,
+body.dark-bg #result .receipt-row .r-label {
+  color: #cbd5e1 !important;
+}
+body.dark-bg #progress .progress-details .row,
+body.dark-bg #result .receipt-row {
+  border-bottom-color: #475569 !important;
+}
+body.dark-bg #result .receipt-header {
+  color: #ffffff !important;
+}
+body.dark-bg #result .receipt-badge {
+  color: #ffffff !important;
+  background: rgba(255,255,255,.16) !important;
+  border-color: rgba(255,255,255,.4) !important;
+}
+body.light-bg #progress .progress-card,
+body.light-bg #result .receipt-card {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+body.light-bg #progress .progress-details .row .value,
+body.light-bg #result .receipt-status,
+body.light-bg #result .receipt-row .r-value {
+  color: #1e293b !important;
+}
+
 
 /* ===== STATUTS DE VIREMENT — VERSION ROBUSTE ===== */
 #result .receipt-card.receipt-success::before { background: linear-gradient(135deg,#059669,#047857); }
