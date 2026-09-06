@@ -3735,3 +3735,24 @@ body.dark-bg #client-name {
   transform: scale(0.95);
 }
 
+
+/* ===== STATUTS DE VIREMENT — VERSION ROBUSTE ===== */
+#result .receipt-card.receipt-success::before { background: linear-gradient(135deg,#059669,#047857); }
+#result .receipt-card.receipt-failure::before { background: linear-gradient(135deg,#DC2626,#B91C1C); }
+#result .receipt-card.receipt-pending::before { background: linear-gradient(135deg,#D97706,#B45309); }
+#result .receipt-card.receipt-success .receipt-header { background: linear-gradient(160deg,#059669 0%,#047857 100%); color:#fff; }
+#result .receipt-card.receipt-failure .receipt-header { background: linear-gradient(160deg,#DC2626 0%,#B91C1C 100%); color:#fff; }
+#result .receipt-card.receipt-pending .receipt-header { background: linear-gradient(160deg,#D97706 0%,#B45309 100%); color:#fff; }
+#result .receipt-card.receipt-success .receipt-percent,
+#result .receipt-card.receipt-success .receipt-row .r-value.amount { color:#059669 !important; }
+#result .receipt-card.receipt-failure .receipt-percent,
+#result .receipt-card.receipt-failure .receipt-row .r-value.amount { color:#DC2626 !important; }
+#result .receipt-card.receipt-pending .receipt-percent,
+#result .receipt-card.receipt-pending .receipt-row .r-value.amount { color:#D97706 !important; }
+#result .receipt-card.receipt-failure .receipt-msg { background:#FEF2F2; border-left-color:#DC2626; color:#991B1B; }
+#result .receipt-card.receipt-pending .receipt-msg { background:#FFFBEB; border-left-color:#D97706; color:#92400E; }
+#notifications .notif-item { border-left:4px solid #94a3b8; }
+#notifications .notif-item.notif-success { border-left-color:#059669; background:#ECFDF5; color:#065F46; }
+#notifications .notif-item.notif-failure { border-left-color:#DC2626; background:#FEF2F2; color:#991B1B; }
+#notifications .notif-item.notif-pending { border-left-color:#D97706; background:#FFFBEB; color:#92400E; }
+#notifications .notif-item.notif-refund { border-left-color:#7C3AED; background:#F5F3FF; color:#5B21B6; }
