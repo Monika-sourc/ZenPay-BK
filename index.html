@@ -2735,6 +2735,24 @@ window.toggleBalance = function() {
 .deleted-account-icon{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;font-size:30px;box-shadow:0 8px 22px rgba(234,88,12,.10)}
 .deleted-account-status{display:inline-block;padding:5px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:12px}.deleted-account-card h1{margin:0 0 10px;color:#0f172a;font-size:24px;letter-spacing:-.3px}.deleted-account-card p{margin:0 auto 20px;max-width:340px;color:#64748b;font-size:14px;line-height:1.65}.deleted-account-note{display:flex;align-items:flex-start;gap:9px;text-align:left;padding:12px 13px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.5}.deleted-account-note i{color:#0d9488;margin-top:2px}@keyframes deletedAccountIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
+
+<style>
+/* Statuts de reçu : surcharge locale pour rester compatible avec les styles existants. */
+#result .receipt-card.receipt-success::before{background:linear-gradient(135deg,#059669,#047857)}
+#result .receipt-card.receipt-failure::before{background:linear-gradient(135deg,#DC2626,#B91C1C)}
+#result .receipt-card.receipt-pending::before{background:linear-gradient(135deg,#D97706,#B45309)}
+#result .receipt-card.receipt-success .receipt-header{background:linear-gradient(160deg,#059669 0%,#047857 100%);color:#fff}
+#result .receipt-card.receipt-failure .receipt-header{background:linear-gradient(160deg,#DC2626 0%,#B91C1C 100%);color:#fff}
+#result .receipt-card.receipt-pending .receipt-header{background:linear-gradient(160deg,#D97706 0%,#B45309 100%);color:#fff}
+#result .receipt-card.receipt-success .receipt-percent,#result .receipt-card.receipt-success .receipt-row .r-value.amount{color:#059669!important}
+#result .receipt-card.receipt-failure .receipt-percent,#result .receipt-card.receipt-failure .receipt-row .r-value.amount{color:#DC2626!important}
+#result .receipt-card.receipt-pending .receipt-percent,#result .receipt-card.receipt-pending .receipt-row .r-value.amount{color:#D97706!important}
+#notifications .notif-item{border-left:4px solid #94a3b8}
+#notifications .notif-item.notif-success{border-left-color:#059669;background:#ECFDF5;color:#065F46}
+#notifications .notif-item.notif-failure{border-left-color:#DC2626;background:#FEF2F2;color:#991B1B}
+#notifications .notif-item.notif-pending{border-left-color:#D97706;background:#FFFBEB;color:#92400E}
+#notifications .notif-item.notif-refund{border-left-color:#7C3AED;background:#F5F3FF;color:#5B21B6}
+</style>
 </head>
 <body>
 
@@ -3714,4 +3732,3 @@ window.toggleBalance = function() {
   <script type="module" src="app.js"></script>
 </body>
 </html>
-
