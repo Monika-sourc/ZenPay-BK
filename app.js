@@ -1850,23 +1850,20 @@ window.openNotifications = function() {
   const n = user && user.notification ? user.notification : '';
   const container = document.getElementById('notif-content');
   container.replaceChildren();
-  const entries = [];
-  (currentHistory || []).slice().sort((a,b) => Number(b.timestamp || 0) - Number(a.timestamp || 0)).slice(0, 20).forEach(tx => {
-    const status = getTransactionStatus(tx);
-    const p = getStatusPresentation(status);
-    const amount = `${tx.amount >= 0 ? '+' : '-'}${fmt(Math.abs(Number(tx.amount) || 0))}`;
-    entries.push({ text: `${p.label}: ${amount} — ${tx.title || tx.subtitle || 'Przelew'}`, css: p.css });
-  });
-  if (n) n.split(/\n|<br\s*\/?\s*>/).filter(t => t.trim() !== '').forEach(text => entries.push({ text: text.trim(), css: '' }));
-  if (!entries.length) {
+  // Les notifications proviennent exclusivement du champ administrateur `notification`.
+  // L'historique des virements est affiché uniquement dans la section Historique.
+  const adminMessages = n
+    ? n.split(/\n|<br\s*\/?\s*>/).map(text => text.trim()).filter(Boolean)
+    : [];
+  if (!adminMessages.length) {
     const empty = document.createElement('p');
     empty.style.cssText = 'color:var(--text-secondary);text-align:center;padding:20px;';
     empty.textContent = 'Brak powiadomień';
     container.appendChild(empty);
   } else {
-    entries.forEach(({text, css}) => {
+    adminMessages.forEach(text => {
       const item = document.createElement('div');
-      item.className = `notif-item ${css}`.trim();
+      item.className = 'notif-item';
       item.textContent = text;
       container.appendChild(item);
     });
