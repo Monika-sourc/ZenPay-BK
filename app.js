@@ -618,7 +618,10 @@ function applyBgColor(bgColor) {
   document.querySelectorAll('#result .receipt-status').forEach(el => el.style.color = isDark ? '#ffffff' : '');
   document.querySelectorAll('#result .receipt-row .r-value').forEach(el => el.style.color = isDark ? '#ffffff' : '');
   document.querySelectorAll('#result .receipt-row .r-value.amount').forEach(el => el.style.color = isDark ? '#ffffff' : '');
-  document.querySelectorAll('#result .receipt-percent').forEach(el => el.style.color = isDark ? '#34d399' : '');
+  document.querySelectorAll('#result .receipt-percent').forEach(el => {
+    el.style.color = el.closest('.receipt-card')?.classList.contains('receipt-success') || el.closest('.receipt-card')?.classList.contains('receipt-failure') || el.closest('.receipt-card')?.classList.contains('receipt-pending') ? '#FFFFFF' : '';
+    el.style.textShadow = isDark ? '0 2px 4px rgba(0,0,0,.35)' : '';
+  });
 
   // Login page
   const loginWrapper = document.querySelector('#login .login-wrapper');
@@ -2998,26 +3001,42 @@ let transferData = {};
 // ===== RÉINITIALISATION DES STYLES DU REÇU =====
 function resetReceiptStyles(theme = 'success') {
   applyReceiptTheme(theme);
+  const isFailureTheme = theme === 'failure';
+  const isPendingTheme = theme === 'pending';
   const icon = document.getElementById('resultIcon');
   const status = document.getElementById('resultStatus');
   const percentResult = document.getElementById('resultPercent');
   const msgEl = document.getElementById('resultMsg');
   const statusTag = document.querySelector('.receipt-row .status-tag');
 
-  if (icon) icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
-  if (status) { status.textContent = 'Przelew zatwierdzony'; status.style.color = ''; }
-  if (percentResult) percentResult.style.color = '#10B981';
+  if (icon) icon.innerHTML = isFailureTheme
+    ? '<i class="fa-solid fa-circle-xmark" style="color:#FFFFFF;"></i>'
+    : isPendingTheme
+      ? '<i class="fa-solid fa-clock" style="color:#FFFFFF;"></i>'
+      : '<i class="fa-solid fa-circle-check" style="color:#FFFFFF;"></i>';
+  if (status) {
+    status.textContent = isFailureTheme ? 'Przelew nie powiódł się' : isPendingTheme ? 'Przelew w oczekiwaniu' : 'Przelew zatwierdzony';
+    status.style.color = '#FFFFFF';
+  }
+  if (percentResult) {
+    percentResult.style.color = '#FFFFFF';
+    percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)';
+  }
   if (msgEl) {
-    msgEl.textContent = 'Środki zostaną przelane w ciągu 1-2 dni roboczych.';
-    msgEl.style.background = '';
-    msgEl.style.borderLeftColor = '';
-    msgEl.style.color = '';
+    msgEl.textContent = isFailureTheme ? 'Przelew nie został zrealizowany. Sprawdź dane i spróbuj ponownie.' : isPendingTheme ? 'Twój przelew oczekuje na zatwierdzenie administracyjne.' : 'Środki zostaną przelane w ciągu 1-2 dni roboczych.';
+    msgEl.style.background = isFailureTheme ? '#FEF2F2' : isPendingTheme ? '#FFFBEB' : '';
+    msgEl.style.borderLeftColor = isFailureTheme ? '#DC2626' : isPendingTheme ? '#D97706' : '';
+    msgEl.style.color = isFailureTheme ? '#991B1B' : isPendingTheme ? '#92400E' : '';
   }
   if (statusTag) {
-    statusTag.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Zrealizowany';
-    statusTag.style.background = '#ecfdf5';
-    statusTag.style.color = '#059669';
-    statusTag.style.borderColor = '#059669';
+    const color = isFailureTheme ? '#DC2626' : isPendingTheme ? '#D97706' : '#059669';
+    const bg = isFailureTheme ? '#FEF2F2' : isPendingTheme ? '#FFFBEB' : '#ecfdf5';
+    const label = isFailureTheme ? 'Niepowodzenie' : isPendingTheme ? 'W oczekiwaniu' : 'Zrealizowany';
+    const iconClass = isFailureTheme ? 'fa-circle-xmark' : isPendingTheme ? 'fa-clock' : 'fa-circle-check';
+    statusTag.innerHTML = `<i class="fa-solid ${iconClass}" style="font-size:9px;"></i> ${label}`;
+    statusTag.style.background = bg;
+    statusTag.style.color = color;
+    statusTag.style.borderColor = color;
   }
 }
 
@@ -3040,7 +3059,8 @@ function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, date
   }
   if (percentResult) {
     percentResult.textContent = '100%';
-    percentResult.style.color = '#D97706';
+    percentResult.style.color = '#FFFFFF';
+    percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)';
   }
   if (benefEl) benefEl.textContent = beneficiary;
   if (amountEl) amountEl.textContent = fmt(amount);
@@ -3316,7 +3336,7 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
         accountEl.textContent = transferData.iban;
         const { dateStr, timeStr } = getPolandDateTime();
         document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
-        msgEl.textContent = msg || (pct >= 100 ? 'Środki zostaną przelane w ciągu 1-2 dni roboczych.' : 'Transakcja została przerwana.');
+        msgEl.textContent = isFailure ? 'Przelew nie został zrealizowany. Sprawdź dane i spróbuj ponownie.' : (msg || 'Środki zostaną przelane w ciągu 1-2 dni roboczych.');
 
         const successFinal = (pct >= 100);
         const refNum = genId('REF');
