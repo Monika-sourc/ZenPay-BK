@@ -3738,38 +3738,37 @@ body.dark-bg #client-name {
 /* ===== CONTRASTE ROBUSTE DES PAGES PROGRESSION ET CONFIRMATION ===== */
 body.dark-bg #progress .progress-card,
 body.dark-bg #result .receipt-card {
-  background: #1e293b !important;
-  color: #f8fafc !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
 }
 body.dark-bg #progress .progress-status,
 body.dark-bg #progress .progress-details-box {
-  background: #0f172a !important;
-  color: #f8fafc !important;
-  border-color: #475569 !important;
+  background: #f8fafc !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
 }
 body.dark-bg #progress .progress-status strong,
 body.dark-bg #progress .progress-status div,
 body.dark-bg #progress .progress-details-title span,
 body.dark-bg #progress .progress-details .row .value,
-body.dark-bg #result .receipt-status,
 body.dark-bg #result .receipt-row .r-value {
-  color: #ffffff !important;
+  color: #1e293b !important;
 }
 body.dark-bg #progress .progress-details .row .label,
 body.dark-bg #result .receipt-row .r-label {
-  color: #cbd5e1 !important;
+  color: #64748b !important;
 }
 body.dark-bg #progress .progress-details .row,
 body.dark-bg #result .receipt-row {
-  border-bottom-color: #475569 !important;
+  border-bottom-color: #e2e8f0 !important;
 }
 body.dark-bg #result .receipt-header {
   color: #ffffff !important;
 }
 body.dark-bg #result .receipt-badge {
-  color: #ffffff !important;
-  background: rgba(255,255,255,.16) !important;
-  border-color: rgba(255,255,255,.4) !important;
+  color: #065f46 !important;
+  background: linear-gradient(135deg,#ecfdf5,#d1fae5) !important;
+  border-color: #a7f3d0 !important;
 }
 body.light-bg #progress .progress-card,
 body.light-bg #result .receipt-card {
