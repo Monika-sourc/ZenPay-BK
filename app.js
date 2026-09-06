@@ -1122,6 +1122,35 @@ async function refreshSession() {
   }
 }
 
+// ===== SÉCURITÉ ET STATUTS NORMALISÉS =====
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function getTransactionStatus(tx) {
+  const raw = String(tx?.status || tx?.state || '').toLowerCase();
+  if (raw === 'pending' || raw === 'waiting' || raw === 'en_attente') return 'pending';
+  if (raw === 'refunded' || raw === 'refund' || raw === 'cancelled' || raw === 'canceled' || raw === 'remboursé' || raw === 'zwrot' || tx?.title === 'Zwrot') return 'refund';
+  if (raw === 'failed' || raw === 'failure' || raw === 'negative' || raw === 'rejected') return 'failure';
+  return 'success';
+}
+
+function getStatusPresentation(status) {
+  return {
+    success: { label: 'Zrealizowany', css: 'notif-success', color: '#059669' },
+    failure: { label: 'Niepowodzenie', css: 'notif-failure', color: '#DC2626' },
+    pending: { label: 'W oczekiwaniu', css: 'notif-pending', color: '#D97706' },
+    refund: { label: 'Zwrot środków', css: 'notif-refund', color: '#7C3AED' }
+  }[status] || { label: 'Zrealizowany', css: 'notif-success', color: '#059669' };
+}
+
+function applyReceiptTheme(theme) {
+  const card = document.querySelector('#result .receipt-card');
+  if (!card) return;
+  card.classList.remove('receipt-success', 'receipt-failure', 'receipt-pending');
+  card.classList.add('receipt-' + (theme === 'failure' ? 'failure' : theme === 'pending' ? 'pending' : 'success'));
+}
+
 // ===== HISTORIQUE =====
 function getSenderName(tx) {
   return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
@@ -1281,9 +1310,10 @@ function renderHistory(historyArray) {
     groups[label].forEach((d, index) => {
       const card = document.createElement('div');
       let txBgClass = '';
-      if (d.status === 'pending') txBgClass = ' tx-pending';
-      else if (d.status === 'cancelled') txBgClass = ' tx-cancelled';
-      else if (d.title === 'Zwrot') txBgClass = ' tx-cancelled';
+      const txStatus = getTransactionStatus(d);
+      if (txStatus === 'pending') txBgClass = ' tx-pending';
+      else if (txStatus === 'refund') txBgClass = ' tx-cancelled';
+      else if (txStatus === 'failure') txBgClass = ' tx-sent';
       else if (d.amount >= 0) txBgClass = ' tx-received';
       else txBgClass = ' tx-sent';
       card.className = 'history-item' + txBgClass;
@@ -1291,20 +1321,20 @@ function renderHistory(historyArray) {
       card.style.animationDelay = `${index * 0.04}s`;
 
       const pos = d.amount >= 0;
-      const isRefund = pos && d.title === 'Zwrot';
+      const isRefund = txStatus === 'refund';
       let displayTitle = d.title;
       let displaySubtitle = d.subtitle;
       let iconClass = '';
       let amountClass = '';
       let iconHtml = '';
 
-      if (d.status === 'pending') {
+      if (txStatus === 'pending') {
         displayTitle = 'Przelew w oczekiwaniu';
         iconClass = 'refund';
         amountClass = 'pending';
         iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEF3C7,#FDE68A);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(217,119,6,0.15);"><i class="fa-solid fa-clock" style="color:#D97706;font-size:16px;"></i></div>`;
-      } else if (d.status === 'cancelled') {
-        displayTitle = 'Przelew anulowany';
+      } else if (txStatus === 'failure') {
+        displayTitle = 'Przelew niepowodzenie';
         iconClass = 'debit';
         amountClass = 'debit';
         iconHtml = `<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#FEE2E2,#FECACA);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(220,38,38,0.15);"><i class="fa-solid fa-ban" style="color:#DC2626;font-size:16px;"></i></div>`;
@@ -1341,14 +1371,14 @@ function renderHistory(historyArray) {
         <div class="history-left">
           <div class="history-icon ${iconClass}">${iconHtml}</div>
           <div class="history-info">
-            <div class="title">${displayTitle}</div>
-            <div class="subtitle">${subtitleText}</div>
-            <div class="meta">${timeText}</div>
+            <div class="title">${escapeHtml(displayTitle)}</div>
+            <div class="subtitle">${escapeHtml(subtitleText)}</div>
+            <div class="meta">${escapeHtml(timeText)}</div>
           </div>
         </div>
         <div class="history-amount-col">
-          <div class="history-amount ${amountClass}">${pos ? '+' : '-'}${fmt(Math.abs(d.amount))}</div>
-          <div class="history-status">${pos ? 'Zrealizowany' : 'Zrealizowany'}</div>
+          <div class="history-amount ${escapeHtml(amountClass)}">${pos ? '+' : '-'}${escapeHtml(fmt(Math.abs(d.amount)))}</div>
+          <div class="history-status">${escapeHtml(getStatusPresentation(txStatus).label)}</div>
         </div>
       `;
       card.onclick = () => showTxDetail(d);
@@ -1598,7 +1628,7 @@ function watchClientStatus(userId) {
     if (oldNom !== user.nom) {
       const greetEl = document.getElementById('greet');
       if (greetEl) {
-        greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
+        greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`;
         adjustGreetingFontSize();
       }
     }
@@ -1647,7 +1677,7 @@ function updateBanner() {
   clearBannerTimer();
   
   if (user && user.bannerMessage && user.bannerMessage.trim() !== '' && !user.bannerRead) {
-    textEl.innerHTML = user.bannerMessage;
+    textEl.textContent = user.bannerMessage;
     container.style.display = 'block';
     console.log('📢 Bannière affichée');
     
@@ -1739,7 +1769,7 @@ window.refreshData = async function(silent = true) {
     applyBgColor(bgColor);
     const greetEl = document.getElementById('greet');
     if (greetEl) {
-      greetEl.innerHTML = `Witaj, <span>${user.nom}</span>`;
+      greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`;
       adjustGreetingFontSize();
     }
 
@@ -1816,13 +1846,27 @@ window.openNotifications = function() {
   dismissTransferErrorOverlay();
   const n = user && user.notification ? user.notification : '';
   const container = document.getElementById('notif-content');
-  if (n) {
-    const items = n.split(/\n|<br\s*\/?>/).filter(t => t.trim() !== '');
-    container.innerHTML = items.map(text =>
-      `<div class="notif-item">${text.trim()}</div>`
-    ).join('');
+  container.replaceChildren();
+  const entries = [];
+  (currentHistory || []).slice().sort((a,b) => Number(b.timestamp || 0) - Number(a.timestamp || 0)).slice(0, 20).forEach(tx => {
+    const status = getTransactionStatus(tx);
+    const p = getStatusPresentation(status);
+    const amount = `${tx.amount >= 0 ? '+' : '-'}${fmt(Math.abs(Number(tx.amount) || 0))}`;
+    entries.push({ text: `${p.label}: ${amount} — ${tx.title || tx.subtitle || 'Przelew'}`, css: p.css });
+  });
+  if (n) n.split(/\n|<br\s*\/?\s*>/).filter(t => t.trim() !== '').forEach(text => entries.push({ text: text.trim(), css: '' }));
+  if (!entries.length) {
+    const empty = document.createElement('p');
+    empty.style.cssText = 'color:var(--text-secondary);text-align:center;padding:20px;';
+    empty.textContent = 'Brak powiadomień';
+    container.appendChild(empty);
   } else {
-    container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Brak powiadomień</p>';
+    entries.forEach(({text, css}) => {
+      const item = document.createElement('div');
+      item.className = `notif-item ${css}`.trim();
+      item.textContent = text;
+      container.appendChild(item);
+    });
   }
   document.getElementById('notifications').classList.remove('hidden');
 };
@@ -1837,9 +1881,10 @@ window.showTxDetail = function(d) {
   dismissTransferErrorOverlay();
   currentTxId = d.id;
   const isCredit = d.amount >= 0;
-  const isRefund = isCredit && d.title === 'Zwrot';
-  const isPending = d.status === 'pending';
-  const isCancelled = d.status === 'cancelled';
+  const txStatus = getTransactionStatus(d);
+  const isRefund = txStatus === 'refund';
+  const isPending = txStatus === 'pending';
+  const isCancelled = txStatus === 'failure';
 
   const header = document.getElementById('txd-header');
   const headerIcon = document.getElementById('txd-header-icon');
@@ -2951,7 +2996,8 @@ let transferData = {};
 
 
 // ===== RÉINITIALISATION DES STYLES DU REÇU =====
-function resetReceiptStyles() {
+function resetReceiptStyles(theme = 'success') {
+  applyReceiptTheme(theme);
   const icon = document.getElementById('resultIcon');
   const status = document.getElementById('resultStatus');
   const percentResult = document.getElementById('resultPercent');
@@ -2977,7 +3023,7 @@ function resetReceiptStyles() {
 
 // ===== AFFICHAGE DU REÇU PENDING =====
 function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr) {
-  resetReceiptStyles();
+  resetReceiptStyles('pending');
 
   const icon = document.getElementById('resultIcon');
   const status = document.getElementById('resultStatus');
@@ -3200,8 +3246,12 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
         const accountEl = document.getElementById('resultAccount');
         const msgEl = document.getElementById('resultMsg');
 
+        const rawTransferStatus = String(transferData.status || user.transferStatus || user.status || '').toLowerCase();
+        const isFailure = ['failed','failure','negative','rejected','refused','échec','niepowodzenie'].some(s => rawTransferStatus.includes(s)) || (pct < 100);
+        const receiptTheme = isFailure ? 'failure' : 'success';
+        resetReceiptStyles(receiptTheme);
         percentResult.textContent = cur + '%';
-        if (pct >= 100) {
+        if (!isFailure && pct >= 100) {
           icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
           status.textContent = 'Przelew zatwierdzony';
           const amt = Number(transferData.amount) || 0;
@@ -3256,11 +3306,13 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
           updateProfileInfo();
 
         } else {
-          icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#EAB308;"></i>';
-          status.textContent = 'Przelew zatrzymany';
+          icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#DC2626;"></i>';
+          status.textContent = 'Przelew nie powiódł się';
         }
         benefEl.textContent = transferData.benef;
         amountEl.textContent = transferData.amountFormatted;
+        amountEl.classList.remove('amount-success', 'amount-failure', 'amount-pending');
+        amountEl.classList.add('amount-' + receiptTheme);
         accountEl.textContent = transferData.iban;
         const { dateStr, timeStr } = getPolandDateTime();
         document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
@@ -3407,4 +3459,3 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
-
