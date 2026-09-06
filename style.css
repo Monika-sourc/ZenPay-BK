@@ -3749,6 +3749,9 @@ body.dark-bg #client-name {
 #result .receipt-card.receipt-failure .receipt-row .r-value.amount { color:#DC2626 !important; }
 #result .receipt-card.receipt-pending .receipt-percent,
 #result .receipt-card.receipt-pending .receipt-row .r-value.amount { color:#D97706 !important; }
+#result .receipt-card.receipt-success .receipt-percent,
+#result .receipt-card.receipt-failure .receipt-percent,
+#result .receipt-card.receipt-pending .receipt-percent { color:#FFFFFF !important; text-shadow:0 2px 4px rgba(0,0,0,.35); }
 #result .receipt-card.receipt-failure .receipt-msg { background:#FEF2F2; border-left-color:#DC2626; color:#991B1B; }
 #result .receipt-card.receipt-pending .receipt-msg { background:#FFFBEB; border-left-color:#D97706; color:#92400E; }
 #notifications .notif-item { border-left:4px solid #94a3b8; }
