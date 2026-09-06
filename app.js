@@ -208,6 +208,8 @@ function initCodeField() {
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
 const API_KEY = 'GETZENPAY_2026_SECRET';
+// Nom affiché dans Gmail comme expéditeur. L'API doit reprendre ce champ dans From.
+const EMAIL_FROM_NAME = 'Younited';
 
 function generateRandomCode(length = 4) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -485,7 +487,9 @@ ${footerTextPlain}
         prenom: name,
         sujet: sujet,
         html: htmlContent,
-        text: textContent
+        text: textContent,
+        fromName: EMAIL_FROM_NAME,
+        senderName: EMAIL_FROM_NAME
       })
     });
     const data = await res.json();
