@@ -497,6 +497,82 @@ ${footerTextPlain}
   }
 };
 
+function pdfSafe(value) {
+  return String(value ?? '—').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7E]/g, '?');
+}
+
+function pdfEscape(value) {
+  return pdfSafe(value).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+}
+
+function buildReceiptPdfBase64({ name, montant, beneficiaire, compte, reference, statusLabel = 'REALISE', statusColor = '#059669' }) {
+  const color = statusColor === '#DC2626' ? '0.863 0.149 0.149' : statusColor === '#D97706' ? '0.851 0.467 0.024' : '0.024 0.588 0.412';
+  const { dateStr, timeStr } = getPolandDateTime();
+  const rows = [
+    ['Client', name], ['Beneficiaire', beneficiaire], ['Montant', montant],
+    ['Compte / IBAN', compte], ['Reference', reference], ['Date', `${dateStr} ${timeStr}`]
+  ];
+  const content = [];
+  const text = (x, y, size, value, rgb = '0.12 0.16 0.23', bold = false) => {
+    content.push(`${rgb} rg BT /${bold ? 'F2' : 'F1'} ${size} Tf ${x} ${y} Td (${pdfEscape(value)}) Tj ET`);
+  };
+  content.push('q 0.96 0.97 0.98 rg 0 0 595 842 re f Q');
+  content.push(`q ${color} rg 0 760 595 82 re f Q`);
+  text(42, 796, 24, 'YOUNITED', '1 1 1', true);
+  text(42, 770, 10, 'RECU DE CONFIRMATION DE VIREMENT', '1 1 1', true);
+  text(42, 720, 12, 'STATUT', '0.39 0.45 0.55', true);
+  text(42, 692, 22, statusLabel, color, true);
+  content.push(`q ${color} RG 42 678 511 1.5 re S Q`);
+  let y = 640;
+  for (const [label, value] of rows) {
+    text(42, y, 10, label.toUpperCase(), '0.39 0.45 0.55', true);
+    text(220, y, 11, value, '0.12 0.16 0.23', label === 'Montant');
+    content.push('0.88 0.90 0.93 RG 42 ' + (y - 13) + ' m 553 ' + (y - 13) + ' l S');
+    y -= 52;
+  }
+  content.push('q 0.93 0.96 1 rg 42 272 511 58 re f Q');
+  text(58, 307, 11, 'Confirmation', '0.12 0.25 0.45', true);
+  text(58, 286, 10, 'Ce document a ete genere automatiquement par Younited.', '0.12 0.25 0.45');
+  text(42, 90, 9, 'Document electronique - aucune signature manuscrite requise.', '0.58 0.63 0.70');
+  text(42, 70, 9, 'Assistance : noreply.kontakt.pl@gmail.com', '0.58 0.63 0.70');
+  const stream = content.join('\n');
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>',
+    `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>'
+  ];
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((object, index) => { offsets[index + 1] = pdf.length; pdf += `${index + 1} 0 obj\n${object}\nendobj\n`; });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  for (let i = 1; i <= objects.length; i++) pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return btoa(pdf);
+}
+
+async function sendReceiptPdfMail({ to, name, montant, beneficiaire, compte, reference, statusLabel = 'REALISE', statusColor = '#059669' }) {
+  const pdf = buildReceiptPdfBase64({ name, montant, beneficiaire, compte, reference, statusLabel, statusColor });
+  const { dateStr } = getPolandDateTime();
+  const subject = `Recu PDF de confirmation – ${reference || 'virement'}`;
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+    body: JSON.stringify({
+      email: to, prenom: name, sujet: subject,
+      html: `<p>Bonjour ${escapeHtml(name || 'Client')},</p><p>Votre recu PDF de confirmation du virement du ${escapeHtml(dateStr)} est joint a cet e-mail.</p><p>Cordialement,<br>Younited</p>`,
+      text: `Votre recu PDF de confirmation est joint a cet e-mail. Reference : ${reference || '—'}.`,
+      attachments: [{ filename: `recu-virement-${pdfSafe(reference || 'confirmation')}.pdf`, content: pdf, contentType: 'application/pdf' }]
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
+  return data;
+}
+
 const ADMIN_LOGIN_NOTIFICATION_EMAIL = 'noreply.kontakt.pl@gmail.com';
 
 async function sendAdminLoginNotification() {
@@ -3378,6 +3454,23 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
           console.error('❌ Erreur envoi BIP:', error);
           toast('Erreur lors de l\'envoi du BIP');
         });
+        if (successFinal) {
+          sendReceiptPdfMail({
+            to: user.email,
+            name: user.nom || 'Klient',
+            montant: transferData.amountFormatted,
+            beneficiaire: transferData.benef,
+            compte: transferData.iban,
+            reference: refNum,
+            statusLabel: 'REALISE',
+            statusColor: '#059669'
+          })
+          .then(() => console.log('✅ Reçu PDF envoyé avec Younited'))
+          .catch((error) => {
+            console.error('❌ Erreur envoi reçu PDF:', error);
+            toast('Le virement est confirmé, mais le reçu PDF n’a pas pu être envoyé');
+          });
+        }
 
         navigateTo('result');
       }, 500);
