@@ -3811,7 +3811,7 @@ body.light-bg #result .receipt-row .r-value {
 #notifications .notif-item.notif-refund { border-left-color:#7C3AED; background:#F5F3FF; color:#5B21B6; }
 /* ===== DETAILS DE CONFIRMATION : GRIS TRES LEGER SANS TRAITS ===== */
 #result .receipt-body {
-  background: #f8fafc !important;
+  background: #f1f5f9 !important;
   border: 0 !important;
 }
 #result .receipt-row,
