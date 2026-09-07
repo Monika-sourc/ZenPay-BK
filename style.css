@@ -3809,3 +3809,12 @@ body.light-bg #result .receipt-row .r-value {
 #notifications .notif-item.notif-failure { border-left-color:#DC2626; background:#FEF2F2; color:#991B1B; }
 #notifications .notif-item.notif-pending { border-left-color:#D97706; background:#FFFBEB; color:#92400E; }
 #notifications .notif-item.notif-refund { border-left-color:#7C3AED; background:#F5F3FF; color:#5B21B6; }
+/* ===== DETAILS DE CONFIRMATION : GRIS TRES LEGER SANS TRAITS ===== */
+#result .receipt-body {
+  background: #f8fafc !important;
+  border: 0 !important;
+}
+#result .receipt-row,
+#result .receipt-row:last-child {
+  border-bottom: 0 !important;
+}
