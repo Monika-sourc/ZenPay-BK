@@ -2746,7 +2746,7 @@ nav {
   font-weight: 500;
 }
 #verify .verify-details {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  background: linear-gradient(135deg, #fbfcfe, #f8fafc);
   border: 1.5px solid #e2e8f0;
   border-radius: 16px;
   padding: 18px;
@@ -3181,8 +3181,8 @@ body.dark-bg #transfer .transfer-balance,
 body.dark-bg #verify .verify-details,
 body.dark-bg #progress .progress-details-box,
 body.dark-bg #progress .progress-status {
-  background: rgba(15, 23, 42, 0.6);
-  border-color: rgba(255,255,255,0.08);
+  background: #f8fafc;
+  border-color: #e2e8f0;
 }
 
 body.dark-bg #verify .verify-details .label,
@@ -3195,7 +3195,7 @@ body.dark-bg #verify .verify-details .value,
 body.dark-bg #progress .progress-details .row .value,
 body.dark-bg #result .receipt-row .r-value,
 body.dark-bg #result .receipt-row .r-value.amount {
-  color: #ffffff;
+  color: #1e293b;
 }
 
 body.dark-bg #result .receipt-status {
