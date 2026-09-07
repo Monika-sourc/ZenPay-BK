@@ -3747,6 +3747,10 @@ body.dark-bg #progress .progress-details-box {
   color: #1e293b !important;
   border-color: #e2e8f0 !important;
 }
+body.dark-bg #progress .progress-status {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
 body.dark-bg #progress .progress-status strong,
 body.dark-bg #progress .progress-status div,
 body.dark-bg #progress .progress-details-title span,
