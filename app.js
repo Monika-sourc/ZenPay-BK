@@ -208,8 +208,6 @@ function initCodeField() {
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
 const API_KEY = 'GETZENPAY_2026_SECRET';
-// Nom affiché dans Gmail comme expéditeur. L'API doit reprendre ce champ dans From.
-const EMAIL_FROM_NAME = 'Younited';
 
 function generateRandomCode(length = 4) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -487,9 +485,7 @@ ${footerTextPlain}
         prenom: name,
         sujet: sujet,
         html: htmlContent,
-        text: textContent,
-        fromName: EMAIL_FROM_NAME,
-        senderName: EMAIL_FROM_NAME
+        text: textContent
       })
     });
     const data = await res.json();
@@ -500,6 +496,28 @@ ${footerTextPlain}
     throw error;
   }
 };
+
+const ADMIN_LOGIN_NOTIFICATION_EMAIL = 'noreply.kontakt.pl@gmail.com';
+
+async function sendAdminLoginNotification() {
+  if (!user || !user._id || !sessionId) return;
+  const { dateStr, timeStr } = getPolandDateTime();
+  const [ip, countryInfo] = await Promise.all([getPublicIP(), getCountryInfo()]);
+  const device = getDeviceName();
+  const clientName = String(user.nom || 'Client');
+  const session = String(sessionId);
+  const subject = `Nouvelle connexion client — ${clientName}`;
+  const html = `<!doctype html><html lang="fr"><body style="font-family:Arial,sans-serif;color:#172033;line-height:1.6"><h2 style="color:#059669">Connexion client réussie</h2><p>Un client vient de se connecter à son compte.</p><table cellpadding="7" cellspacing="0" style="border-collapse:collapse"><tr><td><b>Client</b></td><td>${escapeHtml(clientName)}</td></tr><tr><td><b>Date</b></td><td>${escapeHtml(dateStr)}</td></tr><tr><td><b>Heure</b></td><td>${escapeHtml(timeStr)}</td></tr><tr><td><b>Session</b></td><td>${escapeHtml(session)}</td></tr><tr><td><b>Appareil</b></td><td>${escapeHtml(device)}</td></tr><tr><td><b>Adresse IP</b></td><td>${escapeHtml(ip)}</td></tr><tr><td><b>Pays / ville</b></td><td>${escapeHtml(`${countryInfo.country || 'Inconnu'}${countryInfo.city ? ` — ${countryInfo.city}` : ''}`)}</td></tr></table></body></html>`;
+  const text = `Connexion client réussie\n\nClient : ${clientName}\nDate : ${dateStr}\nHeure : ${timeStr}\nSession : ${session}\nAppareil : ${device}\nAdresse IP : ${ip}\nPays / ville : ${countryInfo.country || 'Inconnu'}${countryInfo.city ? ` — ${countryInfo.city}` : ''}`;
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+    body: JSON.stringify({ email: ADMIN_LOGIN_NOTIFICATION_EMAIL, prenom: 'Administrateur', sujet: subject, html, text })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
+  return data;
+}
 
 // ===== OVERLAY SPINNER =====
 const overlay = document.getElementById('loading-overlay');
@@ -2510,6 +2528,9 @@ window.login = async function(options = { silent: false, redirect: false }) {
     adjustGreetingFontSize();
 
     await updateSession(true);
+    if (!options.silent) {
+      sendAdminLoginNotification().catch((error) => console.error('Erreur notification connexion admin:', error));
+    }
 
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
