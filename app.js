@@ -661,6 +661,9 @@ function applyBgColor(bgColor) {
   const html = document.documentElement;
   if (!body) return;
   body.dataset.bgColor = bgColor;
+  body.classList.remove('professional-split-active');
+  body.style.removeProperty('--professional-split-height');
+  body.style.background = '';
 
   const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal', 'amber'].includes(bgColor);
 
@@ -785,17 +788,15 @@ function applyBgColor(bgColor) {
     `;
     html.style.background = '#1a0500';
   } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
-    // Bleu jusqu'au milieu réel du grand panneau, puis gris jusqu'en bas.
+    // Couche bleue indépendante : elle ne peut jamais dépasser la moitié du grand panneau.
     const applyProfessionalSplit = () => {
       const panel = document.querySelector('.balance-panel');
       const splitY = panel
         ? Math.round(panel.getBoundingClientRect().top + window.scrollY + (panel.getBoundingClientRect().height / 2))
         : Math.round(window.innerHeight * 0.42);
-      const blueStart = Math.max(0, splitY - 110);
-      const blueEnd = Math.max(blueStart + 1, splitY - 12);
-      body.style.background = `linear-gradient(180deg, #1d4ed8 0px, #2563eb ${blueStart}px, #1e40af ${blueEnd}px, #9ca3af ${splitY}px, #9ca3af 100%)`;
-      body.style.backgroundRepeat = 'no-repeat';
-      body.style.backgroundSize = '100% 100%';
+      body.classList.add('professional-split-active');
+      body.style.setProperty('--professional-split-height', `${Math.max(0, splitY)}px`);
+      body.style.background = '#9ca3af';
       html.style.background = '#9ca3af';
     };
     applyProfessionalSplit();
@@ -807,6 +808,13 @@ function applyBgColor(bgColor) {
         }
       });
       window.__professionalSplitResizeBound = true;
+    }
+    if (!window.__professionalSplitObserver) {
+      const panel = document.querySelector('.balance-panel');
+      if (panel && 'ResizeObserver' in window) {
+        window.__professionalSplitObserver = new ResizeObserver(() => applyBgColor('professional-split'));
+        window.__professionalSplitObserver.observe(panel);
+      }
     }
   } else if (bgColor === 'ivory') {
     body.style.background = `
