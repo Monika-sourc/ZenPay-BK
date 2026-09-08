@@ -3878,3 +3878,19 @@ body.professional-split-active::before {
     margin-right: 0;
   }
 }
+
+/* ===== PAGE DE CONFIRMATION EN PLEINE LARGEUR SUR ORDINATEUR ===== */
+@media (min-width: 768px) {
+  #result main {
+    width: 100%;
+    max-width: none !important;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  #result .receipt-card {
+    width: 100%;
+    max-width: none;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
