@@ -3836,3 +3836,25 @@ body.professional-split-active::before {
   pointer-events: none;
   background: linear-gradient(180deg, #1d4ed8 0%, #2563eb 72%, #1e40af 100%);
 }
+
+/* ===== AFFICHAGE PLEIN ÉCRAN SUR ORDINATEUR ===== */
+@media (min-width: 768px) {
+  html, body,
+  .screen,
+  .screen.active,
+  .screen main {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  body {
+    min-width: 100%;
+    overflow-x: hidden;
+  }
+  header {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+}
