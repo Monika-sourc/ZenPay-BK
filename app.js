@@ -785,7 +785,7 @@ function applyBgColor(bgColor) {
     html.style.background = '#1a0500';
   } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
     // Thème clair bicolore : bleu professionnel en haut, gris à partir du milieu.
-    body.style.background = 'linear-gradient(180deg, #dbeafe 0%, #eff6ff 30%, #d1d5db 52%, #d1d5db 100%)';
+    body.style.background = 'linear-gradient(180deg, #1d4ed8 0%, #2563eb 34%, #1e40af 46%, #9ca3af 52%, #9ca3af 100%)';
     html.style.background = '#d1d5db';
   } else if (bgColor === 'ivory') {
     body.style.background = `
