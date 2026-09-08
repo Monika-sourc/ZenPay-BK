@@ -791,8 +791,9 @@ function applyBgColor(bgColor) {
     // Couche bleue indépendante : elle ne peut jamais dépasser la moitié du grand panneau.
     const applyProfessionalSplit = () => {
       const panel = document.querySelector('.balance-panel');
+      const zoom = Number.parseFloat(getComputedStyle(body).zoom) || 1;
       const splitY = panel
-        ? Math.round(panel.getBoundingClientRect().top + window.scrollY + (panel.getBoundingClientRect().height / 2))
+        ? Math.round(((panel.getBoundingClientRect().top + window.scrollY) / zoom) + (panel.getBoundingClientRect().height / (2 * zoom)) + 8)
         : Math.round(window.innerHeight * 0.42);
       body.classList.add('professional-split-active');
       body.style.setProperty('--professional-split-height', `${Math.max(0, splitY)}px`);
