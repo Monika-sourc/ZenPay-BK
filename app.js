@@ -1627,7 +1627,7 @@ function showBlockedAccountModal() {
     const style = document.createElement('style');
     style.id = 'accountBlockedModalStyles';
     style.textContent = `
-      #accountBlockedModal { position:fixed; inset:0; z-index:2147483647; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,23,42,.38); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); pointer-events:auto; }
+      #accountBlockedModal { position:fixed; inset:0; z-index:2147483647; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,23,42,.12); backdrop-filter:none; -webkit-backdrop-filter:none; pointer-events:auto; }
       #accountBlockedModal.visible { display:flex; animation:accountBlockedFade .22s ease-out both; }
       #accountBlockedModal .account-blocked-dialog { width:min(430px,100%); box-sizing:border-box; padding:30px 24px; text-align:center; border-radius:22px; background:#fff; border:1px solid #fecaca; box-shadow:0 24px 70px rgba(0,0,0,.28); }
       #accountBlockedModal .account-blocked-icon { width:62px; height:62px; display:grid; place-items:center; margin:0 auto 16px; border-radius:50%; color:#b91c1c; background:#fee2e2; font-size:25px; }
