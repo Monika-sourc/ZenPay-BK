@@ -783,6 +783,10 @@ function applyBgColor(bgColor) {
       linear-gradient(165deg, #1a0500 0%, #2a1005 20%, #451a03 45%, #78350f 75%, #92400e 90%, #1a0500 100%)
     `;
     html.style.background = '#1a0500';
+  } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
+    // Thème clair bicolore : bleu professionnel en haut, gris à partir du milieu.
+    body.style.background = 'linear-gradient(180deg, #dbeafe 0%, #eff6ff 30%, #d1d5db 52%, #d1d5db 100%)';
+    html.style.background = '#d1d5db';
   } else if (bgColor === 'ivory') {
     body.style.background = `
       radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),
@@ -807,7 +811,8 @@ const themes = {
   orange: { p: '#F97316', l: '#FED7AA' },
   green: { p: '#22C55E', l: '#DCFCE7' },
   black: { p: '#111827', l: '#F3F4F6' },
-  white: { p: '#374151', l: '#FFFFFF' }
+  white: { p: '#374151', l: '#FFFFFF' },
+  'professional-split': { p: '#2563EB', l: '#DBEAFE' }
 };
 
 function adjustBrightness(hex, percent) {
@@ -825,6 +830,7 @@ function applyTheme(theme) {
   document.documentElement.style.setProperty('--p-gradient', `linear-gradient(135deg, ${t.p}, ${adjustBrightness(t.p, -10)})`);
   document.documentElement.style.setProperty('--p-soft', `${t.p}14`);
   localStorage.setItem('Younited_theme', theme);
+  if (theme === 'professional-split') applyBgColor('professional-split');
 }
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -874,7 +880,7 @@ function updateClientDisplay(data) {
     applyTheme(data.theme);
     localStorage.setItem('Younited_theme', data.theme);
   }
-  applyBgColor(data.bgColor || 'gray');
+  applyBgColor(data.bgColor || (data.theme === 'professional-split' ? 'professional-split' : 'gray'));
   if (window.__clientIdFromUrl) {
     const cacheKey = 'Younited_client_cache_' + window.__clientIdFromUrl;
     localStorage.setItem(cacheKey, JSON.stringify({
@@ -1866,7 +1872,7 @@ window.refreshData = async function(silent = true) {
     user.bannerRead = data.bannerRead || false;
     user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
     updateBanner();
-    const bgColor = data.bgColor || 'gray';
+    const bgColor = data.bgColor || (data.theme === 'professional-split' ? 'professional-split' : 'gray');
     applyBgColor(bgColor);
     const greetEl = document.getElementById('greet');
     if (greetEl) {
@@ -2587,7 +2593,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
 
     user = f;
     user._id = fid;
-    applyBgColor(user.bgColor || 'gray');
+    applyBgColor(user.bgColor || (user.theme === 'professional-split' ? 'professional-split' : 'gray'));
     if (!user.devise) user.devise = 'zł';
     if (!user.theme) user.theme = 'teal';
     user.refundCode = user.refundCode || '';
