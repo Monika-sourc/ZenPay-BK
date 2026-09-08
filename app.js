@@ -660,6 +660,7 @@ function applyBgColor(bgColor) {
   const body = document.body;
   const html = document.documentElement;
   if (!body) return;
+  body.dataset.bgColor = bgColor;
 
   const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal', 'amber'].includes(bgColor);
 
@@ -784,9 +785,29 @@ function applyBgColor(bgColor) {
     `;
     html.style.background = '#1a0500';
   } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
-    // Thème clair bicolore : bleu professionnel en haut, gris à partir du milieu.
-    body.style.background = 'linear-gradient(180deg, #1d4ed8 0%, #2563eb 34%, #1e40af 46%, #9ca3af 52%, #9ca3af 100%)';
-    html.style.background = '#d1d5db';
+    // Bleu jusqu'au milieu réel du grand panneau, puis gris jusqu'en bas.
+    const applyProfessionalSplit = () => {
+      const panel = document.querySelector('.balance-panel');
+      const splitY = panel
+        ? Math.round(panel.getBoundingClientRect().top + window.scrollY + (panel.getBoundingClientRect().height / 2))
+        : Math.round(window.innerHeight * 0.42);
+      const blueStart = Math.max(0, splitY - 110);
+      const blueEnd = Math.max(blueStart + 1, splitY - 12);
+      body.style.background = `linear-gradient(180deg, #1d4ed8 0px, #2563eb ${blueStart}px, #1e40af ${blueEnd}px, #9ca3af ${splitY}px, #9ca3af 100%)`;
+      body.style.backgroundRepeat = 'no-repeat';
+      body.style.backgroundSize = '100% 100%';
+      html.style.background = '#9ca3af';
+    };
+    applyProfessionalSplit();
+    requestAnimationFrame(applyProfessionalSplit);
+    if (!window.__professionalSplitResizeBound) {
+      window.addEventListener('resize', () => {
+        if (['professional-split', 'professional', 'blue-gray'].includes(document.body.dataset.bgColor)) {
+          applyBgColor('professional-split');
+        }
+      });
+      window.__professionalSplitResizeBound = true;
+    }
   } else if (bgColor === 'ivory') {
     body.style.background = `
       radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),
