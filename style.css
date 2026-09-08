@@ -3818,3 +3818,21 @@ body.light-bg #result .receipt-row .r-value {
 #result .receipt-row:last-child {
   border-bottom: 0 !important;
 }
+
+/* ===== FOND BICOLORE PROFESSIONNEL STRICTEMENT LIMITE ===== */
+body.professional-split-active {
+  position: relative;
+  background: #9ca3af !important;
+  isolation: isolate;
+}
+body.professional-split-active::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--professional-split-height, 0px);
+  pointer-events: none;
+  background: linear-gradient(180deg, #1d4ed8 0%, #2563eb 72%, #1e40af 100%);
+}
