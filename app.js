@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, update, push, set, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
@@ -930,7 +930,22 @@ function updateClientDisplay(data) {
   hideBlockedMsg();
 }
 
-if (window.__clientIdFromUrl) {
+async function resolveShortClientLink() {
+  const params = new URLSearchParams(window.location.search);
+  const shortCode = (params.get('c') || '').trim().toUpperCase();
+  if (shortCode && !window.__clientIdFromUrl) {
+    try {
+      const result = await get(query(ref(db, 'clients'), orderByChild('publicId'), equalTo(shortCode)));
+      if (result.exists()) window.__clientIdFromUrl = Object.keys(result.val())[0];
+    } catch (error) {
+      console.error('Erreur de résolution du code client court:', error);
+    }
+  }
+  if (!window.__clientIdFromUrl) {
+    if (!localStorage.getItem('Younited_session')) show('login');
+    return;
+  }
+
   onValue(ref(db, 'clients/' + window.__clientIdFromUrl), (snap) => {
     const data = snap.val();
     if (!data) {
@@ -969,38 +984,20 @@ if (window.__clientIdFromUrl) {
     get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
       const data = snap.val();
       hideLoading();
-
-      if (!data) {
-        showBanned();
-        return;
-      }
-
+      if (!data) { showBanned(); return; }
       updateClientDisplay(data);
-
-      if (data.blocked) {
-        showBlockedAccountModal();
-        hideBlockedMsg();
-        show('login');
-      } else {
-        hideBlockedAccountModal();
-        hideBlockedMsg();
-        show('login');
+      if (data.blocked) { showBlockedAccountModal(); hideBlockedMsg(); }
+      else { hideBlockedAccountModal(); hideBlockedMsg(); }
+      const shortCode = String(data.publicId || '').trim().toUpperCase();
+      if (shortCode) {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.search = '?c=' + encodeURIComponent(shortCode);
+        window.history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
       }
-
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('nom', encodeURIComponent(data.nom || ''));
-      newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
-      window.history.replaceState({}, '', newUrl.toString());
-
-    }).catch(() => {
-      hideLoading();
-      show('login');
-    });
+    }).catch(() => { hideLoading(); show('login'); });
   }
-} else if (!localStorage.getItem('Younited_session')) {
-  show('login');
 }
-
+resolveShortClientLink();
 // ===== FORMAT DE MONNAIE =====
 function normalizeDevise(dev) {
   if (!dev) return 'PLN';
@@ -3630,3 +3627,4 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
+
