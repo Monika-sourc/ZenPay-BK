@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getDatabase, ref, get, onValue, update, push, set, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+import { getDatabase, ref, get, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCU-KBtj7vx3OouofytlwIN3KPd1McNlEk",
@@ -15,22 +15,6 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 await import("https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js").then(m=>m.signInAnonymously(m.getAuth(app)));
-
-// ===== RÉSOLUTION PRÉCOCE DU LIEN COURT =====
-// Cette résolution intervient avant toute restauration de session ou connexion.
-const __earlyUrlParams = new URLSearchParams(window.location.search);
-const __shortClientCode = (__earlyUrlParams.get('c') || '').trim().toUpperCase();
-if (__shortClientCode && !window.__clientIdFromUrl) {
-  try {
-    const __shortClientSnap = await get(ref(db, 'publicLinks/' + __shortClientCode));
-    if (__shortClientSnap.exists()) {
-      const __resolvedClientId = String(__shortClientSnap.val() || '').trim();
-      if (__resolvedClientId) window.__clientIdFromUrl = __resolvedClientId;
-    }
-  } catch (__shortLinkError) {
-    console.error('Erreur de résolution du lien court:', __shortLinkError);
-  }
-}
 
 let user = null;
 let currentHistory = [];
@@ -3646,4 +3630,3 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
-
