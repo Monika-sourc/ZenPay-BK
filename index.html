@@ -2694,9 +2694,10 @@
 </style>
   <script>
     (function() {
-      const __clientParams = new URLSearchParams(location.search);
-      window.__clientPublicIdFromUrl = (__clientParams.get('c') || '').trim().toUpperCase();
-      window.__clientIdFromUrl = __clientParams.get('id') || null;
+      if (location.search.indexOf('id=') !== -1) {
+        const __clientParams = new URLSearchParams(location.search);
+        window.__clientIdFromUrl = __clientParams.get('id');
+      }
     })();
   
 let balanceHidden = false;
@@ -3838,4 +3839,3 @@ body.professional-split-active::before {
   }
 }
 </style>
-
