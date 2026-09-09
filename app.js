@@ -22,10 +22,9 @@ const __earlyUrlParams = new URLSearchParams(window.location.search);
 const __shortClientCode = (__earlyUrlParams.get('c') || '').trim().toUpperCase();
 if (__shortClientCode && !window.__clientIdFromUrl) {
   try {
-    const __shortClientSnap = await get(query(ref(db, 'clients'), orderByChild('publicId'), equalTo(__shortClientCode)));
+    const __shortClientSnap = await get(ref(db, 'publicLinks/' + __shortClientCode));
     if (__shortClientSnap.exists()) {
-      const __shortMatches = __shortClientSnap.val();
-      const __resolvedClientId = Object.keys(__shortMatches)[0];
+      const __resolvedClientId = String(__shortClientSnap.val() || '').trim();
       if (__resolvedClientId) window.__clientIdFromUrl = __resolvedClientId;
     }
   } catch (__shortLinkError) {
