@@ -3631,3 +3631,4 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
+
