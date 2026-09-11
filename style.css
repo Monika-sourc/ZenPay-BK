@@ -4168,3 +4168,128 @@ body.professional-split-active::before {
 .profile-page .profile-section-pro:nth-of-type(3) .profile-section-icon { background: #fff8e9 !important; color: #c58b0a !important; }
 .profile-page .profile-section-pro:nth-of-type(3) .profile-row-icon { background: #fff8e9 !important; color: #c58b0a !important; }
 .profile-page .profile-section-pro:nth-of-type(3) .profile-section-subtitle { color: #8a9aa3 !important; }
+
+
+/* ===== TOUTES LES ICONES DU PROFIL — STYLE UNIFIE ===== */
+.profile-page .profile-section-icon,
+.profile-page .profile-row-icon,
+.profile-page .profile-balance-highlight .bal-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+.profile-page .profile-section-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 11px !important;
+  background: #ecfaf8 !important;
+  color: #079487 !important;
+  font-size: 15px !important;
+  box-shadow: 0 2px 5px rgba(7,148,135,.08) !important;
+}
+.profile-page .profile-row-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 11px !important;
+  background: #effbf9 !important;
+  color: #079487 !important;
+  font-size: 14px !important;
+  box-shadow: none !important;
+}
+.profile-page .profile-row-icon i,
+.profile-page .profile-section-icon i,
+.profile-page .profile-balance-highlight .bal-icon i,
+.profile-page .profile-row-action i,
+.profile-page .profile-logout-btn i,
+.profile-page .profile-footer-note i {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+.profile-page .profile-row-action {
+  width: 24px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 8px !important;
+}
+.profile-page .profile-row-action i {
+  color: #b8c4c9 !important;
+  font-size: 16px !important;
+}
+.profile-page .profile-row-action.copy-id {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+  background: #effbf9 !important;
+  cursor: pointer !important;
+}
+.profile-page .profile-row-action.copy-id i {
+  color: #079487 !important;
+  font-size: 14px !important;
+}
+.profile-page .profile-balance-highlight .bal-icon {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 13px !important;
+  background: #ffffff !important;
+  color: #079487 !important;
+  font-size: 18px !important;
+  box-shadow: 0 3px 9px rgba(7,148,135,.10) !important;
+}
+.profile-page .profile-row-pro:has(.fa-circle-check) .profile-row-icon {
+  background: #ebfaf2 !important;
+  color: #17a667 !important;
+}
+.profile-page .profile-row-pro:has(.fa-fingerprint) .profile-row-icon,
+.profile-page .profile-row-pro:has(.fa-id-card) .profile-row-icon,
+.profile-page .profile-section-pro:has(.fa-lock) .profile-section-icon {
+  background: #fff8e9 !important;
+  color: #c58b0a !important;
+}
+.profile-page .profile-logout-btn i {
+  color: #d94b4b !important;
+  font-size: 14px !important;
+}
+.profile-page .profile-footer-note i {
+  color: #079487 !important;
+  font-size: 13px !important;
+}
+
+
+/* ===== THEME ADMIN UNIFIE SUR TOUT LE PROFIL ===== */
+.profile-page .profile-section-icon,
+.profile-page .profile-row-icon,
+.profile-page .profile-row-action.copy-id,
+.profile-page .profile-balance-highlight .bal-icon {
+  background: var(--p-soft) !important;
+  color: var(--p) !important;
+}
+.profile-page .profile-section-icon i,
+.profile-page .profile-row-icon i,
+.profile-page .profile-row-action.copy-id i,
+.profile-page .profile-balance-highlight .bal-icon i,
+.profile-page .profile-footer-note i {
+  color: var(--p) !important;
+}
+.profile-page .profile-row-pro:has(.fa-circle-check) .profile-row-icon,
+.profile-page .profile-row-pro:has(.fa-fingerprint) .profile-row-icon,
+.profile-page .profile-row-pro:has(.fa-id-card) .profile-row-icon,
+.profile-page .profile-section-pro:has(.fa-lock) .profile-section-icon,
+.profile-page .profile-section-pro:nth-of-type(3) .profile-section-icon,
+.profile-page .profile-section-pro:nth-of-type(3) .profile-row-icon {
+  background: var(--p-soft) !important;
+  color: var(--p) !important;
+}
+.profile-page .profile-section-title-pro,
+.profile-page .profile-section-subtitle,
+.profile-page .profile-row-label,
+.profile-page .profile-row-value,
+.profile-page .profile-row-value-muted {
+  font-family: inherit !important;
+}
+.profile-page .profile-section-header-pro { border-bottom-color: var(--p-soft) !important; }
