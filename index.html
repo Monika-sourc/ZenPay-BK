@@ -4161,4 +4161,57 @@ body.professional-split-active::before {
 .profile-page .profile-section-pro > .profile-balance-highlight {
   background: #ffffff !important;
 }
+
+/* ===== ICONES REFERENCE ET BADGE KONTO AKTYWNE ===== */
+.profile-page .profile-row-icon,
+.profile-page .profile-section-icon {
+  background: linear-gradient(145deg, #f1fffc 0%, #d7f5ef 100%) !important;
+  border: 1px solid rgba(13,148,136,.10) !important;
+  color: var(--p) !important;
+  box-shadow: 0 2px 7px rgba(13,148,136,.08) !important;
+}
+.profile-page .profile-row-icon i,
+.profile-page .profile-section-icon i {
+  color: var(--p) !important;
+  filter: none !important;
+}
+.profile-page .profile-status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 16px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(224,255,248,.92)) !important;
+  border: 1px solid rgba(255,255,255,.92) !important;
+  color: #087f77 !important;
+  box-shadow: 0 5px 14px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.9) !important;
+  text-shadow: none !important;
+  font-weight: 800 !important;
+  letter-spacing: .1px !important;
+}
+.profile-page .profile-status-badge .dot {
+  width: 9px !important;
+  height: 9px !important;
+  background: #16b86a !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 0 0 2px rgba(22,184,106,.16), 0 2px 5px rgba(22,184,106,.3) !important;
+  animation: profile-active-pulse 2s ease-in-out infinite !important;
+}
+@keyframes profile-active-pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: .82; }
+}
+
+/* ===== ICONE TELEPHONE DE REFERENCE ===== */
+.profile-page .phone-reference-icon {
+  background: var(--p-soft) !important;
+  color: var(--p) !important;
+  border: 1px solid rgba(13,148,136,.10) !important;
+  box-shadow: 0 2px 7px rgba(13,148,136,.08) !important;
+}
+.profile-page .phone-reference-icon i {
+  color: var(--p) !important;
+  font-size: 15px !important;
+  transform: rotate(0deg) !important;
+}
 </style>
