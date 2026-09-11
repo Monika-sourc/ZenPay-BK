@@ -4293,3 +4293,59 @@ body.professional-split-active::before {
   font-family: inherit !important;
 }
 .profile-page .profile-section-header-pro { border-bottom-color: var(--p-soft) !important; }
+
+
+/* ===== TITRES DE SECTION VISIBLES AU-DESSUS DES CARTES ===== */
+.profile-page .profile-section-pro {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  margin-bottom: 22px !important;
+}
+.profile-page .profile-section-header-pro {
+  display: flex !important;
+  position: relative !important;
+  min-height: 45px !important;
+  padding: 3px 2px 9px !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.profile-page .profile-section-header-pro .profile-section-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+}
+.profile-page .profile-section-title-pro {
+  display: block !important;
+  color: #1d303d !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+}
+.profile-page .profile-section-subtitle {
+  display: block !important;
+  color: #81919a !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+  margin-top: 3px !important;
+}
+.profile-page .profile-section-pro > .profile-row-pro:first-of-type,
+.profile-page .profile-section-pro > .profile-balance-highlight + .profile-row-pro {
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+.profile-page .profile-section-pro > .profile-row-pro:last-child,
+.profile-page .profile-section-pro > .profile-row-pro:nth-last-child(1) {
+  border-bottom-left-radius: 16px !important;
+  border-bottom-right-radius: 16px !important;
+}
+.profile-page .profile-section-pro > .profile-row-pro,
+.profile-page .profile-section-pro > .profile-balance-highlight {
+  background: #fff !important;
+}
+.profile-page .profile-section-pro > .profile-balance-highlight {
+  border-radius: 16px !important;
+  margin-top: 0 !important;
+}
