@@ -2250,6 +2250,10 @@ window.confirmRefund = async function() {
 function buildProfile(u) {
   const initials = (u.nom || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
   return `
+    <div class="profile-intro">
+      <div class="profile-eyebrow">Espace personnel</div>
+      <h1 class="profile-title">Mon profil</h1>
+    </div>
     <div class="profile-header-card">
       <div class="profile-avatar-large">${initials}</div>
       <div class="profile-name">${u.nom || 'Użytkownik'}</div>
@@ -2267,6 +2271,7 @@ function buildProfile(u) {
           <div class="profile-section-title-pro">Informacje osobiste</div>
           <div class="profile-section-subtitle">Dane identyfikacyjne</div>
         </div>
+        <button class="profile-edit-link" type="button" onclick="toast('Edycja danych będzie dostępna wkrótce')">Modifier</button>
       </div>
       <div class="profile-row-pro">
         <div class="profile-row-left">
