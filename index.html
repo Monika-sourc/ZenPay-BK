@@ -2914,7 +2914,18 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
             <i class="fa-solid fa-wallet" style="color:#3b82f6;"></i>
             <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
           </div>
-          <i class="fa-solid fa-money-bills" style="color:#3b82f6;font-size:32px;opacity:1;flex-shrink:0;"></i>
+          <div class="reference-money-transfer-wrap" aria-hidden="true"><svg class="reference-money-transfer-icon" viewBox="0 0 120 90" width="72" height="54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g opacity="0.18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="28" y="7" width="70" height="38" rx="5"/>
+    <rect x="22" y="14" width="70" height="38" rx="5"/>
+    <rect x="16" y="21" width="70" height="38" rx="5"/>
+    <path d="M34 29h34"/>
+    <circle cx="51" cy="40" r="5"/>
+    <path d="M31 59h49"/>
+    <path d="M31 70h35"/>
+    <path d="M76 64l13 10-13 10"/>
+  </g>
+</svg></div>
         </div>
 
         <div class="transfer-sepa-row">
@@ -3024,7 +3035,18 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
           <div class="verify-details-header">
             <i class="fa-solid fa-money-bill-wave"></i>
             <span>Szczegóły przelewu w oczekiwaniu</span>
-            <i class="fa-solid fa-money-bills bg-icon" style="font-size:64px;"></i>
+            <div class="reference-money-transfer-wrap verify-reference-icon" aria-hidden="true"><svg class="reference-money-transfer-icon" viewBox="0 0 120 90" width="72" height="54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g opacity="0.18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="28" y="7" width="70" height="38" rx="5"/>
+    <rect x="22" y="14" width="70" height="38" rx="5"/>
+    <rect x="16" y="21" width="70" height="38" rx="5"/>
+    <path d="M34 29h34"/>
+    <circle cx="51" cy="40" r="5"/>
+    <path d="M31 59h49"/>
+    <path d="M31 70h35"/>
+    <path d="M76 64l13 10-13 10"/>
+  </g>
+</svg></div>
           </div>
 
           <div class="verify-details-inner">
@@ -3098,7 +3120,19 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     <main>
       <h2 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:24px;">Twoje aktualne polecenie przelewu...</h2>
       <div class="progress-card">
-        <div class="progress-status" style="margin-bottom:14px;">
+        <div class="progress-status" style="margin-bottom:14px; position:relative;">
+          <div class="reference-money-transfer-wrap progress-reference-icon" aria-hidden="true"><svg class="reference-money-transfer-icon" viewBox="0 0 120 90" width="72" height="54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g opacity="0.18" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="28" y="7" width="70" height="38" rx="5"/>
+    <rect x="22" y="14" width="70" height="38" rx="5"/>
+    <rect x="16" y="21" width="70" height="38" rx="5"/>
+    <path d="M34 29h34"/>
+    <circle cx="51" cy="40" r="5"/>
+    <path d="M31 59h49"/>
+    <path d="M31 70h35"/>
+    <path d="M76 64l13 10-13 10"/>
+  </g>
+</svg></div>
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
             <i class="fa-solid fa-user" style="font-size:20px; color:var(--p);"></i>
             <strong style="font-size:14px; color:var(--text-primary);">Weryfikacja tożsamości zakończona pomyślnie.</strong>
@@ -3751,6 +3785,68 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
 
   <!-- ========== SCRIPT PRINCIPAL ========== -->
   <script type="module" src="app.js"></script>
+
+<style>
+/* ===== ICÔNE DE VIREMENT — RÉFÉRENCE FOURNIE ===== */
+.reference-money-transfer-wrap {
+  width: 72px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #64748b;
+}
+.reference-money-transfer-icon {
+  display: block;
+  width: 72px;
+  height: 54px;
+}
+#transfer .transfer-balance-bar .reference-money-transfer-wrap {
+  margin-left: 12px;
+}
+#verify .verify-details-header {
+  position: relative;
+  padding-right: 84px;
+}
+#verify .verify-details-header .verify-reference-icon {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 72px;
+  height: 54px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+#progress .progress-reference-icon {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 72px;
+  height: 54px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+@media (max-width: 480px) {
+  .reference-money-transfer-wrap {
+    width: 64px;
+    height: 48px;
+  }
+  .reference-money-transfer-icon {
+    width: 64px;
+    height: 48px;
+  }
+  #verify .verify-details-header {
+    padding-right: 72px;
+  }
+  #verify .verify-details-header .verify-reference-icon,
+  #progress .progress-reference-icon {
+    width: 64px;
+    height: 48px;
+  }
+}
+</style>
+
 </body>
 </html>
 
