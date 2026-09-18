@@ -711,6 +711,18 @@
     #transfer .btn:hover:not(:disabled) i {
       transform: translateX(4px);
     }
+    /* ===== NOUVEAU : wrapper externe pour le bouton (hors carte blanche) ===== */
+    #transfer .transfer-action-outer {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #transfer .transfer-action-outer .btn {
+      margin: 20px 0 0 0;
+      width: 100%;
+    }
     @media (max-width: 480px) {
       #transfer .transfer-card {
         border-radius: 4px;
@@ -739,9 +751,12 @@
       #transfer .transfer-info {
         margin: 8px 20px 16px;
       }
-      #transfer .btn {
-        margin: 0 20px 20px;
-        width: calc(100% - 40px);
+      #transfer .transfer-action-outer {
+        padding: 0 20px;
+      }
+      #transfer .transfer-action-outer .btn {
+        margin: 20px 0 0 0;
+        width: 100%;
       }
     }
 
@@ -755,7 +770,7 @@
     #verify .verify-card {
       background: #ffffff;
       border: none;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 0;
       box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
       max-width: 520px;
@@ -938,9 +953,21 @@
       transform: translateY(-2px);
       box-shadow: 0 12px 32px rgba(13,148,136,0.35);
     }
+    /* ===== NOUVEAU : wrapper externe pour le bouton (hors carte blanche) ===== */
+    #verify .verify-action-outer {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #verify .verify-action-outer .btn-continue {
+      margin: 20px 0 0 0;
+      width: 100%;
+    }
     @media (max-width: 480px) {
       #verify .verify-card {
-        border-radius: 12px;
+        border-radius: 4px;
         box-shadow: none;
         max-width: 100%;
       }
@@ -959,6 +986,13 @@
       }
       #verify .verify-actions .btn,
       #verify .verify-cancel {
+        width: 100%;
+      }
+      #verify .verify-action-outer {
+        padding: 0 20px;
+      }
+      #verify .verify-action-outer .btn-continue {
+        margin: 20px 0 0 0;
         width: 100%;
       }
     }
@@ -1495,6 +1529,17 @@
     #transfer .btn:hover:not(:disabled) i {
       transform: translateX(4px);
     }
+    #transfer .transfer-action-outer {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #transfer .transfer-action-outer .btn {
+      margin: 20px 0 0 0;
+      width: 100%;
+    }
     @media (max-width: 480px) {
       #transfer .transfer-card {
         border-radius: 4px;
@@ -1523,9 +1568,12 @@
       #transfer .transfer-info {
         margin: 8px 20px 16px;
       }
-      #transfer .btn {
-        margin: 0 20px 20px;
-        width: calc(100% - 40px);
+      #transfer .transfer-action-outer {
+        padding: 0 20px;
+      }
+      #transfer .transfer-action-outer .btn {
+        margin: 20px 0 0 0;
+        width: 100%;
       }
     }
 
@@ -2396,7 +2444,7 @@
 #verify .verify-card {
   background: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 0;
   box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
   max-width: 520px;
@@ -2540,7 +2588,7 @@
 }
 @media (max-width: 480px) {
   #verify .verify-card {
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow: none;
     max-width: 100%;
   }
@@ -2779,32 +2827,34 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
   flex-shrink: 0;
   display: block;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(212, 160, 23, 0.20));
+  opacity: 0.55;
+  filter: drop-shadow(0 2px 4px rgba(212, 160, 23, 0.12));
 }
 #transfer .transfer-balance-bar .currency-icon-svg.transfer-currency-icon {
-  width: 48px;
-  height: 48px;
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
   margin-left: auto;
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  opacity: 0.55;
 }
 #verify .verify-details-header .currency-icon-svg.verify-currency-icon {
   position: absolute;
   right: 22px;
   top: 22px;
-  width: 52px;
-  height: 52px;
+  width: 76px;
+  height: 76px;
   pointer-events: none;
-  opacity: 1;
+  opacity: 0.55;
 }
 @media (max-width: 480px) {
   #transfer .transfer-balance-bar .currency-icon-svg.transfer-currency-icon {
-    width: 42px;
-    height: 42px;
+    width: 60px;
+    height: 60px;
   }
   #verify .verify-details-header .currency-icon-svg.verify-currency-icon {
-    width: 44px;
-    height: 44px;
+    width: 64px;
+    height: 64px;
     right: 16px;
     top: 16px;
   }
@@ -2952,7 +3002,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
             <i class="fa-solid fa-wallet" style="color:#3b82f6;"></i>
             <span>Dostępne saldo: <b id="bal2">0,00 zł</b></span>
           </div>
-          <!-- ===== ICÔNE OR (cartes empilées) — remplace l'ancien fa-money-bill-transfer ===== -->
           <svg class="currency-icon-svg transfer-currency-icon" viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <rect x="30" y="5" width="58" height="38" rx="6" fill="none" stroke="#D4A017" stroke-width="3.5"/>
             <rect x="19" y="15" width="58" height="38" rx="6" fill="none" stroke="#D4A017" stroke-width="3.5"/>
@@ -3042,7 +3091,10 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
           <i class="fa-solid fa-circle-exclamation"></i>
           <span>Przetwarzanie przelewu od 1 do 3 minut po ostatecznej weryfikacji.</span>
         </div>
+      </div>
 
+      <!-- ===== BOUTON HORS CARTE BLANCHE ===== -->
+      <div class="transfer-action-outer">
         <button onclick="toVerify()" class="btn" id="continueBtn" disabled>Kontynuuj <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     </main>
@@ -3070,7 +3122,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
           <div class="verify-details-header">
             <i class="fa-solid fa-money-bill-wave"></i>
             <span>Szczegóły przelewu w oczekiwaniu</span>
-            <!-- ===== ICÔNE OR (cartes empilées) — remplace l'ancien bg-icon ===== -->
             <svg class="currency-icon-svg verify-currency-icon" viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <rect x="30" y="5" width="58" height="38" rx="6" fill="none" stroke="#D4A017" stroke-width="3.5"/>
               <rect x="19" y="15" width="58" height="38" rx="6" fill="none" stroke="#D4A017" stroke-width="3.5"/>
@@ -3127,11 +3178,14 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
               <div class="field-error" id="error-code"></div>
             </div>
           </form>
-
-          <button onclick="finish()" class="btn-continue" id="finishBtn" style="background:var(--p-gradient);color:#fff;border:none;">
-            Potwierdź przelew <i class="fa-solid fa-arrow-right"></i>
-          </button>
         </div>
+      </div>
+
+      <!-- ===== BOUTON HORS CARTE BLANCHE ===== -->
+      <div class="verify-action-outer">
+        <button onclick="finish()" class="btn-continue" id="finishBtn">
+          Potwierdź przelew <i class="fa-solid fa-arrow-right"></i>
+        </button>
       </div>
     </main>
   </section>
@@ -3377,7 +3431,7 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
 #verify .verify-card {
   background: #ffffff;
   border: none;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 0;
   box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
   max-width: 520px;
@@ -3521,7 +3575,7 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
 }
 @media (max-width: 480px) {
   #verify .verify-card {
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow: none;
     max-width: 100%;
   }
@@ -3831,14 +3885,12 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
         }
       }
 
-      // Premier passage au chargement
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', syncCurrencySymbols);
       } else {
         syncCurrencySymbols();
       }
 
-      // Observation des changements de #currency-symbol et #stat-devise
       function startObserver() {
         var cs = document.getElementById('currency-symbol');
         var sd = document.getElementById('stat-devise');
@@ -3854,7 +3906,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
         startObserver();
       }
 
-      // Filet de sécurité : synchronisation périodique
       setInterval(syncCurrencySymbols, 800);
     })();
   </script>
