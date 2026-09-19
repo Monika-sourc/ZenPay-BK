@@ -58,16 +58,8 @@ if (document.head) document.head.appendChild(darkStyleEl);
 
 let bannerTimer = null;
 
-// ═══════════════════════════════════════════════════════════════
-// ===== FIELD ERROR UTILITIES (MODIFIÉ — MODALE AU LIEU DE BULLE) =====
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * Affiche une erreur de champ : met en rouge le champ concerné
- * ET ouvre une vraie fenêtre modale avec en-tête propre.
- */
+// ===== FIELD ERROR UTILITIES — MODIFIÉ : utilise la modale unifiée =====
 function showFieldError(fieldId, message) {
-  // 1. Feedback visuel sur le champ (bordure rouge + shake)
   const inputEl = document.getElementById(fieldId);
   if (inputEl) {
     inputEl.classList.add('input-error');
@@ -77,56 +69,8 @@ function showFieldError(fieldId, message) {
       if (parentGroup) parentGroup.classList.add('has-error');
     }
   }
-  // 2. Fenêtre modale unifiée avec en-tête
   window.showErrorModal(message, 'error');
 }
-
-/**
- * Ouvre la modale d'erreur unifiée.
- * variant : 'error' (rouge) | 'info' (orange) | 'success' (vert)
- */
-window.showErrorModal = function(message, variant = 'error', title = null, subtitle = null) {
-  const modal = document.getElementById('fieldErrorModal');
-  const card = document.getElementById('fieldErrorModalCard');
-  const msgEl = document.getElementById('fieldErrorModalMessage');
-  const titleEl = document.getElementById('fieldErrorModalTitle');
-  const subEl = document.getElementById('fieldErrorModalSubtitle');
-  const iconEl = document.getElementById('fieldErrorModalIcon');
-  if (!modal || !card) {
-    // Fallback : si la modale n'existe pas dans le DOM, on utilise le toast
-    if (window.toast) window.toast(message);
-    return;
-  }
-
-  card.classList.remove('error', 'info', 'success');
-
-  if (variant === 'info') {
-    card.classList.add('info');
-    if (iconEl) iconEl.className = 'fa-solid fa-circle-info';
-    if (titleEl) titleEl.textContent = title || 'Informacja';
-    if (subEl) subEl.textContent = subtitle || 'Proszę sprawdzić poniższe informacje';
-  } else if (variant === 'success') {
-    card.classList.add('success');
-    if (iconEl) iconEl.className = 'fa-solid fa-circle-check';
-    if (titleEl) titleEl.textContent = title || 'Sukces';
-    if (subEl) subEl.textContent = subtitle || 'Operacja zakończona pomyślnie';
-  } else {
-    if (iconEl) iconEl.className = 'fa-solid fa-circle-exclamation';
-    if (titleEl) titleEl.textContent = title || 'Błąd w formularzu';
-    if (subEl) subEl.textContent = subtitle || 'Popraw poniższe informacje';
-  }
-
-  if (msgEl) msgEl.textContent = message;
-  modal.classList.remove('hidden');
-};
-
-/**
- * Ferme la modale d'erreur unifiée.
- */
-window.closeFieldErrorModal = function() {
-  const modal = document.getElementById('fieldErrorModal');
-  if (modal) modal.classList.add('hidden');
-};
 
 function clearFieldError(fieldId) {
   const errorEl = document.getElementById('error-' + fieldId);
@@ -167,14 +111,12 @@ function validateAmountField() {
 
   const raw = input.value;
 
-  // Champ vide
   if (!raw || raw.trim() === '') {
     showFieldError('a', 'Proszę wpisać kwotę przelewu.');
     if (continueBtn) continueBtn.disabled = true;
     return false;
   }
 
-  // Contient des espaces
   if (raw.includes(' ')) {
     const cleaned = raw.replace(/\s/g, '');
     const example = cleaned || 'np. 3000';
@@ -183,7 +125,6 @@ function validateAmountField() {
     return false;
   }
 
-  // Contient des caractères non numériques
   if (!/^\d+$/.test(raw)) {
     const digitsOnly = raw.replace(/[^0-9]/g, '');
     const hasComma = raw.includes(',');
@@ -206,7 +147,6 @@ function validateAmountField() {
     return false;
   }
 
-  // Montant numérique valide — vérifier le solde
   const amt = Number(raw);
   if (user && amt > Number(user.montant)) {
     showFieldError('a', `Kwota przekracza dostępne saldo (${fmt(user.montant)}).`);
@@ -251,6 +191,129 @@ function initCodeField() {
     clearFieldError('code');
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ===== MODALE ERREUR UNIFIÉE =====
+// ═══════════════════════════════════════════════════════════════
+window.showErrorModal = function(message, variant = 'error', title = null, subtitle = null) {
+  const modal = document.getElementById('fieldErrorModal');
+  const card = document.getElementById('fieldErrorModalCard');
+  const msgEl = document.getElementById('fieldErrorModalMessage');
+  const titleEl = document.getElementById('fieldErrorModalTitle');
+  const subEl = document.getElementById('fieldErrorModalSubtitle');
+  const iconEl = document.getElementById('fieldErrorModalIcon');
+  if (!modal || !card) {
+    if (window.toast) window.toast(message);
+    return;
+  }
+
+  card.classList.remove('error', 'info', 'success');
+
+  if (variant === 'info') {
+    card.classList.add('info');
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-info';
+    if (titleEl) titleEl.textContent = title || 'Informacja';
+    if (subEl) subEl.textContent = subtitle || 'Proszę sprawdzić poniższe informacje';
+  } else if (variant === 'success') {
+    card.classList.add('success');
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-check';
+    if (titleEl) titleEl.textContent = title || 'Sukces';
+    if (subEl) subEl.textContent = subtitle || 'Operacja zakończona pomyślnie';
+  } else {
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-exclamation';
+    if (titleEl) titleEl.textContent = title || 'Błąd w formularzu';
+    if (subEl) subEl.textContent = subtitle || 'Popraw poniższe informacje';
+  }
+
+  if (msgEl) msgEl.textContent = message;
+  modal.classList.remove('hidden');
+};
+
+window.closeFieldErrorModal = function() {
+  const modal = document.getElementById('fieldErrorModal');
+  if (modal) modal.classList.add('hidden');
+};
+
+// ═══════════════════════════════════════════════════════════════
+// ===== MODALE RÉSULTAT DE VIREMENT (5 états) =====
+// ═══════════════════════════════════════════════════════════════
+window.showTransferResultModal = function(type, data) {
+  data = data || {};
+  const modal = document.getElementById('transferResultModal');
+  const card = document.getElementById('trmCard');
+  const icon = document.getElementById('trmIcon');
+  const title = document.getElementById('trmTitle');
+  const subtitle = document.getElementById('trmSubtitle');
+  const amountEl = document.getElementById('trmAmount');
+  const recipientEl = document.getElementById('trmRecipient');
+  const ibanEl = document.getElementById('trmIban');
+  const dateEl = document.getElementById('trmDate');
+  const refEl = document.getElementById('trmRef');
+  const msgEl = document.getElementById('trmMessage');
+  const btn = document.getElementById('trmBtn');
+  if (!modal || !card) return;
+
+  card.classList.remove('success', 'failure', 'pending', 'validated', 'cancelled');
+
+  const configs = {
+    success: {
+      icon: 'fa-circle-check',
+      title: 'Przelew wysłany pomyślnie',
+      subtitle: 'Środki zostały przekazane do banku odbiorcy',
+      message: 'Przelew został zrealizowany. Środki zostaną przelane na konto beneficjenta w ciągu 1–2 dni roboczych.',
+      btnText: 'Rozumiem',
+    },
+    failure: {
+      icon: 'fa-circle-xmark',
+      title: 'Przelew nie powiódł się',
+      subtitle: 'Operacja została odrzucona',
+      message: 'Przelew nie został zrealizowany. Sprawdź poprawność danych beneficjenta i spróbuj ponownie.',
+      btnText: 'Zamknij',
+    },
+    pending: {
+      icon: 'fa-clock',
+      title: 'Przelew oczekuje',
+      subtitle: 'Oczekiwanie na zatwierdzenie administracyjne',
+      message: 'Twój przelew oczekuje na weryfikację przez administrację. Otrzymasz powiadomienie po zatwierdzeniu lub odrzuceniu.',
+      btnText: 'Rozumiem',
+    },
+    validated: {
+      icon: 'fa-circle-check',
+      title: 'Przelew zatwierdzony',
+      subtitle: 'Administracja zatwierdziła Twój przelew',
+      message: 'Twoja operacja została zatwierdzona przez administrację i przekazana do realizacji.',
+      btnText: 'Świetnie',
+    },
+    cancelled: {
+      icon: 'fa-rotate-left',
+      title: 'Przelew anulowany',
+      subtitle: 'Operacja odrzucona przez administrację',
+      message: 'Przelew został anulowany. Kwota została zwrócona na Twoje konto.',
+      btnText: 'Rozumiem',
+    }
+  };
+
+  const cfg = configs[type] || configs.success;
+  card.classList.add(type);
+  if (icon) icon.className = 'fa-solid ' + cfg.icon;
+  if (title) title.textContent = data.title || cfg.title;
+  if (subtitle) subtitle.textContent = data.subtitle || cfg.subtitle;
+  if (amountEl) amountEl.textContent = data.amount || '0,00 zł';
+  if (recipientEl) recipientEl.textContent = data.recipient || '—';
+  if (ibanEl) ibanEl.textContent = data.iban || '—';
+  if (dateEl) dateEl.textContent = data.date || '—';
+  if (refEl) refEl.textContent = data.reference || '—';
+  if (msgEl) msgEl.textContent = data.message || cfg.message;
+  if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> ' + cfg.btnText;
+
+  modal.classList.remove('hidden');
+};
+
+window.closeTransferResultModal = function() {
+  const modal = document.getElementById('transferResultModal');
+  if (modal) modal.classList.add('hidden');
+};
+
 
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
@@ -1731,6 +1794,9 @@ function watchBlockedLoginState(clientId) {
   });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ===== watchClientStatus — MODIFIÉ : modales validated/cancelled =====
+// ═══════════════════════════════════════════════════════════════
 function watchClientStatus(userId) {
   if (statusListener) statusListener();
   statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
@@ -1799,16 +1865,31 @@ function watchClientStatus(userId) {
     const pts = data.pendingTransfers || {};
     const prevPts = user._pendingTransfers || {};
 
+    // ═══ MODIFIÉ : affiche la modale validated/cancelled ═══
     for (const [ptId, pt] of Object.entries(pts)) {
       const prevPt = prevPts[ptId];
       if (!prevPt) continue;
 
       if (pt.status === 'approved' && prevPt.status === 'pending') {
         toast('✅ Przelew zatwierdzony przez administrację i wysłany');
+        window.showTransferResultModal('validated', {
+          amount: fmt(pt.amount || 0),
+          recipient: pt.beneficiary || '—',
+          iban: pt.iban || '—',
+          date: (pt.date || '') + ' • ' + (pt.time || ''),
+          reference: pt.reference || '—'
+        });
       }
 
       if (pt.status === 'cancelled' && prevPt.status === 'pending') {
         toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
+        window.showTransferResultModal('cancelled', {
+          amount: fmt(pt.amount || 0),
+          recipient: pt.beneficiary || '—',
+          iban: pt.iban || '—',
+          date: (pt.date || '') + ' • ' + (pt.time || ''),
+          reference: pt.reference || '—'
+        });
       }
     }
 
@@ -2164,12 +2245,12 @@ window.closeRefundModal = function() {
   refundTargetTx = null;
 };
 
+// ═══ MODIFIÉ : utilise showErrorModal pour les erreurs de code ═══
 window.confirmRefund = async function() {
   const code = document.getElementById('refundCode').value.trim();
   const errEl = document.getElementById('refundError');
   errEl.style.display = 'none';
 
-  // MODIFIÉ : utilise la modale unifiée au lieu du message inline
   if (!code) {
     window.showErrorModal(
       'Proszę wprowadzić kod anulowania.',
@@ -2818,7 +2899,6 @@ if (window.__clientIdFromUrl && savedClientId && savedClientId !== window.__clie
 
 // ===== PERSONNALISATION DES MESSAGES REQUIS EN POLONAIS =====
 function setupRequiredMessages() {
-  // Validation gérée par le système de messages d'erreur en temps réel
 }
 
 // ===== VALIDATION EN TEMPS RÉEL DU MONTANT =====
@@ -2874,7 +2954,7 @@ function isValidIban(value) {
   return remainder === 1;
 }
 
-// MODIFIÉ : utilise la modale unifiée en variante "info"
+// ═══ MODIFIÉ : utilise showErrorModal variante info ═══
 function showRecipientInputError(message) {
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
   window.showErrorModal(
@@ -2885,7 +2965,6 @@ function showRecipientInputError(message) {
   );
 }
 
-// MODIFIÉ : redirige vers la modale unifiée
 window.closeRecipientInputAlert = function() {
   window.closeFieldErrorModal();
 };
@@ -2971,7 +3050,6 @@ window.finish = function() {
   const codeInput = document.getElementById('code');
   const code = codeInput.value.trim();
 
-  // MODIFIÉ : utilise la modale unifiée
   if (!code) {
     showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
     return;
@@ -3237,7 +3315,9 @@ function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, date
   navigateTo('result');
 }
 
-// ===== GESTION DU TRANSFERT EN MODE PENDING =====
+// ═══════════════════════════════════════════════════════════════
+// ===== handlePendingTransfer — MODIFIÉ : ajoute la modale pending =====
+// ═══════════════════════════════════════════════════════════════
 async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
   showLoading('Przetwarzanie...');
   try {
@@ -3341,6 +3421,16 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
         clearInterval(interval);
         setTimeout(() => {
           showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
+          // ═══ MODIFIÉ : affiche la modale pending ═══
+          setTimeout(() => {
+            window.showTransferResultModal('pending', {
+              amount: fmt(amount),
+              recipient: beneficiary,
+              iban: iban,
+              date: dateStr + ' • ' + timeStr,
+              reference: refNum
+            });
+          }, 350);
         }, 500);
       }
     }, 80);
@@ -3354,6 +3444,9 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 }
 
 
+// ═══════════════════════════════════════════════════════════════
+// ===== startProgress — MODIFIÉ : ajoute la modale success/failure =====
+// ═══════════════════════════════════════════════════════════════
 function startProgress(amount, beneficiary, iban, bank, reason) {
   console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
 
@@ -3514,6 +3607,20 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
             console.error('❌ Erreur envoi reçu PDF:', error);
             toast('Le virement est confirmé, mais le reçu PDF n’a pas pu être envoyé');
           });
+        }
+
+        // ═══ MODIFIÉ : affiche la modale success/failure ═══
+        const __modalData = {
+          amount: transferData.amountFormatted,
+          recipient: transferData.benef,
+          iban: transferData.iban,
+          date: dateStr + ' • ' + timeStr,
+          reference: refNum
+        };
+        if (successFinal) {
+          window.showTransferResultModal('success', __modalData);
+        } else {
+          window.showTransferResultModal('failure', __modalData);
         }
 
         navigateTo('result');
