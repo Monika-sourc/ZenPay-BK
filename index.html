@@ -3773,6 +3773,50 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </div>
   </div>
 
+  <!-- ========== MODALE RÉSULTAT DE VIREMENT (5 états) ========== -->
+  <div id="transferResultModal" class="modal hidden" onclick="if(event.target===this)closeTransferResultModal()">
+    <div class="trm-card" id="trmCard">
+      <div class="trm-header" id="trmHeader">
+        <button class="trm-close" onclick="closeTransferResultModal()" aria-label="Zamknij">×</button>
+        <div class="trm-icon-wrap" id="trmIconWrap">
+          <i class="fa-solid fa-circle-check" id="trmIcon"></i>
+        </div>
+        <h2 class="trm-title" id="trmTitle">Przelew wysłany pomyślnie</h2>
+        <p class="trm-subtitle" id="trmSubtitle">Środki zostały przekazane do banku odbiorcy</p>
+      </div>
+      <div class="trm-body">
+        <div class="trm-amount-box">
+          <div class="trm-amount-label">KWOTA PRZELEWU</div>
+          <div class="trm-amount" id="trmAmount">0,00 zł</div>
+        </div>
+        <div class="trm-details">
+          <div class="trm-detail-row">
+            <span class="trm-detail-label">Beneficjent</span>
+            <span class="trm-detail-value" id="trmRecipient">—</span>
+          </div>
+          <div class="trm-detail-row">
+            <span class="trm-detail-label">Numer konta / IBAN</span>
+            <span class="trm-detail-value trm-mono" id="trmIban">—</span>
+          </div>
+          <div class="trm-detail-row">
+            <span class="trm-detail-label">Data i godzina</span>
+            <span class="trm-detail-value" id="trmDate">—</span>
+          </div>
+          <div class="trm-detail-row">
+            <span class="trm-detail-label">Numer referencyjny</span>
+            <span class="trm-detail-value trm-mono" id="trmRef">—</span>
+          </div>
+        </div>
+        <div class="trm-message" id="trmMessage"></div>
+      </div>
+      <div class="trm-footer">
+        <button class="trm-btn" id="trmBtn" onclick="closeTransferResultModal()">
+          <i class="fa-solid fa-check"></i> Rozumiem
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ========== SCRIPT PRINCIPAL ========== -->
   <script type="module" src="app.js"></script>
 </body>
@@ -4236,198 +4280,5 @@ body.professional-split-active::before {
   color: var(--p) !important;
   font-size: 15px !important;
   transform: rotate(0deg) !important;
-}
-
-/* ===== MODALE ERREUR UNIFIÉE (remplace les bulles flottantes) ===== */
-#fieldErrorModal {
-  z-index: 2000;
-}
-
-.field-error-modal-card {
-  background: #ffffff;
-  border-radius: 20px;
-  max-width: 440px;
-  width: 100%;
-  overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.20);
-  animation: feModalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-}
-
-@keyframes feModalPop {
-  from { opacity: 0; transform: scale(0.92) translateY(12px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.fe-modal-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 22px 18px;
-  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
-  border-bottom: 1px solid #FECACA;
-  position: relative;
-}
-
-.fe-modal-header-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1.5px solid #FCA5A5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #DC2626;
-  font-size: 20px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
-}
-
-.fe-modal-header-text {
-  flex: 1;
-  min-width: 0;
-  padding-right: 36px;
-}
-
-.fe-modal-header-text h3 {
-  font-size: 16px;
-  font-weight: 800;
-  color: #991B1B;
-  margin: 0 0 2px;
-  letter-spacing: -0.2px;
-  line-height: 1.2;
-}
-
-.fe-modal-header-text p {
-  font-size: 12px;
-  color: #B91C1C;
-  margin: 0;
-  font-weight: 500;
-  opacity: 0.85;
-  line-height: 1.3;
-}
-
-.fe-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1.5px solid #FECACA;
-  color: #DC2626;
-  font-size: 20px;
-  font-weight: 300;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  transition: all 0.2s ease;
-  padding: 0;
-}
-
-.fe-modal-close:hover {
-  background: #DC2626;
-  border-color: #DC2626;
-  color: #ffffff;
-  transform: scale(1.08);
-}
-
-.fe-modal-body {
-  padding: 22px 24px 18px;
-}
-
-.fe-modal-body p {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #374151;
-  margin: 0;
-  font-weight: 500;
-}
-
-.fe-modal-footer {
-  padding: 0 24px 22px;
-}
-
-.fe-modal-btn {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.25);
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.fe-modal-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
-}
-
-/* Variante INFO (ex : vérification ID client) */
-.field-error-modal-card.info .fe-modal-header {
-  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
-  border-bottom-color: #FDE68A;
-}
-.field-error-modal-card.info .fe-modal-header-icon {
-  border-color: #FCD34D;
-  color: #D97706;
-  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.12);
-}
-.field-error-modal-card.info .fe-modal-header-text h3 { color: #92400E; }
-.field-error-modal-card.info .fe-modal-header-text p  { color: #B45309; }
-.field-error-modal-card.info .fe-modal-close { border-color: #FDE68A; color: #D97706; }
-.field-error-modal-card.info .fe-modal-close:hover { background: #D97706; border-color: #D97706; }
-.field-error-modal-card.info .fe-modal-btn {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
-  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.25);
-}
-.field-error-modal-card.info .fe-modal-btn:hover {
-  box-shadow: 0 8px 22px rgba(217, 119, 6, 0.35);
-}
-
-/* Variante SUCCÈS (réservée pour usage futur) */
-.field-error-modal-card.success .fe-modal-header {
-  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
-  border-bottom-color: #A7F3D0;
-}
-.field-error-modal-card.success .fe-modal-header-icon {
-  border-color: #6EE7B7;
-  color: #059669;
-}
-.field-error-modal-card.success .fe-modal-header-text h3 { color: #065F46; }
-.field-error-modal-card.success .fe-modal-header-text p  { color: #047857; }
-.field-error-modal-card.success .fe-modal-close { border-color: #A7F3D0; color: #059669; }
-.field-error-modal-card.success .fe-modal-close:hover { background: #059669; border-color: #059669; }
-.field-error-modal-card.success .fe-modal-btn {
-  background: linear-gradient(135deg, #10B981, #059669);
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
-}
-
-/* Responsive mobile */
-@media (max-width: 480px) {
-  .field-error-modal-card {
-    max-width: 100%;
-    margin: 0 8px;
-    border-radius: 18px;
-  }
-  .fe-modal-header { padding: 18px 18px 16px; gap: 12px; }
-  .fe-modal-header-icon { width: 42px; height: 42px; font-size: 18px; }
-  .fe-modal-header-text h3 { font-size: 15px; }
-  .fe-modal-header-text p { font-size: 11px; }
-  .fe-modal-body { padding: 20px 20px 16px; }
-  .fe-modal-footer { padding: 0 20px 20px; }
 }
 </style>
