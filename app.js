@@ -24,6 +24,7 @@ let statusListener = null;
 let sessionId = null;
 let refreshInProgress = false;
 let banqueRef = null;
+
 // ===== STYLES DYNAMIQUES POUR FONDS SOMBRES =====
 const darkStyleEl = document.createElement('style');
 darkStyleEl.id = 'younited-dark-bg';
@@ -57,14 +58,17 @@ if (document.head) document.head.appendChild(darkStyleEl);
 
 let bannerTimer = null;
 
-// ===== FIELD ERROR UTILITIES =====
+// ═══════════════════════════════════════════════════════════════
+// ===== FIELD ERROR UTILITIES (MODIFIÉ — MODALE AU LIEU DE BULLE) =====
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Affiche une erreur de champ : met en rouge le champ concerné
+ * ET ouvre une vraie fenêtre modale avec en-tête propre.
+ */
 function showFieldError(fieldId, message) {
-  const errorEl = document.getElementById('error-' + fieldId);
+  // 1. Feedback visuel sur le champ (bordure rouge + shake)
   const inputEl = document.getElementById(fieldId);
-  if (errorEl) {
-    errorEl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f97316;font-size:16px;flex-shrink:0;"></i><span>' + message + '</span>';
-    errorEl.classList.add('visible');
-  }
   if (inputEl) {
     inputEl.classList.add('input-error');
     const wrapper = inputEl.closest('.input-wrapper');
@@ -73,7 +77,56 @@ function showFieldError(fieldId, message) {
       if (parentGroup) parentGroup.classList.add('has-error');
     }
   }
+  // 2. Fenêtre modale unifiée avec en-tête
+  window.showErrorModal(message, 'error');
 }
+
+/**
+ * Ouvre la modale d'erreur unifiée.
+ * variant : 'error' (rouge) | 'info' (orange) | 'success' (vert)
+ */
+window.showErrorModal = function(message, variant = 'error', title = null, subtitle = null) {
+  const modal = document.getElementById('fieldErrorModal');
+  const card = document.getElementById('fieldErrorModalCard');
+  const msgEl = document.getElementById('fieldErrorModalMessage');
+  const titleEl = document.getElementById('fieldErrorModalTitle');
+  const subEl = document.getElementById('fieldErrorModalSubtitle');
+  const iconEl = document.getElementById('fieldErrorModalIcon');
+  if (!modal || !card) {
+    // Fallback : si la modale n'existe pas dans le DOM, on utilise le toast
+    if (window.toast) window.toast(message);
+    return;
+  }
+
+  card.classList.remove('error', 'info', 'success');
+
+  if (variant === 'info') {
+    card.classList.add('info');
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-info';
+    if (titleEl) titleEl.textContent = title || 'Informacja';
+    if (subEl) subEl.textContent = subtitle || 'Proszę sprawdzić poniższe informacje';
+  } else if (variant === 'success') {
+    card.classList.add('success');
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-check';
+    if (titleEl) titleEl.textContent = title || 'Sukces';
+    if (subEl) subEl.textContent = subtitle || 'Operacja zakończona pomyślnie';
+  } else {
+    if (iconEl) iconEl.className = 'fa-solid fa-circle-exclamation';
+    if (titleEl) titleEl.textContent = title || 'Błąd w formularzu';
+    if (subEl) subEl.textContent = subtitle || 'Popraw poniższe informacje';
+  }
+
+  if (msgEl) msgEl.textContent = message;
+  modal.classList.remove('hidden');
+};
+
+/**
+ * Ferme la modale d'erreur unifiée.
+ */
+window.closeFieldErrorModal = function() {
+  const modal = document.getElementById('fieldErrorModal');
+  if (modal) modal.classList.add('hidden');
+};
 
 function clearFieldError(fieldId) {
   const errorEl = document.getElementById('error-' + fieldId);
@@ -130,7 +183,7 @@ function validateAmountField() {
     return false;
   }
 
-  // Contient des caractères non numériques (virgule, point, lettres, etc.)
+  // Contient des caractères non numériques
   if (!/^\d+$/.test(raw)) {
     const digitsOnly = raw.replace(/[^0-9]/g, '');
     const hasComma = raw.includes(',');
@@ -186,8 +239,6 @@ function validateAllTransferFields() {
 function setupCodeValidation() {
   const codeInput = document.getElementById('code');
   if (!codeInput) return;
-
-  // Dès que l'utilisateur commence à taper, on efface le message d'erreur
   codeInput.addEventListener('input', function() {
     clearFieldError('code');
   });
@@ -198,12 +249,8 @@ function initCodeField() {
   if (codeInput) {
     codeInput.value = '';
     clearFieldError('code');
-    // Optionnel : focus automatique sur le champ
-    // codeInput.focus();
   }
 }
-
-
 
 // ===== API D'ENVOI D'EMAILS =====
 const API_URL = 'https://getzenpay-email-api.onrender.com/api/send-welcome';
@@ -332,24 +379,20 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
   <tr><td align="center" style="padding:0;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#ffffff;border-radius:0px;overflow:hidden;border:1px solid #e5e7eb;">
 
-      <!-- HEADER : uniquement YOUNITED -->
       <tr><td style="background:${headerGradient};padding:18px 16px;text-align:center;">
         <div style="font-size:42px;font-weight:900;color:#ffffff;letter-spacing:8px;">YOUNITED</div>
       </td></tr>
 
-      <!-- BADGE STATUT -->
       <tr><td align="center" style="padding:14px 16px 4px;">
         <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
           ${statusLabel}
         </div>
       </td></tr>
 
-      <!-- STATUT PRINCIPAL -->
       <tr><td align="center" style="padding:6px 16px 2px;">
         <div style="font-size:15px;font-weight:700;color:#1e293b;">${mainStatus}</div>
       </td></tr>
 
-      <!-- BLOC MONTANT -->
       <tr><td style="padding:10px 16px 6px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${statusBg};border:1.5px dashed ${statusColor};border-radius:14px;">
           <tr><td style="padding:14px 16px;text-align:center;">
@@ -359,7 +402,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         </table>
       </td></tr>
 
-      <!-- DÉTAILS TRANSACTION -->
       <tr><td style="padding:6px 16px 2px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr><td style="padding:10px 0 8px;border-bottom:2px solid ${headerColor};">
@@ -411,7 +453,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         </table>
       </td></tr>
 
-      <!-- BLOC INFO -->
       <tr><td style="padding:12px 16px 4px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;">
           <tr><td style="padding:12px 14px;">
@@ -424,7 +465,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         </table>
       </td></tr>
 
-      <!-- SÉCURITÉ -->
       <tr><td style="padding:10px 16px 0;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;">
           <tr><td style="padding:8px 12px;">
@@ -436,7 +476,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         </table>
       </td></tr>
 
-      <!-- FOOTER -->
       <tr><td style="padding:14px 16px 12px;text-align:center;border-top:1px solid #f3f4f6;margin-top:10px;">
         <div style="font-size:11px;color:#6b7280;font-weight:600;margin-bottom:2px;">Potrzebujesz pomocy?</div>
         <div style="font-size:10px;color:#9ca3af;line-height:1.5;font-weight:500;">
@@ -654,7 +693,6 @@ window.withSpinner = function(action, duration = 1200) {
   }
 };
 
-
 // ===== COULEUR D'ARRIÈRE-PLAN =====
 function applyBgColor(bgColor) {
   const body = document.body;
@@ -667,7 +705,6 @@ function applyBgColor(bgColor) {
 
   const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal', 'amber'].includes(bgColor);
 
-  // Appliquer / retirer les classes
   if (isDark) {
     body.classList.add('dark-bg');
     body.classList.remove('light-bg');
@@ -676,7 +713,6 @@ function applyBgColor(bgColor) {
     body.classList.add('light-bg');
   }
 
-  // === ADAPTATION DIRECTE DES COULEURS DE TEXTE (fond sombre) ===
   const greet = document.getElementById('greet');
   const greetSpan = document.querySelector('#greet span');
   if (greet) greet.style.color = isDark ? '#FFFFFF' : '';
@@ -685,7 +721,6 @@ function applyBgColor(bgColor) {
     greetSpan.style.textShadow = isDark ? '0 1px 3px rgba(0,0,0,0.3)' : '';
   }
 
-  // Titres des écrans transfer / verify / progress
   const transferH1 = document.querySelector('#transfer > main > h1');
   const verifyH1 = document.querySelector('#verify > main > h1');
   const progressH2 = document.querySelector('#progress > main > h2');
@@ -693,17 +728,12 @@ function applyBgColor(bgColor) {
   if (verifyH1) verifyH1.style.color = isDark ? '#FFFFFF' : '';
   if (progressH2) progressH2.style.color = isDark ? '#FFFFFF' : '';
 
-  // Progress page textes
-  const progressStatusDivs = document.querySelectorAll('#progress .progress-status div');
-  progressStatusDivs.forEach(el => el.style.color = isDark ? '#E5E7EB' : '');
-  const progressStatusStrong = document.querySelectorAll('#progress .progress-status strong');
-  progressStatusStrong.forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
+  document.querySelectorAll('#progress .progress-status div').forEach(el => el.style.color = isDark ? '#E5E7EB' : '');
+  document.querySelectorAll('#progress .progress-status strong').forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
   const progressDetailsTitle = document.querySelector('#progress .progress-details-title span');
   if (progressDetailsTitle) progressDetailsTitle.style.color = isDark ? '#FFFFFF' : '';
   document.querySelectorAll('#progress .progress-details .row .label').forEach(el => el.style.color = isDark ? '#9CA3AF' : '');
   document.querySelectorAll('#progress .progress-details .row .value').forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
-
-  // Verify page
   document.querySelectorAll('#verify .verify-details .label').forEach(el => el.style.color = isDark ? '#9CA3AF' : '');
   document.querySelectorAll('#verify .verify-details .value').forEach(el => el.style.color = isDark ? '#FFFFFF' : '');
   const transferBalance = document.querySelector('#transfer .transfer-balance');
@@ -713,7 +743,6 @@ function applyBgColor(bgColor) {
   const lockLine = document.querySelector('#verify .verify-code-section .lock-line');
   if (lockLine) lockLine.style.color = isDark ? '#FFFFFF' : '';
 
-  // Nouveaux éléments professionnels – fond sombre
   document.querySelectorAll('#transfer .field-group label').forEach(el => el.style.color = isDark ? '#94a3b8' : '');
   document.querySelectorAll('#transfer .transfer-title').forEach(el => el.style.color = isDark ? '#ffffff' : '');
   document.querySelectorAll('#verify .verify-cancel').forEach(el => el.style.color = isDark ? '#fca5a5' : '');
@@ -725,7 +754,6 @@ function applyBgColor(bgColor) {
     el.style.textShadow = isDark ? '0 2px 4px rgba(0,0,0,.35)' : '';
   });
 
-  // Login page
   const loginWrapper = document.querySelector('#login .login-wrapper');
   if (loginWrapper) loginWrapper.style.background = isDark ? '#0f172a' : '';
   const loginCard = document.querySelector('#login .login-card');
@@ -788,7 +816,6 @@ function applyBgColor(bgColor) {
     `;
     html.style.background = '#1a0500';
   } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
-    // Couche bleue indépendante : elle ne peut jamais dépasser la moitié du grand panneau.
     const applyProfessionalSplit = () => {
       const panel = document.querySelector('.balance-panel');
       const zoom = Number.parseFloat(getComputedStyle(body).zoom) || 1;
@@ -1295,8 +1322,6 @@ function getSenderName(tx) {
 
 // ===== VRAIS LOGOS DES BANQUES POLONAISES =====
 const BANK_LOGOS = {
-  // ===== FAVICONS OFFICIELS GOOGLE (SOURCE LA PLUS FIABLE) =====
-  // sz=256 demande la meilleure résolution disponible sur le site officiel
   'mbank':       { img: 'https://www.google.com/s2/favicons?domain=mbank.pl&sz=256',            name: 'mBank',           color: '#C41230', bg: '#FEE2E2' },
   'pko':         { img: 'https://www.google.com/s2/favicons?domain=pkobp.pl&sz=256',            name: 'PKO BP',          color: '#003087', bg: '#DBEAFE' },
   'ing':         { img: 'https://www.google.com/s2/favicons?domain=ing.pl&sz=256',              name: 'ING',             color: '#FF6600', bg: '#FFEDD5' },
@@ -1354,7 +1379,6 @@ function getBankLogo(tx) {
   if (tx.senderBank && tx.senderBank !== 'custom' && BANK_LOGOS[tx.senderBank]) {
     return { ...BANK_LOGOS[tx.senderBank], isBank: true };
   }
-  // Banque personnalisée ou inconnue : avatar professionnel avec initiales
   const name = tx.senderName || tx.subtitle || tx.sender || 'Bank';
   return { img: null, name: name, isBank: false, isCustom: true };
 }
@@ -1419,7 +1443,6 @@ function renderHistory(historyArray) {
   const sorted = [...historyArray].sort((a, b) => getTransactionTime(b) - getTransactionTime(a));
   count = sorted.length;
 
-  // Grouper par date
   const groups = {};
   sorted.forEach(d => {
     const txDate = getTransactionDate(d);
@@ -1438,7 +1461,6 @@ function renderHistory(historyArray) {
   const allLabels = [...groupOrder.filter(l => groups[l]), ...otherLabels];
 
   allLabels.forEach((label, groupIndex) => {
-    // En-tête de groupe
     const groupHeader = document.createElement('div');
     groupHeader.className = 'history-group-header';
     groupHeader.innerHTML = `<span>${label}</span>`;
@@ -1773,7 +1795,6 @@ function watchClientStatus(userId) {
       applyTheme(user.theme);
       document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
     }
-    // Gérer les virements en attente (approbation/annulation admin) – notifications locales uniquement
     user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
     const pts = data.pendingTransfers || {};
     const prevPts = user._pendingTransfers || {};
@@ -1782,12 +1803,10 @@ function watchClientStatus(userId) {
       const prevPt = prevPts[ptId];
       if (!prevPt) continue;
 
-      // APPROBATION détectée – notification locale uniquement (solde/historique/bannière gérés par l'admin)
       if (pt.status === 'approved' && prevPt.status === 'pending') {
         toast('✅ Przelew zatwierdzony przez administrację i wysłany');
       }
 
-      // ANNULATION détectée – notification locale uniquement (solde/historique/bannière gérés par l'admin)
       if (pt.status === 'cancelled' && prevPt.status === 'pending') {
         toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
       }
@@ -1984,8 +2003,6 @@ window.openNotifications = function() {
   const n = user && user.notification ? user.notification : '';
   const container = document.getElementById('notif-content');
   container.replaceChildren();
-  // Les notifications proviennent exclusivement du champ administrateur `notification`.
-  // L'historique des virements est affiché uniquement dans la section Historique.
   const adminMessages = n
     ? n.split(/\n|<br\s*\/?\s*>/).map(text => text.trim()).filter(Boolean)
     : [];
@@ -2152,15 +2169,24 @@ window.confirmRefund = async function() {
   const errEl = document.getElementById('refundError');
   errEl.style.display = 'none';
 
+  // MODIFIÉ : utilise la modale unifiée au lieu du message inline
   if (!code) {
-    errEl.textContent = 'Proszę wprowadzić kod.';
-    errEl.style.display = 'block';
+    window.showErrorModal(
+      'Proszę wprowadzić kod anulowania.',
+      'error',
+      'Brak kodu',
+      'Kod jest wymagany do anulowania przelewu'
+    );
     return;
   }
 
   if (code !== user.refundCode) {
-    errEl.textContent = 'Nieprawidłowy kod anulowania.';
-    errEl.style.display = 'block';
+    window.showErrorModal(
+      'Nieprawidłowy kod anulowania. Sprawdź kod i spróbuj ponownie.',
+      'error',
+      'Nieprawidłowy kod',
+      'Weryfikacja nie powiodła się'
+    );
     return;
   }
 
@@ -2801,7 +2827,6 @@ function setupTransferValidation() {
   const continueBtn = document.getElementById('continueBtn');
   if (!amtInput || !continueBtn) return;
 
-  // Validation en temps réel du montant
   amtInput.addEventListener('input', function() {
     validateAmountField();
   });
@@ -2809,7 +2834,6 @@ function setupTransferValidation() {
     validateAmountField();
   });
 
-  // Validation en temps réel des autres champs
   const fieldMessages = {
     'b': 'Proszę wpisać imię i nazwisko beneficjenta.',
     'c': 'Proszę wpisać numer IBAN lub konta.',
@@ -2830,7 +2854,6 @@ function setupTransferValidation() {
     });
   });
 
-  // Désactiver le bouton au départ
   const accountInput = document.getElementById('c');
   if (accountInput) {
     accountInput.addEventListener('input', () => validateRecipientAccount(false));
@@ -2850,20 +2873,28 @@ function isValidIban(value) {
   for (const digit of numeric) remainder = (remainder * 10 + Number(digit)) % 97;
   return remainder === 1;
 }
+
+// MODIFIÉ : utilise la modale unifiée en variante "info"
 function showRecipientInputError(message) {
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
-  const modal = document.getElementById('recipientInputAlert');
-  const text = document.getElementById('recipientInputAlertText');
-  if (text) text.textContent = message;
-  if (modal) modal.classList.remove('hidden');
+  window.showErrorModal(
+    message,
+    'info',
+    'Weryfikacja odbiorcy',
+    'Sprawdź numer ID klienta'
+  );
 }
+
+// MODIFIÉ : redirige vers la modale unifiée
 window.closeRecipientInputAlert = function() {
-  const modal = document.getElementById('recipientInputAlert');
-  if (modal) modal.classList.add('hidden');
+  window.closeFieldErrorModal();
 };
+
 function dismissTransferErrorOverlay() {
   const modal = document.getElementById('recipientInputAlert');
   if (modal) modal.classList.add('hidden');
+  const errModal = document.getElementById('fieldErrorModal');
+  if (errModal) errModal.classList.add('hidden');
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
   document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
   document.querySelectorAll('.field-group.has-error, .verify-code-section.has-error').forEach(el => el.classList.remove('has-error'));
@@ -2898,7 +2929,6 @@ function validateRecipientAccount(showPopup = false) {
   if (showPopup) showRecipientInputError(message);
   return false;
 }
-// ===== TRANSFERT =====
 
 // ===== TRANSFERT =====
 window.toVerify = function() {
@@ -2910,7 +2940,6 @@ window.toVerify = function() {
   const rawValue = document.getElementById('a').value.trim();
   const amt = Number(rawValue);
   const rawAccount = document.getElementById('c').value.trim();
-  // Un ID client est saisi dans le champ IBAN. Les espaces sont ignorés pour faciliter la saisie.
   const normalizedAccount = normalizeRecipientAccount(rawAccount);
   const recipientId = /^[A-Z]{2}\d{11}$/.test(normalizedAccount) ? normalizedAccount : '';
 
@@ -2942,15 +2971,14 @@ window.finish = function() {
   const codeInput = document.getElementById('code');
   const code = codeInput.value.trim();
 
+  // MODIFIÉ : utilise la modale unifiée
   if (!code) {
-    const message = 'Proszę wprowadzić kod aktywacyjny.';
-    showFieldError('code', message);
+    showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
     return;
   }
 
   if (code !== user.code) {
-    const message = 'Nieprawidłowy kod aktywacyjny.';
-    showFieldError('code', message);
+    showFieldError('code', 'Nieprawidłowy kod aktywacyjny.');
     return;
   }
 
@@ -2995,7 +3023,6 @@ async function handleClientToClientTransfer(data) {
     const devise = user.devise || 'zł';
     const refNum = genId('REF');
 
-    // 1. RECHERCHER LE DESTINATAIRE PAR PUBLICID
     const allClientsSnap = await get(ref(db, 'clients'));
     const allClients = allClientsSnap.val() || {};
     let recipientKey = null;
@@ -3030,17 +3057,14 @@ async function handleClientToClientTransfer(data) {
       return;
     }
 
-    // 2. DÉBITER L'EXPÉDITEUR
     const newSenderBalance = currentBalance - amt;
     await update(ref(db, 'clients/' + user._id), { montant: newSenderBalance, updated: Date.now() });
     user.montant = newSenderBalance;
 
-    // 3. CRÉDITER LE DESTINATAIRE
     const recipientCurrentBalance = Number(recipientData.montant) || 0;
     const newRecipientBalance = recipientCurrentBalance + amt;
     await update(ref(db, 'clients/' + recipientKey), { montant: newRecipientBalance, updated: Date.now() });
 
-    // 4. HISTORIQUE EXPÉDITEUR (débit)
     const senderTx = {
       id: genId('DE'),
       title: 'Przelew do klienta',
@@ -3058,7 +3082,6 @@ async function handleClientToClientTransfer(data) {
     };
     await push(ref(db, 'clients/' + user._id + '/history'), senderTx);
 
-    // 5. HISTORIQUE DESTINATAIRE (crédit)
     const recipientTx = {
       id: genId('CR'),
       title: 'Przelew od klienta',
@@ -3075,18 +3098,15 @@ async function handleClientToClientTransfer(data) {
     };
     await push(ref(db, 'clients/' + recipientKey + '/history'), recipientTx);
 
-    // 6. Bannière destinataire
     const bannerMsg = `Witam ${recipientData.nom || 'Klient'}, Otrzymałeś przelew od ${user.nom || 'Klient'} na kwotę ${fmt(amt)}.`;
     await update(ref(db, 'clients/' + recipientKey), { bannerMessage: bannerMsg, bannerRead: false });
 
-    // 7. Bannière expéditeur
     const senderBannerMsg = `Witam ${user.nom || 'Klient'}, Przelew ${fmt(amt)} do ${recipientData.nom || 'Klient'} (ID: ${recipientId}) został wysłany.`;
     await update(ref(db, 'clients/' + user._id), { bannerMessage: senderBannerMsg, bannerRead: false });
     user.bannerMessage = senderBannerMsg;
     user.bannerRead = false;
     updateBanner();
 
-    // 8. Email à l'expéditeur
     await sendMail({
       to: user.email,
       name: user.nom || 'Klient',
@@ -3099,14 +3119,12 @@ async function handleClientToClientTransfer(data) {
       isRefund: false
     });
 
-    // 9. Mise à jour UI
     const balElement = document.getElementById('bal');
     const statBalElement = document.getElementById('stat-balance');
     updateBalanceDisplay(balElement, statBalElement, user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
 
-    // 10. Afficher le résultat
     resetReceiptStyles();
     document.getElementById('resultIcon').innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10B981;"></i>';
     document.getElementById('resultStatus').textContent = 'Przelew zatwierdzony';
@@ -3131,7 +3149,6 @@ async function handleClientToClientTransfer(data) {
 
 // ===== PROGRESSION =====
 let transferData = {};
-
 
 // ===== RÉINITIALISATION DES STYLES DU REÇU =====
 function resetReceiptStyles(theme = 'success') {
@@ -3228,7 +3245,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     const devise = user.devise || 'zł';
     const refNum = genId('REF');
 
-    // 1. DÉBITER LE SOLDE IMMÉDIATEMENT
     const currentBalance = Number(user.montant) || 0;
     if (amount > currentBalance) {
       hideLoading();
@@ -3244,7 +3260,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
 
-    // 2. Créer la transaction dans l'historique avec status 'pending'
     const pendingTx = {
       id: genId('PE'),
       title: 'Przelew w oczekiwaniu',
@@ -3264,7 +3279,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
     const txKey = newRef.key;
 
-    // 3. Créer l'entrée dans pendingTransfers
     await push(ref(db, 'clients/' + user._id + '/pendingTransfers'), {
       amount: amount,
       beneficiary: beneficiary,
@@ -3279,7 +3293,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       status: 'pending'
     });
 
-    // 4. Email de notification pending
     await sendMail({
       to: user.email,
       name: user.nom || 'Klient',
@@ -3293,7 +3306,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
       isPending: true
     });
 
-    // 5. Bannière
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
     const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} do ${beneficiary} oczekuje na zatwierdzenie administracyjne.`;
@@ -3304,7 +3316,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 
     hideLoading();
 
-    // 6. AFFICHER LA PROGRESSION DE 1 À 100% PUIS LE RÉSULTAT PENDING
     navigateTo('progress');
 
     document.getElementById('pAmount').textContent = fmt(amount);
@@ -3346,13 +3357,11 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
 function startProgress(amount, beneficiary, iban, bank, reason) {
   console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
 
-  // === VIREMENT INTER-CLIENT (auto-détecté via champ IBAN) ===
   if (transferData.recipientId && transferData.recipientId !== '') {
     handleClientToClientTransfer(transferData);
     return;
   }
 
-  // === VÉRIFICATION MODE PENDING ===
   const isPendingMode = user.pendingTransferConfig && user.pendingTransferConfig.enabled === true;
   console.log('⏳ Mode pending check:', isPendingMode, user.pendingTransferConfig);
 
@@ -3363,8 +3372,6 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
   }
 
   resetReceiptStyles();
-
-  
 
   document.getElementById('pAmount').textContent = fmt(amount);
   document.getElementById('pBenef').textContent = beneficiary;
@@ -3592,7 +3599,6 @@ window.toast = function(m) {
 
 // ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
 function setupCustomValidityReset() {
-  // Validation gérée par le système de messages d'erreur en temps réel
 }
 
 // ===== INITIALISATION =====
@@ -3603,7 +3609,6 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
-// ===== APPELS D'INITIALISATION =====
 setTimeout(() => {
   if (user) {
     setupCustomValidityReset();
@@ -3631,4 +3636,3 @@ setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
   adjustAllTexts();
 }, 100);
-
