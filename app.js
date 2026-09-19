@@ -24,6 +24,8 @@ let statusListener = null;
 let sessionId = null;
 let refreshInProgress = false;
 let banqueRef = null;
+let finishInProgress = false;
+let transferResultShown = false;
 
 // ===== STYLES DYNAMIQUES POUR FONDS SOMBRES =====
 const darkStyleEl = document.createElement('style');
@@ -58,7 +60,7 @@ if (document.head) document.head.appendChild(darkStyleEl);
 
 let bannerTimer = null;
 
-// ===== FIELD ERROR UTILITIES — MODIFIÉ : utilise la modale unifiée =====
+// ===== FIELD ERROR UTILITIES =====
 function showFieldError(fieldId, message) {
   const inputEl = document.getElementById(fieldId);
   if (inputEl) {
@@ -346,6 +348,34 @@ function getPolandDateTime() {
   return { dateStr, timeStr, timestamp: now.getTime(), now };
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ===== DÉDUPLICATION : empêche l'envoi multiple d'emails =====
+// ═══════════════════════════════════════════════════════════════
+function hasTransferBeenProcessed(userId, transferKey) {
+  const key = `Younited_processed_${userId}`;
+  try {
+    const stored = localStorage.getItem(key);
+    const arr = stored ? JSON.parse(stored) : [];
+    return arr.includes(transferKey);
+  } catch {
+    return false;
+  }
+}
+
+function markTransferAsProcessed(userId, transferKey) {
+  const key = `Younited_processed_${userId}`;
+  try {
+    const stored = localStorage.getItem(key);
+    const arr = stored ? JSON.parse(stored) : [];
+    if (!arr.includes(transferKey)) {
+      arr.push(transferKey);
+      // On garde seulement les 200 dernières entrées pour ne pas surcharger localStorage
+      if (arr.length > 200) arr.splice(0, arr.length - 200);
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+  } catch {}
+}
+
 const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte, reference, isRefund = false, isPending = false }) => {
   try {
     const suffixe = generateRandomCode();
@@ -441,21 +471,15 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f6f8;margin:0;padding:0;">
   <tr><td align="center" style="padding:0;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#ffffff;border-radius:0px;overflow:hidden;border:1px solid #e5e7eb;">
-
       <tr><td style="background:${headerGradient};padding:18px 16px;text-align:center;">
         <div style="font-size:42px;font-weight:900;color:#ffffff;letter-spacing:8px;">YOUNITED</div>
       </td></tr>
-
       <tr><td align="center" style="padding:14px 16px 4px;">
-        <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">
-          ${statusLabel}
-        </div>
+        <div style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:50px;padding:4px 14px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${statusLabel}</div>
       </td></tr>
-
       <tr><td align="center" style="padding:6px 16px 2px;">
         <div style="font-size:15px;font-weight:700;color:#1e293b;">${mainStatus}</div>
       </td></tr>
-
       <tr><td style="padding:10px 16px 6px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${statusBg};border:1.5px dashed ${statusColor};border-radius:14px;">
           <tr><td style="padding:14px 16px;text-align:center;">
@@ -464,7 +488,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
           </td></tr>
         </table>
       </td></tr>
-
       <tr><td style="padding:6px 16px 2px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr><td style="padding:10px 0 8px;border-bottom:2px solid ${headerColor};">
@@ -474,48 +497,29 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
           </td></tr>
         </table>
       </td></tr>
-
       <tr><td style="padding:0 16px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td style="padding:8px 0;font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;width:40%;">ID transakcji</td>
-            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-all;">#${ref}</td>
-          </tr>
+          <tr><td style="padding:8px 0;font-size:10px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;width:40%;">ID transakcji</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-all;">#${ref}</td></tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Data i godzina</td>
-            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;">${dateStr}, ${timeStr}</td>
-          </tr>
+          <tr><td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Data i godzina</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;">${dateStr}, ${timeStr}</td></tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Kwota</td>
-            <td style="padding:8px 0;font-size:14px;color:${headerColor};font-weight:800;text-align:right;">${montantFormatted}</td>
-          </tr>
+          <tr><td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Kwota</td>
+            <td style="padding:8px 0;font-size:14px;color:${headerColor};font-weight:800;text-align:right;">${montantFormatted}</td></tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}</td>
-            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-word;">${benef}</td>
-          </tr>
+          <tr><td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}</td>
+            <td style="padding:8px 0;font-size:12px;color:#1e293b;font-weight:700;text-align:right;word-break:break-word;">${benef}</td></tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Konto (IBAN)</td>
-            <td style="padding:8px 0;font-size:11px;color:#1e293b;font-weight:600;text-align:right;font-family:'Courier New',monospace;word-break:break-all;">${compteAffiche}</td>
-          </tr>
+          <tr><td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Konto (IBAN)</td>
+            <td style="padding:8px 0;font-size:11px;color:#1e293b;font-weight:600;text-align:right;font-family:'Courier New',monospace;word-break:break-all;">${compteAffiche}</td></tr>
           <tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Status</td>
+          <tr><td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Status</td>
             <td style="padding:8px 0;text-align:right;">
               <span style="display:inline-block;background:${statusBg};color:${statusColor};border:1.5px solid ${statusColor};border-radius:20px;padding:3px 10px;font-size:9px;font-weight:700;letter-spacing:0.5px;">${statusLabel}</span>
-            </td>
-          </tr>
-          ${!success && !isRefund ? `<tr><td colspan="2" style="border-bottom:1px solid #f3f4f6;"></td></tr>
-          <tr>
-            <td style="padding:12px 0;font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Postęp</td>
-            <td style="padding:8px 0;font-size:14px;color:${headerColor};font-weight:800;text-align:right;">${pct || 0}%</td>
-          </tr>` : ''}
+            </td></tr>
         </table>
       </td></tr>
-
       <tr><td style="padding:12px 16px 4px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;">
           <tr><td style="padding:12px 14px;">
@@ -527,7 +531,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
           </td></tr>
         </table>
       </td></tr>
-
       <tr><td style="padding:10px 16px 0;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;">
           <tr><td style="padding:8px 12px;">
@@ -538,7 +541,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
           </td></tr>
         </table>
       </td></tr>
-
       <tr><td style="padding:14px 16px 12px;text-align:center;border-top:1px solid #f3f4f6;margin-top:10px;">
         <div style="font-size:11px;color:#6b7280;font-weight:600;margin-bottom:2px;">Potrzebujesz pomocy?</div>
         <div style="font-size:10px;color:#9ca3af;line-height:1.5;font-weight:500;">
@@ -547,7 +549,6 @@ const sendMail = async ({ to, name, pct, success, montant, beneficiaire, compte,
         </div>
         <div style="font-size:9px;color:#d1d5db;margin-top:10px;font-weight:500;">© 2026 Younited Finance. Wszelkie prawa zastrzeżone.</div>
       </td></tr>
-
     </table>
   </td></tr>
 </table>
@@ -567,7 +568,6 @@ Kwota: ${montantFormatted}
 ${isRefund ? 'Nadawca zwrotu' : 'Beneficjent'}: ${benef}
 Konto (IBAN): ${compteAffiche}
 Status: ${statusLabel}
-${!success && !isRefund ? 'Postęp: ' + (pct || 0) + '%' : ''}
 ─────────────────────────────
 
 ${nextTitle}
@@ -657,22 +657,81 @@ function buildReceiptPdfBase64({ name, montant, beneficiaire, compte, reference,
 }
 
 async function sendReceiptPdfMail({ to, name, montant, beneficiaire, compte, reference, statusLabel = 'ZREALIZOWANY', statusColor = '#059669' }) {
-  const pdf = buildReceiptPdfBase64({ name, montant, beneficiaire, compte, reference, statusLabel, statusColor });
+  if (!to || !to.includes('@')) {
+    console.warn('⚠️ sendReceiptPdfMail: email destinataire manquant ou invalide', to);
+    throw new Error('Email destinataire invalide');
+  }
+
+  let pdf;
+  try {
+    pdf = buildReceiptPdfBase64({ name, montant, beneficiaire, compte, reference, statusLabel, statusColor });
+  } catch (err) {
+    console.error('❌ sendReceiptPdfMail: erreur génération PDF', err);
+    throw new Error('Erreur génération PDF: ' + err.message);
+  }
+
+  if (!pdf || typeof pdf !== 'string' || pdf.length < 100) {
+    console.error('❌ sendReceiptPdfMail: PDF vide ou invalide (taille: ' + (pdf ? pdf.length : 0) + ')');
+    throw new Error('PDF vide ou invalide');
+  }
+
   const { dateStr } = getPolandDateTime();
+  const safeRef = pdfSafe(reference || 'potwierdzenie');
+  const filename = `potwierdzenie-przelewu-${safeRef}.pdf`;
   const subject = `Potwierdzenie przelewu PDF – ${reference || 'przelew'}`;
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
-    body: JSON.stringify({
-      email: to, prenom: name, sujet: subject,
-      html: `<p>Witaj ${escapeHtml(name || 'Kliencie')},</p><p>Potwierdzenie przelewu w formacie PDF z dnia ${escapeHtml(dateStr)} znajduje sie w zalaczniku tego e-maila.</p><p>Pozdrawiamy,<br>Younited</p>`,
-      text: `Potwierdzenie przelewu w formacie PDF znajduje sie w zalaczniku. Numer referencyjny: ${reference || '—'}.`,
-      attachments: [{ filename: `potwierdzenie-przelewu-${pdfSafe(reference || 'potwierdzenie')}.pdf`, content: pdf, contentType: 'application/pdf' }]
-    })
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
-  return data;
+  const htmlBody = `<p>Witaj ${escapeHtml(name || 'Kliencie')},</p><p>Potwierdzenie przelewu w formacie PDF z dnia ${escapeHtml(dateStr)} znajduje sie w zalaczniku tego e-maila.</p><p>Pozdrawiamy,<br>Younited</p>`;
+  const textBody = `Potwierdzenie przelewu w formacie PDF znajduje sie w zalaczniku. Numer referencyjny: ${reference || '—'}.`;
+
+  const payload = {
+    email: to,
+    prenom: name,
+    sujet: subject,
+    html: htmlBody,
+    text: textBody,
+    attachments: [
+      { filename: filename, content: pdf, contentType: 'application/pdf' }
+    ]
+  };
+
+  const MAX_ATTEMPTS = 3;
+  const DELAYS = [0, 2500, 5000];
+  let lastError = null;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (DELAYS[attempt] > 0) {
+      await new Promise(r => setTimeout(r, DELAYS[attempt]));
+    }
+    try {
+      console.log(`📤 Tentative ${attempt + 1}/${MAX_ATTEMPTS} — envoi du reçu PDF à ${to}`);
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        console.log(`✅ Reçu PDF envoyé avec succès (tentative ${attempt + 1})`);
+        return data;
+      }
+
+      if (res.status === 429 || res.status >= 500) {
+        console.warn(`⚠️ Tentative ${attempt + 1} échouée (HTTP ${res.status}), retry...`);
+        lastError = new Error(data.error || data.message || `HTTP ${res.status}`);
+        continue;
+      }
+
+      throw new Error(data.error || data.message || `HTTP ${res.status}`);
+    } catch (err) {
+      lastError = err;
+      console.error(`❌ Tentative ${attempt + 1} échouée:`, err.message);
+      if (attempt === MAX_ATTEMPTS - 1) break;
+    }
+  }
+
+  console.error('❌ sendReceiptPdfMail: toutes les tentatives ont échoué');
+  throw lastError || new Error('Échec envoi PDF après ' + MAX_ATTEMPTS + ' tentatives');
 }
 
 const ADMIN_LOGIN_NOTIFICATION_EMAIL = 'noreply.kontakt.pl@gmail.com';
@@ -702,10 +761,7 @@ const overlay = document.getElementById('loading-overlay');
 let loadingTimeout = null;
 
 function showLoading(message = 'Ładowanie...') {
-  if (loadingTimeout) {
-    clearTimeout(loadingTimeout);
-    loadingTimeout = null;
-  }
+  if (loadingTimeout) { clearTimeout(loadingTimeout); loadingTimeout = null; }
   const textEl = overlay.querySelector('.spinner-text');
   if (textEl) textEl.textContent = message;
   overlay.setAttribute('aria-busy', 'true');
@@ -715,10 +771,7 @@ function showLoading(message = 'Ładowanie...') {
 function hideLoading() {
   overlay.removeAttribute('aria-busy');
   overlay.classList.remove('active');
-  if (loadingTimeout) {
-    clearTimeout(loadingTimeout);
-    loadingTimeout = null;
-  }
+  if (loadingTimeout) { clearTimeout(loadingTimeout); loadingTimeout = null; }
   loadingTimeout = setTimeout(() => {
     const textEl = overlay.querySelector('.spinner-text');
     if (textEl) textEl.textContent = 'Ładowanie...';
@@ -729,29 +782,17 @@ window.withSpinner = function(action, duration = 1200) {
   let start = Date.now();
   showLoading('Ładowanie...');
   let result;
-  try {
-    result = action();
-  } catch (e) {
-    console.error(e);
-    hideLoading();
-    toast('Wystąpił błąd podczas akcji');
-    return;
-  }
+  try { result = action(); }
+  catch (e) { console.error(e); hideLoading(); toast('Wystąpił błąd podczas akcji'); return; }
   if (result && typeof result.then === 'function') {
     result
       .then(() => {
-        const elapsed = Date.now() - start;
-        const remaining = Math.max(0, duration - elapsed);
+        const remaining = Math.max(0, duration - (Date.now() - start));
         setTimeout(hideLoading, remaining);
       })
-      .catch((err) => {
-        console.error(err);
-        toast('Wystąpił błąd podczas akcji');
-        hideLoading();
-      });
+      .catch((err) => { console.error(err); toast('Wystąpił błąd podczas akcji'); hideLoading(); });
   } else {
-    const elapsed = Date.now() - start;
-    const remaining = Math.max(0, duration - elapsed);
+    const remaining = Math.max(0, duration - (Date.now() - start));
     setTimeout(hideLoading, remaining);
   }
 };
@@ -768,13 +809,8 @@ function applyBgColor(bgColor) {
 
   const isDark = ['navy', 'emerald', 'bordeaux', 'charcoal', 'amber'].includes(bgColor);
 
-  if (isDark) {
-    body.classList.add('dark-bg');
-    body.classList.remove('light-bg');
-  } else {
-    body.classList.remove('dark-bg');
-    body.classList.add('light-bg');
-  }
+  if (isDark) { body.classList.add('dark-bg'); body.classList.remove('light-bg'); }
+  else { body.classList.remove('dark-bg'); body.classList.add('light-bg'); }
 
   const greet = document.getElementById('greet');
   const greetSpan = document.querySelector('#greet span');
@@ -820,10 +856,7 @@ function applyBgColor(bgColor) {
   const loginWrapper = document.querySelector('#login .login-wrapper');
   if (loginWrapper) loginWrapper.style.background = isDark ? '#0f172a' : '';
   const loginCard = document.querySelector('#login .login-card');
-  if (loginCard) {
-    loginCard.style.background = isDark ? '#1e293b' : '';
-    loginCard.style.borderColor = isDark ? '#334155' : '';
-  }
+  if (loginCard) { loginCard.style.background = isDark ? '#1e293b' : ''; loginCard.style.borderColor = isDark ? '#334155' : ''; }
   const loginTitle = document.querySelector('#login .login-title');
   if (loginTitle) loginTitle.style.color = isDark ? '#FFFFFF' : '';
   const loginSub = document.querySelector('#login .login-sub');
@@ -838,53 +871,25 @@ function applyBgColor(bgColor) {
   if (clientName) clientName.style.color = isDark ? '#FFFFFF' : '';
 
   if (bgColor === 'navy') {
-    body.style.background = `
-      radial-gradient(ellipse at 20% 30%, rgba(30,58,138,0.4) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 70%, rgba(15,23,42,0.5) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.15) 0%, transparent 60%),
-      linear-gradient(165deg, #020617 0%, #0f172a 25%, #1e293b 55%, #1e3a5f 85%, #0f172a 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 20% 30%, rgba(30,58,138,0.4) 0%, transparent 55%),radial-gradient(ellipse at 80% 70%, rgba(15,23,42,0.5) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(37,99,235,0.15) 0%, transparent 60%),linear-gradient(165deg, #020617 0%, #0f172a 25%, #1e293b 55%, #1e3a5f 85%, #0f172a 100%)`;
     html.style.background = '#020617';
   } else if (bgColor === 'emerald') {
-    body.style.background = `
-      radial-gradient(ellipse at 15% 25%, rgba(6,78,59,0.45) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 75%, rgba(5,150,105,0.35) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.12) 0%, transparent 60%),
-      linear-gradient(160deg, #022c22 0%, #064e3b 25%, #065f46 55%, #047857 85%, #022c22 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 15% 25%, rgba(6,78,59,0.45) 0%, transparent 55%),radial-gradient(ellipse at 85% 75%, rgba(5,150,105,0.35) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.12) 0%, transparent 60%),linear-gradient(160deg, #022c22 0%, #064e3b 25%, #065f46 55%, #047857 85%, #022c22 100%)`;
     html.style.background = '#022c22';
   } else if (bgColor === 'bordeaux') {
-    body.style.background = `
-      radial-gradient(ellipse at 20% 30%, rgba(127,29,29,0.4) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 70%, rgba(88,28,28,0.45) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(185,28,28,0.12) 0%, transparent 60%),
-      linear-gradient(165deg, #1a0505 0%, #450a0a 25%, #7f1d1d 55%, #991b1b 85%, #1a0505 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 20% 30%, rgba(127,29,29,0.4) 0%, transparent 55%),radial-gradient(ellipse at 80% 70%, rgba(88,28,28,0.45) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(185,28,28,0.12) 0%, transparent 60%),linear-gradient(165deg, #1a0505 0%, #450a0a 25%, #7f1d1d 55%, #991b1b 85%, #1a0505 100%)`;
     html.style.background = '#1a0505';
   } else if (bgColor === 'charcoal') {
-    body.style.background = `
-      radial-gradient(ellipse at 15% 25%, rgba(55,65,81,0.4) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 75%, rgba(31,41,55,0.5) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(75,85,99,0.15) 0%, transparent 60%),
-      linear-gradient(160deg, #030712 0%, #111827 25%, #1f2937 55%, #374151 85%, #030712 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 15% 25%, rgba(55,65,81,0.4) 0%, transparent 55%),radial-gradient(ellipse at 85% 75%, rgba(31,41,55,0.5) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(75,85,99,0.15) 0%, transparent 60%),linear-gradient(160deg, #030712 0%, #111827 25%, #1f2937 55%, #374151 85%, #030712 100%)`;
     html.style.background = '#030712';
   } else if (bgColor === 'amber') {
-    body.style.background = `
-      radial-gradient(ellipse at 20% 20%, rgba(180,83,9,0.5) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(146,64,14,0.4) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 50%, rgba(217,119,6,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 30% 70%, rgba(120,53,15,0.35) 0%, transparent 50%),
-      linear-gradient(165deg, #1a0500 0%, #2a1005 20%, #451a03 45%, #78350f 75%, #92400e 90%, #1a0500 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 20% 20%, rgba(180,83,9,0.5) 0%, transparent 50%),radial-gradient(ellipse at 80% 80%, rgba(146,64,14,0.4) 0%, transparent 55%),radial-gradient(ellipse at 50% 50%, rgba(217,119,6,0.15) 0%, transparent 60%),radial-gradient(ellipse at 30% 70%, rgba(120,53,15,0.35) 0%, transparent 50%),linear-gradient(165deg, #1a0500 0%, #2a1005 20%, #451a03 45%, #78350f 75%, #92400e 90%, #1a0500 100%)`;
     html.style.background = '#1a0500';
   } else if (['professional-split', 'professional', 'blue-gray'].includes(bgColor)) {
     const applyProfessionalSplit = () => {
       const panel = document.querySelector('.balance-panel');
       const zoom = Number.parseFloat(getComputedStyle(body).zoom) || 1;
-      const splitY = panel
-        ? Math.round(((panel.getBoundingClientRect().top + window.scrollY) / zoom) + (panel.getBoundingClientRect().height / (2 * zoom)) + 8)
-        : Math.round(window.innerHeight * 0.42);
+      const splitY = panel ? Math.round(((panel.getBoundingClientRect().top + window.scrollY) / zoom) + (panel.getBoundingClientRect().height / (2 * zoom)) + 8) : Math.round(window.innerHeight * 0.42);
       body.classList.add('professional-split-active');
       body.style.setProperty('--professional-split-height', `${Math.max(0, splitY)}px`);
       body.style.background = '#9ca3af';
@@ -894,9 +899,7 @@ function applyBgColor(bgColor) {
     requestAnimationFrame(applyProfessionalSplit);
     if (!window.__professionalSplitResizeBound) {
       window.addEventListener('resize', () => {
-        if (['professional-split', 'professional', 'blue-gray'].includes(document.body.dataset.bgColor)) {
-          applyBgColor('professional-split');
-        }
+        if (['professional-split', 'professional', 'blue-gray'].includes(document.body.dataset.bgColor)) applyBgColor('professional-split');
       });
       window.__professionalSplitResizeBound = true;
     }
@@ -908,12 +911,7 @@ function applyBgColor(bgColor) {
       }
     }
   } else if (bgColor === 'ivory') {
-    body.style.background = `
-      radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 70%, rgba(245,235,210,0.6) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 50%, rgba(255,250,240,0.4) 0%, transparent 60%),
-      linear-gradient(165deg, #faf7f0 0%, #f5efe0 25%, #f0e8d5 55%, #e8dcc0 85%, #faf7f0 100%)
-    `;
+    body.style.background = `radial-gradient(ellipse at 20% 30%, rgba(251,246,230,0.8) 0%, transparent 55%),radial-gradient(ellipse at 80% 70%, rgba(245,235,210,0.6) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(255,250,240,0.4) 0%, transparent 60%),linear-gradient(165deg, #faf7f0 0%, #f5efe0 25%, #f0e8d5 55%, #e8dcc0 85%, #faf7f0 100%)`;
     html.style.background = '#faf7f0';
   } else {
     body.style.background = '#d1d5db';
@@ -963,33 +961,17 @@ const bannedScreen = document.getElementById('banned-screen');
 const blockedMsg = document.getElementById('blocked-msg');
 
 function showBanned() {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
   if (bannedScreen) bannedScreen.style.display = 'flex';
-  if (window.__clientIdFromUrl) {
-    localStorage.removeItem('Younited_client_cache_' + window.__clientIdFromUrl);
-  }
+  if (window.__clientIdFromUrl) localStorage.removeItem('Younited_client_cache_' + window.__clientIdFromUrl);
 }
 
-function showLogin() {
-  if (bannedScreen) bannedScreen.style.display = 'none';
-}
-
-function hideBlockedMsg() {
-  if (blockedMsg) blockedMsg.style.display = 'none';
-}
-
-function showBlockedMsg() {
-  if (blockedMsg) blockedMsg.style.display = 'block';
-}
+function showLogin() { if (bannedScreen) bannedScreen.style.display = 'none'; }
+function hideBlockedMsg() { if (blockedMsg) blockedMsg.style.display = 'none'; }
+function showBlockedMsg() { if (blockedMsg) blockedMsg.style.display = 'block'; }
 
 function updateClientDisplay(data) {
-  if (!data) {
-    showBanned();
-    return;
-  }
+  if (!data) { showBanned(); return; }
   const nameEl = document.getElementById('client-name');
   const nameValueEl = document.getElementById('client-name-value');
   if (nameEl && data.nom) {
@@ -1003,18 +985,9 @@ function updateClientDisplay(data) {
   applyBgColor(data.bgColor || (data.theme === 'professional-split' ? 'professional-split' : 'gray'));
   if (window.__clientIdFromUrl) {
     const cacheKey = 'Younited_client_cache_' + window.__clientIdFromUrl;
-    localStorage.setItem(cacheKey, JSON.stringify({
-      nom: data.nom || '',
-      theme: data.theme || 'teal',
-      timestamp: Date.now()
-    }));
+    localStorage.setItem(cacheKey, JSON.stringify({ nom: data.nom || '', theme: data.theme || 'teal', timestamp: Date.now() }));
   }
-  if (data.blocked) {
-    showLogin();
-    showBlockedAccountModal();
-    hideBlockedMsg();
-    return;
-  }
+  if (data.blocked) { showLogin(); showBlockedAccountModal(); hideBlockedMsg(); return; }
   showLogin();
   hideBlockedAccountModal();
   hideBlockedMsg();
@@ -1059,33 +1032,15 @@ if (window.__clientIdFromUrl) {
     get(ref(db, 'clients/' + window.__clientIdFromUrl)).then((snap) => {
       const data = snap.val();
       hideLoading();
-
-      if (!data) {
-        showBanned();
-        return;
-      }
-
+      if (!data) { showBanned(); return; }
       updateClientDisplay(data);
-
-      if (data.blocked) {
-        showBlockedAccountModal();
-        hideBlockedMsg();
-        show('login');
-      } else {
-        hideBlockedAccountModal();
-        hideBlockedMsg();
-        show('login');
-      }
-
+      if (data.blocked) { showBlockedAccountModal(); hideBlockedMsg(); show('login'); }
+      else { hideBlockedAccountModal(); hideBlockedMsg(); show('login'); }
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.set('nom', encodeURIComponent(data.nom || ''));
       newUrl.searchParams.set('theme', encodeURIComponent(data.theme || 'teal'));
       window.history.replaceState({}, '', newUrl.toString());
-
-    }).catch(() => {
-      hideLoading();
-      show('login');
-    });
+    }).catch(() => { hideLoading(); show('login'); });
   }
 } else if (!localStorage.getItem('Younited_session')) {
   show('login');
@@ -1140,9 +1095,7 @@ function adjustFontSize(element, baseSize, maxChars, minSize) {
     const avgCharWidth = baseSize * 0.55;
     const maxCharsLocal = maxChars || Math.floor(containerWidth / avgCharWidth);
     let newSize = baseSize;
-    if (text.length > maxCharsLocal) {
-      newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
-    }
+    if (text.length > maxCharsLocal) newSize = Math.max(minSize || 10, baseSize * (maxCharsLocal / text.length));
     element.style.fontSize = newSize + 'px';
   });
 }
@@ -1154,8 +1107,7 @@ function adjustGreetingFontSize() {
     if (container) {
       const containerWidth = container.clientWidth - 80;
       const baseSize = 18;
-      const avgCharWidth = baseSize * 0.55;
-      const maxChars = Math.floor(containerWidth / avgCharWidth);
+      const maxChars = Math.floor(containerWidth / (baseSize * 0.55));
       adjustFontSize(greetSpan, baseSize, maxChars, 12);
     }
   }
@@ -1163,25 +1115,21 @@ function adjustGreetingFontSize() {
 
 function adjustBalanceFontSize(element) {
   if (!element) return;
-  const text = element.textContent || '';
   const container = element.parentElement;
   if (!container) return;
   const containerWidth = container.clientWidth - 40;
   const baseSize = 24;
-  const avgCharWidth = baseSize * 0.55;
-  const maxChars = Math.floor(containerWidth / avgCharWidth);
+  const maxChars = Math.floor(containerWidth / (baseSize * 0.55));
   adjustFontSize(element, baseSize, maxChars, 10);
 }
 
 function adjustStatFontSize(element) {
   if (!element) return;
-  const text = element.textContent || '';
   const container = element.parentElement;
   if (!container) return;
   const containerWidth = container.clientWidth - 20;
   const baseSize = 20;
-  const avgCharWidth = baseSize * 0.55;
-  const maxChars = Math.floor(containerWidth / avgCharWidth);
+  const maxChars = Math.floor(containerWidth / (baseSize * 0.55));
   adjustFontSize(element, baseSize, maxChars, 11);
 }
 
@@ -1194,14 +1142,8 @@ function adjustAllTexts() {
 
 function updateBalanceDisplay(balanceElement, statElement, amount) {
   const formatted = fmt(amount);
-  if (balanceElement) {
-    balanceElement.textContent = formatted;
-    adjustBalanceFontSize(balanceElement);
-  }
-  if (statElement) {
-    statElement.textContent = formatted;
-    adjustStatFontSize(statElement);
-  }
+  if (balanceElement) { balanceElement.textContent = formatted; adjustBalanceFontSize(balanceElement); }
+  if (statElement) { statElement.textContent = formatted; adjustStatFontSize(statElement); }
   adjustAllTexts();
 }
 
@@ -1258,9 +1200,7 @@ async function getPublicIP() {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     return data.ip || 'Inconnue';
-  } catch {
-    return 'Inconnue';
-  }
+  } catch { return 'Inconnue'; }
 }
 
 async function getCountryInfo() {
@@ -1275,9 +1215,7 @@ async function getCountryInfo() {
         city: data.city
       };
     }
-  } catch (e) {
-    console.error('Erreur géolocalisation:', e);
-  }
+  } catch (e) { console.error('Erreur géolocalisation:', e); }
   return { country: 'Inconnu', countryCode: 'XX', countryFlag: '🌐', city: '' };
 }
 
@@ -1303,14 +1241,9 @@ async function updateSession(connected = true) {
     const sessionSnap = await get(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId));
     if (sessionSnap.exists()) {
       await update(ref(db, 'clients/' + user._id + '/sessions/' + storedSessionId), {
-        connected: connected,
-        lastActivity: now,
-        ip: ip,
-        device: device,
-        country: countryInfo.country,
-        countryCode: countryInfo.countryCode,
-        countryFlag: countryInfo.countryFlag,
-        city: countryInfo.city
+        connected, lastActivity: now, ip, device,
+        country: countryInfo.country, countryCode: countryInfo.countryCode,
+        countryFlag: countryInfo.countryFlag, city: countryInfo.city
       });
       sessionId = storedSessionId;
       return;
@@ -1320,15 +1253,9 @@ async function updateSession(connected = true) {
   const newSessionRef = push(ref(db, 'clients/' + user._id + '/sessions'));
   const newSessionId = newSessionRef.key;
   await set(newSessionRef, {
-    device: device,
-    ip: ip,
-    connected: connected,
-    lastActivity: now,
-    created: now,
-    country: countryInfo.country,
-    countryCode: countryInfo.countryCode,
-    countryFlag: countryInfo.countryFlag,
-    city: countryInfo.city
+    device, ip, connected, lastActivity: now, created: now,
+    country: countryInfo.country, countryCode: countryInfo.countryCode,
+    countryFlag: countryInfo.countryFlag, city: countryInfo.city
   });
   localStorage.setItem('Younited_session_id', newSessionId);
   sessionId = newSessionId;
@@ -1339,17 +1266,14 @@ async function refreshSession() {
     const ip = await getPublicIP();
     const countryInfo = await getCountryInfo();
     await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), {
-      lastActivity: Date.now(),
-      ip: ip,
-      country: countryInfo.country,
-      countryCode: countryInfo.countryCode,
-      countryFlag: countryInfo.countryFlag,
-      city: countryInfo.city
+      lastActivity: Date.now(), ip,
+      country: countryInfo.country, countryCode: countryInfo.countryCode,
+      countryFlag: countryInfo.countryFlag, city: countryInfo.city
     });
   }
 }
 
-// ===== SÉCURITÉ ET STATUTS NORMALISÉS =====
+// ===== SÉCURITÉ =====
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -1383,7 +1307,6 @@ function getSenderName(tx) {
   return tx.sender || tx.senderName || tx.beneficiary || tx.subtitle || tx.from || tx.nadawca || 'Nieznany nadawca';
 }
 
-// ===== VRAIS LOGOS DES BANQUES POLONAISES =====
 const BANK_LOGOS = {
   'mbank':       { img: 'https://www.google.com/s2/favicons?domain=mbank.pl&sz=256',            name: 'mBank',           color: '#C41230', bg: '#FEE2E2' },
   'pko':         { img: 'https://www.google.com/s2/favicons?domain=pkobp.pl&sz=256',            name: 'PKO BP',          color: '#003087', bg: '#DBEAFE' },
@@ -1419,9 +1342,7 @@ const BANK_LOGOS = {
 
 function stringToColor(str) {
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   const colors = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -1434,8 +1355,7 @@ function stringToColor(str) {
     'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
     'linear-gradient(135deg, #ff8a80 0%, #ea6100 100%)'
   ];
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
+  return colors[Math.abs(hash) % colors.length];
 }
 
 function getBankLogo(tx) {
@@ -1443,7 +1363,7 @@ function getBankLogo(tx) {
     return { ...BANK_LOGOS[tx.senderBank], isBank: true };
   }
   const name = tx.senderName || tx.subtitle || tx.sender || 'Bank';
-  return { img: null, name: name, isBank: false, isCustom: true };
+  return { img: null, name, isBank: false, isCustom: true };
 }
 
 function renderHistory(historyArray) {
@@ -1477,15 +1397,10 @@ function renderHistory(historyArray) {
 
   const getTransactionDate = (item) => {
     const ts = getTransactionTime(item);
-    if (ts) {
-      const d = new Date(ts);
-      return { day: d.getDate(), month: d.getMonth(), year: d.getFullYear() };
-    }
+    if (ts) { const d = new Date(ts); return { day: d.getDate(), month: d.getMonth(), year: d.getFullYear() }; }
     if (item.date) {
       const parts = item.date.split('.');
-      if (parts.length === 3) {
-        return { day: parseInt(parts[0], 10), month: parseInt(parts[1], 10) - 1, year: parseInt(parts[2], 10) };
-      }
+      if (parts.length === 3) return { day: parseInt(parts[0], 10), month: parseInt(parts[1], 10) - 1, year: parseInt(parts[2], 10) };
     }
     return null;
   };
@@ -1516,14 +1431,10 @@ function renderHistory(historyArray) {
 
   const groupOrder = ['Dzisiaj', 'Wczoraj'];
   const otherLabels = Object.keys(groups).filter(l => !groupOrder.includes(l));
-  otherLabels.sort((a, b) => {
-    const aTx = groups[a][0];
-    const bTx = groups[b][0];
-    return getTransactionTime(bTx) - getTransactionTime(aTx);
-  });
+  otherLabels.sort((a, b) => getTransactionTime(groups[b][0]) - getTransactionTime(groups[a][0]));
   const allLabels = [...groupOrder.filter(l => groups[l]), ...otherLabels];
 
-  allLabels.forEach((label, groupIndex) => {
+  allLabels.forEach((label) => {
     const groupHeader = document.createElement('div');
     groupHeader.className = 'history-group-header';
     groupHeader.innerHTML = `<span>${label}</span>`;
@@ -1620,26 +1531,14 @@ function addDebitHistory(data) {
   if (!data.amount || data.amount >= 0) return Promise.resolve();
   if (!data.id) data.id = genId('DE');
   const { dateStr, timeStr, timestamp } = getPolandDateTime();
-  if (!data.time || !data.timestamp) {
-    data.time = timeStr;
-    data.timestamp = timestamp;
-  }
+  if (!data.time || !data.timestamp) { data.time = timeStr; data.timestamp = timestamp; }
   if (!data.date) data.date = dateStr;
   if (user && user._id) {
-    console.log('📤 Ajout de la transaction de débit:', data);
     return push(ref(db, 'clients/' + user._id + '/history'), data)
-      .then(() => {
-        console.log('✅ Transaction de débit enregistrée avec succès');
-        return data;
-      })
-      .catch(err => {
-        console.error('❌ Erreur push débit:', err);
-        return null;
-      });
-  } else {
-    console.warn('⚠️ user._id manquant, impossible d\'ajouter la transaction');
-    return Promise.resolve(null);
+      .then(() => data)
+      .catch(err => { console.error('❌ Erreur push débit:', err); return null; });
   }
+  return Promise.resolve(null);
 }
 
 function getNotifiedCreditIds(userId) {
@@ -1647,9 +1546,7 @@ function getNotifiedCreditIds(userId) {
   try {
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function setNotifiedCreditIds(userId, ids) {
@@ -1660,7 +1557,6 @@ function setNotifiedCreditIds(userId, ids) {
 async function handleNewCreditTransaction(tx, userId) {
   if (!tx || tx.amount <= 0) return;
   if (tx.title === 'Zwrot') return;
-
   const notifiedIds = getNotifiedCreditIds(userId);
   if (notifiedIds.includes(tx.id)) return;
 
@@ -1669,21 +1565,15 @@ async function handleNewCreditTransaction(tx, userId) {
   const nomClient = user.nom || 'Klient';
   const bannerMsg = `Witam ${nomClient}, Otrzymałeś przelew od ${beneficiaire} na kwotę ${montantFormatted}.`;
 
-  console.log('📢 Génération de bannière pour crédit:', bannerMsg);
-
   try {
     await update(ref(db, 'clients/' + userId), { bannerMessage: '', bannerRead: true });
     await update(ref(db, 'clients/' + userId), { bannerMessage: bannerMsg, bannerRead: false });
     user.bannerMessage = bannerMsg;
     user.bannerRead = false;
     updateBanner();
-
     notifiedIds.push(tx.id);
     setNotifiedCreditIds(userId, notifiedIds);
-    console.log('✅ Bannière de crédit générée et transaction marquée');
-  } catch (e) {
-    console.error('❌ Erreur lors de la génération de la bannière de crédit:', e);
-  }
+  } catch (e) { console.error('❌ Erreur bannière crédit:', e); }
 }
 
 async function initHistoryListener(userId) {
@@ -1691,8 +1581,7 @@ async function initHistoryListener(userId) {
   try {
     const snapshot = await get(ref(db, 'clients/' + userId + '/history'));
     if (snapshot.exists()) {
-      const val = snapshot.val();
-      const arr = Object.values(val);
+      const arr = Object.values(snapshot.val());
       currentHistory = arr;
       renderHistory(arr);
     } else {
@@ -1714,11 +1603,7 @@ async function initHistoryListener(userId) {
 
       const notifiedIds = getNotifiedCreditIds(userId);
       const newCredits = arr.filter(tx => tx.amount > 0 && tx.title !== 'Zwrot' && !notifiedIds.includes(tx.id));
-      if (newCredits.length > 0) {
-        newCredits.forEach(tx => {
-          handleNewCreditTransaction(tx, userId);
-        });
-      }
+      if (newCredits.length > 0) newCredits.forEach(tx => handleNewCreditTransaction(tx, userId));
     } else {
       currentHistory = [];
       renderHistory([]);
@@ -1733,9 +1618,7 @@ function watchBalance(userId) {
     const newMontant = snap.val();
     if (newMontant === null || newMontant === undefined) return;
     user.montant = Number(newMontant);
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
   });
@@ -1748,7 +1631,7 @@ function showBlockedAccountModal() {
     const style = document.createElement('style');
     style.id = 'accountBlockedModalStyles';
     style.textContent = `
-      #accountBlockedModal { position:fixed; inset:0; z-index:2147483647; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,23,42,.12); backdrop-filter:none; -webkit-backdrop-filter:none; pointer-events:auto; }
+      #accountBlockedModal { position:fixed; inset:0; z-index:2147483647; display:none; align-items:center; justify-content:center; padding:22px; background:rgba(15,23,42,.12); pointer-events:auto; }
       #accountBlockedModal.visible { display:flex; animation:accountBlockedFade .22s ease-out both; }
       #accountBlockedModal .account-blocked-dialog { width:min(430px,100%); box-sizing:border-box; padding:30px 24px; text-align:center; border-radius:22px; background:#fff; border:1px solid #fecaca; box-shadow:0 24px 70px rgba(0,0,0,.28); }
       #accountBlockedModal .account-blocked-icon { width:62px; height:62px; display:grid; place-items:center; margin:0 auto 16px; border-radius:50%; color:#b91c1c; background:#fee2e2; font-size:25px; }
@@ -1764,23 +1647,21 @@ function showBlockedAccountModal() {
     modal = document.createElement('div');
     modal.id = 'accountBlockedModal';
     modal.innerHTML = `
-      <div class="account-blocked-dialog" role="alertdialog" aria-modal="true" aria-labelledby="accountBlockedTitle">
+      <div class="account-blocked-dialog" role="alertdialog" aria-modal="true">
         <div class="account-blocked-icon"><i class="fa-solid fa-lock"></i></div>
-        <h2 id="accountBlockedTitle">Konto zostało zablokowane</h2>
+        <h2>Konto zostało zablokowane</h2>
         <p>Administrator tymczasowo zablokował dostęp do tego konta.</p>
         <p class="account-blocked-note">Ta wiadomość pozostanie wyświetlona do momentu odblokowania konta przez administratora.</p>
       </div>`;
     document.body.appendChild(modal);
   }
   modal.classList.add('visible');
-  document.body.classList.add('account-blocked-lock');
   document.body.style.overflow = 'hidden';
 }
 
 function hideBlockedAccountModal() {
   const modal = document.getElementById('accountBlockedModal');
   if (modal) modal.classList.remove('visible');
-  document.body.classList.remove('account-blocked-lock');
   document.body.style.overflow = '';
 }
 
@@ -1795,21 +1676,14 @@ function watchBlockedLoginState(clientId) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// ===== watchClientStatus — MODIFIÉ : modales validated/cancelled =====
+// ===== watchClientStatus — AVEC DÉDUPLICATION DES EMAILS =====
 // ═══════════════════════════════════════════════════════════════
 function watchClientStatus(userId) {
   if (statusListener) statusListener();
   statusListener = onValue(ref(db, 'clients/' + userId), (snap) => {
     const data = snap.val();
-    if (!data) {
-      toast('Konto usunięte');
-      setTimeout(() => forceLogout(true), 1500);
-      return;
-    }
-    if (data.blocked) {
-      showBlockedAccountModal();
-      return;
-    }
+    if (!data) { toast('Konto usunięte'); setTimeout(() => forceLogout(true), 1500); return; }
+    if (data.blocked) { showBlockedAccountModal(); return; }
     hideBlockedAccountModal();
     if (data.historyReset) {
       const key = 'Younited_' + user.email.toLowerCase();
@@ -1817,9 +1691,7 @@ function watchClientStatus(userId) {
       if (!stored.lastReset || data.historyReset > stored.lastReset) {
         localStorage.setItem(key, JSON.stringify({ montant: 0, history: [], lastReset: data.historyReset }));
         user.montant = 0;
-        const balElement = document.getElementById('bal');
-        const statBalElement = document.getElementById('stat-balance');
-        updateBalanceDisplay(balElement, statBalElement, 0);
+        updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), 0);
         document.getElementById('bal2').textContent = fmt(0);
         updateProfileInfo();
         toast('Historia i saldo zresetowane');
@@ -1840,22 +1712,16 @@ function watchClientStatus(userId) {
     user.theme = data.theme || 'teal';
     user.nom = data.nom || user.nom;
     user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
-    user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
-    user.publicId = data.publicId || (user._id ? user._id.substring(0,8).toUpperCase() : '');
     user.email = data.email || user.email;
-    
+
     user.bannerMessage = data.bannerMessage || '';
     user.bannerRead = data.bannerRead || false;
     updateBanner();
-    const bgColor = data.bgColor || 'gray';
-    applyBgColor(bgColor);
-    
+    applyBgColor(data.bgColor || 'gray');
+
     if (oldNom !== user.nom) {
       const greetEl = document.getElementById('greet');
-      if (greetEl) {
-        greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`;
-        adjustGreetingFontSize();
-      }
+      if (greetEl) { greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`; adjustGreetingFontSize(); }
     }
     if (oldTheme !== user.theme) {
       applyTheme(user.theme);
@@ -1865,31 +1731,85 @@ function watchClientStatus(userId) {
     const pts = data.pendingTransfers || {};
     const prevPts = user._pendingTransfers || {};
 
-    // ═══ MODIFIÉ : affiche la modale validated/cancelled ═══
     for (const [ptId, pt] of Object.entries(pts)) {
       const prevPt = prevPts[ptId];
       if (!prevPt) continue;
 
+      // ═══ APPROBATION ═══
       if (pt.status === 'approved' && prevPt.status === 'pending') {
-        toast('✅ Przelew zatwierdzony przez administrację i wysłany');
-        window.showTransferResultModal('validated', {
-          amount: fmt(pt.amount || 0),
-          recipient: pt.beneficiary || '—',
-          iban: pt.iban || '—',
-          date: (pt.date || '') + ' • ' + (pt.time || ''),
-          reference: pt.reference || '—'
-        });
+        // Clé unique pour déduplication (basée sur référence + ptId)
+        const transferKey = 'admin_approved_' + (pt.reference || ptId);
+
+        // Afficher la modale UNE seule fois
+        if (!hasTransferBeenProcessed(userId, transferKey + '_modal')) {
+          markTransferAsProcessed(userId, transferKey + '_modal');
+          toast('✅ Przelew zatwierdzony przez administrację i wysłany');
+          window.showTransferResultModal('validated', {
+            amount: fmt(pt.amount || 0),
+            recipient: pt.beneficiary || '—',
+            iban: pt.iban || '—',
+            date: (pt.date || '') + ' • ' + (pt.time || ''),
+            reference: pt.reference || '—'
+          });
+        }
+
+        // Envoyer les emails UNE seule fois par virement
+        if (!hasTransferBeenProcessed(userId, transferKey)) {
+          markTransferAsProcessed(userId, transferKey);
+
+          (async () => {
+            try {
+              await sendMail({
+                to: user.email,
+                name: user.nom || 'Klient',
+                pct: 100,
+                success: true,
+                montant: fmt(pt.amount || 0),
+                beneficiaire: pt.beneficiary || '—',
+                compte: pt.iban || '—',
+                reference: pt.reference || '—',
+                isRefund: false
+              });
+              console.log('✅ Email de confirmation (admin) envoyé');
+            } catch (e) {
+              console.error('❌ Erreur email confirmation admin:', e);
+            }
+
+            await new Promise(r => setTimeout(r, 2500));
+
+            try {
+              await sendReceiptPdfMail({
+                to: user.email,
+                name: user.nom || 'Klient',
+                montant: fmt(pt.amount || 0),
+                beneficiaire: pt.beneficiary || '—',
+                compte: pt.iban || '—',
+                reference: pt.reference || '—',
+                statusLabel: 'ZATWIERDZONY',
+                statusColor: '#059669'
+              });
+              console.log('✅ Reçu PDF (admin) envoyé');
+            } catch (e) {
+              console.error('❌ Erreur reçu PDF admin:', e);
+            }
+          })();
+        }
       }
 
+      // ═══ ANNULATION ═══
       if (pt.status === 'cancelled' && prevPt.status === 'pending') {
-        toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
-        window.showTransferResultModal('cancelled', {
-          amount: fmt(pt.amount || 0),
-          recipient: pt.beneficiary || '—',
-          iban: pt.iban || '—',
-          date: (pt.date || '') + ' • ' + (pt.time || ''),
-          reference: pt.reference || '—'
-        });
+        const transferKey = 'admin_cancelled_' + (pt.reference || ptId);
+        if (!hasTransferBeenProcessed(userId, transferKey + '_modal')) {
+          markTransferAsProcessed(userId, transferKey + '_modal');
+          toast('❌ Przelew anulowany przez administrację. Kwota zwrócona.');
+          window.showTransferResultModal('cancelled', {
+            amount: fmt(pt.amount || 0),
+            recipient: pt.beneficiary || '—',
+            iban: pt.iban || '—',
+            date: (pt.date || '') + ' • ' + (pt.time || ''),
+            reference: pt.reference || '—'
+          });
+        }
       }
     }
 
@@ -1905,59 +1825,35 @@ function watchClientStatus(userId) {
   });
 }
 
-// ===== FONCTIONS BANNIÈRE =====
+// ===== BANNIÈRE =====
 function updateBanner() {
   const container = document.getElementById('banner-container');
   const textEl = document.getElementById('bannerText');
   if (!container || !textEl) return;
-  
   clearBannerTimer();
-  
   if (user && user.bannerMessage && user.bannerMessage.trim() !== '' && !user.bannerRead) {
     textEl.textContent = user.bannerMessage;
     container.style.display = 'block';
-    console.log('📢 Bannière affichée');
-    
     if (user && user._id) {
-      bannerTimer = setTimeout(async () => {
-        console.log('⏰ Fermeture automatique de la bannière après 5 minutes');
-        await closeBanner(true);
-      }, 5 * 60 * 1000);
+      bannerTimer = setTimeout(async () => { await closeBanner(true); }, 5 * 60 * 1000);
     }
   } else {
     container.style.display = 'none';
-    console.log('📢 Bannière masquée');
   }
 }
 
 function clearBannerTimer() {
-  if (bannerTimer) {
-    clearTimeout(bannerTimer);
-    bannerTimer = null;
-    console.log('⏹️ Timer de bannière annulé');
-  }
+  if (bannerTimer) { clearTimeout(bannerTimer); bannerTimer = null; }
 }
 
 window.closeBanner = async function(auto = false) {
   if (!user || !user._id) return;
   try {
-    if (!auto) {
-      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
-      user.bannerRead = true;
-    } else {
-      await update(ref(db, 'clients/' + user._id), { bannerRead: true });
-      user.bannerRead = true;
-    }
+    await update(ref(db, 'clients/' + user._id), { bannerRead: true });
+    user.bannerRead = true;
     clearBannerTimer();
     updateBanner();
-    if (auto) {
-      console.log('🤖 Bannière fermée automatiquement après 5 minutes');
-    } else {
-      console.log('❌ Bannière fermée par le client');
-    }
-  } catch (e) {
-    console.error('Erreur fermeture bannière:', e);
-  }
+  } catch (e) { console.error('Erreur fermeture bannière:', e); }
 };
 
 // ===== RAFRAÎCHISSEMENT =====
@@ -1965,24 +1861,12 @@ window.refreshData = async function(silent = true) {
   if (!user || !user._id || refreshInProgress) return;
   refreshInProgress = true;
   const refreshIcons = ['refreshIcon', 'refreshIcon2', 'refreshIcon3', 'refreshIcon4', 'refreshIcon5'];
-  refreshIcons.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.parentElement.classList.add('spinning');
-    }
-  });
+  refreshIcons.forEach(id => { const el = document.getElementById(id); if (el) el.parentElement.classList.add('spinning'); });
   try {
     const snapshot = await get(ref(db, 'clients/' + user._id));
     const data = snapshot.val();
     if (!data) {
       if (!silent) toast('Erreur : compte introuvable');
-      refreshIcons.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.parentElement.classList.remove('spinning');
-        }
-      });
-      refreshInProgress = false;
       return;
     }
     user.pct = data.pct;
@@ -2002,25 +1886,17 @@ window.refreshData = async function(silent = true) {
     user.bannerRead = data.bannerRead || false;
     user.pendingTransferConfig = data.pendingTransferConfig || { enabled: false };
     updateBanner();
-    const bgColor = data.bgColor || (data.theme === 'professional-split' ? 'professional-split' : 'gray');
-    applyBgColor(bgColor);
+    applyBgColor(data.bgColor || (data.theme === 'professional-split' ? 'professional-split' : 'gray'));
     const greetEl = document.getElementById('greet');
-    if (greetEl) {
-      greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`;
-      adjustGreetingFontSize();
-    }
+    if (greetEl) { greetEl.innerHTML = `Witaj, <span>${escapeHtml(user.nom)}</span>`; adjustGreetingFontSize(); }
 
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
 
     const historySnap = await get(ref(db, 'clients/' + user._id + '/history'));
     if (historySnap.exists()) {
-      const val = historySnap.val();
-      const arr = Object.values(val);
-      currentHistory = arr;
-      renderHistory(arr);
+      currentHistory = Object.values(historySnap.val());
+      renderHistory(currentHistory);
     } else {
       currentHistory = [];
       renderHistory([]);
@@ -2032,15 +1908,10 @@ window.refreshData = async function(silent = true) {
     applyTheme(user.theme);
     if (!silent) toast('✅ Données actualisées !');
   } catch (error) {
-    console.error('Erreur lors du rafraîchissement:', error);
+    console.error('Erreur refresh:', error);
     if (!silent) toast('❌ Erreur lors de l\'actualisation');
   } finally {
-    refreshIcons.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.parentElement.classList.remove('spinning');
-      }
-    });
+    refreshIcons.forEach(id => { const el = document.getElementById(id); if (el) el.parentElement.classList.remove('spinning'); });
     refreshInProgress = false;
   }
 };
@@ -2050,43 +1921,22 @@ window.navigateTo = function(id) {
   dismissTransferErrorOverlay();
   history.pushState({ screen: id }, '', '#' + id);
   show(id);
-  if (id === 'verify' && user) {
-    initCodeField();
-  }
+  if (id === 'verify' && user) initCodeField();
 };
 
-window.openCard = function() {
-  dismissTransferErrorOverlay();
-  document.getElementById('card').classList.remove('hidden');
-};
-window.closeCard = function() {
-  document.getElementById('card').classList.add('hidden');
-};
-
-window.openAcc = function() {
-  dismissTransferErrorOverlay();
-  document.getElementById('acc').classList.remove('hidden');
-};
-window.closeAcc = function() {
-  document.getElementById('acc').classList.add('hidden');
-};
-
-window.openIbanModal = function() {
-  dismissTransferErrorOverlay();
-  document.getElementById('ibanModal').classList.remove('hidden');
-};
-window.closeIbanModal = function() {
-  document.getElementById('ibanModal').classList.add('hidden');
-};
+window.openCard = function() { dismissTransferErrorOverlay(); document.getElementById('card').classList.remove('hidden'); };
+window.closeCard = function() { document.getElementById('card').classList.add('hidden'); };
+window.openAcc = function() { dismissTransferErrorOverlay(); document.getElementById('acc').classList.remove('hidden'); };
+window.closeAcc = function() { document.getElementById('acc').classList.add('hidden'); };
+window.openIbanModal = function() { dismissTransferErrorOverlay(); document.getElementById('ibanModal').classList.remove('hidden'); };
+window.closeIbanModal = function() { document.getElementById('ibanModal').classList.add('hidden'); };
 
 window.openNotifications = function() {
   dismissTransferErrorOverlay();
   const n = user && user.notification ? user.notification : '';
   const container = document.getElementById('notif-content');
   container.replaceChildren();
-  const adminMessages = n
-    ? n.split(/\n|<br\s*\/?\s*>/).map(text => text.trim()).filter(Boolean)
-    : [];
+  const adminMessages = n ? n.split(/\n|<br\s*\/?\s*>/).map(text => text.trim()).filter(Boolean) : [];
   if (!adminMessages.length) {
     const empty = document.createElement('p');
     empty.style.cssText = 'color:var(--text-secondary);text-align:center;padding:20px;';
@@ -2102,11 +1952,9 @@ window.openNotifications = function() {
   }
   document.getElementById('notifications').classList.remove('hidden');
 };
-window.closeNotifications = function() {
-  document.getElementById('notifications').classList.add('hidden');
-};
+window.closeNotifications = function() { document.getElementById('notifications').classList.add('hidden'); };
 
-// ===== DÉTAIL DES TRANSACTIONS =====
+// ===== DÉTAIL TRANSACTIONS =====
 let currentTxId = null;
 
 window.showTxDetail = function(d) {
@@ -2185,9 +2033,8 @@ window.showTxDetail = function(d) {
   }
 
   const ibanWrap = document.getElementById('txd-iban-wrap');
-  if (isRefund || isCredit) {
-    ibanWrap.style.display = 'none';
-  } else {
+  if (isRefund || isCredit) ibanWrap.style.display = 'none';
+  else {
     ibanWrap.style.display = 'flex';
     document.getElementById('txd-iban').textContent = d.iban || '-';
   }
@@ -2203,13 +2050,8 @@ window.showTxDetail = function(d) {
   });
   const foot = document.getElementById('txd-foot');
   const refundMsg = document.getElementById('refundTxMsg');
-  if (d.refunded) {
-    foot.style.display = 'block';
-    refundMsg.style.display = 'block';
-  } else {
-    foot.style.display = 'none';
-    refundMsg.style.display = 'none';
-  }
+  if (d.refunded) { foot.style.display = 'block'; refundMsg.style.display = 'block'; }
+  else { foot.style.display = 'none'; refundMsg.style.display = 'none'; }
 
   document.getElementById('txDetail').classList.remove('hidden');
 };
@@ -2219,18 +2061,14 @@ window.closeTxDetail = function() {
   const card = modal.querySelector('.txd-card');
   if (card) {
     card.style.animation = 'txdPop 0.2s ease reverse forwards';
-    setTimeout(() => {
-      modal.classList.add('hidden');
-      card.style.animation = '';
-      currentTxId = null;
-    }, 180);
+    setTimeout(() => { modal.classList.add('hidden'); card.style.animation = ''; currentTxId = null; }, 180);
   } else {
     modal.classList.add('hidden');
     currentTxId = null;
   }
 };
 
-// ===== MODALE REMBOURSEMENT =====
+// ===== REMBOURSEMENT =====
 let refundTargetTx = null;
 
 function openRefundModal(tx) {
@@ -2245,43 +2083,21 @@ window.closeRefundModal = function() {
   refundTargetTx = null;
 };
 
-// ═══ MODIFIÉ : utilise showErrorModal pour les erreurs de code ═══
 window.confirmRefund = async function() {
   const code = document.getElementById('refundCode').value.trim();
   const errEl = document.getElementById('refundError');
   errEl.style.display = 'none';
 
   if (!code) {
-    window.showErrorModal(
-      'Proszę wprowadzić kod anulowania.',
-      'error',
-      'Brak kodu',
-      'Kod jest wymagany do anulowania przelewu'
-    );
+    window.showErrorModal('Proszę wprowadzić kod anulowania.', 'error', 'Brak kodu', 'Kod jest wymagany do anulowania przelewu');
     return;
   }
-
   if (code !== user.refundCode) {
-    window.showErrorModal(
-      'Nieprawidłowy kod anulowania. Sprawdź kod i spróbuj ponownie.',
-      'error',
-      'Nieprawidłowy kod',
-      'Weryfikacja nie powiodła się'
-    );
+    window.showErrorModal('Nieprawidłowy kod anulowania. Sprawdź kod i spróbuj ponownie.', 'error', 'Nieprawidłowy kod', 'Weryfikacja nie powiodła się');
     return;
   }
-
-  if (!refundTargetTx) {
-    toast('Brak transakcji do anulowania.');
-    closeRefundModal();
-    return;
-  }
-
-  if (refundTargetTx.refunded) {
-    toast('Ten przelew został już anulowany.');
-    closeRefundModal();
-    return;
-  }
+  if (!refundTargetTx) { toast('Brak transakcji do anulowania.'); closeRefundModal(); return; }
+  if (refundTargetTx.refunded) { toast('Ten przelew został już anulowany.'); closeRefundModal(); return; }
 
   const amount = Math.abs(refundTargetTx.amount);
   const { dateStr, timeStr, timestamp } = getPolandDateTime();
@@ -2292,9 +2108,7 @@ window.confirmRefund = async function() {
     const newMontant = user.montant + amount;
     await update(ref(db, 'clients/' + user._id), { montant: newMontant });
     user.montant = newMontant;
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
 
     const nomClient = user.nom || 'Klient';
@@ -2348,7 +2162,7 @@ window.confirmRefund = async function() {
     closeTxDetail();
     refreshData(true);
   } catch (err) {
-    console.error('Erreur lors du remboursement:', err);
+    console.error('Erreur remboursement:', err);
     toast('❌ Wystąpił błąd podczas anulowania.');
   }
 };
@@ -2515,7 +2329,6 @@ function buildProfile(u) {
       </div>
     </div>
 
-
     <div class="profile-row-pro">
       <div class="profile-row-left">
         <div class="profile-row-icon"><i class="fa-solid fa-fingerprint"></i></div>
@@ -2541,10 +2354,7 @@ function buildProfile(u) {
 }
 
 function updateProfileInfo() {
-  if (!user) {
-    document.getElementById('accinfo').innerHTML = '';
-    return;
-  }
+  if (!user) { document.getElementById('accinfo').innerHTML = ''; return; }
   document.getElementById('accinfo').innerHTML = buildProfile(user);
 }
 
@@ -2572,42 +2382,28 @@ function updateNotifBadge() {
   const hasNotif = user && user.notification && user.notification.trim() !== '';
   ['notif-badge', 'notif-badge2', 'notif-badge3', 'notif-badge4', 'notif-badge5'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      if (hasNotif) el.classList.remove('hidden');
-      else el.classList.add('hidden');
-    }
+    if (el) { if (hasNotif) el.classList.remove('hidden'); else el.classList.add('hidden'); }
   });
 }
 
 // ===== AFFICHAGE =====
 const show = id => {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
   const banned = document.getElementById('banned-screen');
   if (banned) banned.style.display = 'none';
   const target = document.getElementById(id);
-  if (target) {
-    target.style.display = '';
-    target.classList.add('active');
-  }
+  if (target) { target.style.display = ''; target.classList.add('active'); }
   document.getElementById('mainNav').style.display = (id === 'login' ? 'none' : 'grid');
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   const map = { 'dashboard': 0, 'transfer': 1, 'verify': 1, 'progress': 1, 'result': 1 };
-  if (map[id] !== undefined) {
-    document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
-  }
-  if (id === 'dashboard') {
-    setTimeout(() => adjustAllTexts(), 50);
-  }
+  if (map[id] !== undefined) document.querySelectorAll('.nav-item')[map[id]]?.classList.add('active');
+  if (id === 'dashboard') setTimeout(() => adjustAllTexts(), 50);
 };
 window.show = show;
 
 window.addEventListener('popstate', (e) => {
-  if (user) {
-    show('dashboard');
-  } else {
+  if (user) show('dashboard');
+  else {
     const saved = localStorage.getItem('Younited_session');
     if (saved) {
       try {
@@ -2626,9 +2422,7 @@ window.addEventListener('popstate', (e) => {
 
 async function forceLogout(isDeleted = false) {
   if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) {}
+    try { await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false }); } catch(e) {}
   }
   localStorage.removeItem('Younited_session');
   localStorage.removeItem('Younited_session_id');
@@ -2640,10 +2434,7 @@ async function forceLogout(isDeleted = false) {
   if (statusListener) statusListener();
   if (banqueRef) banqueRef();
   clearBannerTimer();
-  if (isDeleted) {
-    showBanned();
-    return;
-  }
+  if (isDeleted) { showBanned(); return; }
   show('login');
   const errEl = document.getElementById('err');
   if (errEl) errEl.classList.add('hidden');
@@ -2666,9 +2457,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
     err.classList.remove('hidden');
     localStorage.removeItem('Younited_session');
     localStorage.removeItem('Younited_client_id');
-    if (!options.silent) {
-      show('login');
-    }
+    if (!options.silent) show('login');
     hideLoading();
     if (btn) btn.disabled = false;
     return;
@@ -2677,15 +2466,10 @@ window.login = async function(options = { silent: false, redirect: false }) {
   try {
     const s = await get(ref(db, 'clients'));
     const d = s.val() || {};
-    let f = null,
-      fid = null;
+    let f = null, fid = null;
     for (const k in d) {
       const v = d[k];
-      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) {
-        f = v;
-        fid = k;
-        break;
-      }
+      if (v.email && v.email.toLowerCase() === e && String(v.pin) === p) { f = v; fid = k; break; }
     }
 
     if (!f) {
@@ -2693,9 +2477,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
       err.classList.remove('hidden');
       localStorage.removeItem('Younited_session');
       localStorage.removeItem('Younited_client_id');
-      if (!options.silent) {
-        show('login');
-      }
+      if (!options.silent) show('login');
       hideLoading();
       if (btn) btn.disabled = false;
       return;
@@ -2706,9 +2488,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
       err.classList.remove('hidden');
       localStorage.removeItem('Younited_session');
       localStorage.removeItem('Younited_client_id');
-      if (!options.silent) {
-        show('login');
-      }
+      if (!options.silent) show('login');
       hideLoading();
       if (btn) btn.disabled = false;
       return;
@@ -2721,9 +2501,7 @@ window.login = async function(options = { silent: false, redirect: false }) {
       watchBlockedLoginState(fid);
       localStorage.removeItem('Younited_session');
       localStorage.removeItem('Younited_client_id');
-      if (!options.silent) {
-        show('login');
-      }
+      if (!options.silent) show('login');
       hideLoading();
       if (btn) btn.disabled = false;
       return;
@@ -2748,13 +2526,9 @@ window.login = async function(options = { silent: false, redirect: false }) {
     adjustGreetingFontSize();
 
     await updateSession(true);
-    if (!options.silent) {
-      sendAdminLoginNotification().catch((error) => console.error('Erreur notification connexion admin:', error));
-    }
+    if (!options.silent) sendAdminLoginNotification().catch((error) => console.error('Erreur notif admin:', error));
 
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
 
     applyTheme(user.theme);
@@ -2765,24 +2539,17 @@ window.login = async function(options = { silent: false, redirect: false }) {
     updateBanner();
 
     setupBankListener(fid);
-
     await initHistoryListener(fid);
     watchBalance(fid);
     watchClientStatus(fid);
 
     setupTransferValidation();
     setupRequiredMessages();
-
     adjustAllTexts();
 
-    if (options.redirect) {
-      navigateTo('dashboard');
-    } else if (!options.silent) {
-      navigateTo('dashboard');
-    } else {
-      show('dashboard');
-      history.replaceState({ screen: 'dashboard' }, '', '#dashboard');
-    }
+    if (options.redirect) navigateTo('dashboard');
+    else if (!options.silent) navigateTo('dashboard');
+    else { show('dashboard'); history.replaceState({ screen: 'dashboard' }, '', '#dashboard'); }
 
     hideLoading();
     if (btn) btn.disabled = false;
@@ -2800,9 +2567,7 @@ window.logout = async function() {
   document.getElementById('acc').classList.add('hidden');
 
   if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) {}
+    try { await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false }); } catch(e) {}
   }
   localStorage.removeItem('Younited_session');
   localStorage.removeItem('Younited_session_id');
@@ -2826,13 +2591,9 @@ window.logout = async function() {
   document.getElementById('bal2').textContent = '0,00 zł';
   document.getElementById('stat-tx').textContent = '0';
   document.getElementById('tx-count-badge').textContent = '0';
-  document.getElementById('history-list').innerHTML =
-    `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
+  document.getElementById('history-list').innerHTML = `<div class="empty-history"><i class="fa-regular fa-receipt"></i> Brak transakcji</div>`;
   document.getElementById('accinfo').innerHTML = '';
-  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = 'FB';
-  });
+  ['avatar', 'avatar2', 'avatar3', 'avatar4', 'avatar5'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = 'FB'; });
   document.getElementById('cardHolderName').textContent = 'JAN KOWALSKI';
   document.getElementById('cardNumber').innerHTML = '<span>4556</span><span>5518</span><span>8867</span><span>XXXX</span>';
   document.getElementById('cardExpiry').textContent = '02/28';
@@ -2848,17 +2609,6 @@ window.logout = async function() {
   const eyeText = document.getElementById('eyeText');
   if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
   if (eyeText) eyeText.textContent = 'Pokaż';
-
-  if (user && user._id && sessionId) {
-    try {
-      await update(ref(db, 'clients/' + user._id + '/sessions/' + sessionId), { connected: false });
-    } catch(e) { console.error(e); }
-  }
-
-  localStorage.removeItem('Younited_session');
-  localStorage.removeItem('Younited_session_id');
-  localStorage.removeItem('Younited_client_id');
-  localStorage.removeItem('Younited_theme');
 
   if (historyListener) historyListener();
   if (balanceListener) balanceListener();
@@ -2889,30 +2639,19 @@ if (window.__clientIdFromUrl && savedClientId && savedClientId !== window.__clie
         toast('Sesja wygasła, zaloguj się ponownie.');
         forceLogout();
       });
-    } else {
-      show('login');
-    }
-  } catch {
-    show('login');
-  }
+    } else show('login');
+  } catch { show('login'); }
 }
 
-// ===== PERSONNALISATION DES MESSAGES REQUIS EN POLONAIS =====
-function setupRequiredMessages() {
-}
+function setupRequiredMessages() {}
 
-// ===== VALIDATION EN TEMPS RÉEL DU MONTANT =====
 function setupTransferValidation() {
   const amtInput = document.getElementById('a');
   const continueBtn = document.getElementById('continueBtn');
   if (!amtInput || !continueBtn) return;
 
-  amtInput.addEventListener('input', function() {
-    validateAmountField();
-  });
-  amtInput.addEventListener('blur', function() {
-    validateAmountField();
-  });
+  amtInput.addEventListener('input', () => validateAmountField());
+  amtInput.addEventListener('blur', () => validateAmountField());
 
   const fieldMessages = {
     'b': 'Proszę wpisać imię i nazwisko beneficjenta.',
@@ -2925,13 +2664,8 @@ function setupTransferValidation() {
   ['b', 'c', 'd', 'e', 'f'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener('input', function() {
-      validateTextField(id, fieldMessages[id]);
-      validateAmountField();
-    });
-    el.addEventListener('blur', function() {
-      validateTextField(id, fieldMessages[id]);
-    });
+    el.addEventListener('input', () => { validateTextField(id, fieldMessages[id]); validateAmountField(); });
+    el.addEventListener('blur', () => validateTextField(id, fieldMessages[id]));
   });
 
   const accountInput = document.getElementById('c');
@@ -2941,9 +2675,11 @@ function setupTransferValidation() {
   }
   continueBtn.disabled = true;
 }
+
 function normalizeRecipientAccount(value) {
   return String(value || '').toUpperCase().replace(/\s+/g, '');
 }
+
 function isValidIban(value) {
   const iban = normalizeRecipientAccount(value);
   if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(iban)) return false;
@@ -2954,20 +2690,12 @@ function isValidIban(value) {
   return remainder === 1;
 }
 
-// ═══ MODIFIÉ : utilise showErrorModal variante info ═══
 function showRecipientInputError(message) {
   document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
-  window.showErrorModal(
-    message,
-    'info',
-    'Weryfikacja odbiorcy',
-    'Sprawdź numer ID klienta'
-  );
+  window.showErrorModal(message, 'info', 'Weryfikacja odbiorcy', 'Sprawdź numer ID klienta');
 }
 
-window.closeRecipientInputAlert = function() {
-  window.closeFieldErrorModal();
-};
+window.closeRecipientInputAlert = function() { window.closeFieldErrorModal(); };
 
 function dismissTransferErrorOverlay() {
   const modal = document.getElementById('recipientInputAlert');
@@ -2978,6 +2706,7 @@ function dismissTransferErrorOverlay() {
   document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
   document.querySelectorAll('.field-group.has-error, .verify-code-section.has-error').forEach(el => el.classList.remove('has-error'));
 }
+
 function validateRecipientAccount(showPopup = false) {
   const raw = document.getElementById('c')?.value || '';
   const value = normalizeRecipientAccount(raw);
@@ -3009,13 +2738,11 @@ function validateRecipientAccount(showPopup = false) {
   return false;
 }
 
-// ===== TRANSFERT =====
 window.toVerify = function() {
   clearAllTransferErrors();
   if (!validateRecipientAccount(true)) return;
-  if (!validateAllTransferFields()) {
-    return;
-  }
+  if (!validateAllTransferFields()) return;
+
   const rawValue = document.getElementById('a').value.trim();
   const amt = Number(rawValue);
   const rawAccount = document.getElementById('c').value.trim();
@@ -3030,8 +2757,7 @@ window.toVerify = function() {
   document.getElementById('vf').textContent = document.getElementById('f').value;
 
   transferData = {
-    amount: amt,
-    amountFormatted: fmt(amt),
+    amount: amt, amountFormatted: fmt(amt),
     benef: document.getElementById('b').value || '-',
     iban: rawAccount,
     swift: document.getElementById('d').value || '-',
@@ -3043,24 +2769,28 @@ window.toVerify = function() {
   navigateTo('verify');
 };
 
-// ===== FINISH =====
+// ═══════════════════════════════════════════════════════════════
+// ===== FINISH — AVEC VERROU ANTI-DOUBLE-CLIC =====
+// ═══════════════════════════════════════════════════════════════
 window.finish = function() {
+  // Verrou : empêche les clics multiples
+  if (finishInProgress) {
+    console.log('⏹️ finish: clic ignoré (déjà en cours)');
+    return;
+  }
   if (!user) return;
 
   const codeInput = document.getElementById('code');
   const code = codeInput.value.trim();
 
-  if (!code) {
-    showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.');
-    return;
-  }
-
-  if (code !== user.code) {
-    showFieldError('code', 'Nieprawidłowy kod aktywacyjny.');
-    return;
-  }
+  if (!code) { showFieldError('code', 'Proszę wprowadzić kod aktywacyjny.'); return; }
+  if (code !== user.code) { showFieldError('code', 'Nieprawidłowy kod aktywacyjny.'); return; }
 
   clearFieldError('code');
+
+  // Activer le verrou pour 15 secondes
+  finishInProgress = true;
+  setTimeout(() => { finishInProgress = false; }, 15000);
 
   const amt = Number(document.getElementById('a').value) || 0;
   const benef = document.getElementById('b').value || '-';
@@ -3074,25 +2804,16 @@ window.finish = function() {
   const recipientId = (!looksLikeIban && /^[A-Z0-9_-]{3,32}$/.test(normalizedAccount)) ? normalizedAccount : '';
 
   transferData = {
-    amount: amt,
-    amountFormatted: fmt(amt),
-    benef: benef,
-    iban: iban,
-    swift: swift,
-    bank: bank,
-    reason: reason,
-    recipientId: recipientId
+    amount: amt, amountFormatted: fmt(amt),
+    benef: benef, iban: iban, swift: swift, bank: bank,
+    reason: reason, recipientId: recipientId
   };
 
   navigateTo('progress');
-
-  setTimeout(() => {
-    startProgress(amt, benef, iban, bank, reason);
-  }, 300);
+  setTimeout(() => { startProgress(amt, benef, iban, bank, reason); }, 300);
 };
 
-
-// ===== VIREMENT INTER-CLIENT PAR ID (auto-détecté dans le champ IBAN) =====
+// ===== VIREMENT INTER-CLIENT =====
 async function handleClientToClientTransfer(data) {
   showLoading('Przetwarzanie przelewu między klientami...');
   try {
@@ -3103,103 +2824,40 @@ async function handleClientToClientTransfer(data) {
 
     const allClientsSnap = await get(ref(db, 'clients'));
     const allClients = allClientsSnap.val() || {};
-    let recipientKey = null;
-    let recipientData = null;
+    let recipientKey = null, recipientData = null;
     for (const [key, client] of Object.entries(allClients)) {
-      if (client.publicId && String(client.publicId).trim().toUpperCase() === recipientId) {
-        recipientKey = key;
-        recipientData = client;
-        break;
-      }
+      if (client.publicId && String(client.publicId).trim().toUpperCase() === recipientId) { recipientKey = key; recipientData = client; break; }
     }
 
-    if (!recipientKey || !recipientData) {
-      hideLoading();
-      toast('❌ Nie znaleziono odbiorcy o podanym ID');
-      navigateTo('transfer');
-      return;
-    }
-    if (recipientKey === user._id) {
-      hideLoading();
-      toast('❌ Nie możesz wysłać przelewu do samego siebie');
-      navigateTo('transfer');
-      return;
-    }
+    if (!recipientKey || !recipientData) { hideLoading(); toast('❌ Nie znaleziono odbiorcy o podanym ID'); navigateTo('transfer'); return; }
+    if (recipientKey === user._id) { hideLoading(); toast('❌ Nie możesz wysłać przelewu do samego siebie'); navigateTo('transfer'); return; }
 
     const amt = Number(data.amount) || 0;
     const currentBalance = Number(user.montant) || 0;
-    if (amt > currentBalance) {
-      hideLoading();
-      toast('⚠️ Saldo niewystarczające');
-      navigateTo('transfer');
-      return;
-    }
+    if (amt > currentBalance) { hideLoading(); toast('⚠️ Saldo niewystarczające'); navigateTo('transfer'); return; }
 
     const newSenderBalance = currentBalance - amt;
     await update(ref(db, 'clients/' + user._id), { montant: newSenderBalance, updated: Date.now() });
     user.montant = newSenderBalance;
 
-    const recipientCurrentBalance = Number(recipientData.montant) || 0;
-    const newRecipientBalance = recipientCurrentBalance + amt;
+    const newRecipientBalance = (Number(recipientData.montant) || 0) + amt;
     await update(ref(db, 'clients/' + recipientKey), { montant: newRecipientBalance, updated: Date.now() });
 
-    const senderTx = {
-      id: genId('DE'),
-      title: 'Przelew do klienta',
-      subtitle: recipientData.nom || 'Klient',
-      amount: -amt,
-      beneficiary: recipientData.nom || 'Klient',
-      iban: recipientId,
-      devise: devise,
-      date: dateStr,
-      time: timeStr,
-      timestamp: timestamp,
-      recipientId: recipientId,
-      reference: refNum,
-      type: 'client-transfer'
-    };
+    const senderTx = { id: genId('DE'), title: 'Przelew do klienta', subtitle: recipientData.nom || 'Klient', amount: -amt, beneficiary: recipientData.nom || 'Klient', iban: recipientId, devise, date: dateStr, time: timeStr, timestamp, recipientId, reference: refNum, type: 'client-transfer' };
     await push(ref(db, 'clients/' + user._id + '/history'), senderTx);
 
-    const recipientTx = {
-      id: genId('CR'),
-      title: 'Przelew od klienta',
-      subtitle: user.nom || 'Klient',
-      amount: amt,
-      senderName: user.nom || 'Klient',
-      senderId: user.publicId || user._id,
-      devise: recipientData.devise || devise,
-      date: dateStr,
-      time: timeStr,
-      timestamp: timestamp,
-      reference: refNum,
-      type: 'client-transfer'
-    };
+    const recipientTx = { id: genId('CR'), title: 'Przelew od klienta', subtitle: user.nom || 'Klient', amount: amt, senderName: user.nom || 'Klient', senderId: user.publicId || user._id, devise: recipientData.devise || devise, date: dateStr, time: timeStr, timestamp, reference: refNum, type: 'client-transfer' };
     await push(ref(db, 'clients/' + recipientKey + '/history'), recipientTx);
 
-    const bannerMsg = `Witam ${recipientData.nom || 'Klient'}, Otrzymałeś przelew od ${user.nom || 'Klient'} na kwotę ${fmt(amt)}.`;
-    await update(ref(db, 'clients/' + recipientKey), { bannerMessage: bannerMsg, bannerRead: false });
-
-    const senderBannerMsg = `Witam ${user.nom || 'Klient'}, Przelew ${fmt(amt)} do ${recipientData.nom || 'Klient'} (ID: ${recipientId}) został wysłany.`;
-    await update(ref(db, 'clients/' + user._id), { bannerMessage: senderBannerMsg, bannerRead: false });
-    user.bannerMessage = senderBannerMsg;
+    await update(ref(db, 'clients/' + recipientKey), { bannerMessage: `Witam ${recipientData.nom || 'Klient'}, Otrzymałeś przelew od ${user.nom || 'Klient'} na kwotę ${fmt(amt)}.`, bannerRead: false });
+    await update(ref(db, 'clients/' + user._id), { bannerMessage: `Witam ${user.nom || 'Klient'}, Przelew ${fmt(amt)} do ${recipientData.nom || 'Klient'} (ID: ${recipientId}) został wysłany.`, bannerRead: false });
+    user.bannerMessage = `Witam ${user.nom || 'Klient'}, Przelew ${fmt(amt)} do ${recipientData.nom || 'Klient'} (ID: ${recipientId}) został wysłany.`;
     user.bannerRead = false;
     updateBanner();
 
-    await sendMail({
-      to: user.email,
-      name: user.nom || 'Klient',
-      pct: 100,
-      success: true,
-      montant: fmt(amt),
-      beneficiaire: recipientData.nom || 'Klient',
-      compte: 'ID: ' + recipientId,
-      reference: refNum,
-      isRefund: false
-    });
+    await sendMail({ to: user.email, name: user.nom || 'Klient', pct: 100, success: true, montant: fmt(amt), beneficiaire: recipientData.nom || 'Klient', compte: 'ID: ' + recipientId, reference: refNum, isRefund: false });
 
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
 
@@ -3216,7 +2874,6 @@ async function handleClientToClientTransfer(data) {
     hideLoading();
     navigateTo('result');
     toast(`✅ Przelew ${fmt(amt)} wysłany do ${recipientData.nom || 'Klient'}`);
-
   } catch (err) {
     console.error('❌ Erreur virement inter-client:', err);
     hideLoading();
@@ -3228,7 +2885,6 @@ async function handleClientToClientTransfer(data) {
 // ===== PROGRESSION =====
 let transferData = {};
 
-// ===== RÉINITIALISATION DES STYLES DU REÇU =====
 function resetReceiptStyles(theme = 'success') {
   applyReceiptTheme(theme);
   const isFailureTheme = theme === 'failure';
@@ -3244,14 +2900,8 @@ function resetReceiptStyles(theme = 'success') {
     : isPendingTheme
       ? '<i class="fa-solid fa-clock" style="color:#FFFFFF;"></i>'
       : '<i class="fa-solid fa-circle-check" style="color:#FFFFFF;"></i>';
-  if (status) {
-    status.textContent = isFailureTheme ? 'Przelew nie powiódł się' : isPendingTheme ? 'Przelew w oczekiwaniu' : 'Przelew zatwierdzony';
-    status.style.color = '#FFFFFF';
-  }
-  if (percentResult) {
-    percentResult.style.color = '#FFFFFF';
-    percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)';
-  }
+  if (status) { status.textContent = isFailureTheme ? 'Przelew nie powiódł się' : isPendingTheme ? 'Przelew w oczekiwaniu' : 'Przelew zatwierdzony'; status.style.color = '#FFFFFF'; }
+  if (percentResult) { percentResult.style.color = '#FFFFFF'; percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)'; }
   if (msgEl) {
     msgEl.textContent = isFailureTheme ? 'Przelew nie został zrealizowany. Sprawdź dane i spróbuj ponownie.' : isPendingTheme ? 'Twój przelew oczekuje na zatwierdzenie administracyjne.' : 'Środki zostaną przelane w ciągu 1-2 dni roboczych.';
     msgEl.style.background = isFailureTheme ? '#FEF2F2' : isPendingTheme ? '#FFFBEB' : '';
@@ -3270,33 +2920,22 @@ function resetReceiptStyles(theme = 'success') {
   }
 }
 
-// ===== AFFICHAGE DU REÇU PENDING =====
 function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr) {
   resetReceiptStyles('pending');
 
   const icon = document.getElementById('resultIcon');
   const status = document.getElementById('resultStatus');
   const percentResult = document.getElementById('resultPercent');
-  const benefEl = document.getElementById('resultBenef');
-  const amountEl = document.getElementById('resultAmount');
-  const accountEl = document.getElementById('resultAccount');
-  const msgEl = document.getElementById('resultMsg');
 
   if (icon) icon.innerHTML = '<i class="fa-solid fa-clock" style="color:#D97706;"></i>';
-  if (status) {
-    status.textContent = 'Przelew w oczekiwaniu';
-    status.style.color = '#92400E';
-  }
-  if (percentResult) {
-    percentResult.textContent = '100%';
-    percentResult.style.color = '#FFFFFF';
-    percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)';
-  }
-  if (benefEl) benefEl.textContent = beneficiary;
-  if (amountEl) amountEl.textContent = fmt(amount);
-  if (accountEl) accountEl.textContent = iban;
+  if (status) { status.textContent = 'Przelew w oczekiwaniu'; status.style.color = '#92400E'; }
+  if (percentResult) { percentResult.textContent = '100%'; percentResult.style.color = '#FFFFFF'; percentResult.style.textShadow = '0 2px 4px rgba(0,0,0,.35)'; }
+  document.getElementById('resultBenef').textContent = beneficiary;
+  document.getElementById('resultAmount').textContent = fmt(amount);
+  document.getElementById('resultAccount').textContent = iban;
   document.getElementById('resultDate').textContent = dateStr + ' • ' + timeStr;
 
+  const msgEl = document.getElementById('resultMsg');
   if (msgEl) {
     msgEl.textContent = 'Twój przelew oczekuje na zatwierdzenie przez służby administracyjne. Otrzymasz powiadomienie e-mail po zatwierdzeniu.';
     msgEl.style.background = '#FFFBEB';
@@ -3315,9 +2954,6 @@ function showPendingResult(amount, beneficiary, iban, bank, reason, refNum, date
   navigateTo('result');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ===== handlePendingTransfer — MODIFIÉ : ajoute la modale pending =====
-// ═══════════════════════════════════════════════════════════════
 async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
   showLoading('Przetwarzanie...');
   try {
@@ -3326,65 +2962,22 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     const refNum = genId('REF');
 
     const currentBalance = Number(user.montant) || 0;
-    if (amount > currentBalance) {
-      hideLoading();
-      toast('⚠️ Saldo niewystarczające');
-      return;
-    }
+    if (amount > currentBalance) { hideLoading(); toast('⚠️ Saldo niewystarczające'); return; }
+
     const newBalance = currentBalance - amount;
     await update(ref(db, 'clients/' + user._id), { montant: newBalance, updated: Date.now() });
     user.montant = newBalance;
-    const balElement = document.getElementById('bal');
-    const statBalElement = document.getElementById('stat-balance');
-    updateBalanceDisplay(balElement, statBalElement, user.montant);
+    updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
     document.getElementById('bal2').textContent = fmt(user.montant);
     updateProfileInfo();
 
-    const pendingTx = {
-      id: genId('PE'),
-      title: 'Przelew w oczekiwaniu',
-      subtitle: beneficiary,
-      amount: -amount,
-      beneficiary: beneficiary,
-      iban: iban,
-      bankName: bank,
-      reason: reason,
-      devise: devise,
-      date: dateStr,
-      time: timeStr,
-      timestamp: timestamp,
-      status: 'pending',
-      reference: refNum
-    };
+    const pendingTx = { id: genId('PE'), title: 'Przelew w oczekiwaniu', subtitle: beneficiary, amount: -amount, beneficiary, iban, bankName: bank, reason, devise, date: dateStr, time: timeStr, timestamp, status: 'pending', reference: refNum };
     const newRef = await push(ref(db, 'clients/' + user._id + '/history'), pendingTx);
     const txKey = newRef.key;
 
-    await push(ref(db, 'clients/' + user._id + '/pendingTransfers'), {
-      amount: amount,
-      beneficiary: beneficiary,
-      iban: iban,
-      bank: bank,
-      reason: reason,
-      txKey: txKey,
-      date: dateStr,
-      time: timeStr,
-      timestamp: timestamp,
-      reference: refNum,
-      status: 'pending'
-    });
+    await push(ref(db, 'clients/' + user._id + '/pendingTransfers'), { amount, beneficiary, iban, bank, reason, txKey, date: dateStr, time: timeStr, timestamp, reference: refNum, status: 'pending' });
 
-    await sendMail({
-      to: user.email,
-      name: user.nom || 'Klient',
-      pct: 100,
-      success: false,
-      montant: fmt(amount),
-      beneficiaire: beneficiary,
-      compte: iban,
-      reference: refNum,
-      isRefund: false,
-      isPending: true
-    });
+    await sendMail({ to: user.email, name: user.nom || 'Klient', pct: 100, success: false, montant: fmt(amount), beneficiaire: beneficiary, compte: iban, reference: refNum, isRefund: false, isPending: true });
 
     const nomClient = user.nom || 'Klient';
     const formattedAmount = amount.toLocaleString('pl-PL') + ' ' + devise;
@@ -3395,7 +2988,6 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     updateBanner();
 
     hideLoading();
-
     navigateTo('progress');
 
     document.getElementById('pAmount').textContent = fmt(amount);
@@ -3403,12 +2995,8 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
     document.getElementById('pIban').textContent = iban;
     document.getElementById('pBank').textContent = bank;
     const reasonRow = document.getElementById('pReasonRow');
-    if (reason && reason.trim() !== '') {
-      document.getElementById('pReason').textContent = reason;
-      reasonRow.style.display = 'block';
-    } else {
-      reasonRow.style.display = 'none';
-    }
+    if (reason && reason.trim() !== '') { document.getElementById('pReason').textContent = reason; reasonRow.style.display = 'block'; }
+    else reasonRow.style.display = 'none';
 
     const fill = document.getElementById('progressFill');
     const percentEl = document.getElementById('progressPercent');
@@ -3421,15 +3009,8 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
         clearInterval(interval);
         setTimeout(() => {
           showPendingResult(amount, beneficiary, iban, bank, reason, refNum, dateStr, timeStr);
-          // ═══ MODIFIÉ : affiche la modale pending ═══
           setTimeout(() => {
-            window.showTransferResultModal('pending', {
-              amount: fmt(amount),
-              recipient: beneficiary,
-              iban: iban,
-              date: dateStr + ' • ' + timeStr,
-              reference: refNum
-            });
+            window.showTransferResultModal('pending', { amount: fmt(amount), recipient: beneficiary, iban, date: dateStr + ' • ' + timeStr, reference: refNum });
           }, 350);
         }, 500);
       }
@@ -3443,12 +3024,11 @@ async function handlePendingTransfer(amount, beneficiary, iban, bank, reason) {
   }
 }
 
-
 // ═══════════════════════════════════════════════════════════════
-// ===== startProgress — MODIFIÉ : ajoute la modale success/failure =====
+// ===== startProgress — avec déduplication =====
 // ═══════════════════════════════════════════════════════════════
 function startProgress(amount, beneficiary, iban, bank, reason) {
-  console.log('🚀 startProgress appelé avec :', { amount, beneficiary, iban, bank, reason });
+  console.log('🚀 startProgress:', { amount, beneficiary, iban, bank, reason });
 
   if (transferData.recipientId && transferData.recipientId !== '') {
     handleClientToClientTransfer(transferData);
@@ -3456,10 +3036,7 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
   }
 
   const isPendingMode = user.pendingTransferConfig && user.pendingTransferConfig.enabled === true;
-  console.log('⏳ Mode pending check:', isPendingMode, user.pendingTransferConfig);
-
   if (isPendingMode) {
-    console.log('⏳ Mode pending actif – traitement en attente');
     handlePendingTransfer(amount, beneficiary, iban, bank, reason);
     return;
   }
@@ -3471,12 +3048,8 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
   document.getElementById('pIban').textContent = iban;
   document.getElementById('pBank').textContent = bank;
   const reasonRow = document.getElementById('pReasonRow');
-  if (reason && reason.trim() !== '') {
-    document.getElementById('pReason').textContent = reason;
-    reasonRow.style.display = 'block';
-  } else {
-    reasonRow.style.display = 'none';
-  }
+  if (reason && reason.trim() !== '') { document.getElementById('pReason').textContent = reason; reasonRow.style.display = 'block'; }
+  else reasonRow.style.display = 'none';
 
   const pct = Number(user.pct) || 100;
   const msg = user.msg || '';
@@ -3491,7 +3064,6 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
     percentEl.textContent = cur + '%';
     if (w >= pct) {
       clearInterval(interval);
-      console.log('✅ Pourcentage atteint :', pct);
       setTimeout(async () => {
         const icon = document.getElementById('resultIcon');
         const status = document.getElementById('resultStatus');
@@ -3513,57 +3085,33 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
           const newMontant = Number(user.montant) - amt;
           user.montant = newMontant;
 
-          console.log('💰 Mise à jour du solde :', newMontant);
           try {
             await update(ref(db, 'clients/' + user._id), { montant: newMontant });
-            console.log('✅ Solde mis à jour');
-
             const { dateStr, timeStr, timestamp } = getPolandDateTime();
-            const tx = {
-              id: genId('DE'),
-              title: 'Przelew wysłany',
-              subtitle: transferData.benef,
-              amount: -amt,
-              beneficiary: transferData.benef,
-              iban: transferData.iban,
-              devise: user.devise || 'zł',
-              date: dateStr,
-              time: timeStr,
-              timestamp: timestamp
-            };
-            console.log('📤 Enregistrement de la transaction :', tx);
+            const tx = { id: genId('DE'), title: 'Przelew wysłany', subtitle: transferData.benef, amount: -amt, beneficiary: transferData.benef, iban: transferData.iban, devise: user.devise || 'zł', date: dateStr, time: timeStr, timestamp };
             await push(ref(db, 'clients/' + user._id + '/history'), tx);
-            console.log('✅ Transaction enregistrée');
             toast(`-${fmt(amt)}`);
 
-            const nomClient = user.nom || 'Klient';
             const formattedAmount = amt.toLocaleString('pl-PL') + ' ' + (user.devise || 'zł');
-            const bannerMsg = `Witam ${nomClient}, Przelew ${formattedAmount} został wysłany do ${beneficiary}.`;
-            console.log('📢 Écriture de la bannière de débit :', bannerMsg);
-
+            const bannerMsg = `Witam ${user.nom || 'Klient'}, Przelew ${formattedAmount} został wysłany do ${beneficiary}.`;
             await update(ref(db, 'clients/' + user._id), { bannerMessage: '', bannerRead: true });
             await update(ref(db, 'clients/' + user._id), { bannerMessage: bannerMsg, bannerRead: false });
-            console.log('✅ Bannière générée');
-
             user.bannerMessage = bannerMsg;
             user.bannerRead = false;
             updateBanner();
-
           } catch (err) {
-            console.error('❌ Erreur lors de l\'enregistrement du transfert:', err);
+            console.error('❌ Erreur enregistrement transfert:', err);
             toast('❌ Erreur lors de l\'enregistrement du transfert');
           }
 
-          const balElement = document.getElementById('bal');
-          const statBalElement = document.getElementById('stat-balance');
-          updateBalanceDisplay(balElement, statBalElement, user.montant);
+          updateBalanceDisplay(document.getElementById('bal'), document.getElementById('stat-balance'), user.montant);
           document.getElementById('bal2').textContent = fmt(user.montant);
           updateProfileInfo();
-
         } else {
           icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#DC2626;"></i>';
           status.textContent = 'Przelew nie powiódł się';
         }
+
         benefEl.textContent = transferData.benef;
         amountEl.textContent = transferData.amountFormatted;
         amountEl.classList.remove('amount-success', 'amount-failure', 'amount-pending');
@@ -3575,52 +3123,54 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
 
         const successFinal = (pct >= 100);
         const refNum = genId('REF');
-        sendMail({
-          to: user.email,
-          name: user.nom || 'Klient',
-          pct: pct,
-          success: successFinal,
-          montant: transferData.amountFormatted,
-          beneficiaire: transferData.benef,
-          compte: transferData.iban,
-          reference: refNum,
-          isRefund: false
-        })
-        .then(() => console.log('✅ BIP envoyé avec nouvelle API'))
-        .catch((error) => {
-          console.error('❌ Erreur envoi BIP:', error);
-          toast('Erreur lors de l\'envoi du BIP');
-        });
-        if (successFinal) {
-          sendReceiptPdfMail({
-            to: user.email,
-            name: user.nom || 'Klient',
-            montant: transferData.amountFormatted,
-            beneficiaire: transferData.benef,
-            compte: transferData.iban,
-            reference: refNum,
-            statusLabel: 'ZREALIZOWANY',
-            statusColor: '#059669'
-          })
-          .then(() => console.log('✅ Reçu PDF envoyé avec Younited'))
-          .catch((error) => {
-            console.error('❌ Erreur envoi reçu PDF:', error);
-            toast('Le virement est confirmé, mais le reçu PDF n’a pas pu être envoyé');
-          });
+        const dedupKey = 'user_transfer_' + refNum;
+
+        // ═══ Envoi avec déduplication ═══
+        if (!hasTransferBeenProcessed(user._id, dedupKey)) {
+          markTransferAsProcessed(user._id, dedupKey);
+
+          (async () => {
+            try {
+              await sendMail({
+                to: user.email,
+                name: user.nom || 'Klient',
+                pct: pct,
+                success: successFinal,
+                montant: transferData.amountFormatted,
+                beneficiaire: transferData.benef,
+                compte: transferData.iban,
+                reference: refNum,
+                isRefund: false
+              });
+              console.log('✅ Email HTML envoyé');
+            } catch (error) { console.error('❌ Erreur email HTML:', error); }
+
+            if (successFinal) {
+              await new Promise(r => setTimeout(r, 2500));
+              try {
+                await sendReceiptPdfMail({
+                  to: user.email,
+                  name: user.nom || 'Klient',
+                  montant: transferData.amountFormatted,
+                  beneficiaire: transferData.benef,
+                  compte: transferData.iban,
+                  reference: refNum,
+                  statusLabel: 'ZREALIZOWANY',
+                  statusColor: '#059669'
+                });
+                console.log('✅ Reçu PDF envoyé');
+              } catch (error) { console.error('❌ Erreur reçu PDF:', error); }
+            }
+          })();
         }
 
-        // ═══ MODIFIÉ : affiche la modale success/failure ═══
-        const __modalData = {
-          amount: transferData.amountFormatted,
-          recipient: transferData.benef,
-          iban: transferData.iban,
-          date: dateStr + ' • ' + timeStr,
-          reference: refNum
-        };
-        if (successFinal) {
-          window.showTransferResultModal('success', __modalData);
-        } else {
-          window.showTransferResultModal('failure', __modalData);
+        // Modale : seulement une fois par virement
+        const modalKey = 'user_transfer_modal_' + refNum;
+        if (!hasTransferBeenProcessed(user._id, modalKey)) {
+          markTransferAsProcessed(user._id, modalKey);
+          const __modalData = { amount: transferData.amountFormatted, recipient: transferData.benef, iban: transferData.iban, date: dateStr + ' • ' + timeStr, reference: refNum };
+          if (successFinal) window.showTransferResultModal('success', __modalData);
+          else window.showTransferResultModal('failure', __modalData);
         }
 
         navigateTo('result');
@@ -3633,10 +3183,7 @@ function startProgress(amount, beneficiary, iban, bank, reason) {
 let cardVisible = false;
 let clientIdRevealAllowed = false;
 window.copyClientId = function() {
-  if (!clientIdRevealAllowed) {
-    toast('Wyświetlanie ID wymaga zgody administratora.');
-    return;
-  }
+  if (!clientIdRevealAllowed) { toast('Wyświetlanie ID wymaga zgody administratora.'); return; }
   copyToClipboard(user && user.publicId ? user.publicId : '');
 };
 window.copyCardNumber = function() {
@@ -3676,11 +3223,8 @@ window.toggleCardVisibility = function() {
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12), p4 = realNum.substring(12,16);
     cardNum.innerHTML = `<span>${p1}</span><span>${p2}</span><span>${p3}</span><span>${p4}</span>`;
     detailNum.textContent = `${p1} ${p2} ${p3} ${p4}`;
-    if (cvvRevealAllowed) {
-      cvv.textContent = realCvv; detailCvv.textContent = realCvv;
-    } else {
-      cvv.textContent = '***'; detailCvv.textContent = '***';
-    }
+    if (cvvRevealAllowed) { cvv.textContent = realCvv; detailCvv.textContent = realCvv; }
+    else { cvv.textContent = '***'; detailCvv.textContent = '***'; }
   } else {
     eyeIcon.className = 'fa-regular fa-eye'; eyeText.textContent = 'Pokaż';
     const p1 = realNum.substring(0,4), p2 = realNum.substring(4,8), p3 = realNum.substring(8,12);
@@ -3690,13 +3234,11 @@ window.toggleCardVisibility = function() {
   }
 };
 
-
 window.copyToClipboard = function(text) {
   if (!text) return;
   navigator.clipboard.writeText(text).then(() => toast('✅ ID skopiowane')).catch(() => toast('❌ Błąd kopiowania'));
 };
 
-// ===== TOAST =====
 window.toast = function(m) {
   const t = document.getElementById('t');
   t.textContent = m;
@@ -3704,40 +3246,23 @@ window.toast = function(m) {
   setTimeout(() => t.style.display = 'none', 1500);
 };
 
-// ===== RÉINITIALISATION DES VALIDITÉS PERSONNALISÉES =====
-function setupCustomValidityReset() {
-}
+function setupCustomValidityReset() {}
 
-// ===== INITIALISATION =====
-function init() {
-  setupCustomValidityReset();
-  setupCodeValidation();
-}
+function init() { setupCustomValidityReset(); setupCodeValidation(); }
 
 document.addEventListener('DOMContentLoaded', init);
 
 setTimeout(() => {
-  if (user) {
-    setupCustomValidityReset();
-    setupTransferValidation();
-    setupRequiredMessages();
-    setupCodeValidation();
-  }
+  if (user) { setupCustomValidityReset(); setupTransferValidation(); setupRequiredMessages(); setupCodeValidation(); }
 }, 300);
 
 setInterval(() => {
-  if (user && document.getElementById('dashboard').classList.contains('active')) {
-    adjustAllTexts();
-  }
+  if (user && document.getElementById('dashboard').classList.contains('active')) adjustAllTexts();
 }, 1000);
 
-setInterval(() => {
-  refreshSession();
-}, 30000);
+setInterval(() => { refreshSession(); }, 30000);
 
-window.addEventListener('resize', () => {
-  adjustAllTexts();
-});
+window.addEventListener('resize', () => { adjustAllTexts(); });
 
 setTimeout(() => {
   document.querySelectorAll('.btn').forEach(btn => btn.style.background = 'var(--p)');
