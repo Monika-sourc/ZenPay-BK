@@ -55,8 +55,6 @@
       min-height: 100%; display: flex; align-items: center; justify-content: center;
       padding: 40px 24px; flex: 1; background: #e5e7eb;
     }
-
-    /* ===== EN-TÊTE FIXE EN HAUT ===== */
     header {
       position: fixed; top: 0; left: 0; right: 0; width: 100%;
       z-index: 100;
@@ -100,8 +98,6 @@
     .notif-badge.hidden { display: none; }
     .notif-badge:not(.hidden) { animation: notificationPulse 1.8s ease-in-out infinite; }
     @keyframes notificationPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239,68,68,.28); } 50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(239,68,68,0); } }
-
-    /* ===== CONTENU PRINCIPAL ===== */
     main { flex: 1; padding: 16px 14px 40px; background: transparent; width: 100%; max-width: 100%; }
     .screen:not(#login) main { padding-top: 96px; }
     @media (min-width: 768px) {
@@ -129,62 +125,6 @@
       #progress main { padding-bottom: 0; }
     }
     .balance-panel { border-radius: 18px !important; }
-
-    /* ═══════════════════════════════════════════════════════════
-       ═══ CORRECTION N°1 : PLEIN ÉCRAN DESKTOP (SANS GROSSIR LA POLICE) ═══
-       Le CSS était auparavant placé après </body> ce qui le rendait inopérant.
-       ═══════════════════════════════════════════════════════════ */
-    @media (min-width: 768px) {
-      html, body,
-      .screen,
-      .screen.active,
-      .screen main {
-        width: 100%;
-        max-width: none;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      body {
-        width: 133.333333%;
-        min-width: 133.333333%;
-        overflow-x: hidden;
-      }
-      header {
-        left: 0;
-        right: 0;
-        width: 100%;
-      }
-      #transfer main,
-      #verify main,
-      #progress main {
-        width: 100%;
-        max-width: none;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #transfer .transfer-card,
-      #verify .verify-card,
-      #progress .progress-card {
-        width: 100%;
-        max-width: none;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #result main {
-        width: 100%;
-        max-width: none !important;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #result .receipt-card {
-        width: 100%;
-        max-width: none;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
-    }
-
-    /* ===== MODALES ===== */
     .modal {
       position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px);
       display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
@@ -341,8 +281,6 @@
     .transfer-title { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 13px; color: var(--p); font-weight: 600; }
     .field-group { margin-bottom: 24px; }
     .field-group label { display: block; font-size: 11px; font-weight: 500; color: var(--text-secondary); margin-bottom: 2px; letter-spacing: 0.3px; }
-
-    /* ===== PAGE TRANSFER PROFESSIONNELLE ===== */
     #transfer main { padding-top: 88px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; }
     .transfer-page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 16px; width: 100%; max-width: 560px; padding: 0 4px; }
     .transfer-sepa-row { display: flex; align-items: center; gap: 12px; padding: 8px 28px 16px; }
@@ -386,8 +324,6 @@
       #transfer .transfer-info { margin: 8px 20px 16px; }
       #transfer .btn { margin: 0 20px 20px; width: calc(100% - 40px); }
     }
-
-    /* ===== PAGE VÉRIFICATION PROFESSIONNELLE ===== */
     #verify main { padding-top: 96px; display: flex; justify-content: center; align-items: flex-start; }
     #verify .verify-card { background: #ffffff; border: none; border-radius: 12px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04); max-width: 520px; width: 100%; overflow: hidden; position: relative; }
     #verify .verify-header { display: flex; align-items: center; gap: 16px; padding: 28px 28px 20px; border-bottom: 1px solid #f1f5f9; }
@@ -420,8 +356,6 @@
       #verify .verify-actions { padding: 0 20px 20px; flex-direction: column; }
       #verify .verify-actions .btn, #verify .verify-cancel { width: 100%; }
     }
-
-    /* ===== STYLES SPÉCIFIQUES À LA PAGE DE VÉRIFICATION ===== */
     .verify-details { background: #e5e7eb; padding: 12px 14px; border-radius: var(--radius-sm); margin-bottom: 12px; border: 1px solid var(--border-light); }
     .verify-details .row { margin-bottom: 10px; }
     .verify-details .row:last-child { margin-bottom: 0; }
@@ -435,7 +369,6 @@
     .verify-code-section .code-input:focus { outline: none; border-color: var(--p); box-shadow: 0 0 0 4px rgba(13,148,136,0.10); background: #fff; }
     .verify-code-section .code-input::placeholder { color: #6b7280; letter-spacing: 4px; font-weight: 400; }
     .verify-submit { margin-top: 4px; }
-
     .progress-pill { width: 100%; height: 56px; background: #fff; border: 3px solid var(--p); border-radius: 50px; overflow: hidden; position: relative; margin: 32px 0 36px; }
     .progress-pill-fill { height: 100%; background: var(--p); border-radius: 50px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 15px; min-width: 56px; width: 0%; transition: width 0.15s linear; }
     .progress-details-box { background: #e5e7eb; border-radius: var(--radius-sm); padding: 36px 24px 44px; margin-top: 32px; }
@@ -475,8 +408,6 @@
     .nav-item i { font-size: 22px; color: #4B5563; transition: all 0.2s ease; }
     .nav-item.active { color: var(--p); background: rgba(13,148,136,0.08); }
     .nav-item.active i { color: var(--p); }
-
-    /* ===== LOGIN PROFESSIONNEL ===== */
     #login { position: relative; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, #0c4a6e 0%, #075985 30%, #0369a1 55%, #0c4a6e 80%, #082f49 100%); }
     #login::before, #login::after { content: ''; position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: 0; animation: floatBlob 20s ease-in-out infinite; }
     #login::before { width: 600px; height: 600px; background: radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%); top: -200px; right: -200px; }
@@ -517,8 +448,6 @@
     .login-card .btn i { font-size: 16px; transition: transform 0.25s ease; }
     .login-card .btn:hover i { transform: translateX(3px); }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ===== TOAST ===== */
     #t {
       position: fixed; bottom: 72px; left: 50%; transform: translateX(-50%);
       background: rgba(11,15,25,0.92); backdrop-filter: blur(4px); color: #fff;
@@ -546,8 +475,6 @@
     .banner-text strong { color: #047857; }
     .banner-close { flex-shrink: 0; background: transparent; border: none; font-size: 20px; color: #6b7280; cursor: pointer; padding: 0 4px; transition: color 0.2s; line-height: 1; }
     .banner-close:hover { color: #ef4444; }
-
-    /* ===== PROFIL ===== */
     .profile-page { background: linear-gradient(180deg, #f8fafc 0%, #d1d5db 100%); min-height: calc(100vh - 80px); }
     .profile-page .profile-header-card { background: var(--p-gradient); border-radius: var(--radius); padding: 28px 20px 20px; margin-bottom: 16px; color: #fff; text-align: center; position: relative; overflow: hidden; box-shadow: 0 12px 32px rgba(13,148,136,0.25); border: 1px solid rgba(255,255,255,0.15); }
     .profile-page .profile-header-card::before { content: ''; position: absolute; top: -50%; right: -30%; width: 180px; height: 180px; background: rgba(255,255,255,0.06); border-radius: 50%; }
@@ -581,16 +508,12 @@
     .profile-page .profile-logout-btn:hover { background: #fef2f2; border-color: #f87171; box-shadow: 0 4px 12px rgba(220,38,38,0.1); }
     .profile-page .profile-footer-note { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 16px; padding: 0 16px; line-height: 1.5; }
     .profile-page .profile-footer-note i { color: var(--p); margin-right: 4px; }
-
-    /* ===== BANNED SCREEN ===== */
     #banned-screen { display: none; position: fixed; inset: 0; background: #fff; z-index: 99999; align-items: center; justify-content: center; flex-direction: column; overflow-y: auto; padding: 20px; }
     #banned-screen .banned-logo { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
     #banned-screen .banned-logo-icon { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #14b8a6, #0d9488); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; }
     #banned-screen .banned-logo-text { font-size: 15px; font-weight: 700; color: #1a1a2e; }
     #banned-screen .banned-sub { font-size: 20px; font-weight: 700; color: #6b7280; text-align: center; margin-bottom: 24px; letter-spacing: 0.5px; }
     #banned-screen .banned-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #e5e7eb; border: 1px solid #9ca3af; border-radius: var(--radius-sm); padding: 12px 24px; font-size: 14px; font-weight: 700; color: #374151; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.2s; }
-
-    /* ===== AJUSTEMENTS RESPONSIVE ===== */
     @media (max-width: 480px) {
       main { padding: 12px 14px 100px; }
       .balance-panel { padding: 20px 18px 16px; min-height: 160px; }
@@ -618,48 +541,15 @@
       .nav-item { font-size: 9px; }
       .nav-item i { font-size: 18px; }
     }
-
-    /* ═══════════════════════════════════════════════════════════
-       ═══ CORRECTION N°2 : MODALE DÉTAIL TRANSACTION — SCROLL INTERNE ═══
-       Le contenu était coupé en bas car la carte dépassait 100vh.
-       On ajoute un scroll interne au body + footer toujours visible.
-       ═══════════════════════════════════════════════════════════ */
-    #txDetail.modal {
-      padding: 12px;
-      overflow-y: auto;
-      align-items: center;
-    }
-    .txd-card {
-      max-width: 420px;
-      width: 100%;
-      max-height: 92vh;
-      padding: 0;
-      overflow: hidden;
-      position: relative;
-      animation: txdPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border-radius: 20px;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-    .txd-header {
-      flex-shrink: 0;
-    }
-    .txd-body {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 8px;
-    }
-    .txd-foot {
-      flex-shrink: 0;
-    }
+    #txDetail.modal { padding: 12px; overflow-y: auto; align-items: center; }
+    .txd-card { max-width: 420px; width: 100%; max-height: 92vh; padding: 0; overflow: hidden; position: relative; animation: txdPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 20px; background: #fff; display: flex; flex-direction: column; }
+    .txd-header { flex-shrink: 0; }
+    .txd-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
+    .txd-foot { flex-shrink: 0; }
     @media (max-width: 480px) {
       #txDetail.modal { padding: 8px; }
       .txd-card { max-height: 94vh; margin: 0; }
     }
-    /* Reste du style txd (inchangé) */
     @keyframes txdPop { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     .txd-header { padding: 28px 24px 24px; position: relative; text-align: center; color: #fff; background: var(--p-gradient); }
     .txd-header.credit { background: linear-gradient(135deg, #059669, #047857); }
@@ -696,8 +586,6 @@
       .txd-label { font-size: 10px; }
       .txd-val { font-size: 13px; }
     }
-
-    /* ===== STYLES REÇU PENDING ===== */
     .receipt-header.pending-header { border-bottom: 1px dashed #fde68a; }
     .receipt-header.pending-header::before, .receipt-header.pending-header::after { background: #FFFBEB; }
     .receipt-icon.pending-icon { background: linear-gradient(135deg, #FEF3C7, #FDE68A) !important; color: #D97706 !important; }
@@ -705,8 +593,6 @@
     .receipt-status.pending-status { color: #92400E !important; }
     .receipt-msg.pending-msg { background: linear-gradient(135deg, #FFFBEB, #FEF3C7) !important; border-left-color: #D97706 !important; color: #92400E !important; }
     .status-tag.pending-tag { background: #FFFBEB !important; color: #D97706 !important; border: 1.5px solid #D97706 !important; }
-
-    /* ===== NOUVEAU DESIGN PAGE VÉRIFICATION ===== */
     #verify main { padding-top: 88px; padding-bottom: 120px; display: flex; flex-direction: column; align-items: center; }
     #verify .verify-page-title { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 20px; width: 100%; max-width: 520px; padding-left: 4px; }
     #verify .verify-card { background: #ffffff; border: none; border-radius: 12px; padding: 0; box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03); max-width: 520px; width: 100%; overflow: hidden; }
@@ -736,11 +622,8 @@
       #verify .verify-code-section { padding: 20px 20px 24px; }
       #verify .verify-page-title { padding-left: 16px; font-size: 20px; }
     }
-
     .balance-toggle { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 2px solid rgba(255,255,255,0.5); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); transition: all 0.2s ease; z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15); }
     .balance-toggle:hover { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2); }
-
-    /* ===== BADGE NOM CLIENT – LOGIN ===== */
     .client-badge { position: relative; display: flex; align-items: center; justify-content: center; background: #e5e9ee; border: 1.5px solid #cbd5e1; border-radius: 50px; padding: 14px 50px 14px 60px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.06); animation: fadeUp 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.2s both; max-width: 100%; width: fit-content; overflow: visible; }
     .client-badge-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #0d9488); border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 18px; box-shadow: 0 4px 12px rgba(37,99,235,.28); flex-shrink: 0; }
     .client-badge-icon i { color: #ffffff; }
@@ -753,10 +636,7 @@
       .client-badge-name { font-size: 15px; letter-spacing: 0.5px; }
       .client-badge-hint { font-size: 13px; }
     }
-
     @keyframes cardPulse { 0%, 100% { box-shadow: 8px 0 28px rgba(30,58,138,0.22); } 50% { box-shadow: 8px 0 36px rgba(30,58,138,0.32), 0 0 60px rgba(30,58,138,0.08); } }
-
-    /* ===== FONDS COLORÉS HISTORIQUE TRANSACTIONS (LÉGERS) ===== */
     .history-item.tx-received { background: rgba(16, 185, 129, 0.03) !important; }
     .history-item.tx-received:hover { background: rgba(16, 185, 129, 0.06) !important; }
     .history-item.tx-pending { background: rgba(245, 158, 11, 0.03) !important; }
@@ -765,142 +645,37 @@
     .history-item.tx-sent:hover { background: rgba(239, 68, 68, 0.06) !important; }
     .history-item.tx-cancelled { background: rgba(139, 92, 246, 0.03) !important; }
     .history-item.tx-cancelled:hover { background: rgba(139, 92, 246, 0.06) !important; }
-
-    /* ═══════════════════════════════════════════════════════════════
-       ═══ MODALE ERREUR UNIFIÉE (#fieldErrorModal) — INTÉGRÉE ═══
-       ═══════════════════════════════════════════════════════════════ */
     #fieldErrorModal { z-index: 2000; }
-    #fieldErrorModal.modal {
-      position: fixed; inset: 0;
-      background: rgba(11, 15, 25, 0.5);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px;
-    }
+    #fieldErrorModal.modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; }
     #fieldErrorModal.modal.hidden { display: none !important; }
-    .field-error-modal-card {
-      background: #ffffff;
-      border-radius: 20px;
-      max-width: 440px;
-      width: 100%;
-      overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.20);
-      animation: feModalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-    }
-    @keyframes feModalPop {
-      from { opacity: 0; transform: scale(0.92) translateY(12px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .fe-modal-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 20px 22px 18px;
-      background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
-      border-bottom: 1px solid #FECACA;
-      position: relative;
-    }
-    .fe-modal-header-icon {
-      width: 46px; height: 46px;
-      border-radius: 14px;
-      background: #ffffff;
-      border: 1.5px solid #FCA5A5;
-      display: flex; align-items: center; justify-content: center;
-      color: #DC2626;
-      font-size: 20px;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12);
-    }
+    .field-error-modal-card { background: #ffffff; border-radius: 20px; max-width: 440px; width: 100%; overflow: hidden; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.20); animation: feModalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; }
+    @keyframes feModalPop { from { opacity: 0; transform: scale(0.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .fe-modal-header { display: flex; align-items: center; gap: 14px; padding: 20px 22px 18px; background: linear-gradient(135deg, #FEF2F2, #FEE2E2); border-bottom: 1px solid #FECACA; position: relative; }
+    .fe-modal-header-icon { width: 46px; height: 46px; border-radius: 14px; background: #ffffff; border: 1.5px solid #FCA5A5; display: flex; align-items: center; justify-content: center; color: #DC2626; font-size: 20px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12); }
     .fe-modal-header-text { flex: 1; min-width: 0; padding-right: 36px; }
-    .fe-modal-header-text h3 {
-      font-size: 16px; font-weight: 800;
-      color: #991B1B;
-      margin: 0 0 2px;
-      letter-spacing: -0.2px;
-      line-height: 1.2;
-    }
-    .fe-modal-header-text p {
-      font-size: 12px; color: #B91C1C;
-      margin: 0; font-weight: 500;
-      opacity: 0.85; line-height: 1.3;
-    }
-    .fe-modal-close {
-      position: absolute;
-      top: 12px; right: 12px;
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1.5px solid #FECACA;
-      color: #DC2626;
-      font-size: 20px; font-weight: 300;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      line-height: 1; padding: 0;
-      transition: all 0.2s ease;
-    }
-    .fe-modal-close:hover {
-      background: #DC2626;
-      border-color: #DC2626;
-      color: #ffffff;
-      transform: scale(1.08);
-    }
+    .fe-modal-header-text h3 { font-size: 16px; font-weight: 800; color: #991B1B; margin: 0 0 2px; letter-spacing: -0.2px; line-height: 1.2; }
+    .fe-modal-header-text p { font-size: 12px; color: #B91C1C; margin: 0; font-weight: 500; opacity: 0.85; line-height: 1.3; }
+    .fe-modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); border: 1.5px solid #FECACA; color: #DC2626; font-size: 20px; font-weight: 300; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; transition: all 0.2s ease; }
+    .fe-modal-close:hover { background: #DC2626; border-color: #DC2626; color: #ffffff; transform: scale(1.08); }
     .fe-modal-body { padding: 22px 24px 18px; }
-    .fe-modal-body p {
-      font-size: 14px; line-height: 1.6;
-      color: #374151;
-      margin: 0; font-weight: 500;
-    }
+    .fe-modal-body p { font-size: 14px; line-height: 1.6; color: #374151; margin: 0; font-weight: 500; }
     .fe-modal-footer { padding: 0 24px 22px; }
-    .fe-modal-btn {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #DC2626, #B91C1C);
-      color: #ffffff;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px;
-      box-shadow: 0 6px 18px rgba(220, 38, 38, 0.25);
-      transition: all 0.2s ease;
-      font-family: inherit;
-    }
-    .fe-modal-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
-    }
-    .field-error-modal-card.info .fe-modal-header {
-      background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
-      border-bottom-color: #FDE68A;
-    }
-    .field-error-modal-card.info .fe-modal-header-icon {
-      border-color: #FCD34D; color: #D97706;
-    }
+    .fe-modal-btn { width: 100%; padding: 13px; border: none; border-radius: 12px; background: linear-gradient(135deg, #DC2626, #B91C1C); color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 18px rgba(220, 38, 38, 0.25); transition: all 0.2s ease; font-family: inherit; }
+    .fe-modal-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35); }
+    .field-error-modal-card.info .fe-modal-header { background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border-bottom-color: #FDE68A; }
+    .field-error-modal-card.info .fe-modal-header-icon { border-color: #FCD34D; color: #D97706; }
     .field-error-modal-card.info .fe-modal-header-text h3 { color: #92400E; }
-    .field-error-modal-card.info .fe-modal-header-text p  { color: #B45309; }
+    .field-error-modal-card.info .fe-modal-header-text p { color: #B45309; }
     .field-error-modal-card.info .fe-modal-close { border-color: #FDE68A; color: #D97706; }
     .field-error-modal-card.info .fe-modal-close:hover { background: #D97706; border-color: #D97706; }
-    .field-error-modal-card.info .fe-modal-btn {
-      background: linear-gradient(135deg, #F59E0B, #D97706);
-      box-shadow: 0 6px 18px rgba(217, 119, 6, 0.25);
-    }
-    .field-error-modal-card.success .fe-modal-header {
-      background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
-      border-bottom-color: #A7F3D0;
-    }
-    .field-error-modal-card.success .fe-modal-header-icon {
-      border-color: #6EE7B7; color: #059669;
-    }
+    .field-error-modal-card.info .fe-modal-btn { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 6px 18px rgba(217, 119, 6, 0.25); }
+    .field-error-modal-card.success .fe-modal-header { background: linear-gradient(135deg, #ECFDF5, #D1FAE5); border-bottom-color: #A7F3D0; }
+    .field-error-modal-card.success .fe-modal-header-icon { border-color: #6EE7B7; color: #059669; }
     .field-error-modal-card.success .fe-modal-header-text h3 { color: #065F46; }
-    .field-error-modal-card.success .fe-modal-header-text p  { color: #047857; }
+    .field-error-modal-card.success .fe-modal-header-text p { color: #047857; }
     .field-error-modal-card.success .fe-modal-close { border-color: #A7F3D0; color: #059669; }
     .field-error-modal-card.success .fe-modal-close:hover { background: #059669; border-color: #059669; }
-    .field-error-modal-card.success .fe-modal-btn {
-      background: linear-gradient(135deg, #10B981, #059669);
-      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
-    }
+    .field-error-modal-card.success .fe-modal-btn { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25); }
     @media (max-width: 480px) {
       .field-error-modal-card { max-width: 100%; margin: 0 8px; border-radius: 18px; }
       .fe-modal-header { padding: 18px 18px 16px; gap: 12px; }
@@ -910,227 +685,59 @@
       .fe-modal-body { padding: 20px 20px 16px; }
       .fe-modal-footer { padding: 0 20px 20px; }
     }
-
-    /* ═══════════════════════════════════════════════════════════════
-       ═══ MODALE RÉSULTAT DE VIREMENT (#transferResultModal) ═══
-       ═══════════════════════════════════════════════════════════════ */
     #transferResultModal { z-index: 2500; }
-    #transferResultModal.modal {
-      position: fixed; inset: 0;
-      background: rgba(11, 15, 25, 0.5);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 16px;
-    }
+    #transferResultModal.modal { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; }
     #transferResultModal.modal.hidden { display: none !important; }
-    .trm-card {
-      background: #ffffff;
-      border-radius: 24px;
-      max-width: 460px;
-      width: 100%;
-      max-height: 92vh;
-      overflow: hidden;
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.24);
-      animation: trmPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    @keyframes trmPop {
-      from { opacity: 0; transform: scale(0.9) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .trm-header {
-      position: relative;
-      padding: 28px 24px 24px;
-      text-align: center;
-      color: #fff;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .trm-header::before {
-      content: ''; position: absolute;
-      top: -50%; right: -30%;
-      width: 200px; height: 200px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 50%; pointer-events: none;
-    }
-    .trm-header::after {
-      content: ''; position: absolute;
-      bottom: -40%; left: -20%;
-      width: 160px; height: 160px;
-      background: rgba(0,0,0,0.06);
-      border-radius: 50%; pointer-events: none;
-    }
-    .trm-close {
-      position: absolute; top: 14px; right: 14px;
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.2);
-      border: 1.5px solid rgba(255,255,255,0.35);
-      color: #fff; font-size: 20px; font-weight: 300;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      line-height: 1; z-index: 5;
-      transition: all 0.2s ease; padding: 0;
-    }
+    .trm-card { background: #ffffff; border-radius: 24px; max-width: 460px; width: 100%; max-height: 92vh; overflow: hidden; box-shadow: 0 28px 80px rgba(0, 0, 0, 0.24); animation: trmPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; display: flex; flex-direction: column; }
+    @keyframes trmPop { from { opacity: 0; transform: scale(0.9) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .trm-header { position: relative; padding: 28px 24px 24px; text-align: center; color: #fff; overflow: hidden; flex-shrink: 0; }
+    .trm-header::before { content: ''; position: absolute; top: -50%; right: -30%; width: 200px; height: 200px; background: rgba(255,255,255,0.08); border-radius: 50%; pointer-events: none; }
+    .trm-header::after { content: ''; position: absolute; bottom: -40%; left: -20%; width: 160px; height: 160px; background: rgba(0,0,0,0.06); border-radius: 50%; pointer-events: none; }
+    .trm-close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1.5px solid rgba(255,255,255,0.35); color: #fff; font-size: 20px; font-weight: 300; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; z-index: 5; transition: all 0.2s ease; padding: 0; }
     .trm-close:hover { background: rgba(255,255,255,0.35); transform: scale(1.08); }
-    .trm-icon-wrap {
-      width: 64px; height: 64px;
-      margin: 0 auto 12px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.22);
-      border: 2px solid rgba(255,255,255,0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px;
-      position: relative; z-index: 2;
-      backdrop-filter: blur(4px);
-    }
+    .trm-icon-wrap { width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 50%; background: rgba(255,255,255,0.22); border: 2px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; z-index: 2; backdrop-filter: blur(4px); }
     .trm-icon-wrap i { color: #fff; }
-    .trm-title {
-      font-size: 20px; font-weight: 800;
-      margin: 0 0 4px;
-      letter-spacing: -0.3px;
-      position: relative; z-index: 2;
-      line-height: 1.2;
-    }
-    .trm-subtitle {
-      font-size: 13px; margin: 0; font-weight: 500;
-      opacity: 0.9;
-      position: relative; z-index: 2;
-      line-height: 1.4;
-    }
-    .trm-body {
-      padding: 20px 22px 4px;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .trm-amount-box {
-      background: #f8fafc;
-      border: 1.5px dashed #cbd5e1;
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 18px;
-    }
-    .trm-amount-label {
-      font-size: 10px; font-weight: 800;
-      letter-spacing: 1.5px;
-      color: #64748b;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    .trm-amount {
-      font-size: 28px; font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #1e293b; line-height: 1;
-    }
-    .trm-details {
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 4px 16px;
-      margin-bottom: 16px;
-    }
-    .trm-detail-row {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #e2e8f0;
-    }
+    .trm-title { font-size: 20px; font-weight: 800; margin: 0 0 4px; letter-spacing: -0.3px; position: relative; z-index: 2; line-height: 1.2; }
+    .trm-subtitle { font-size: 13px; margin: 0; font-weight: 500; opacity: 0.9; position: relative; z-index: 2; line-height: 1.4; }
+    .trm-body { padding: 20px 22px 4px; flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .trm-amount-box { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 18px; }
+    .trm-amount-label { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+    .trm-amount { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: #1e293b; line-height: 1; }
+    .trm-details { background: #f8fafc; border-radius: 14px; padding: 4px 16px; margin-bottom: 16px; }
+    .trm-detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
     .trm-detail-row:last-child { border-bottom: none; }
-    .trm-detail-label {
-      font-size: 12px; font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      flex-shrink: 0; padding-right: 8px;
-    }
-    .trm-detail-value {
-      font-size: 14px; font-weight: 700;
-      color: #1e293b;
-      text-align: right;
-      word-break: break-word;
-      max-width: 62%;
-    }
-    .trm-detail-value.trm-mono {
-      font-family: 'Courier New', monospace;
-      font-size: 13px; letter-spacing: 0.4px;
-    }
-    .trm-message {
-      font-size: 13px; line-height: 1.6;
-      color: #475569;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #f1f5f9;
-      margin-bottom: 18px;
-    }
-    .trm-footer {
-      padding: 0 22px 22px;
-      flex-shrink: 0;
-    }
-    .trm-btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 14px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      gap: 10px;
-      color: #fff;
-      font-family: inherit;
-      transition: all 0.2s ease;
-      letter-spacing: 0.2px;
-    }
+    .trm-detail-label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0; padding-right: 8px; }
+    .trm-detail-value { font-size: 14px; font-weight: 700; color: #1e293b; text-align: right; word-break: break-word; max-width: 62%; }
+    .trm-detail-value.trm-mono { font-family: 'Courier New', monospace; font-size: 13px; letter-spacing: 0.4px; }
+    .trm-message { font-size: 13px; line-height: 1.6; color: #475569; padding: 12px 14px; border-radius: 12px; background: #f1f5f9; margin-bottom: 18px; }
+    .trm-footer { padding: 0 22px 22px; flex-shrink: 0; }
+    .trm-btn { width: 100%; padding: 15px; border: none; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: #fff; font-family: inherit; transition: all 0.2s ease; letter-spacing: 0.2px; }
     .trm-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
-
-    /* Variante SUCCESS */
     .trm-card.success .trm-header { background: linear-gradient(140deg, #10B981 0%, #059669 60%, #047857 100%); }
     .trm-card.success .trm-amount-box { background: #ecfdf5; border-color: #6ee7b7; }
     .trm-card.success .trm-amount { color: #047857; }
     .trm-card.success .trm-message { background: #ecfdf5; color: #065f46; border-left: 3px solid #10B981; }
-    .trm-card.success .trm-btn {
-      background: linear-gradient(135deg, #10B981, #059669);
-      box-shadow: 0 8px 22px rgba(16, 185, 129, 0.3);
-    }
-    /* Variante FAILURE */
+    .trm-card.success .trm-btn { background: linear-gradient(135deg, #10B981, #059669); box-shadow: 0 8px 22px rgba(16, 185, 129, 0.3); }
     .trm-card.failure .trm-header { background: linear-gradient(140deg, #EF4444 0%, #DC2626 60%, #B91C1C 100%); }
     .trm-card.failure .trm-amount-box { background: #fef2f2; border-color: #fca5a5; }
     .trm-card.failure .trm-amount { color: #B91C1C; }
     .trm-card.failure .trm-message { background: #fef2f2; color: #991B1B; border-left: 3px solid #EF4444; }
-    .trm-card.failure .trm-btn {
-      background: linear-gradient(135deg, #EF4444, #DC2626);
-      box-shadow: 0 8px 22px rgba(239, 68, 68, 0.3);
-    }
-    /* Variante PENDING */
+    .trm-card.failure .trm-btn { background: linear-gradient(135deg, #EF4444, #DC2626); box-shadow: 0 8px 22px rgba(239, 68, 68, 0.3); }
     .trm-card.pending .trm-header { background: linear-gradient(140deg, #F59E0B 0%, #D97706 60%, #B45309 100%); }
     .trm-card.pending .trm-amount-box { background: #fffbeb; border-color: #fcd34d; }
     .trm-card.pending .trm-amount { color: #B45309; }
     .trm-card.pending .trm-message { background: #fffbeb; color: #92400E; border-left: 3px solid #F59E0B; }
-    .trm-card.pending .trm-btn {
-      background: linear-gradient(135deg, #F59E0B, #D97706);
-      box-shadow: 0 8px 22px rgba(217, 119, 6, 0.3);
-    }
-    /* Variante VALIDATED */
+    .trm-card.pending .trm-btn { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 8px 22px rgba(217, 119, 6, 0.3); }
     .trm-card.validated .trm-header { background: linear-gradient(140deg, #14B8A6 0%, #0D9488 60%, #0F766E 100%); }
     .trm-card.validated .trm-amount-box { background: #f0fdfa; border-color: #5eead4; }
     .trm-card.validated .trm-amount { color: #0F766E; }
     .trm-card.validated .trm-message { background: #f0fdfa; color: #115E59; border-left: 3px solid #14B8A6; }
-    .trm-card.validated .trm-btn {
-      background: linear-gradient(135deg, #14B8A6, #0D9488);
-      box-shadow: 0 8px 22px rgba(13, 148, 136, 0.3);
-    }
-    /* Variante CANCELLED */
+    .trm-card.validated .trm-btn { background: linear-gradient(135deg, #14B8A6, #0D9488); box-shadow: 0 8px 22px rgba(13, 148, 136, 0.3); }
     .trm-card.cancelled .trm-header { background: linear-gradient(140deg, #8B5CF6 0%, #7C3AED 60%, #6D28D9 100%); }
     .trm-card.cancelled .trm-amount-box { background: #f5f3ff; border-color: #c4b5fd; }
     .trm-card.cancelled .trm-amount { color: #6D28D9; }
     .trm-card.cancelled .trm-message { background: #f5f3ff; color: #5B21B6; border-left: 3px solid #8B5CF6; }
-    .trm-card.cancelled .trm-btn {
-      background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-      box-shadow: 0 8px 22px rgba(124, 58, 237, 0.3);
-    }
+    .trm-card.cancelled .trm-btn { background: linear-gradient(135deg, #8B5CF6, #7C3AED); box-shadow: 0 8px 22px rgba(124, 58, 237, 0.3); }
     @media (max-width: 480px) {
       .trm-card { max-width: 100%; margin: 0 10px; border-radius: 20px; }
       .trm-header { padding: 24px 18px 20px; }
@@ -1143,11 +750,92 @@
       .trm-footer { padding: 0 18px 18px; }
       .trm-btn { padding: 14px; font-size: 14px; }
     }
-
-    /* ===== FORCER L'AFFICHAGE CORRECT DES 2 MODALES ===== */
     #fieldErrorModal:not(.hidden),
-    #transferResultModal:not(.hidden) {
-      display: flex !important;
+    #transferResultModal:not(.hidden) { display: flex !important; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ═══ PLEIN ÉCRAN DESKTOP — FORCÉ EN DERNIER (override) ═══
+       Placé tout en bas du <style> pour gagner la bataille de spécificité.
+       N'affecte PAS la taille des textes ni le mobile.
+       ═══════════════════════════════════════════════════════════════ */
+    @media (min-width: 768px) {
+      html, body {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      body {
+        width: 133.333333% !important;
+        min-width: 133.333333% !important;
+        overflow-x: hidden !important;
+      }
+      .screen,
+      .screen.active {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      .screen main,
+      main {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      header {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+      }
+      #dashboard .balance-panel,
+      #dashboard .quick-stats,
+      #dashboard .history-container {
+        max-width: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      #transfer main {
+        width: 100% !important;
+        max-width: none !important;
+        align-items: stretch !important;
+      }
+      #transfer .transfer-card {
+        max-width: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        border-radius: 12px !important;
+      }
+      .transfer-page-title {
+        max-width: none !important;
+        width: 100% !important;
+      }
+      #verify .verify-card,
+      #progress .progress-card {
+        max-width: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      #result main {
+        max-width: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      #result .receipt-card {
+        max-width: none !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+      nav#mainNav {
+        left: 40px !important;
+        right: 40px !important;
+      }
     }
   </style>
   <script>
@@ -1157,7 +845,6 @@
         window.__clientIdFromUrl = __clientParams.get('id');
       }
     })();
-  
 let balanceHidden = false;
 let realBalanceText = '';
 window.togglePasswordVisibility = function() {
@@ -1172,7 +859,6 @@ window.togglePasswordVisibility = function() {
     icon.className = 'fa-regular fa-eye';
   }
 };
-
 window.toggleBalance = function() {
   const bal = document.getElementById('bal');
   const eye = document.getElementById('balanceEye');
@@ -1196,7 +882,6 @@ window.toggleBalance = function() {
 .deleted-account-icon{width:76px;height:76px;margin:0 auto 16px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:#fff7ed;color:#ea580c;border:1px solid #fed7aa;font-size:30px;box-shadow:0 8px 22px rgba(234,88,12,.10)}
 .deleted-account-status{display:inline-block;padding:5px 12px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:10px;font-weight:800;letter-spacing:1px;margin-bottom:12px}.deleted-account-card h1{margin:0 0 10px;color:#0f172a;font-size:24px;letter-spacing:-.3px}.deleted-account-card p{margin:0 auto 20px;max-width:340px;color:#64748b;font-size:14px;line-height:1.65}.deleted-account-note{display:flex;align-items:flex-start;gap:9px;text-align:left;padding:12px 13px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.5}.deleted-account-note i{color:#0d9488;margin-top:2px}@keyframes deletedAccountIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
-
 <style>
 #result .receipt-card.receipt-success::before{background:linear-gradient(135deg,#059669,#047857)}
 #result .receipt-card.receipt-failure::before{background:linear-gradient(135deg,#DC2626,#B91C1C)}
@@ -1229,7 +914,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
 </head>
 <body>
 
-  <!-- ========== PAGE COMPTE SUPPRIMÉ / LIEN INACTIF ========== -->
   <div id="banned-screen" class="deleted-account-screen" role="status" aria-live="polite">
     <div class="deleted-account-card">
       <div class="deleted-account-brand"><span>Y</span><strong>Younited</strong></div>
@@ -1241,19 +925,16 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </div>
   </div>
 
-  <!-- ========== OVERLAY SPINNER ========== -->
   <div id="loading-overlay" role="status" aria-live="polite" aria-busy="false">
     <div class="spinner-container"><div class="loading-card"><div class="spinner"></div><span class="spinner-text">Ładowanie...</span></div></div>
   </div>
 
-  <!-- ========== LOGIN ========== -->
   <section id="login" class="screen">
     <div class="login-wrapper">
       <div class="login-card">
         <div class="login-logo">Y</div>
         <h1 class="login-title">Younited</h1>
         <p class="login-sub">Bankowość internetowa</p>
-        
         <div id="client-name" style="display:none; text-align:center; margin-bottom:20px;">
           <div class="client-badge">
             <div class="client-badge-icon"><i class="fa-solid fa-user"></i></div>
@@ -1289,7 +970,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </div>
   </section>
 
-  <!-- ========== DASHBOARD ========== -->
   <section id="dashboard" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1340,7 +1020,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </main>
   </section>
 
-  <!-- ========== TRANSFER ========== -->
   <section id="transfer" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1443,7 +1122,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </main>
   </section>
 
-  <!-- ========== VERIFY ========== -->
   <section id="verify" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1514,7 +1192,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </main>
   </section>
 
-  <!-- ========== PROGRESS ========== -->
   <section id="progress" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1560,7 +1237,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </main>
   </section>
 
-  <!-- ========== RESULT ========== -->
   <section id="result" class="screen">
     <header>
       <div class="logo"><i class="fa-solid fa-building-columns"></i> Younited</div>
@@ -1595,7 +1271,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </main>
   </section>
 
-  <!-- ========== BOTTOM NAV ========== -->
   <nav id="mainNav" style="display:none">
     <div class="nav-item" onclick="withSpinner(() => navigateTo('dashboard'))"><i class="fa-solid fa-house"></i><span>Pulpit</span></div>
     <div class="nav-item" onclick="withSpinner(() => navigateTo('transfer'))"><i class="fa-solid fa-arrow-right-arrow-left"></i><span>Płatności</span></div>
@@ -1603,7 +1278,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     <div class="nav-item" onclick="withSpinner(() => openAcc())"><i class="fa-regular fa-user"></i><span>Profil</span></div>
   </nav>
 
-  <!-- ========== MODALES ========== -->
   <div id="card" class="modal hidden" onclick="if(event.target===this)withSpinner(()=>closeCard())">
     <div class="modal-content" style="max-width:400px;padding:20px;">
       <button onclick="withSpinner(() => closeCard())" class="modal-close" style="top:12px;right:12px;width:32px;height:32px;font-size:18px;border:none;background:rgba(0,0,0,0.5);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.2);">×</button>
@@ -1613,9 +1287,9 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
         <div style="position:absolute;top:-10%;left:-5%;width:65%;height:120%;overflow:hidden;border-radius:0 40% 60% 0 / 0 30% 70% 0;z-index:2;pointer-events:none;">
           <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.18) 42%,rgba(255,255,255,0.40) 50%,rgba(255,255,255,0.18) 58%,transparent 70%);animation:holo 4s ease-in-out infinite;"></div>
         </div>
+        <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}</style>
         <div style="position:absolute;top:15%;left:12%;width:70px;height:70px;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
         <div style="position:absolute;bottom:12%;left:28%;width:45px;height:45px;background:radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 70%);border-radius:50%;z-index:2;pointer-events:none;"></div>
-        <style>@keyframes holo{0%,100%{transform:translateX(-100%)}50%{transform:translateX(100%)}}</style>
         <div style="position:absolute;top:-30%;right:-20%;width:160px;height:160px;background:radial-gradient(circle,rgba(13,148,136,0.15) 0%,transparent 70%);border-radius:50%;"></div>
         <div style="position:absolute;bottom:-40%;left:-30%;width:180px;height:180px;background:radial-gradient(circle,rgba(20,184,166,0.1) 0%,transparent 70%);border-radius:50%;"></div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px 0;position:relative;z-index:3;">
@@ -1782,7 +1456,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </div>
   </div>
 
-  <!-- Détail transaction -->
   <div id="txDetail" class="modal hidden" onclick="if(event.target===this)closeTxDetail()">
     <div class="modal-content txd-card">
       <div class="txd-header" id="txd-header">
@@ -1869,7 +1542,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
 
   <div id="t"></div>
 
-  <!-- ========== MODALE ERREUR UNIFIÉE ========== -->
   <div id="fieldErrorModal" class="modal hidden" onclick="if(event.target===this)closeFieldErrorModal()">
     <div class="field-error-modal-card" id="fieldErrorModalCard">
       <div class="fe-modal-header">
@@ -1893,7 +1565,6 @@ body.light-bg #progress .progress-details .row .value,body.light-bg #result .rec
     </div>
   </div>
 
-  <!-- ========== MODALE RÉSULTAT DE VIREMENT (5 états) ========== -->
   <div id="transferResultModal" class="modal hidden" onclick="if(event.target===this)closeTransferResultModal()">
     <div class="trm-card" id="trmCard">
       <div class="trm-header" id="trmHeader">
